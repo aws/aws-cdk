@@ -37,7 +37,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - none
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<{ [key: string]: any }>;
 
   /**
    * Add Customer managed KMS key to encrypt Filter Criteria.
@@ -165,7 +165,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
-      }),
+      })
     );
 
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
@@ -175,14 +175,16 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       this.innerProps.secret.grantRead(target);
     }
 
-    target.addToRolePolicy(new iam.PolicyStatement(
-      {
+    target.addToRolePolicy(
+      new iam.PolicyStatement({
         actions: ['kafka:DescribeCluster', 'kafka:GetBootstrapBrokers', 'kafka:ListScramSecrets'],
         resources: [this.innerProps.clusterArn],
-      },
-    ));
+      })
+    );
 
-    target.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaMSKExecutionRole'));
+    target.role?.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaMSKExecutionRole')
+    );
   }
 
   private sourceAccessConfigurations() {
@@ -195,14 +197,12 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       });
     }
 
-    return sourceAccessConfigurations.length === 0
-      ? undefined
-      : sourceAccessConfigurations;
+    return sourceAccessConfigurations.length === 0 ? undefined : sourceAccessConfigurations;
   }
 
   /**
-  * The identifier for this EventSourceMapping
-  */
+   * The identifier for this EventSourceMapping
+   */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
       throw new Error('KafkaEventSource is not yet bound to an event source mapping');
@@ -241,11 +241,12 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new Error('secret must be set if Kafka brokers accessed over Internet');
     }
     this.innerProps = props;
-
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(target instanceof Construct)) { throw new Error('Function is not a construct. Unexpected error.'); }
+    if (!(target instanceof Construct)) {
+      throw new Error('Function is not a construct. Unexpected error.');
+    }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
@@ -259,7 +260,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         onFailure: this.innerProps.onFailure,
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
-      }),
+      })
     );
 
     if (this.innerProps.secret !== undefined) {
@@ -268,7 +269,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   private mappingId(target: lambda.IFunction) {
-    const idHash = md5hash(JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers)));
+    const idHash = md5hash(
+      JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers))
+    );
     return `KafkaEventSource:${idHash}:${this.innerProps.topic}`;
   }
 
@@ -306,15 +309,15 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       sourceAccessConfigurations.push({
         type: lambda.SourceAccessConfigurationType.VPC_SECURITY_GROUP,
         uri: this.innerProps.securityGroup.securityGroupId,
-      },
-      );
+      });
       this.innerProps.vpc?.selectSubnets(this.innerProps.vpcSubnets).subnetIds.forEach((id) => {
-        sourceAccessConfigurations.push({ type: lambda.SourceAccessConfigurationType.VPC_SUBNET, uri: id });
+        sourceAccessConfigurations.push({
+          type: lambda.SourceAccessConfigurationType.VPC_SUBNET,
+          uri: id,
+        });
       });
     }
 
-    return sourceAccessConfigurations.length === 0
-      ? undefined
-      : sourceAccessConfigurations;
+    return sourceAccessConfigurations.length === 0 ? undefined : sourceAccessConfigurations;
   }
 }

@@ -49,7 +49,11 @@ export interface RequestValidatorProps extends RequestValidatorOptions {
 }
 
 export class RequestValidator extends Resource implements IRequestValidator {
-  public static fromRequestValidatorId(scope: Construct, id: string, requestValidatorId: string): IRequestValidator {
+  public static fromRequestValidatorId(
+    scope: Construct,
+    id: string,
+    requestValidatorId: string
+  ): IRequestValidator {
     class Import extends Resource implements IRequestValidator {
       public readonly requestValidatorId = requestValidatorId;
     }
@@ -80,7 +84,8 @@ export class RequestValidator extends Resource implements IRequestValidator {
 
     this.requestValidatorId = resource.ref;
 
-    const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
+    const deployment =
+      props.restApi instanceof RestApi ? props.restApi.latestDeployment : undefined;
     if (deployment) {
       deployment.node.addDependency(resource);
       deployment.addToLogicalId({ validator: validatorProps });

@@ -11,9 +11,7 @@ class TestStack extends cdk.Stack {
         version: '0.2',
         phases: {
           build: {
-            commands: [
-              'echo "Hello, CodeBuild!"',
-            ],
+            commands: ['echo "Hello, CodeBuild!"'],
           },
         },
       }),

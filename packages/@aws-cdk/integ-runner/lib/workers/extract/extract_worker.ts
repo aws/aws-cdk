@@ -1,7 +1,13 @@
 import * as workerpool from 'workerpool';
 import { IntegSnapshotRunner, IntegTestRunner } from '../../runner';
 import { IntegTest, IntegTestInfo } from '../../runner/integration-tests';
-import { DiagnosticReason, IntegTestWorkerConfig, SnapshotVerificationOptions, Diagnostic, formatAssertionResults } from '../common';
+import {
+  DiagnosticReason,
+  IntegTestWorkerConfig,
+  SnapshotVerificationOptions,
+  Diagnostic,
+  formatAssertionResults,
+} from '../common';
 import { IntegTestBatchRequest } from '../integ-test-worker';
 import { IntegWatchOptions } from '../integ-watch-worker';
 
@@ -25,15 +31,18 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
     const start = Date.now();
 
     try {
-      const runner = new IntegTestRunner({
-        test,
-        profile: request.profile,
-        env: {
-          AWS_REGION: request.region,
-          CDK_DOCKER: process.env.CDK_DOCKER ?? 'docker',
+      const runner = new IntegTestRunner(
+        {
+          test,
+          profile: request.profile,
+          env: {
+            AWS_REGION: request.region,
+            CDK_DOCKER: process.env.CDK_DOCKER ?? 'docker',
+          },
+          showOutput: verbosity >= 2,
         },
-        showOutput: verbosity >= 2,
-      }, testInfo.destructiveChanges);
+        testInfo.destructiveChanges
+      );
 
       const tests = runner.actualTests();
 
@@ -49,7 +58,7 @@ export function integTestWorker(request: IntegTestBatchRequest): IntegTestWorker
             updateWorkflow: request.updateWorkflow,
             verbosity,
           });
-          if (results && Object.values(results).some(result => result.status === 'fail')) {
+          if (results && Object.values(results).some((result) => result.status === 'fail')) {
             failures.push(testInfo);
             workerpool.workerEmit({
               reason: DiagnosticReason.ASSERTION_FAILED,
@@ -121,7 +130,10 @@ export async function watchTestWorker(options: IntegWatchOptions) {
  * if there is an existing snapshot, and if there is will
  * check if there are any changes
  */
-export function snapshotTestWorker(testInfo: IntegTestInfo, options: SnapshotVerificationOptions = {}): IntegTestWorkerConfig[] {
+export function snapshotTestWorker(
+  testInfo: IntegTestInfo,
+  options: SnapshotVerificationOptions = {}
+): IntegTestWorkerConfig[] {
   const failedTests = new Array<IntegTestWorkerConfig>();
   const start = Date.now();
   const test = new IntegTest(testInfo); // Hydrate the data record again
@@ -148,10 +160,12 @@ export function snapshotTestWorker(testInfo: IntegTestInfo, options: SnapshotVer
     } else {
       const { diagnostics, destructiveChanges } = runner.testSnapshot(options);
       if (diagnostics.length > 0) {
-        diagnostics.forEach(diagnostic => workerpool.workerEmit({
-          ...diagnostic,
-          duration: (Date.now() - start) / 1000,
-        } as Diagnostic));
+        diagnostics.forEach((diagnostic) =>
+          workerpool.workerEmit({
+            ...diagnostic,
+            duration: (Date.now() - start) / 1000,
+          } as Diagnostic)
+        );
         failedTests.push({
           ...test.info,
           destructiveChanges,

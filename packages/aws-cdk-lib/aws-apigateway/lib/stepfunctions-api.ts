@@ -111,18 +111,25 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
 export class StepFunctionsRestApi extends RestApi {
   constructor(scope: Construct, id: string, props: StepFunctionsRestApiProps) {
     if (props.defaultIntegration) {
-      throw new Error('Cannot specify "defaultIntegration" since Step Functions integration is automatically defined');
+      throw new Error(
+        'Cannot specify "defaultIntegration" since Step Functions integration is automatically defined'
+      );
     }
 
-    if ((props.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineType !== sfn.StateMachineType.EXPRESS) {
-      throw new Error('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType');
+    if (
+      (props.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineType !==
+      sfn.StateMachineType.EXPRESS
+    ) {
+      throw new Error(
+        'State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType'
+      );
     }
 
     const stepfunctionsIntegration = StepFunctionsIntegration.startExecution(props.stateMachine, {
       credentialsRole: props.role,
       requestContext: props.requestContext,
-      path: props.path?? true,
-      querystring: props.querystring?? true,
+      path: props.path ?? true,
+      querystring: props.querystring ?? true,
       headers: props.headers,
       authorizer: props.authorizer,
       useDefaultMethodResponses: props.useDefaultMethodResponses,

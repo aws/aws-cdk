@@ -43,8 +43,8 @@ export interface IAccessPoint extends core.IResource {
 }
 
 /**
-  * The S3 object lambda access point configuration.
-  */
+ * The S3 object lambda access point configuration.
+ */
 export interface AccessPointProps {
   /**
    * The bucket to which this access point belongs.
@@ -112,8 +112,11 @@ abstract class AccessPointBase extends core.Resource implements IAccessPoint {
   }
 
   /** Implement the `IAccessPoint.virtualHostedUrlForObject` method. */
-  public virtualHostedUrlForObject(key?: string, options?: s3.VirtualHostedStyleUrlOptions): string {
-    const domainName = options?.regional ?? true ? this.regionalDomainName : this.domainName;
+  public virtualHostedUrlForObject(
+    key?: string,
+    options?: s3.VirtualHostedStyleUrlOptions
+  ): string {
+    const domainName = (options?.regional ?? true) ? this.regionalDomainName : this.domainName;
     const prefix = `https://${domainName}`;
     if (!key) {
       return prefix;
@@ -158,19 +161,25 @@ function validateAccessPointName(name: string): void {
     throw new Error('Access point name cannot begin or end with a dash');
   }
   if (!/^[0-9a-z](.(?![\.A-Z_]))+[0-9a-z]$/.test(name)) {
-    throw new Error('Access point name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods');
+    throw new Error(
+      'Access point name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods'
+    );
   }
 }
 
 /**
-  * An S3 object lambda access point for intercepting and
-  * transforming `GetObject` requests.
-  */
+ * An S3 object lambda access point for intercepting and
+ * transforming `GetObject` requests.
+ */
 export class AccessPoint extends AccessPointBase {
   /**
    * Reference an existing AccessPoint defined outside of the CDK code.
    */
-  public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
+  public static fromAccessPointAttributes(
+    scope: Construct,
+    id: string,
+    attrs: AccessPointAttributes
+  ): IAccessPoint {
     const arn = core.Arn.split(attrs.accessPointArn, core.ArnFormat.SLASH_RESOURCE_NAME);
     if (!arn.resourceName) {
       throw new Error('Unable to parse acess point name');
@@ -255,7 +264,7 @@ export class AccessPoint extends AccessPointBase {
       new iam.PolicyStatement({
         actions: ['s3-object-lambda:WriteGetObjectResponse'],
         resources: ['*'],
-      }),
+      })
     );
   }
 }

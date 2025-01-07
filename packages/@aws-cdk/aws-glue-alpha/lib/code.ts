@@ -10,7 +10,6 @@ import * as constructs from 'constructs';
  * Represents a Glue Job's Code assets (an asset can be a scripts, a jar, a python file or any other file).
  */
 export abstract class Code {
-
   /**
    * Job code as an S3 object.
    * @param bucket The S3 bucket
@@ -39,7 +38,10 @@ export abstract class Code {
  * Glue job Code from an S3 bucket.
  */
 export class S3Code extends Code {
-  constructor(private readonly bucket: s3.IBucket, private readonly key: string) {
+  constructor(
+    private readonly bucket: s3.IBucket,
+    private readonly key: string
+  ) {
     super();
   }
 
@@ -63,7 +65,10 @@ export class AssetCode extends Code {
   /**
    * @param path The path to the Code file.
    */
-  constructor(private readonly path: string, private readonly options: s3assets.AssetOptions = { }) {
+  constructor(
+    private readonly path: string,
+    private readonly options: s3assets.AssetOptions = {}
+  ) {
     super();
 
     if (fs.lstatSync(this.path).isDirectory()) {
@@ -79,8 +84,10 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Code instance for every stack.');
+      throw new Error(
+        `Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+          'Create a new Code instance for every stack.'
+      );
     }
     this.asset.grantRead(grantable);
     return {
@@ -96,7 +103,7 @@ export class AssetCode extends Code {
    */
   private hashcode(s: string): string {
     return md5hash(s);
-  };
+  }
 }
 
 /**

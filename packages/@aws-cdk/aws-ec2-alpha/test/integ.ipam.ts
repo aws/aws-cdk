@@ -9,7 +9,14 @@
  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
-import { AddressFamily, AwsServiceName, IpCidr, Ipam, IpamPoolPublicIpSource, SubnetV2 } from '../lib';
+import {
+  AddressFamily,
+  AwsServiceName,
+  IpCidr,
+  Ipam,
+  IpamPoolPublicIpSource,
+  SubnetV2,
+} from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
@@ -40,7 +47,7 @@ const pool2 = ipam.publicScope.addPool('PublicPool0', {
   locale: 'us-west-2',
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
-pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 } );
+pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 });
 
 /** Test Ipv4 Primary and Secondary address IpvIPAM */
 const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {

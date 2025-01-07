@@ -99,20 +99,32 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * Import an existing VirtualRouter given an ARN
    */
-  public static fromVirtualRouterArn(scope: Construct, id: string, virtualRouterArn: string): IVirtualRouter {
-    return new class extends VirtualRouterBase {
+  public static fromVirtualRouterArn(
+    scope: Construct,
+    id: string,
+    virtualRouterArn: string
+  ): IVirtualRouter {
+    return new (class extends VirtualRouterBase {
       readonly virtualRouterArn = virtualRouterArn;
-      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualRouterArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
+      private readonly parsedArn = cdk.Fn.split(
+        '/',
+        cdk.Stack.of(scope).splitArn(virtualRouterArn, cdk.ArnFormat.SLASH_RESOURCE_NAME)
+          .resourceName!
+      );
       readonly virtualRouterName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
-    }(scope, id);
+    })(scope, id);
   }
 
   /**
    * Import an existing VirtualRouter given attributes
    */
-  public static fromVirtualRouterAttributes(scope: Construct, id: string, attrs: VirtualRouterAttributes): IVirtualRouter {
-    return new class extends VirtualRouterBase {
+  public static fromVirtualRouterAttributes(
+    scope: Construct,
+    id: string,
+    attrs: VirtualRouterAttributes
+  ): IVirtualRouter {
+    return new (class extends VirtualRouterBase {
       readonly virtualRouterName = attrs.virtualRouterName;
       readonly mesh = attrs.mesh;
       readonly virtualRouterArn = cdk.Stack.of(this).formatArn({
@@ -120,7 +132,7 @@ export class VirtualRouter extends VirtualRouterBase {
         resource: `mesh/${attrs.mesh.meshName}/virtualRouter`,
         resourceName: this.virtualRouterName,
       });
-    }(scope, id);
+    })(scope, id);
   }
 
   /**
@@ -142,12 +154,13 @@ export class VirtualRouter extends VirtualRouterBase {
 
   constructor(scope: Construct, id: string, props: VirtualRouterProps) {
     super(scope, id, {
-      physicalName: props.virtualRouterName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName:
+        props.virtualRouterName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;
     if (props.listeners && props.listeners.length) {
-      props.listeners.forEach(listener => this.addListener(listener));
+      props.listeners.forEach((listener) => this.addListener(listener));
     } else {
       this.addListener(VirtualRouterListener.http());
     }

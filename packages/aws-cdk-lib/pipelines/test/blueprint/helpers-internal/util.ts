@@ -1,6 +1,6 @@
 import { Graph, GraphNode } from '../../../lib/helpers-internal';
 
-class PlainNode extends GraphNode<any> { }
+class PlainNode extends GraphNode<any> {}
 
 export function mkGraph(name: string, block: (b: GraphBuilder) => void) {
   const graph = new Graph(name);
@@ -13,7 +13,7 @@ export function mkGraph(name: string, block: (b: GraphBuilder) => void) {
     },
     node(name2, deps) {
       const innerN = new PlainNode(name2);
-      innerN.dependOn(...deps ?? []);
+      innerN.dependOn(...(deps ?? []));
       graph.add(innerN);
       return innerN;
     },
@@ -30,7 +30,11 @@ export function nodeNames(n: GraphNode<any>): string;
 export function nodeNames(ns: GraphNode<any>[]): string[];
 export function nodeNames(ns: GraphNode<any>[][]): string[][];
 export function nodeNames(n: any): any {
-  if (n instanceof GraphNode) { return n.id; }
-  if (Array.isArray(n)) { return n.map(nodeNames); }
+  if (n instanceof GraphNode) {
+    return n.id;
+  }
+  if (Array.isArray(n)) {
+    return n.map(nodeNames);
+  }
   throw new Error('oh no');
 }

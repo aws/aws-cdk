@@ -5,23 +5,19 @@ const client = new CodePipeline();
 const TIMEOUT_IN_MINUTES = 5;
 
 const sleep = (seconds: number) => {
-  return new Promise<void>(resolve => setTimeout(resolve, seconds * 1000));
+  return new Promise<void>((resolve) => setTimeout(resolve, seconds * 1000));
 };
 
 export async function handler(event: any, _context: any) {
-  const {
-    PipelineName: pipelineName,
-    StageName: stageName,
-    ActionName: actionName,
-  } = event;
+  const { PipelineName: pipelineName, StageName: stageName, ActionName: actionName } = event;
 
   function parseState(response: any): string | undefined {
     const stages = response.stageStates;
     const validStages = stages?.filter((s: any) => s.stageName === stageName);
-    const manualApproval = validStages.length &&
+    const manualApproval =
+      validStages.length &&
       validStages[0].actionStates.filter((state: any) => state.actionName === actionName);
-    const latest = manualApproval && manualApproval.length &&
-      manualApproval[0].latestExecution;
+    const latest = manualApproval && manualApproval.length && manualApproval[0].latestExecution;
 
     return latest ? latest.token : undefined;
   }

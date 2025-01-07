@@ -12,7 +12,11 @@ export abstract class ApiDefinition {
   /**
    * Creates an API definition from a specification file in an S3 bucket
    */
-  public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3ApiDefinition {
+  public static fromBucket(
+    bucket: s3.IBucket,
+    key: string,
+    objectVersion?: string
+  ): S3ApiDefinition {
     return new S3ApiDefinition(bucket, key, objectVersion);
   }
 
@@ -133,7 +137,11 @@ export interface ApiDefinitionConfig {
 export class S3ApiDefinition extends ApiDefinition {
   private bucketName: string;
 
-  constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  constructor(
+    bucket: s3.IBucket,
+    private key: string,
+    private objectVersion?: string
+  ) {
     super();
 
     if (!bucket.bucketName) {
@@ -161,7 +169,7 @@ export class InlineApiDefinition extends ApiDefinition {
   constructor(private definition: any) {
     super();
 
-    if (typeof(definition) !== 'object') {
+    if (typeof definition !== 'object') {
       throw new Error('definition should be of type object');
     }
 
@@ -183,7 +191,10 @@ export class InlineApiDefinition extends ApiDefinition {
 export class AssetApiDefinition extends ApiDefinition {
   private asset?: s3_assets.Asset;
 
-  constructor(private readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(
+    private readonly path: string,
+    private readonly options: s3_assets.AssetOptions = {}
+  ) {
     super();
   }
 

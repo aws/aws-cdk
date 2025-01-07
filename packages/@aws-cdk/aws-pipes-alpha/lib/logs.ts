@@ -46,17 +46,17 @@ export enum LogLevel {
  */
 export enum S3OutputFormat {
   /**
-  * Plain text
-  */
+   * Plain text
+   */
   PLAIN = 'plain',
   /**
-  * JSON
-  */
+   * JSON
+   */
   JSON = 'json',
   /**
-  * W3C extended log file format
-  * @see https://www.w3.org/TR/WD-logfile
-  */
+   * W3C extended log file format
+   * @see https://www.w3.org/TR/WD-logfile
+   */
   W3C = 'w3c',
 }
 

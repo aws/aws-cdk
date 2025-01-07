@@ -48,11 +48,11 @@ export class Row implements IWidget {
     }
   }
 
-  public get width() : number {
+  public get width(): number {
     return this._width;
   }
 
-  public get height() : number {
+  public get height(): number {
     return this._height;
   }
 
@@ -118,15 +118,15 @@ export class Column implements IWidget {
     this.widgets = widgets;
 
     // There's no vertical wrapping so this one's a lot easier
-    this._width = Math.max(...this.widgets.map(w => w.width));
-    this._height = sum(...this.widgets.map(w => w.height));
+    this._width = Math.max(...this.widgets.map((w) => w.width));
+    this._height = sum(...this.widgets.map((w) => w.height));
   }
 
-  public get width() : number {
+  public get width(): number {
     return this._width;
   }
 
-  public get height() : number {
+  public get height(): number {
     return this._height;
   }
 

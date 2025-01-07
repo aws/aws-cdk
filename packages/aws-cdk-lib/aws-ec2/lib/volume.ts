@@ -3,7 +3,18 @@ import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags } from '../../core';
+import {
+  IResource,
+  Resource,
+  Size,
+  SizeRoundingBehavior,
+  Stack,
+  Token,
+  Tags,
+  Names,
+  RemovalPolicy,
+  FeatureFlags,
+} from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import * as cxapi from '../../cx-api';
 
@@ -158,7 +169,10 @@ export class BlockDeviceVolume {
    * @param snapshotId The snapshot ID of the volume to use
    * @param options additional device options
    */
-  public static ebsFromSnapshot(snapshotId: string, options: EbsDeviceSnapshotOptions = {}): BlockDeviceVolume {
+  public static ebsFromSnapshot(
+    snapshotId: string,
+    options: EbsDeviceSnapshotOptions = {}
+  ): BlockDeviceVolume {
     return new this({ ...options, snapshotId });
   }
 
@@ -180,8 +194,10 @@ export class BlockDeviceVolume {
    * @param ebsDevice EBS device info
    * @param virtualName Virtual device name
    */
-  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
-  }
+  protected constructor(
+    public readonly ebsDevice?: EbsDeviceProps,
+    public readonly virtualName?: string
+  ) {}
 }
 
 /**
@@ -312,7 +328,11 @@ export interface IVolume extends IResource {
    * @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
    *                     Defaults to a hash calculated from this volume and list of constructs. (DEPRECATED)
    */
-  grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant;
+  grantAttachVolumeByResourceTag(
+    grantee: IGrantable,
+    constructs: Construct[],
+    tagKeySuffix?: string
+  ): Grant;
 
   /**
    * Grants permission to detach this Volume from an instance
@@ -339,7 +359,11 @@ export interface IVolume extends IResource {
    * @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
    *                     Defaults to a hash calculated from this volume and list of constructs. (DEPRECATED)
    */
-  grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant;
+  grantDetachVolumeByResourceTag(
+    grantee: IGrantable,
+    constructs: Construct[],
+    tagKeySuffix?: string
+  ): Grant;
 }
 
 /**
@@ -511,35 +535,35 @@ abstract class VolumeBase extends Resource implements IVolume {
       // of least privilege, in accordance with best practices.
       // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-permissions
       const kmsGrant: Grant = this.encryptionKey.grant(grantee, 'kms:CreateGrant');
-      kmsGrant.principalStatement!.addConditions(
-        {
-          Bool: { 'kms:GrantIsForAWSResource': true },
-          StringEquals: {
-            'kms:ViaService': `ec2.${Stack.of(this).region}.amazonaws.com`,
-            'kms:GrantConstraintType': 'EncryptionContextSubset',
-          },
+      kmsGrant.principalStatement!.addConditions({
+        Bool: { 'kms:GrantIsForAWSResource': true },
+        StringEquals: {
+          'kms:ViaService': `ec2.${Stack.of(this).region}.amazonaws.com`,
+          'kms:GrantConstraintType': 'EncryptionContextSubset',
         },
-      );
+      });
     }
 
     return result;
   }
 
-  public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
+  public grantAttachVolumeByResourceTag(
+    grantee: IGrantable,
+    constructs: Construct[],
+    tagKeySuffix?: string
+  ): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
     const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
     const result = this.grantAttachVolume(grantee);
-    result.principalStatement!.addCondition(
-      'ForAnyValue:StringEquals', grantCondition,
-    );
+    result.principalStatement!.addCondition('ForAnyValue:StringEquals', grantCondition);
 
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
+    constructs.forEach((construct) => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
@@ -554,21 +578,23 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  public grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
+  public grantDetachVolumeByResourceTag(
+    grantee: IGrantable,
+    constructs: Construct[],
+    tagKeySuffix?: string
+  ): Grant {
     const tagValue = this.calculateResourceTagValue([this, ...constructs]);
     const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
     const result = this.grantDetachVolume(grantee);
-    result.principalStatement!.addCondition(
-      'ForAnyValue:StringEquals', grantCondition,
-    );
+    result.principalStatement!.addCondition('ForAnyValue:StringEquals', grantCondition);
 
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
+    constructs.forEach((construct) => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
@@ -580,7 +606,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     ];
     const instanceArnPrefix = `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:instance`;
     if (instances) {
-      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceId}`));
+      instances.forEach((instance) =>
+        resourceArns.push(`${instanceArnPrefix}/${instance?.instanceId}`)
+      );
     } else {
       resourceArns.push(`${instanceArnPrefix}/*`);
     }
@@ -588,7 +616,7 @@ abstract class VolumeBase extends Resource implements IVolume {
   }
 
   private calculateResourceTagValue(constructs: Construct[]): string {
-    return md5hash(constructs.map(c => Names.uniqueId(c)).join(''));
+    return md5hash(constructs.map((c) => Names.uniqueId(c)).join(''));
   }
 }
 
@@ -603,7 +631,11 @@ export class Volume extends VolumeBase {
    * @param id    the ID of the imported Volume in the construct tree.
    * @param attrs the attributes of the imported Volume
    */
-  public static fromVolumeAttributes(scope: Construct, id: string, attrs: VolumeAttributes): IVolume {
+  public static fromVolumeAttributes(
+    scope: Construct,
+    id: string,
+    attrs: VolumeAttributes
+  ): IVolume {
     class Import extends VolumeBase {
       public readonly volumeId = attrs.volumeId;
       public readonly availabilityZone = attrs.availabilityZone;
@@ -611,7 +643,9 @@ export class Volume extends VolumeBase {
     }
     // Check that the provided volumeId looks like it could be valid.
     if (!Token.isUnresolved(attrs.volumeId) && !/^vol-[0-9a-fA-F]+$/.test(attrs.volumeId)) {
-      throw new Error('`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token');
+      throw new Error(
+        '`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token'
+      );
     }
     return new Import(scope, id);
   }
@@ -637,9 +671,11 @@ export class Volume extends VolumeBase {
       size: props.size?.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }),
       snapshotId: props.snapshotId,
       throughput: props.throughput,
-      volumeType: props.volumeType ??
-        (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
-          EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
+      volumeType:
+        props.volumeType ??
+        (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3)
+          ? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3
+          : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -651,16 +687,19 @@ export class Volume extends VolumeBase {
 
     if (this.encryptionKey) {
       // Per: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-requirements
-      const principal =
-        new ViaServicePrincipal(`ec2.${Stack.of(this).region}.amazonaws.com`, new AccountRootPrincipal()).withConditions({
-          StringEquals: {
-            'kms:CallerAccount': Stack.of(this).account,
-          },
-        });
-      const grant = this.encryptionKey.grant(principal,
+      const principal = new ViaServicePrincipal(
+        `ec2.${Stack.of(this).region}.amazonaws.com`,
+        new AccountRootPrincipal()
+      ).withConditions({
+        StringEquals: {
+          'kms:CallerAccount': Stack.of(this).account,
+        },
+      });
+      const grant = this.encryptionKey.grant(
+        principal,
         // Describe & Generate are required to be able to create the CMK-encrypted Volume.
         'kms:DescribeKey',
-        'kms:GenerateDataKeyWithoutPlainText',
+        'kms:GenerateDataKeyWithoutPlainText'
       );
       if (props.snapshotId) {
         // ReEncrypt is required for when re-encrypting from an encrypted snapshot.
@@ -674,8 +713,14 @@ export class Volume extends VolumeBase {
       throw new Error('Must provide at least one of `size` or `snapshotId`');
     }
 
-    if (props.snapshotId && !Token.isUnresolved(props.snapshotId) && !/^snap-[0-9a-fA-F]+$/.test(props.snapshotId)) {
-      throw new Error('`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
+    if (
+      props.snapshotId &&
+      !Token.isUnresolved(props.snapshotId) &&
+      !/^snap-[0-9a-fA-F]+$/.test(props.snapshotId)
+    ) {
+      throw new Error(
+        '`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token'
+      );
     }
 
     if (props.encryptionKey && !props.encrypted) {
@@ -691,7 +736,7 @@ export class Volume extends VolumeBase {
       !props.iops
     ) {
       throw new Error(
-        '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD` or `PROVISIONED_IOPS_SSD_IO2`.',
+        '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD` or `PROVISIONED_IOPS_SSD_IO2`.'
       );
     }
 
@@ -705,7 +750,7 @@ export class Volume extends VolumeBase {
         ].includes(volumeType)
       ) {
         throw new Error(
-          '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
+          '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.'
         );
       }
       // Enforce minimum & maximum IOPS:
@@ -726,19 +771,25 @@ export class Volume extends VolumeBase {
       maximumRatios[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = 50;
       maximumRatios[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = 500;
       const maximumRatio = maximumRatios[volumeType];
-      if (props.size && (props.iops > maximumRatio * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
-        throw new Error(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`);
+      if (
+        props.size &&
+        props.iops > maximumRatio * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL })
+      ) {
+        throw new Error(
+          `\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`
+        );
       }
 
       const maximumThroughputRatios: { [key: string]: number } = {};
       maximumThroughputRatios[EbsDeviceVolumeType.GP3] = 0.25;
       const maximumThroughputRatio = maximumThroughputRatios[volumeType];
       if (props.throughput && props.iops) {
-        const iopsRatio = (props.throughput / props.iops);
+        const iopsRatio = props.throughput / props.iops;
         if (iopsRatio > maximumThroughputRatio) {
-          throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`);
+          throw new Error(
+            `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`
+          );
         }
-
       }
     }
 
@@ -750,7 +801,9 @@ export class Volume extends VolumeBase {
           EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
         ].includes(volumeType)
       ) {
-        throw new Error('multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.');
+        throw new Error(
+          'multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.'
+        );
       }
     }
 
@@ -769,7 +822,9 @@ export class Volume extends VolumeBase {
       const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
       const { Min, Max } = sizeRanges[volumeType];
       if (size < Min || size > Max) {
-        throw new Error(`\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`);
+        throw new Error(
+          `\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`
+        );
       }
     }
 
@@ -777,14 +832,10 @@ export class Volume extends VolumeBase {
       const throughputRange = { Min: 125, Max: 1000 };
       const { Min, Max } = throughputRange;
       if (props.volumeType != EbsDeviceVolumeType.GP3) {
-        throw new Error(
-          'throughput property requires volumeType: EbsDeviceVolumeType.GP3',
-        );
+        throw new Error('throughput property requires volumeType: EbsDeviceVolumeType.GP3');
       }
       if (props.throughput < Min || props.throughput > Max) {
-        throw new Error(
-          `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
-        );
+        throw new Error(`throughput property takes a minimum of ${Min} and a maximum of ${Max}`);
       }
     }
   }

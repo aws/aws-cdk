@@ -83,7 +83,11 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   /**
    * Use an existing place index by name
    */
-  public static fromPlaceIndexName(scope: Construct, id: string, placeIndexName: string): IPlaceIndex {
+  public static fromPlaceIndexName(
+    scope: Construct,
+    id: string,
+    placeIndexName: string
+  ): IPlaceIndex {
     const placeIndexArn = Stack.of(scope).formatArn({
       service: 'geo',
       resource: 'place-index',
@@ -96,7 +100,11 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   /**
    * Use an existing place index by ARN
    */
-  public static fromPlaceIndexArn(scope: Construct, id: string, placeIndexArn: string): IPlaceIndex {
+  public static fromPlaceIndexArn(
+    scope: Construct,
+    id: string,
+    placeIndexArn: string
+  ): IPlaceIndex {
     const parsedArn = Stack.of(scope).splitArn(placeIndexArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
@@ -133,17 +141,27 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   public readonly placeIndexUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: PlaceIndexProps = {}) {
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
+    if (
+      props.description &&
+      !Token.isUnresolved(props.description) &&
+      props.description.length > 1000
+    ) {
+      throw new Error(
+        `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`
+      );
     }
 
     if (props.placeIndexName !== undefined && !Token.isUnresolved(props.placeIndexName)) {
       if (props.placeIndexName.length < 1 || props.placeIndexName.length > 100) {
-        throw new Error(`\`placeIndexName\` must be between 1 and 100 characters, got: ${props.placeIndexName.length} characters.`);
+        throw new Error(
+          `\`placeIndexName\` must be between 1 and 100 characters, got: ${props.placeIndexName.length} characters.`
+        );
       }
 
       if (!/^[-._\w]+$/.test(props.placeIndexName)) {
-        throw new Error(`\`placeIndexName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.placeIndexName}.`);
+        throw new Error(
+          `\`placeIndexName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.placeIndexName}.`
+        );
       }
     }
 
@@ -154,9 +172,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
     const placeIndex = new CfnPlaceIndex(this, 'Resource', {
       indexName: this.physicalName,
       dataSource: props.dataSource ?? DataSource.ESRI,
-      dataSourceConfiguration: props.intendedUse
-        ? { intendedUse: props.intendedUse }
-        : undefined,
+      dataSourceConfiguration: props.intendedUse ? { intendedUse: props.intendedUse } : undefined,
       description: props.description,
     });
 
@@ -181,10 +197,11 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
    * Grant the given identity permissions to search using this index
    */
   public grantSearch(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
+    return this.grant(
+      grantee,
       'geo:SearchPlaceIndexForPosition',
       'geo:SearchPlaceIndexForSuggestions',
-      'geo:SearchPlaceIndexForText',
+      'geo:SearchPlaceIndexForText'
     );
   }
 }

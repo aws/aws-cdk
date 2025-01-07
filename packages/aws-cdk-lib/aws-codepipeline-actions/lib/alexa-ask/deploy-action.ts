@@ -62,8 +62,11 @@ export class AlexaSkillDeployAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    _options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     return {
       configuration: {
         ClientId: this.props.clientId,

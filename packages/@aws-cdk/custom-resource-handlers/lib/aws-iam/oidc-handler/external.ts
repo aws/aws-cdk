@@ -7,7 +7,9 @@ import * as sdk from '@aws-sdk/client-iam';
 
 let client: sdk.IAM;
 function iam(): sdk.IAM {
-  if (!client) { client = new sdk.IAM({}); }
+  if (!client) {
+    client = new sdk.IAM({});
+  }
   return client;
 }
 
@@ -20,7 +22,6 @@ function defaultLogger(fmt: string, ...args: any[]) {
  * Downloads the CA thumbprint from the issuer URL
  */
 async function downloadThumbprint(issuerUrl: string) {
-
   return new Promise<string>((ok, ko) => {
     const purl = url.parse(issuerUrl);
     const port = purl.port ? parseInt(purl.port, 10) : 443;
@@ -31,7 +32,10 @@ async function downloadThumbprint(issuerUrl: string) {
 
     external.log(`Fetching x509 certificate chain from issuer ${issuerUrl}`);
 
-    const socket = tls.connect(port, purl.host, { rejectUnauthorized: false, servername: purl.host });
+    const socket = tls.connect(port, purl.host, {
+      rejectUnauthorized: false,
+      servername: purl.host,
+    });
     socket.once('error', ko);
 
     socket.once('secureConnect', () => {
@@ -101,9 +105,16 @@ function getCertificateValidity(certDate: Date): number {
 export const external = {
   downloadThumbprint,
   log: defaultLogger,
-  createOpenIDConnectProvider: (req: sdk.CreateOpenIDConnectProviderCommandInput) => iam().createOpenIDConnectProvider(req),
-  deleteOpenIDConnectProvider: (req: sdk.DeleteOpenIDConnectProviderCommandInput) => iam().deleteOpenIDConnectProvider(req),
-  updateOpenIDConnectProviderThumbprint: (req: sdk.UpdateOpenIDConnectProviderThumbprintCommandInput) => iam().updateOpenIDConnectProviderThumbprint(req),
-  addClientIDToOpenIDConnectProvider: (req: sdk.AddClientIDToOpenIDConnectProviderCommandInput) => iam().addClientIDToOpenIDConnectProvider(req),
-  removeClientIDFromOpenIDConnectProvider: (req: sdk.RemoveClientIDFromOpenIDConnectProviderCommandInput) => iam().removeClientIDFromOpenIDConnectProvider(req),
+  createOpenIDConnectProvider: (req: sdk.CreateOpenIDConnectProviderCommandInput) =>
+    iam().createOpenIDConnectProvider(req),
+  deleteOpenIDConnectProvider: (req: sdk.DeleteOpenIDConnectProviderCommandInput) =>
+    iam().deleteOpenIDConnectProvider(req),
+  updateOpenIDConnectProviderThumbprint: (
+    req: sdk.UpdateOpenIDConnectProviderThumbprintCommandInput
+  ) => iam().updateOpenIDConnectProviderThumbprint(req),
+  addClientIDToOpenIDConnectProvider: (req: sdk.AddClientIDToOpenIDConnectProviderCommandInput) =>
+    iam().addClientIDToOpenIDConnectProvider(req),
+  removeClientIDFromOpenIDConnectProvider: (
+    req: sdk.RemoveClientIDFromOpenIDConnectProviderCommandInput
+  ) => iam().removeClientIDFromOpenIDConnectProvider(req),
 };

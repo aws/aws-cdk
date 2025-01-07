@@ -9,7 +9,10 @@ import { IResource } from '../../core';
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseCluster
+  extends IResource,
+    ec2.IConnectable,
+    secretsmanager.ISecretAttachmentTarget {
   /**
    * Identifier of the cluster
    */

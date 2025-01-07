@@ -1,7 +1,13 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { BuildSpec, ComputeType, LinuxBuildImage, Project, ProjectProps } from 'aws-cdk-lib/aws-codebuild';
+import {
+  BuildSpec,
+  ComputeType,
+  LinuxBuildImage,
+  Project,
+  ProjectProps,
+} from 'aws-cdk-lib/aws-codebuild';
 import { CompositePrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
@@ -52,7 +58,8 @@ const parameter = new ssm.StringParameter(stack, 'MyParameter', {
 const role = new Role(stack, 'SchedulerRole', {
   assumedBy: new CompositePrincipal(
     new ServicePrincipal('scheduler.amazonaws.com'),
-    new ServicePrincipal('codebuild.amazonaws.com')),
+    new ServicePrincipal('codebuild.amazonaws.com')
+  ),
 });
 
 const codebuildProject = new TestCodeBuildProject(stack, 'Project', {
@@ -78,11 +85,15 @@ const getParameter = integrationTest.assertions.awsApiCall('SSM', 'getParameter'
 });
 
 // Verifies that expected parameter is created by the invoked step function
-getParameter.expect(ExpectedResult.objectLike({
-  Parameter: {
-    Name: payload.Name,
-    Value: payload.Value,
-  },
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(2),
-});
+getParameter
+  .expect(
+    ExpectedResult.objectLike({
+      Parameter: {
+        Name: payload.Name,
+        Value: payload.Value,
+      },
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(2),
+  });

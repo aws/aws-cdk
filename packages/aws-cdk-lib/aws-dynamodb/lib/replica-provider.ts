@@ -2,7 +2,10 @@ import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Aws, Duration, NestedStack, Stack } from '../../core';
-import { ReplicaOnEventFunction, ReplicaIsCompleteFunction } from '../../custom-resource-handlers/dist/aws-dynamodb/replica-provider.generated';
+import {
+  ReplicaOnEventFunction,
+  ReplicaIsCompleteFunction,
+} from '../../custom-resource-handlers/dist/aws-dynamodb/replica-provider.generated';
 import * as cr from '../../custom-resources';
 
 /**
@@ -34,7 +37,9 @@ export class ReplicaProvider extends NestedStack {
   public static getOrCreate(scope: Construct, props: ReplicaProviderProps) {
     const stack = Stack.of(scope);
     const uid = '@aws-cdk/aws-dynamodb.ReplicaProvider';
-    return stack.node.tryFindChild(uid) as ReplicaProvider ?? new ReplicaProvider(stack, uid, props);
+    return (
+      (stack.node.tryFindChild(uid) as ReplicaProvider) ?? new ReplicaProvider(stack, uid, props)
+    );
   }
 
   /**
@@ -69,13 +74,16 @@ export class ReplicaProvider extends NestedStack {
     this.onEventHandler.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['iam:CreateServiceLinkedRole'],
-        resources: [Stack.of(this).formatArn({
-          service: 'iam',
-          region: '', // IAM is region-less
-          resource: 'role',
-          resourceName: 'aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
-        })],
-      }),
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'iam',
+            region: '', // IAM is region-less
+            resource: 'role',
+            resourceName:
+              'aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
+          }),
+        ],
+      })
     );
 
     // Required for replica table creation
@@ -83,20 +91,22 @@ export class ReplicaProvider extends NestedStack {
       new iam.PolicyStatement({
         actions: ['dynamodb:DescribeLimits'],
         resources: ['*'],
-      }),
+      })
     );
 
     // Required for replica table deletion
     let resources: string[] = [];
     props.regions.forEach((region) => {
-      resources.push(`arn:${Aws.PARTITION}:dynamodb:${region}:${this.account}:table/${props.tableName}`);
+      resources.push(
+        `arn:${Aws.PARTITION}:dynamodb:${region}:${this.account}:table/${props.tableName}`
+      );
     });
 
     this.onEventHandler.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['dynamodb:DeleteTable', 'dynamodb:DeleteTableReplica'],
         resources: resources,
-      }),
+      })
     );
 
     this.provider = new cr.Provider(this, 'Provider', {

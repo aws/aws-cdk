@@ -197,20 +197,24 @@ export interface IntegrationConfig {
  */
 export class Integration {
   constructor(private readonly props: IntegrationProps) {
-    const options = this.props.options || { };
+    const options = this.props.options || {};
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new Error('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
+      throw new Error("'credentialsPassthrough' and 'credentialsRole' are mutually exclusive");
     }
 
     if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new Error('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
+      throw new Error("'connectionType' of VPC_LINK requires 'vpcLink' prop to be set");
     }
 
     if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
+      throw new Error("cannot set 'vpcLink' where 'connectionType' is INTERNET");
     }
 
-    if (options.timeout && !options.timeout.isUnresolved() && options.timeout.toMilliseconds() < 50) {
+    if (
+      options.timeout &&
+      !options.timeout.isUnresolved() &&
+      options.timeout.toMilliseconds() < 50
+    ) {
       throw new Error('Integration timeout must be greater than 50 milliseconds.');
     }
 
@@ -235,7 +239,9 @@ export class Integration {
           if (vpcLink instanceof VpcLink) {
             const targets = vpcLink._targetDnsNames;
             if (targets.length > 1) {
-              throw new Error("'uri' is required when there are more than one NLBs in the VPC Link");
+              throw new Error(
+                "'uri' is required when there are more than one NLBs in the VPC Link"
+              );
             } else {
               return `http://${targets[0]}`;
             }

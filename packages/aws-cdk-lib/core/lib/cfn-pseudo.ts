@@ -21,14 +21,17 @@ const AWS_NOVALUE = 'AWS::NoValue';
 export class Aws {
   public static readonly ACCOUNT_ID = pseudoString(AWS_ACCOUNTID);
   public static readonly URL_SUFFIX = pseudoString(AWS_URLSUFFIX);
-  public static readonly NOTIFICATION_ARNS = Token.asList({ Ref: AWS_NOTIFICATIONARNS }, { displayHint: AWS_NOTIFICATIONARNS });
+  public static readonly NOTIFICATION_ARNS = Token.asList(
+    { Ref: AWS_NOTIFICATIONARNS },
+    { displayHint: AWS_NOTIFICATIONARNS }
+  );
   public static readonly PARTITION = pseudoString(AWS_PARTITION);
   public static readonly REGION = pseudoString(AWS_REGION);
   public static readonly STACK_ID = pseudoString(AWS_STACKID);
   public static readonly STACK_NAME = pseudoString(AWS_STACKNAME);
   public static readonly NO_VALUE = pseudoString(AWS_NOVALUE);
 
-  private constructor() { }
+  private constructor() {}
 }
 
 /**
@@ -38,8 +41,7 @@ export class Aws {
  * tree, and their values will be exported automatically.
  */
 export class ScopedAws {
-  constructor(private readonly scope: Construct) {
-  }
+  constructor(private readonly scope: Construct) {}
 
   public get accountId(): string {
     return this.asString(AWS_ACCOUNTID);

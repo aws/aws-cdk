@@ -88,7 +88,7 @@ export class UntrustedCodeBoundaryPolicy extends iam.ManagedPolicy {
           ],
           resources: ['*'],
         }),
-        ...props.additionalStatements ?? [],
+        ...(props.additionalStatements ?? []),
       ],
     });
   }

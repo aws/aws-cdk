@@ -112,11 +112,9 @@ interface ExtraHashOptions {
 /**
  * Options related to calculating source hash.
  */
-export interface FingerprintOptions extends CopyOptions, ExtraHashOptions {
-}
+export interface FingerprintOptions extends CopyOptions, ExtraHashOptions {}
 
 /**
  * Options related to calculating source hash.
  */
-export interface FileFingerprintOptions extends FileCopyOptions, ExtraHashOptions {
-}
+export interface FileFingerprintOptions extends FileCopyOptions, ExtraHashOptions {}

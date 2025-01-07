@@ -74,14 +74,16 @@ export class ContextProvider {
   public static getKey(scope: Construct, options: GetContextKeyOptions): GetContextKeyResult {
     const stack = Stack.of(scope);
 
-    const props = options.includeEnvironment ?? true
-      ? { account: stack.account, region: stack.region, ...options.props }
-      : (options.props ?? {});
+    const props =
+      (options.includeEnvironment ?? true)
+        ? { account: stack.account, region: stack.region, ...options.props }
+        : (options.props ?? {});
 
-    if (Object.values(props).find(x => Token.isUnresolved(x))) {
+    if (Object.values(props).find((x) => Token.isUnresolved(x))) {
       throw new Error(
         `Cannot determine scope for context provider ${options.provider}.\n` +
-        'This usually happens when one or more of the provider props have unresolved tokens');
+          'This usually happens when one or more of the provider props have unresolved tokens'
+      );
     }
 
     const propStrings = propsToArray(props);
@@ -95,10 +97,12 @@ export class ContextProvider {
     const stack = Stack.of(scope);
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
-      throw new Error(`Cannot retrieve value from context provider ${options.provider} since account/region ` +
-                      'are not specified at the stack level. Configure "env" with an account and region when ' +
-                      'you define your stack.' +
-                      'See https://docs.aws.amazon.com/cdk/latest/guide/environments.html for more details.');
+      throw new Error(
+        `Cannot retrieve value from context provider ${options.provider} since account/region ` +
+          'are not specified at the stack level. Configure "env" with an account and region when ' +
+          'you define your stack.' +
+          'See https://docs.aws.amazon.com/cdk/latest/guide/environments.html for more details.'
+      );
     }
 
     const { key, props } = this.getKey(scope, options);
@@ -134,7 +138,7 @@ export class ContextProvider {
     return { value };
   }
 
-  private constructor() { }
+  private constructor() {}
 }
 
 /**
@@ -157,7 +161,7 @@ function colonQuote(xs: string): string {
   return xs.replace(/\$/g, '$$').replace(/:/g, '$:');
 }
 
-function propsToArray(props: {[key: string]: any}, keyPrefix = ''): string[] {
+function propsToArray(props: { [key: string]: any }, keyPrefix = ''): string[] {
   const ret: string[] = [];
 
   for (const key of Object.keys(props)) {

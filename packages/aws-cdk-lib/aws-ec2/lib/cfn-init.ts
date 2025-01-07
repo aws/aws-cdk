@@ -2,7 +2,12 @@ import * as crypto from 'crypto';
 import { Construct } from 'constructs';
 import { InitElement } from './cfn-init-elements';
 import { OperatingSystemType } from './machine-image';
-import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
+import {
+  InitBindOptions,
+  InitElementConfig,
+  InitElementType,
+  InitPlatform,
+} from './private/cfn-init-internal';
 import { UserData } from './user-data';
 import * as iam from '../../aws-iam';
 import { Aws, CfnResource } from '../../core';
@@ -65,7 +70,7 @@ export class CloudFormationInit {
       throw new Error(`CloudFormationInit already contains a configSet named '${configSetName}'`);
     }
 
-    const unk = configNames.filter(c => !this._configs[c]);
+    const unk = configNames.filter((c) => !this._configs[c]);
     if (unk.length > 0) {
       throw new Error(`Unknown configs referenced in definition of '${configSetName}': ${unk}`);
     }
@@ -97,7 +102,9 @@ export class CloudFormationInit {
     const CFN_INIT_METADATA_KEY = 'AWS::CloudFormation::Init';
 
     if (attachedResource.getMetadata(CFN_INIT_METADATA_KEY) !== undefined) {
-      throw new Error(`Cannot bind CfnInit: resource '${attachedResource.node.path}' already has '${CFN_INIT_METADATA_KEY}' attached`);
+      throw new Error(
+        `Cannot bind CfnInit: resource '${attachedResource.node.path}' already has '${CFN_INIT_METADATA_KEY}' attached`
+      );
     }
 
     // Note: This will not reflect mutations made after attaching.
@@ -110,10 +117,12 @@ export class CloudFormationInit {
     const fingerprintInput = { config: resolvedConfig, assetHash: bindResult.assetHash };
     const fingerprint = contentHash(JSON.stringify(fingerprintInput)).slice(0, 16);
 
-    attachOptions.instanceRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
-      resources: [Aws.STACK_ID],
-    }));
+    attachOptions.instanceRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
+        resources: [Aws.STACK_ID],
+      })
+    );
 
     if (bindResult.authData) {
       attachedResource.addMetadata('AWS::CloudFormation::Authentication', bindResult.authData);
@@ -150,7 +159,7 @@ export class CloudFormationInit {
           `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
           `cfn-signal.exe -e ${errCode} ${notifyResourceLocator}`,
           ...(printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : []),
-        ],
+        ]
       );
     } else {
       const errCode = attachOptions.ignoreFailures ? '0' : '$?';
@@ -163,26 +172,34 @@ export class CloudFormationInit {
           `  /opt/aws/bin/cfn-signal -e ${errCode} ${notifyResourceLocator}`,
           ...(printLog ? ['  cat /var/log/cfn-init.log >&2'] : []),
           ')',
-        ],
+        ]
       );
     }
   }
 
-  private bind(scope: Construct, options: AttachInitOptions): { configData: any; authData: any; assetHash?: any } {
-    const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty() ? undefined : c);
+  private bind(
+    scope: Construct,
+    options: AttachInitOptions
+  ): { configData: any; authData: any; assetHash?: any } {
+    const nonEmptyConfigs = mapValues(this._configs, (c) => (c.isEmpty() ? undefined : c));
 
-    const configNameToBindResult = mapValues(nonEmptyConfigs, c => c._bind(scope, options));
+    const configNameToBindResult = mapValues(nonEmptyConfigs, (c) => c._bind(scope, options));
 
     return {
       configData: {
-        configSets: mapValues(this._configSets, configNames => configNames.filter(name => nonEmptyConfigs[name] !== undefined)),
-        ...mapValues(configNameToBindResult, c => c.config),
+        configSets: mapValues(this._configSets, (configNames) =>
+          configNames.filter((name) => nonEmptyConfigs[name] !== undefined)
+        ),
+        ...mapValues(configNameToBindResult, (c) => c.config),
       },
-      authData: Object.values(configNameToBindResult).map(c => c.authentication).reduce(deepMerge, undefined),
-      assetHash: combineAssetHashesOrUndefined(Object.values(configNameToBindResult).map(c => c.assetHash)),
+      authData: Object.values(configNameToBindResult)
+        .map((c) => c.authentication)
+        .reduce(deepMerge, undefined),
+      assetHash: combineAssetHashesOrUndefined(
+        Object.values(configNameToBindResult).map((c) => c.assetHash)
+      ),
     };
   }
-
 }
 
 /**
@@ -230,9 +247,17 @@ export class InitConfig {
     // Must be last!
     const servicesConfig = this.bindForType(InitElementType.SERVICE, bindOptions);
 
-    const allConfig = [packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig];
-    const authentication = allConfig.map(c => c?.authentication).reduce(deepMerge, undefined);
-    const assetHash = combineAssetHashesOrUndefined(allConfig.map(c => c?.assetHash));
+    const allConfig = [
+      packageConfig,
+      groupsConfig,
+      usersConfig,
+      sourcesConfig,
+      filesConfig,
+      commandsConfig,
+      servicesConfig,
+    ];
+    const authentication = allConfig.map((c) => c?.authentication).reduce(deepMerge, undefined);
+    const assetHash = combineAssetHashesOrUndefined(allConfig.map((c) => c?.assetHash));
 
     return {
       config: {
@@ -249,16 +274,21 @@ export class InitConfig {
     };
   }
 
-  private bindForType(elementType: InitElementType, renderOptions: Omit<InitBindOptions, 'index'>): InitElementConfig | undefined {
-    const elements = this.elements.filter(elem => elem.elementType === elementType);
-    if (elements.length === 0) { return undefined; }
+  private bindForType(
+    elementType: InitElementType,
+    renderOptions: Omit<InitBindOptions, 'index'>
+  ): InitElementConfig | undefined {
+    const elements = this.elements.filter((elem) => elem.elementType === elementType);
+    if (elements.length === 0) {
+      return undefined;
+    }
 
     const bindResults = elements.map((e, index) => e._bind({ index, ...renderOptions }));
 
     return {
-      config: bindResults.map(r => r.config).reduce(deepMerge, undefined) ?? {},
-      authentication: bindResults.map(r => r.authentication).reduce(deepMerge, undefined),
-      assetHash: combineAssetHashesOrUndefined(bindResults.map(r => r.assetHash)),
+      config: bindResults.map((r) => r.config).reduce(deepMerge, undefined) ?? {},
+      authentication: bindResults.map((r) => r.authentication).reduce(deepMerge, undefined),
+      assetHash: combineAssetHashesOrUndefined(bindResults.map((r) => r.assetHash)),
     };
   }
 
@@ -299,8 +329,12 @@ export interface ConfigSetProps {
  * cfn-inits, not applicable elsewhere.
  */
 function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
-  if (target == null) { return src; }
-  if (src == null) { return target; }
+  if (target == null) {
+    return src;
+  }
+  if (src == null) {
+    return target;
+  }
 
   for (const [key, value] of Object.entries(src)) {
     if (key === '__proto__' || key === 'constructor') {
@@ -311,16 +345,11 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
       if (target[key] && !Array.isArray(target[key])) {
         throw new Error(`Trying to merge array [${value}] into a non-array '${target[key]}'`);
       }
-      if (key === 'command') { // don't deduplicate command arguments
-        target[key] = new Array(
-          ...target[key] ?? [],
-          ...value,
-        );
+      if (key === 'command') {
+        // don't deduplicate command arguments
+        target[key] = new Array(...(target[key] ?? []), ...value);
       } else {
-        target[key] = Array.from(new Set([
-          ...target[key] ?? [],
-          ...value,
-        ]));
+        target[key] = Array.from(new Set([...(target[key] ?? []), ...value]));
       }
       continue;
     }

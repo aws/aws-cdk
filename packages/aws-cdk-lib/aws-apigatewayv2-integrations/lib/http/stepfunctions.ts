@@ -44,20 +44,24 @@ export class HttpStepFunctionsIntegration extends apigwv2.HttpRouteIntegration {
    */
   constructor(
     id: string,
-    private readonly props: HttpStepFunctionsIntegrationProps,
+    private readonly props: HttpStepFunctionsIntegrationProps
   ) {
     super(id);
   }
 
-  public bind(options: apigwv2.HttpRouteIntegrationBindOptions): apigwv2.HttpRouteIntegrationConfig {
+  public bind(
+    options: apigwv2.HttpRouteIntegrationBindOptions
+  ): apigwv2.HttpRouteIntegrationConfig {
     if (this.props.subtype && !this.props.subtype.startsWith('StepFunctions-')) {
       throw new Error('Subtype must start with `STEPFUNCTIONS_`');
     }
     if (
-      this.props.subtype === apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION
-      && this.props.stateMachine.stateMachineType === sfn.StateMachineType.STANDARD
+      this.props.subtype === apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION &&
+      this.props.stateMachine.stateMachineType === sfn.StateMachineType.STANDARD
     ) {
-      throw new Error('Cannot use subtype `STEPFUNCTIONS_START_SYNC_EXECUTION` with a standard type state machine');
+      throw new Error(
+        'Cannot use subtype `STEPFUNCTIONS_START_SYNC_EXECUTION` with a standard type state machine'
+      );
     }
 
     const invokeRole = new iam.Role(options.scope, 'InvokeRole', {
@@ -70,7 +74,7 @@ export class HttpStepFunctionsIntegration extends apigwv2.HttpRouteIntegration {
         sid: 'AllowStepFunctionsExecution',
         actions: [this.determineActionBySubtype(this.props.subtype)],
         resources: [this.determineResourceArn(options)],
-      }),
+      })
     );
 
     return {
@@ -79,8 +83,12 @@ export class HttpStepFunctionsIntegration extends apigwv2.HttpRouteIntegration {
       subtype: this.props.subtype ?? apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_EXECUTION,
       credentials: apigwv2.IntegrationCredentials.fromRole(invokeRole),
       connectionType: apigwv2.HttpConnectionType.INTERNET,
-      parameterMapping: this.props.parameterMapping ?? new apigwv2.ParameterMapping()
-        .custom('StateMachineArn', this.props.stateMachine.stateMachineArn),
+      parameterMapping:
+        this.props.parameterMapping ??
+        new apigwv2.ParameterMapping().custom(
+          'StateMachineArn',
+          this.props.stateMachine.stateMachineArn
+        ),
     };
   }
 

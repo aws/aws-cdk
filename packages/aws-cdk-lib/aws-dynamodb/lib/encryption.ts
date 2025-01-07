@@ -22,7 +22,7 @@ export abstract class TableEncryptionV2 {
       public _renderReplicaSseSpecification(_scope: Construct, _region: string) {
         return undefined;
       }
-    }) (TableEncryption.DEFAULT);
+    })(TableEncryption.DEFAULT);
   }
 
   /**
@@ -40,7 +40,7 @@ export abstract class TableEncryptionV2 {
       public _renderReplicaSseSpecification(_scope: Construct, _region: string) {
         return undefined;
       }
-    }) (TableEncryption.AWS_MANAGED);
+    })(TableEncryption.AWS_MANAGED);
   }
 
   /**
@@ -49,7 +49,10 @@ export abstract class TableEncryptionV2 {
    * @param tableKey the KMS key for the primary table.
    * @param replicaKeyArns an object containing the ARN of the KMS key to use for each replica table.
    */
-  public static customerManagedKey(tableKey: IKey, replicaKeyArns: { [region: string]: string } = {}): TableEncryptionV2 {
+  public static customerManagedKey(
+    tableKey: IKey,
+    replicaKeyArns: { [region: string]: string } = {}
+  ): TableEncryptionV2 {
     return new (class extends TableEncryptionV2 {
       public _renderSseSpecification() {
         return {
@@ -61,11 +64,15 @@ export abstract class TableEncryptionV2 {
       public _renderReplicaSseSpecification(scope: Construct, replicaRegion: string) {
         const stackRegion = Stack.of(scope).region;
         if (Token.isUnresolved(stackRegion)) {
-          throw new Error('Replica SSE specification cannot be rendered in a region agnostic stack');
+          throw new Error(
+            'Replica SSE specification cannot be rendered in a region agnostic stack'
+          );
         }
 
         if (replicaKeyArns.hasOwnProperty(stackRegion)) {
-          throw new Error(`KMS key for deployment region ${stackRegion} cannot be defined in 'replicaKeyArns'`);
+          throw new Error(
+            `KMS key for deployment region ${stackRegion} cannot be defined in 'replicaKeyArns'`
+          );
         }
 
         if (replicaRegion === stackRegion) {
@@ -83,13 +90,14 @@ export abstract class TableEncryptionV2 {
           kmsMasterKeyId: replicaKeyArns[replicaRegion],
         } satisfies CfnGlobalTable.ReplicaSSESpecificationProperty;
       }
-    }) (TableEncryption.CUSTOMER_MANAGED, tableKey, replicaKeyArns);
+    })(TableEncryption.CUSTOMER_MANAGED, tableKey, replicaKeyArns);
   }
 
-  private constructor (
+  private constructor(
     public readonly type: TableEncryption,
     public readonly tableKey?: IKey,
-    public readonly replicaKeyArns?: { [region: string]: string }) {}
+    public readonly replicaKeyArns?: { [region: string]: string }
+  ) {}
 
   /**
    * @internal

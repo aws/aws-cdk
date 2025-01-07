@@ -16,7 +16,6 @@ import { Aws, Duration, Names, Stack } from '../../core';
  * Corresponds to the image tag of 'amazon/aws-load-balancer-controller' image.
  */
 export class AlbControllerVersion {
-
   /**
    * v2.0.0
    */
@@ -215,7 +214,8 @@ export class AlbControllerVersion {
     /**
      * Whether or not its a custom version.
      */
-    public readonly custom: boolean) { }
+    public readonly custom: boolean
+  ) {}
 }
 
 /**
@@ -224,7 +224,6 @@ export class AlbControllerVersion {
  * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/#scheme
  */
 export enum AlbScheme {
-
   /**
    * The nodes of an internal load balancer have only private IP addresses.
    * The DNS name of an internal load balancer is publicly resolvable to the private IP addresses of the nodes.
@@ -243,7 +242,6 @@ export enum AlbScheme {
  * Options for `AlbController`.
  */
 export interface AlbControllerOptions {
-
   /**
    * Version of the controller.
    */
@@ -277,7 +275,6 @@ export interface AlbControllerOptions {
  * Properties for `AlbController`.
  */
 export interface AlbControllerProps extends AlbControllerOptions {
-
   /**
    * [disable-awslint:ref-via-interface]
    * Cluster to install the controller onto.
@@ -313,14 +310,27 @@ export class AlbController extends Construct {
     super(scope, id);
 
     const namespace = 'kube-system';
-    const serviceAccount = new ServiceAccount(this, 'alb-sa', { namespace, name: 'aws-load-balancer-controller', cluster: props.cluster });
+    const serviceAccount = new ServiceAccount(this, 'alb-sa', {
+      namespace,
+      name: 'aws-load-balancer-controller',
+      cluster: props.cluster,
+    });
 
     if (props.version.custom && !props.policy) {
-      throw new Error("'albControllerOptions.policy' is required when using a custom controller version");
+      throw new Error(
+        "'albControllerOptions.policy' is required when using a custom controller version"
+      );
     }
 
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#iam-permissions
-    const policy: any = props.policy ?? JSON.parse(fs.readFileSync(path.join(__dirname, 'addons', `alb-iam_policy-${props.version.version}.json`), 'utf8'));
+    const policy: any =
+      props.policy ??
+      JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, 'addons', `alb-iam_policy-${props.version.version}.json`),
+          'utf8'
+        )
+      );
 
     for (const statement of policy.Statement) {
       const rewrittenStatement = {
@@ -350,7 +360,9 @@ export class AlbController extends Construct {
         region: Stack.of(this).region,
         vpcId: props.cluster.vpc.vpcId,
         image: {
-          repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
+          repository:
+            props.repository ??
+            '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
           tag: props.version.version,
         },
       },
@@ -365,7 +377,9 @@ export class AlbController extends Construct {
     }
   }
 
-  private rewritePolicyResources(resources: string | string[] | undefined): string | string[] | undefined {
+  private rewritePolicyResources(
+    resources: string | string[] | undefined
+  ): string | string[] | undefined {
     // This is safe to disable because we're actually replacing the literal partition with a reference to
     // the stack partition (which is hardcoded into the JSON files) to prevent issues such as
     // aws/aws-cdk#22520.

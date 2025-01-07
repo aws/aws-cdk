@@ -35,9 +35,13 @@ export class Activity extends Resource implements IActivity {
    */
   public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
     class Imported extends Resource implements IActivity {
-      public get activityArn() { return activityArn; }
+      public get activityArn() {
+        return activityArn;
+      }
       public get activityName() {
-        return Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || '';
+        return (
+          Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || ''
+        );
       }
     }
 
@@ -48,12 +52,16 @@ export class Activity extends Resource implements IActivity {
    * Construct an Activity from an existing Activity Name
    */
   public static fromActivityName(scope: Construct, id: string, activityName: string): IActivity {
-    return Activity.fromActivityArn(scope, id, Stack.of(scope).formatArn({
-      service: 'states',
-      resource: 'activity',
-      resourceName: activityName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    }));
+    return Activity.fromActivityArn(
+      scope,
+      id,
+      Stack.of(scope).formatArn({
+        service: 'states',
+        resource: 'activity',
+        resourceName: activityName,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })
+    );
   }
 
   /**
@@ -73,28 +81,29 @@ export class Activity extends Resource implements IActivity {
 
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
-      physicalName: props.activityName ||
-        Lazy.string({ produce: () => this.generateName() }),
+      physicalName: props.activityName || Lazy.string({ produce: () => this.generateName() }),
     });
 
     this.encryptionConfiguration = props.encryptionConfiguration;
 
     if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
-      props.encryptionConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
-        principals: [new iam.ServicePrincipal('states.amazonaws.com')],
-        conditions: {
-          StringEquals: {
-            'kms:EncryptionContext:aws:states:activityArn': Stack.of(this).formatArn({
-              service: 'states',
-              resource: 'activity',
-              sep: ':',
-              resourceName: this.physicalName,
-            }),
+      props.encryptionConfiguration.kmsKey.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+          principals: [new iam.ServicePrincipal('states.amazonaws.com')],
+          conditions: {
+            StringEquals: {
+              'kms:EncryptionContext:aws:states:activityArn': Stack.of(this).formatArn({
+                service: 'states',
+                resource: 'activity',
+                sep: ':',
+                resourceName: this.physicalName,
+              }),
+            },
           },
-        },
-      }));
+        })
+      );
     }
 
     const resource = new CfnActivity(this, 'Resource', {
@@ -231,7 +240,8 @@ export class Activity extends Resource implements IActivity {
 
   private cannedMetric(
     fn: (dims: { ActivityArn: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ ActivityArn: this.activityArn }),
       ...props,

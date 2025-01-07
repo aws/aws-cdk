@@ -13,9 +13,7 @@ export class IntegManifestWriter {
 function getFinalLocation(filePath: string): string {
   try {
     const st = fs.statSync(filePath);
-    return st.isDirectory()
-      ? path.join(filePath, IntegManifestWriter.DEFAULT_FILENAME)
-      : filePath;
+    return st.isDirectory() ? path.join(filePath, IntegManifestWriter.DEFAULT_FILENAME) : filePath;
   } catch (e: any) {
     if (e.code === 'ENOENT') {
       return filePath;

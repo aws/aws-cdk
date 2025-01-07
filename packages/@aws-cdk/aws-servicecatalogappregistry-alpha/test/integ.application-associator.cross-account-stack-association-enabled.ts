@@ -11,14 +11,19 @@ const app = new cdk.App();
 const localStack = new cdk.Stack(app, 'integ-servicecatalogappregistry-local-resource');
 
 new appreg.ApplicationAssociator(app, 'RegisterCdkApplication', {
-  applications: [appreg.TargetApplication.createApplicationStack({
-    associateCrossAccountStacks: true,
-    applicationName: 'AppRegistryAssociatedApplication',
-    stackName: 'TestAppRegistryApplicationStack',
-  })],
+  applications: [
+    appreg.TargetApplication.createApplicationStack({
+      associateCrossAccountStacks: true,
+      applicationName: 'AppRegistryAssociatedApplication',
+      stackName: 'TestAppRegistryApplicationStack',
+    }),
+  ],
 });
 
-const crossAccountStack = new cdk.Stack(app, 'integ-servicecatalogappregistry-cross-account-resource');
+const crossAccountStack = new cdk.Stack(
+  app,
+  'integ-servicecatalogappregistry-cross-account-resource'
+);
 
 new integ.IntegTest(app, 'ApplicationAssociatorTest', {
   testCases: [localStack, crossAccountStack],

@@ -17,25 +17,39 @@ import { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
  * @returns +true+ if both +lvalue+ and +rvalue+ are equivalent to each other.
  */
 export function deepEqual(lvalue: any, rvalue: any): boolean {
-  if (lvalue === rvalue) { return true; }
+  if (lvalue === rvalue) {
+    return true;
+  }
   // CloudFormation allows passing strings into boolean-typed fields
-  if (((typeof lvalue === 'string' && typeof rvalue === 'boolean') ||
+  if (
+    ((typeof lvalue === 'string' && typeof rvalue === 'boolean') ||
       (typeof lvalue === 'boolean' && typeof rvalue === 'string')) &&
-      lvalue.toString() === rvalue.toString()) {
+    lvalue.toString() === rvalue.toString()
+  ) {
     return true;
   }
   // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
-  if ((typeof lvalue === 'string' || typeof rvalue === 'string') &&
-      safeParseFloat(lvalue) === safeParseFloat(rvalue)) {
+  if (
+    (typeof lvalue === 'string' || typeof rvalue === 'string') &&
+    safeParseFloat(lvalue) === safeParseFloat(rvalue)
+  ) {
     return true;
   }
-  if (typeof lvalue !== typeof rvalue) { return false; }
-  if (Array.isArray(lvalue) !== Array.isArray(rvalue)) { return false; }
+  if (typeof lvalue !== typeof rvalue) {
+    return false;
+  }
+  if (Array.isArray(lvalue) !== Array.isArray(rvalue)) {
+    return false;
+  }
   if (Array.isArray(lvalue) /* && Array.isArray(rvalue) */) {
-    if (lvalue.length !== rvalue.length) { return false; }
-    for (let i = 0 ; i < lvalue.length ; i++) {
-      if (!deepEqual(lvalue[i], rvalue[i])) { return false; }
+    if (lvalue.length !== rvalue.length) {
+      return false;
+    }
+    for (let i = 0; i < lvalue.length; i++) {
+      if (!deepEqual(lvalue[i], rvalue[i])) {
+        return false;
+      }
     }
     return true;
   }
@@ -45,15 +59,23 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
       return false;
     }
     const keys = Object.keys(lvalue);
-    if (keys.length !== Object.keys(rvalue).length) { return false; }
+    if (keys.length !== Object.keys(rvalue).length) {
+      return false;
+    }
     for (const key of keys) {
-      if (!rvalue.hasOwnProperty(key)) { return false; }
+      if (!rvalue.hasOwnProperty(key)) {
+        return false;
+      }
       if (key === 'DependsOn') {
-        if (!dependsOnEqual(lvalue[key], rvalue[key])) { return false; };
+        if (!dependsOnEqual(lvalue[key], rvalue[key])) {
+          return false;
+        }
         // check differences other than `DependsOn`
         continue;
       }
-      if (!deepEqual(lvalue[key], rvalue[key])) { return false; }
+      if (!deepEqual(lvalue[key], rvalue[key])) {
+        return false;
+      }
     }
     return true;
   }
@@ -84,10 +106,12 @@ function dependsOnEqual(lvalue: any, rvalue: any): boolean {
 
   // allows arrays passed to DependsOn to be equivalent irrespective of element order
   if (Array.isArray(lvalue) && Array.isArray(rvalue)) {
-    if (lvalue.length !== rvalue.length) { return false; }
-    for (let i = 0 ; i < lvalue.length ; i++) {
-      for (let j = 0 ; j < lvalue.length ; j++) {
-        if ((!deepEqual(lvalue[i], rvalue[j])) && (j === lvalue.length - 1)) {
+    if (lvalue.length !== rvalue.length) {
+      return false;
+    }
+    for (let i = 0; i < lvalue.length; i++) {
+      for (let j = 0; j < lvalue.length; j++) {
+        if (!deepEqual(lvalue[i], rvalue[j]) && j === lvalue.length - 1) {
           return false;
         }
         break;
@@ -111,7 +135,8 @@ function dependsOnEqual(lvalue: any, rvalue: any): boolean {
 export function diffKeyedEntities<T>(
   oldValue: { [key: string]: any } | undefined,
   newValue: { [key: string]: any } | undefined,
-  elementDiff: (oldElement: any, newElement: any, key: string) => T): { [name: string]: T } {
+  elementDiff: (oldElement: any, newElement: any, key: string) => T
+): { [name: string]: T } {
   const result: { [name: string]: T } = {};
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {
     const oldElement = oldValue && oldValue[logicalId];
@@ -169,7 +194,7 @@ function safeParseFloat(str: string): number {
 
 /**
  * Lazily load the service spec database and cache the loaded db
-*/
+ */
 let DATABASE: SpecDatabase | undefined;
 function database(): SpecDatabase {
   if (!DATABASE) {

@@ -97,16 +97,12 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
 /**
  * The interface of a task definition run on a Fargate cluster.
  */
-export interface IFargateTaskDefinition extends ITaskDefinition {
-
-}
+export interface IFargateTaskDefinition extends ITaskDefinition {}
 
 /**
  * Attributes used to import an existing Fargate task definition
  */
-export interface FargateTaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
-
-}
+export interface FargateTaskDefinitionAttributes extends CommonTaskDefinitionAttributes {}
 
 /**
  * The details of a task definition run on a Fargate cluster.
@@ -114,11 +110,14 @@ export interface FargateTaskDefinitionAttributes extends CommonTaskDefinitionAtt
  * @resource AWS::ECS::TaskDefinition
  */
 export class FargateTaskDefinition extends TaskDefinition implements IFargateTaskDefinition {
-
   /**
    * Imports a task definition from the specified task definition ARN.
    */
-  public static fromFargateTaskDefinitionArn(scope: Construct, id: string, fargateTaskDefinitionArn: string): IFargateTaskDefinition {
+  public static fromFargateTaskDefinitionArn(
+    scope: Construct,
+    id: string,
+    fargateTaskDefinitionArn: string
+  ): IFargateTaskDefinition {
     return new ImportedTaskDefinition(scope, id, { taskDefinitionArn: fargateTaskDefinitionArn });
   }
 
@@ -128,7 +127,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   public static fromFargateTaskDefinitionAttributes(
     scope: Construct,
     id: string,
-    attrs: FargateTaskDefinitionAttributes,
+    attrs: FargateTaskDefinitionAttributes
   ): IFargateTaskDefinition {
     return new ImportedTaskDefinition(scope, id, {
       taskDefinitionArn: attrs.taskDefinitionArn,
@@ -159,28 +158,41 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
     super(scope, id, {
       ...props,
       cpu: props.cpu !== undefined ? Tokenization.stringifyNumber(props.cpu) : '256',
-      memoryMiB: props.memoryLimitMiB !== undefined ? Tokenization.stringifyNumber(props.memoryLimitMiB) : '512',
+      memoryMiB:
+        props.memoryLimitMiB !== undefined
+          ? Tokenization.stringifyNumber(props.memoryLimitMiB)
+          : '512',
       compatibility: Compatibility.FARGATE,
       networkMode: NetworkMode.AWS_VPC,
       pidMode: props.pidMode,
     });
 
     // eslint-disable-next-line max-len
-    if (props.ephemeralStorageGiB && !Token.isUnresolved(props.ephemeralStorageGiB) && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {
+    if (
+      props.ephemeralStorageGiB &&
+      !Token.isUnresolved(props.ephemeralStorageGiB) &&
+      (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)
+    ) {
       throw new Error('Ephemeral storage size must be between 21GiB and 200GiB');
     }
 
     if (props.pidMode) {
       if (!props.runtimePlatform?.operatingSystemFamily) {
-        throw new Error('Specifying \'pidMode\' requires that operating system family also be provided.');
+        throw new Error(
+          "Specifying 'pidMode' requires that operating system family also be provided."
+        );
       }
       if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
-        throw new Error('\'pidMode\' is not supported for Windows containers.');
+        throw new Error("'pidMode' is not supported for Windows containers.");
       }
-      if (!Token.isUnresolved(props.pidMode)
-          && props.runtimePlatform?.operatingSystemFamily?.isLinux()
-          && props.pidMode !== PidMode.TASK) {
-        throw new Error(`\'pidMode\' can only be set to \'${PidMode.TASK}\' for Linux Fargate containers, got: \'${props.pidMode}\'.`);
+      if (
+        !Token.isUnresolved(props.pidMode) &&
+        props.runtimePlatform?.operatingSystemFamily?.isLinux() &&
+        props.pidMode !== PidMode.TASK
+      ) {
+        throw new Error(
+          `\'pidMode\' can only be set to \'${PidMode.TASK}\' for Linux Fargate containers, got: \'${props.pidMode}\'.`
+        );
       }
     }
 

@@ -31,7 +31,10 @@ export class StepFunctionsStateMachineAction implements iot.IAction {
    * @param stateMachine The Step Functions Start Machine which shoud be executed.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly stateMachine: stepfunctions.IStateMachine, props?: StepFunctionsStateMachineActionProps) {
+  constructor(
+    private readonly stateMachine: stepfunctions.IStateMachine,
+    props?: StepFunctionsStateMachineActionProps
+  ) {
     this.executionNamePrefix = props?.executionNamePrefix;
     this.role = props?.role;
   }
@@ -41,16 +44,21 @@ export class StepFunctionsStateMachineAction implements iot.IAction {
    */
   public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
-    const stateMachineName = Stack.of(this.stateMachine).splitArn(this.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
+    const stateMachineName = Stack.of(this.stateMachine).splitArn(
+      this.stateMachine.stateMachineArn,
+      ArnFormat.COLON_RESOURCE_NAME
+    ).resourceName;
 
     if (!stateMachineName) {
       throw new Error(`No state machine name found in ARN: '${this.stateMachine.stateMachineArn}'`);
     }
 
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['states:StartExecution'],
-      resources: [this.stateMachine.stateMachineArn],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['states:StartExecution'],
+        resources: [this.stateMachine.stateMachineArn],
+      })
+    );
 
     return {
       configuration: {

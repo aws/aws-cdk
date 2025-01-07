@@ -28,7 +28,11 @@ export interface ServiceAttributes {
   readonly serviceName?: string;
 }
 
-export function fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
+export function fromServiceAttributes(
+  scope: Construct,
+  id: string,
+  attrs: ServiceAttributes
+): IBaseService {
   if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
     throw new Error('You can only specify either serviceArn or serviceName.');
   }
@@ -40,7 +44,9 @@ export function fromServiceAttributes(scope: Construct, id: string, attrs: Servi
   let arn: string;
   if (attrs.serviceName) {
     name = attrs.serviceName as string;
-    const resourceName = newArnFormat ? `${attrs.cluster.clusterName}/${attrs.serviceName}` : attrs.serviceName as string;
+    const resourceName = newArnFormat
+      ? `${attrs.cluster.clusterName}/${attrs.serviceName}`
+      : (attrs.serviceName as string);
     arn = stack.formatArn({
       partition: stack.partition,
       service: 'ecs',

@@ -49,10 +49,13 @@ export class CloudAssembly {
   constructor(directory: string, loadOptions?: cxschema.LoadManifestOptions) {
     this.directory = directory;
 
-    this.manifest = cxschema.Manifest.loadAssemblyManifest(path.join(directory, MANIFEST_FILE), loadOptions);
+    this.manifest = cxschema.Manifest.loadAssemblyManifest(
+      path.join(directory, MANIFEST_FILE),
+      loadOptions
+    );
     this.version = this.manifest.version;
     this.artifacts = this.renderArtifacts(loadOptions?.topoSort ?? true);
-    this.runtime = this.manifest.runtime || { libraries: { } };
+    this.runtime = this.manifest.runtime || { libraries: {} };
 
     // force validation of deps by accessing 'depends' on all artifacts
     this.validateDeps();
@@ -64,7 +67,7 @@ export class CloudAssembly {
    * @param id The artifact ID
    */
   public tryGetArtifact(id: string): CloudArtifact | undefined {
-    return this.artifacts.find(a => a.id === id);
+    return this.artifacts.find((a) => a.id === id);
   }
 
   /**
@@ -79,14 +82,18 @@ export class CloudAssembly {
    * @returns a `CloudFormationStackArtifact` object.
    */
   public getStackByName(stackName: string): CloudFormationStackArtifact {
-    const artifacts = this.artifacts.filter(a => a instanceof CloudFormationStackArtifact && a.stackName === stackName);
+    const artifacts = this.artifacts.filter(
+      (a) => a instanceof CloudFormationStackArtifact && a.stackName === stackName
+    );
     if (!artifacts || artifacts.length === 0) {
       throw new Error(`Unable to find stack with stack name "${stackName}"`);
     }
 
     if (artifacts.length > 1) {
       // eslint-disable-next-line max-len
-      throw new Error(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
+      throw new Error(
+        `There are multiple stacks with the stack name "${stackName}" (${artifacts.map((a) => a.id).join(',')}). Use "getStackArtifact(id)" instead`
+      );
     }
 
     return artifacts[0] as CloudFormationStackArtifact;
@@ -122,22 +129,25 @@ export class CloudAssembly {
   }
 
   private tryGetArtifactRecursively(artifactId: string): CloudArtifact | undefined {
-    return this.stacksRecursively.find(a => a.id === artifactId);
+    return this.stacksRecursively.find((a) => a.id === artifactId);
   }
 
   /**
    * Returns all the stacks, including the ones in nested assemblies
    */
   public get stacksRecursively(): CloudFormationStackArtifact[] {
-    function search(stackArtifacts: CloudFormationStackArtifact[], assemblies: CloudAssembly[]): CloudFormationStackArtifact[] {
+    function search(
+      stackArtifacts: CloudFormationStackArtifact[],
+      assemblies: CloudAssembly[]
+    ): CloudFormationStackArtifact[] {
       if (assemblies.length === 0) {
         return stackArtifacts;
       }
 
       const [head, ...tail] = assemblies;
-      const nestedAssemblies = head.nestedAssemblies.map(asm => asm.nestedAssembly);
+      const nestedAssemblies = head.nestedAssemblies.map((asm) => asm.nestedAssembly);
       return search(stackArtifacts.concat(head.stacks), tail.concat(nestedAssemblies));
-    };
+    }
 
     return search([], [this]);
   }
@@ -175,11 +185,13 @@ export class CloudAssembly {
    * @returns a `TreeCloudArtifact` object if there is one defined in the manifest, `undefined` otherwise.
    */
   public tree(): TreeCloudArtifact | undefined {
-    const trees = this.artifacts.filter(a => a.manifest.type === cxschema.ArtifactType.CDK_TREE);
+    const trees = this.artifacts.filter((a) => a.manifest.type === cxschema.ArtifactType.CDK_TREE);
     if (trees.length === 0) {
       return undefined;
     } else if (trees.length > 1) {
-      throw new Error(`Multiple artifacts of type ${cxschema.ArtifactType.CDK_TREE} found in manifest`);
+      throw new Error(
+        `Multiple artifacts of type ${cxschema.ArtifactType.CDK_TREE} found in manifest`
+      );
     }
     const tree = trees[0];
 
@@ -220,14 +232,20 @@ export class CloudAssembly {
 
   private renderArtifacts(topoSort: boolean) {
     const result = new Array<CloudArtifact>();
-    for (const [name, artifact] of Object.entries(this.manifest.artifacts || { })) {
+    for (const [name, artifact] of Object.entries(this.manifest.artifacts || {})) {
       const cloudartifact = CloudArtifact.fromManifest(this, name, artifact);
       if (cloudartifact) {
         result.push(cloudartifact);
       }
     }
 
-    return topoSort ? topologicalSort(result, x => x.id, x => x._dependencyIDs) : result;
+    return topoSort
+      ? topologicalSort(
+          result,
+          (x) => x.id,
+          (x) => x._dependencyIDs
+        )
+      : result;
   }
 }
 
@@ -264,7 +282,7 @@ export class CloudAssemblyBuilder {
    */
   public readonly assetOutdir: string;
 
-  private readonly artifacts: { [id: string]: cxschema.ArtifactManifest } = { };
+  private readonly artifacts: { [id: string]: cxschema.ArtifactManifest } = {};
   private readonly missing = new Array<cxschema.MissingContext>();
   private readonly parentBuilder?: CloudAssemblyBuilder;
 
@@ -298,7 +316,7 @@ export class CloudAssemblyBuilder {
    * @param missing Missing context information.
    */
   public addMissing(missing: cxschema.MissingContext) {
-    if (this.missing.every(m => m.key !== missing.key)) {
+    if (this.missing.every((m) => m.key !== missing.key)) {
       this.missing.push(missing);
     }
     // Also report in parent
@@ -310,8 +328,7 @@ export class CloudAssemblyBuilder {
    * `CloudAssembly` object that can be used to inspect the assembly.
    * @param options
    */
-  public buildAssembly(options: AssemblyBuildOptions = { }): CloudAssembly {
-
+  public buildAssembly(options: AssemblyBuildOptions = {}): CloudAssembly {
     // explicitly initializing this type will help us detect
     // breaking changes. (For example adding a required property will break compilation).
     let manifest: cxschema.AssemblyManifest = {
@@ -330,7 +347,10 @@ export class CloudAssemblyBuilder {
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".
     // this will result in an error "CDK Toolkit >= CLOUD_ASSEMBLY_VERSION is required in order to interact with this program."
-    fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: manifest.version }));
+    fs.writeFileSync(
+      path.join(this.outdir, 'cdk.out'),
+      JSON.stringify({ version: manifest.version })
+    );
 
     return new CloudAssembly(this.outdir);
   }
@@ -373,9 +393,7 @@ export class CloudAssemblyBuilder {
  * @deprecated moved to package 'cloud-assembly-schema'
  * @see core.ConstructNode.synth
  */
-export interface RuntimeInfo extends cxschema.RuntimeInfo {
-
-}
+export interface RuntimeInfo extends cxschema.RuntimeInfo {}
 
 /**
  * Backwards compatibility for when `MetadataEntry`
@@ -385,9 +403,7 @@ export interface RuntimeInfo extends cxschema.RuntimeInfo {
  * @deprecated moved to package 'cloud-assembly-schema'
  * @see core.ConstructNode.metadata
  */
-export interface MetadataEntry extends cxschema.MetadataEntry {
-
-}
+export interface MetadataEntry extends cxschema.MetadataEntry {}
 
 /**
  * Backwards compatibility for when `MissingContext`
@@ -435,11 +451,11 @@ export interface AssemblyBuildOptions {
  */
 function filterUndefined(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.filter(x => x !== undefined).map(x => filterUndefined(x));
+    return obj.filter((x) => x !== undefined).map((x) => filterUndefined(x));
   }
 
-  if (typeof(obj) === 'object') {
-    const ret: any = { };
+  if (typeof obj === 'object') {
+    const ret: any = {};
     for (const [key, value] of Object.entries(obj)) {
       if (value === undefined) {
         continue;

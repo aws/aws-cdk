@@ -120,12 +120,13 @@ export class CodeBuildAction extends Action {
   constructor(props: CodeBuildActionProps) {
     super({
       ...props,
-      category: props.type === CodeBuildActionType.TEST
-        ? codepipeline.ActionCategory.TEST
-        : codepipeline.ActionCategory.BUILD,
+      category:
+        props.type === CodeBuildActionType.TEST
+          ? codepipeline.ActionCategory.TEST
+          : codepipeline.ActionCategory.BUILD,
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
-      inputs: [props.input, ...props.extraInputs || []],
+      inputs: [props.input, ...(props.extraInputs || [])],
       resource: props.project,
     });
 
@@ -146,28 +147,35 @@ export class CodeBuildAction extends Action {
     return this.variableExpression(variableName);
   }
 
-  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    scope: Construct,
+    _stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     // check for a cross-account action if there are any outputs
     if ((this.actionProperties.outputs || []).length > 0) {
       const pipelineStack = cdk.Stack.of(scope);
       const projectStack = cdk.Stack.of(this.props.project);
       if (pipelineStack.account !== projectStack.account) {
-        throw new Error('A cross-account CodeBuild action cannot have outputs. ' +
-          'This is a known CodeBuild limitation. ' +
-          'See https://github.com/aws/aws-cdk/issues/4169 for details');
+        throw new Error(
+          'A cross-account CodeBuild action cannot have outputs. ' +
+            'This is a known CodeBuild limitation. ' +
+            'See https://github.com/aws/aws-cdk/issues/4169 for details'
+        );
       }
     }
 
     // grant the Pipeline role the required permissions to this Project
-    options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.props.project.projectArn],
-      actions: [
-        `codebuild:${this.props.executeBatchBuild ? 'BatchGetBuildBatches' : 'BatchGetBuilds'}`,
-        `codebuild:${this.props.executeBatchBuild ? 'StartBuildBatch' : 'StartBuild'}`,
-        `codebuild:${this.props.executeBatchBuild ? 'StopBuildBatch' : 'StopBuild'}`,
-      ],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        resources: [this.props.project.projectArn],
+        actions: [
+          `codebuild:${this.props.executeBatchBuild ? 'BatchGetBuildBatches' : 'BatchGetBuilds'}`,
+          `codebuild:${this.props.executeBatchBuild ? 'StartBuildBatch' : 'StartBuild'}`,
+          `codebuild:${this.props.executeBatchBuild ? 'StopBuildBatch' : 'StopBuild'}`,
+        ],
+      })
+    );
 
     // allow the Project access to the Pipeline's artifact Bucket
     // but only if the project is not imported
@@ -190,35 +198,51 @@ export class CodeBuildAction extends Action {
       // if any of the inputs come from the CodeStarConnectionsSourceAction
       // with codeBuildCloneOutput=true,
       // grant the Project's Role to use the connection
-      const connectionArn = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY);
+      const connectionArn = inputArtifact.getMetadata(
+        CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY
+      );
       if (connectionArn) {
-        this.props.project.addToRolePolicy(new iam.PolicyStatement({
-          actions: ['codestar-connections:UseConnection'],
-          resources: [connectionArn],
-        }));
+        this.props.project.addToRolePolicy(
+          new iam.PolicyStatement({
+            actions: ['codestar-connections:UseConnection'],
+            resources: [connectionArn],
+          })
+        );
       }
 
       // if any of the inputs come from the CodeCommitSourceAction
       // with codeBuildCloneOutput=true,
       // grant the Project's Role git pull access to the repository
-      const codecommitRepositoryArn = inputArtifact.getMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY);
+      const codecommitRepositoryArn = inputArtifact.getMetadata(
+        CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY
+      );
       if (codecommitRepositoryArn) {
-        this.props.project.addToRolePolicy(new iam.PolicyStatement({
-          actions: ['codecommit:GitPull'],
-          resources: [codecommitRepositoryArn],
-        }));
+        this.props.project.addToRolePolicy(
+          new iam.PolicyStatement({
+            actions: ['codecommit:GitPull'],
+            resources: [codecommitRepositoryArn],
+          })
+        );
       }
     }
 
     const configuration: any = {
       ProjectName: this.props.project.projectName,
-      EnvironmentVariables: this.props.environmentVariables &&
-        cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
-          this.props.checkSecretsInPlainTextEnvVariables ?? true, this.props.project)),
+      EnvironmentVariables:
+        this.props.environmentVariables &&
+        cdk.Stack.of(scope).toJsonString(
+          codebuild.Project.serializeEnvVariables(
+            this.props.environmentVariables,
+            this.props.checkSecretsInPlainTextEnvVariables ?? true,
+            this.props.project
+          )
+        ),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
-      configuration.PrimarySource = cdk.Lazy.string({ produce: () => this.props.input.artifactName });
+      configuration.PrimarySource = cdk.Lazy.string({
+        produce: () => this.props.input.artifactName,
+      });
     }
     if (this.props.executeBatchBuild) {
       configuration.BatchEnabled = 'true';

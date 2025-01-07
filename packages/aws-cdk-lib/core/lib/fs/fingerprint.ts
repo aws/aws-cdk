@@ -37,7 +37,7 @@ export function clearLargeFileFingerprintCache() {
  * @param fileOrDirectory The directory or file to fingerprint
  * @param options Fingerprinting options
  */
-export function fingerprint(fileOrDirectory: string, options: FingerprintOptions = { }) {
+export function fingerprint(fileOrDirectory: string, options: FingerprintOptions = {}) {
   const hash = crypto.createHash('sha256');
   _hashField(hash, 'options.extra', options.extraHash || '');
   const follow = options.follow || SymlinkFollowMode.EXTERNAL;
@@ -50,9 +50,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   fileOrDirectory = fs.realpathSync(fileOrDirectory);
 
   const isDir = fs.statSync(fileOrDirectory).isDirectory();
-  const rootDirectory = isDir
-    ? fileOrDirectory
-    : path.dirname(fileOrDirectory);
+  const rootDirectory = isDir ? fileOrDirectory : path.dirname(fileOrDirectory);
 
   const ignoreMode = options.ignoreMode || IgnoreMode.GLOB;
   if (ignoreMode != IgnoreMode.GLOB) {
@@ -64,7 +62,11 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
 
   return hash.digest('hex');
 
-  function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
+  function _processFileOrDirectory(
+    symbolicPath: string,
+    isRootDir: boolean = false,
+    realPath = symbolicPath
+  ) {
     if (!isRootDir && ignoreStrategy.ignores(symbolicPath)) {
       return;
     }
@@ -136,7 +138,8 @@ function contentFingerprintMiss(file: string): string {
       }
 
       let dataBuffer = slicedBuffer;
-      if (!isBinary) { // Line endings normalization (CRLF -> LF)
+      if (!isBinary) {
+        // Line endings normalization (CRLF -> LF)
         const str = buffer.slice(0, read).toString();
 
         // We are going to normalize line endings to LF. So if the current

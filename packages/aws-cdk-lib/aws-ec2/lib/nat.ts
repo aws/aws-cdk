@@ -3,7 +3,13 @@ import { Instance } from './instance';
 import { InstanceArchitecture, InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits } from './launch-template';
-import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, IMachineImage, LookupMachineImage } from './machine-image';
+import {
+  AmazonLinuxCpuType,
+  AmazonLinuxGeneration,
+  AmazonLinuxImage,
+  IMachineImage,
+  LookupMachineImage,
+} from './machine-image';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -35,7 +41,6 @@ export enum NatTrafficDirection {
  * Pair represents a gateway created by NAT Provider
  */
 export interface GatewayConfig {
-
   /**
    * Availability Zone
    */
@@ -296,17 +301,21 @@ export class NatGatewayProvider extends NatProvider {
 
   public configureNat(options: ConfigureNatOptions) {
     if (
-      this.props.eipAllocationIds != null
-      && !Token.isUnresolved(this.props.eipAllocationIds)
-      && this.props.eipAllocationIds.length < options.natSubnets.length
+      this.props.eipAllocationIds != null &&
+      !Token.isUnresolved(this.props.eipAllocationIds) &&
+      this.props.eipAllocationIds.length < options.natSubnets.length
     ) {
-      throw new Error(`Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`);
+      throw new Error(
+        `Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`
+      );
     }
 
     // Create the NAT gateways
     let i = 0;
     for (const sub of options.natSubnets) {
-      const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
+      const eipAllocationId = this.props.eipAllocationIds
+        ? pickN(i, this.props.eipAllocationIds)
+        : undefined;
       const gateway = sub.addNatGateway(eipAllocationId);
       this.gateways.add(sub.availabilityZone, gateway.ref);
       i++;
@@ -329,7 +338,7 @@ export class NatGatewayProvider extends NatProvider {
   }
 
   public get configuredGateways(): GatewayConfig[] {
-    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1] }));
+    return this.gateways.values().map((x) => ({ az: x[0], gatewayId: x[1] }));
   }
 }
 
@@ -348,25 +357,32 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
     super();
 
     if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
-      throw new Error('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+      throw new Error(
+        "Can not specify both of 'defaultAllowedTraffic' and 'defaultAllowedTraffic'; prefer 'defaultAllowedTraffic'"
+      );
     }
 
     if (props.keyName && props.keyPair) {
-      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new Error("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
     }
   }
 
   public configureNat(options: ConfigureNatOptions) {
-    const defaultDirection = this.props.defaultAllowedTraffic ??
-      (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
+    const defaultDirection =
+      this.props.defaultAllowedTraffic ??
+      ((this.props.allowAllTraffic ?? true)
+        ? NatTrafficDirection.INBOUND_AND_OUTBOUND
+        : NatTrafficDirection.OUTBOUND_ONLY);
 
     // Create the NAT instances. They can share a security group and a Role.
     const machineImage = this.props.machineImage ?? new NatInstanceImage();
-    this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
-      vpc: options.vpc,
-      description: 'Security Group for NAT instances',
-      allowAllOutbound: isOutboundAllowed(defaultDirection),
-    });
+    this._securityGroup =
+      this.props.securityGroup ??
+      new SecurityGroup(options.vpc, 'NatSecurityGroup', {
+        vpc: options.vpc,
+        description: 'Security Group for NAT instances',
+        allowAllOutbound: isOutboundAllowed(defaultDirection),
+      });
     this._connections = new Connections({ securityGroups: [this._securityGroup] });
 
     if (isInboundAllowed(defaultDirection)) {
@@ -407,7 +423,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
    */
   public get securityGroup(): ISecurityGroup {
     if (!this._securityGroup) {
-      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+      throw new Error("Pass the NatInstanceProvider to a Vpc before accessing 'securityGroup'");
     }
     return this._securityGroup;
   }
@@ -417,13 +433,13 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+      throw new Error("Pass the NatInstanceProvider to a Vpc before accessing 'connections'");
     }
     return this._connections;
   }
 
   public get configuredGateways(): GatewayConfig[] {
-    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1].instanceId }));
+    return this.gateways.values().map((x) => ({ az: x[0], gatewayId: x[1].instanceId }));
   }
 
   public configureSubnet(subnet: PrivateSubnet) {
@@ -458,7 +474,9 @@ class PrefSet<A> {
       throw new Error('Cannot pick, set is empty');
     }
 
-    if (pref in this.map) { return this.map[pref]; }
+    if (pref in this.map) {
+      return this.map[pref];
+    }
     return this.vals[this.next++ % this.vals.length][1];
   }
 
@@ -503,30 +521,42 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
     super();
 
     if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
-      throw new Error('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+      throw new Error(
+        "Can not specify both of 'defaultAllowedTraffic' and 'defaultAllowedTraffic'; prefer 'defaultAllowedTraffic'"
+      );
     }
 
     if (props.keyName && props.keyPair) {
-      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new Error("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
     }
   }
 
   public configureNat(options: ConfigureNatOptions) {
-    const defaultDirection = this.props.defaultAllowedTraffic ??
-      (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
+    const defaultDirection =
+      this.props.defaultAllowedTraffic ??
+      ((this.props.allowAllTraffic ?? true)
+        ? NatTrafficDirection.INBOUND_AND_OUTBOUND
+        : NatTrafficDirection.OUTBOUND_ONLY);
 
     // Create the NAT instances. They can share a security group and a Role. The new NAT instance created uses latest
     // Amazon Linux 2023 image. This is important since the original NatInstanceProvider uses an instance image that has
     // reached EOL on Dec 31 2023
-    const machineImage = this.props.machineImage || new AmazonLinuxImage({
-      generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
-      cpuType: this.props.instanceType.architecture == InstanceArchitecture.ARM_64 ? AmazonLinuxCpuType.ARM_64 : undefined,
-    });
-    this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
-      vpc: options.vpc,
-      description: 'Security Group for NAT instances',
-      allowAllOutbound: isOutboundAllowed(defaultDirection),
-    });
+    const machineImage =
+      this.props.machineImage ||
+      new AmazonLinuxImage({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
+        cpuType:
+          this.props.instanceType.architecture == InstanceArchitecture.ARM_64
+            ? AmazonLinuxCpuType.ARM_64
+            : undefined,
+      });
+    this._securityGroup =
+      this.props.securityGroup ??
+      new SecurityGroup(options.vpc, 'NatSecurityGroup', {
+        vpc: options.vpc,
+        description: 'Security Group for NAT instances',
+        allowAllOutbound: isOutboundAllowed(defaultDirection),
+      });
     this._connections = new Connections({ securityGroups: [this._securityGroup] });
 
     if (isInboundAllowed(defaultDirection)) {
@@ -568,7 +598,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
    */
   public get securityGroup(): ISecurityGroup {
     if (!this._securityGroup) {
-      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+      throw new Error("Pass the NatInstanceProvider to a Vpc before accessing 'securityGroup'");
     }
     return this._securityGroup;
   }
@@ -578,13 +608,13 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+      throw new Error("Pass the NatInstanceProvider to a Vpc before accessing 'connections'");
     }
     return this._connections;
   }
 
   public get configuredGateways(): GatewayConfig[] {
-    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1].instanceId }));
+    return this.gateways.values().map((x) => ({ az: x[0], gatewayId: x[1].instanceId }));
   }
 
   public configureSubnet(subnet: PrivateSubnet) {
@@ -613,8 +643,10 @@ export class NatInstanceImage extends LookupMachineImage {
 }
 
 function isOutboundAllowed(direction: NatTrafficDirection) {
-  return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND ||
-    direction === NatTrafficDirection.OUTBOUND_ONLY;
+  return (
+    direction === NatTrafficDirection.INBOUND_AND_OUTBOUND ||
+    direction === NatTrafficDirection.OUTBOUND_ONLY
+  );
 }
 
 function isInboundAllowed(direction: NatTrafficDirection) {
@@ -625,7 +657,9 @@ function isInboundAllowed(direction: NatTrafficDirection) {
  * Token-aware pick index function
  */
 function pickN(i: number, xs: string[]) {
-  if (Token.isUnresolved(xs)) { return Fn.select(i, xs); }
+  if (Token.isUnresolved(xs)) {
+    return Fn.select(i, xs);
+  }
 
   if (i >= xs.length) {
     throw new Error(`Cannot get element ${i} from ${xs}`);

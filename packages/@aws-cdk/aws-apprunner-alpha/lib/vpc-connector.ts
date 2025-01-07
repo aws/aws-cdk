@@ -92,7 +92,11 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
   /**
    * Import from VPC connector attributes.
    */
-  public static fromVpcConnectorAttributes(scope: Construct, id: string, attrs: VpcConnectorAttributes): IVpcConnector {
+  public static fromVpcConnectorAttributes(
+    scope: Construct,
+    id: string,
+    attrs: VpcConnectorAttributes
+  ): IVpcConnector {
     const vpcConnectorArn = attrs.vpcConnectorArn;
     const vpcConnectorName = attrs.vpcConnectorName;
     const vpcConnectorRevision = attrs.vpcConnectorRevision;
@@ -137,27 +141,28 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
     });
 
     if (props.vpcConnectorName !== undefined && !cdk.Token.isUnresolved(props.vpcConnectorName)) {
-
       if (props.vpcConnectorName.length < 4 || props.vpcConnectorName.length > 40) {
         throw new Error(
-          `\`vpcConnectorName\` must be between 4 and 40 characters, got: ${props.vpcConnectorName.length} characters.`,
+          `\`vpcConnectorName\` must be between 4 and 40 characters, got: ${props.vpcConnectorName.length} characters.`
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcConnectorName)) {
         throw new Error(
-          `\`vpcConnectorName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcConnectorName}.`,
+          `\`vpcConnectorName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcConnectorName}.`
         );
       }
     }
 
-    const securityGroups = props.securityGroups?.length ?
-      props.securityGroups
+    const securityGroups = props.securityGroups?.length
+      ? props.securityGroups
       : [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc })];
 
     const resource = new CfnVpcConnector(this, 'Resource', {
       subnets: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
-      securityGroups: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
+      securityGroups: cdk.Lazy.list({
+        produce: () => this.connections.securityGroups.map((sg) => sg.securityGroupId),
+      }),
       vpcConnectorName: this.physicalName,
     });
 

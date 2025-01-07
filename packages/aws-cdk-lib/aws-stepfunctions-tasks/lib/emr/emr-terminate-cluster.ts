@@ -30,10 +30,17 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrTerminateClusterProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EmrTerminateClusterProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
-    validatePatternSupported(this.integrationPattern, EmrTerminateCluster.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      EmrTerminateCluster.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -43,7 +50,11 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('elasticmapreduce', 'terminateCluster', this.integrationPattern),
+      Resource: integrationResourceArn(
+        'elasticmapreduce',
+        'terminateCluster',
+        this.integrationPattern
+      ),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
       }),
@@ -58,10 +69,7 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
 
     const policyStatements = [
       new iam.PolicyStatement({
-        actions: [
-          'elasticmapreduce:DescribeCluster',
-          'elasticmapreduce:TerminateJobFlows',
-        ],
+        actions: ['elasticmapreduce:DescribeCluster', 'elasticmapreduce:TerminateJobFlows'],
         resources: [
           Stack.of(this).formatArn({
             service: 'elasticmapreduce',
@@ -73,14 +81,18 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
     ];
 
     if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-        resources: [stack.formatArn({
-          service: 'events',
-          resource: 'rule',
-          resourceName: 'StepFunctionsGetEventForEMRTerminateJobFlowsRule',
-        })],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          resources: [
+            stack.formatArn({
+              service: 'events',
+              resource: 'rule',
+              resourceName: 'StepFunctionsGetEventForEMRTerminateJobFlowsRule',
+            }),
+          ],
+        })
+      );
     }
 
     return policyStatements;

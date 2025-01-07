@@ -6,7 +6,6 @@ import { Stack } from '../../core';
  * Creates a data protection policy for CloudWatch Logs log groups.
  */
 export class DataProtectionPolicy {
-
   private readonly dataProtectionPolicyProps: DataProtectionPolicyProps;
 
   constructor(props: DataProtectionPolicyProps) {
@@ -21,7 +20,8 @@ export class DataProtectionPolicy {
    */
   public _bind(_scope: Construct): DataProtectionPolicyConfig {
     const name = this.dataProtectionPolicyProps.name || 'data-protection-policy-cdk';
-    const description = this.dataProtectionPolicyProps.description || 'cdk generated data protection policy';
+    const description =
+      this.dataProtectionPolicyProps.description || 'cdk generated data protection policy';
     const version = '2021-06-01';
 
     const findingsDestination: PolicyFindingsDestination = {};
@@ -53,15 +53,17 @@ export class DataProtectionPolicy {
           regex: identifier.regex,
         });
       } else {
-        identifiers.push(Stack.of(_scope).formatArn({
-          resource: 'data-identifier',
-          region: '',
-          account: 'aws',
-          service: 'dataprotection',
-          resourceName: identifier.name,
-        }));
+        identifiers.push(
+          Stack.of(_scope).formatArn({
+            resource: 'data-identifier',
+            region: '',
+            account: 'aws',
+            service: 'dataprotection',
+            resourceName: identifier.name,
+          })
+        );
       }
-    };
+    }
 
     const statement = [
       {
@@ -249,24 +251,44 @@ export class DataIdentifier {
   public static readonly DRIVERSLICENSE_SI = new DataIdentifier('DriversLicense-SI');
   public static readonly DRIVERSLICENSE_SK = new DataIdentifier('DriversLicense-SK');
   public static readonly DRIVERSLICENSE_US = new DataIdentifier('DriversLicense-US');
-  public static readonly DRUGENFORCEMENTAGENCYNUMBER_US = new DataIdentifier('DrugEnforcementAgencyNumber-US');
+  public static readonly DRUGENFORCEMENTAGENCYNUMBER_US = new DataIdentifier(
+    'DrugEnforcementAgencyNumber-US'
+  );
   public static readonly ELECTORALROLLNUMBER_GB = new DataIdentifier('ElectoralRollNumber-GB');
   public static readonly EMAILADDRESS = new DataIdentifier('EmailAddress');
-  public static readonly HEALTHINSURANCECARDNUMBER_EU = new DataIdentifier('HealthInsuranceCardNumber-EU');
-  public static readonly HEALTHINSURANCECLAIMNUMBER_US = new DataIdentifier('HealthInsuranceClaimNumber-US');
+  public static readonly HEALTHINSURANCECARDNUMBER_EU = new DataIdentifier(
+    'HealthInsuranceCardNumber-EU'
+  );
+  public static readonly HEALTHINSURANCECLAIMNUMBER_US = new DataIdentifier(
+    'HealthInsuranceClaimNumber-US'
+  );
   public static readonly HEALTHINSURANCENUMBER_FR = new DataIdentifier('HealthInsuranceNumber-FR');
-  public static readonly HEALTHCAREPROCEDURECODE_US = new DataIdentifier('HealthcareProcedureCode-US');
-  public static readonly INDIVIDUALTAXIDENTIFICATIONNUMBER_US = new DataIdentifier('IndividualTaxIdentificationNumber-US');
+  public static readonly HEALTHCAREPROCEDURECODE_US = new DataIdentifier(
+    'HealthcareProcedureCode-US'
+  );
+  public static readonly INDIVIDUALTAXIDENTIFICATIONNUMBER_US = new DataIdentifier(
+    'IndividualTaxIdentificationNumber-US'
+  );
   public static readonly INSEECODE_FR = new DataIdentifier('InseeCode-FR');
   public static readonly IPADDRESS = new DataIdentifier('IpAddress');
   public static readonly LATLONG = new DataIdentifier('LatLong');
-  public static readonly MEDICAREBENEFICIARYNUMBER_US = new DataIdentifier('MedicareBeneficiaryNumber-US');
+  public static readonly MEDICAREBENEFICIARYNUMBER_US = new DataIdentifier(
+    'MedicareBeneficiaryNumber-US'
+  );
   public static readonly NAME = new DataIdentifier('Name');
   public static readonly NATIONALDRUGCODE_US = new DataIdentifier('NationalDrugCode-US');
-  public static readonly NATIONALIDENTIFICATIONNUMBER_DE = new DataIdentifier('NationalIdentificationNumber-DE');
-  public static readonly NATIONALIDENTIFICATIONNUMBER_ES = new DataIdentifier('NationalIdentificationNumber-ES');
-  public static readonly NATIONALIDENTIFICATIONNUMBER_IT = new DataIdentifier('NationalIdentificationNumber-IT');
-  public static readonly NATIONALINSURANCENUMBER_GB = new DataIdentifier('NationalInsuranceNumber-GB');
+  public static readonly NATIONALIDENTIFICATIONNUMBER_DE = new DataIdentifier(
+    'NationalIdentificationNumber-DE'
+  );
+  public static readonly NATIONALIDENTIFICATIONNUMBER_ES = new DataIdentifier(
+    'NationalIdentificationNumber-ES'
+  );
+  public static readonly NATIONALIDENTIFICATIONNUMBER_IT = new DataIdentifier(
+    'NationalIdentificationNumber-IT'
+  );
+  public static readonly NATIONALINSURANCENUMBER_GB = new DataIdentifier(
+    'NationalInsuranceNumber-GB'
+  );
   public static readonly NATIONALPROVIDERID_US = new DataIdentifier('NationalProviderId-US');
   public static readonly NHSNUMBER_GB = new DataIdentifier('NhsNumber-GB');
   public static readonly NIENUMBER_ES = new DataIdentifier('NieNumber-ES');
@@ -279,7 +301,9 @@ export class DataIdentifier {
   public static readonly PASSPORTNUMBER_GB = new DataIdentifier('PassportNumber-GB');
   public static readonly PASSPORTNUMBER_IT = new DataIdentifier('PassportNumber-IT');
   public static readonly PASSPORTNUMBER_US = new DataIdentifier('PassportNumber-US');
-  public static readonly PERMANENTRESIDENCENUMBER_CA = new DataIdentifier('PermanentResidenceNumber-CA');
+  public static readonly PERMANENTRESIDENCENUMBER_CA = new DataIdentifier(
+    'PermanentResidenceNumber-CA'
+  );
   public static readonly PERSONALHEALTHNUMBER_CA = new DataIdentifier('PersonalHealthNumber-CA');
   public static readonly PGPPRIVATEKEY = new DataIdentifier('PgpPrivateKey');
   public static readonly PHONENUMBER_BR = new DataIdentifier('PhoneNumber-BR');
@@ -300,14 +324,16 @@ export class DataIdentifier {
   public static readonly TAXID_ES = new DataIdentifier('TaxId-ES');
   public static readonly TAXID_FR = new DataIdentifier('TaxId-FR');
   public static readonly TAXID_GB = new DataIdentifier('TaxId-GB');
-  public static readonly VEHICLEIDENTIFICATIONNUMBER = new DataIdentifier('VehicleIdentificationNumber');
+  public static readonly VEHICLEIDENTIFICATIONNUMBER = new DataIdentifier(
+    'VehicleIdentificationNumber'
+  );
   public static readonly ZIPCODE_US = new DataIdentifier('ZipCode-US');
 
   /**
    * Create a managed data identifier not in the list of static members. This is used to maintain forward compatibility, in case a new managed identifier is supported but not updated in CDK yet.
    * @param name - name of the identifier.
    */
-  constructor(public readonly name: string) { }
+  constructor(public readonly name: string) {}
 
   public toString(): string {
     return this.name;
@@ -323,7 +349,10 @@ export class CustomDataIdentifier extends DataIdentifier {
    * @param name - the name of the custom data identifier. This cannot share the same name as a managed data identifier.
    * @param regex - the regular expression to detect and mask log events for.
    */
-  constructor(public readonly name: string, public readonly regex: string) {
+  constructor(
+    public readonly name: string,
+    public readonly regex: string
+  ) {
     super(name);
   }
 

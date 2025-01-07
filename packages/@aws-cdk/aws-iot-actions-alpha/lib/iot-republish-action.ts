@@ -47,7 +47,10 @@ export class IotRepublishMqttAction implements iot.IAction {
    * @param topic The MQTT topic to which to republish the message.
    * @param props Optional properties to not use default.
    */
-  constructor(private readonly topic: string, props: IotRepublishMqttActionProps = {}) {
+  constructor(
+    private readonly topic: string,
+    props: IotRepublishMqttActionProps = {}
+  ) {
     this.qualityOfService = props.qualityOfService;
     this.role = props.role;
   }
@@ -57,10 +60,12 @@ export class IotRepublishMqttAction implements iot.IAction {
    */
   public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['iot:Publish'],
-      resources: ['*'],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['iot:Publish'],
+        resources: ['*'],
+      })
+    );
 
     return {
       configuration: {

@@ -40,7 +40,10 @@ export class S3PutObjectAction implements iot.IAction {
    * @param bucket The Amazon S3 bucket to which to write data.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly bucket: s3.IBucket, props: S3PutObjectActionProps = {}) {
+  constructor(
+    private readonly bucket: s3.IBucket,
+    props: S3PutObjectActionProps = {}
+  ) {
     this.accessControl = props.accessControl;
     this.key = props.key;
     this.role = props.role;
@@ -51,10 +54,12 @@ export class S3PutObjectAction implements iot.IAction {
    */
   public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutObject'],
-      resources: [this.bucket.arnForObjects('*')],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:PutObject'],
+        resources: [this.bucket.arnForObjects('*')],
+      })
+    );
 
     return {
       configuration: {

@@ -57,7 +57,9 @@ export abstract class Logging {
    * @internal
    */
   public _render(scope: Construct) {
-    const isLogApiResponseDataFeatureFlagSet = FeatureFlags.of(scope).isEnabled(LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT);
+    const isLogApiResponseDataFeatureFlagSet = FeatureFlags.of(scope).isEnabled(
+      LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT
+    );
     if (isLogApiResponseDataFeatureFlagSet && this.logApiResponseData === undefined) {
       this.logApiResponseData = true;
     }

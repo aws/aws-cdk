@@ -318,12 +318,14 @@ export class Lazy {
    * the value depends on the Stack the value is being used in. Both of these
    * cases are rare, and only ever occur for AWS Construct Library authors.
    */
-  public static uncachedAny(producer: IAnyProducer, options: LazyAnyValueOptions = {}): IResolvable {
+  public static uncachedAny(
+    producer: IAnyProducer,
+    options: LazyAnyValueOptions = {}
+  ): IResolvable {
     return new LazyAny(producer, false, options);
   }
 
-  private constructor() {
-  }
+  private constructor() {}
 }
 
 interface ILazyProducer<A> {
@@ -334,7 +336,10 @@ abstract class LazyBase<A> implements IResolvable {
   public readonly creationStack: string[];
   private _cached?: A;
 
-  constructor(private readonly producer: ILazyProducer<A>, private readonly cache: boolean) {
+  constructor(
+    private readonly producer: ILazyProducer<A>,
+    private readonly cache: boolean
+  ) {
     // Stack trace capture is conditioned to `debugModeEnabled()`, because
     // lazies can be created in a fairly thrashy way, and the stack traces are
     // large and slow to obtain; but are mostly useful only when debugging a
@@ -364,17 +369,18 @@ abstract class LazyBase<A> implements IResolvable {
   public toJSON(): any {
     return '<unresolved-lazy>';
   }
-
 }
 
-class LazyString extends LazyBase<string> {
-}
+class LazyString extends LazyBase<string> {}
 
-class LazyNumber extends LazyBase<number> {
-}
+class LazyNumber extends LazyBase<number> {}
 
 class LazyList extends LazyBase<Array<string>> {
-  constructor(producer: IListProducer, cache: boolean, private readonly options: LazyListValueOptions = {}) {
+  constructor(
+    producer: IListProducer,
+    cache: boolean,
+    private readonly options: LazyListValueOptions = {}
+  ) {
     super(producer, cache);
   }
 
@@ -388,7 +394,11 @@ class LazyList extends LazyBase<Array<string>> {
 }
 
 class LazyAny extends LazyBase<any> {
-  constructor(producer: IAnyProducer, cache: boolean, private readonly options: LazyAnyValueOptions = {}) {
+  constructor(
+    producer: IAnyProducer,
+    cache: boolean,
+    private readonly options: LazyAnyValueOptions = {}
+  ) {
     super(producer, cache);
   }
 

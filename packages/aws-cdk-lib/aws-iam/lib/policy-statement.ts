@@ -1,8 +1,18 @@
 import { IConstruct } from 'constructs';
 import { Group } from './group';
 import {
-  AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts, validateConditionObject,
+  AccountPrincipal,
+  AccountRootPrincipal,
+  AnyPrincipal,
+  ArnPrincipal,
+  CanonicalUserPrincipal,
+  FederatedPrincipal,
+  IPrincipal,
+  PrincipalBase,
+  PrincipalPolicyFragment,
+  ServicePrincipal,
+  ServicePrincipalOpts,
+  validateConditionObject,
 } from './principals';
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './private/util';
@@ -12,10 +22,10 @@ const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
     return undefined;
   }
-  if (typeof (field) !== 'string' && !Array.isArray(field)) {
+  if (typeof field !== 'string' && !Array.isArray(field)) {
     throw new Error('Fields must be either a string or an array of strings');
   }
-  if (Array.isArray(field) && !!field.find((f: any) => typeof (f) !== 'string')) {
+  if (Array.isArray(field) && !!field.find((f: any) => typeof f !== 'string')) {
     throw new Error('Fields must be either a string or an array of strings');
   }
   return Array.isArray(field) ? field : [field];
@@ -41,7 +51,6 @@ const ARN_SIZE_ESTIMATE_CONTEXT_KEY = '@aws-cdk/aws-iam.arnSizeEstimate';
  * Represents a statement in an IAM policy document.
  */
 export class PolicyStatement {
-
   /**
    * Creates a new PolicyStatement based on the object provided.
    * This will accept an object created from the `.toJSON()` call
@@ -75,7 +84,7 @@ export class PolicyStatement {
   private readonly _notPrincipal: { [key: string]: any[] } = {};
   private readonly _resource = new OrderedSet<string>();
   private readonly _notResource = new OrderedSet<string>();
-  private readonly _condition: { [key: string]: any } = { };
+  private readonly _condition: { [key: string]: any } = {};
   private _sid?: string;
   private _effect: Effect;
   private principalConditionsJson?: string;
@@ -89,12 +98,12 @@ export class PolicyStatement {
     this._sid = props.sid;
     this._effect = props.effect || Effect.ALLOW;
 
-    this.addActions(...props.actions || []);
-    this.addNotActions(...props.notActions || []);
-    this.addPrincipals(...props.principals || []);
-    this.addNotPrincipals(...props.notPrincipals || []);
-    this.addResources(...props.resources || []);
-    this.addNotResources(...props.notResources || []);
+    this.addActions(...(props.actions || []));
+    this.addNotActions(...(props.notActions || []));
+    this.addPrincipals(...(props.principals || []));
+    this.addNotPrincipals(...(props.notPrincipals || []));
+    this.addResources(...(props.resources || []));
+    this.addNotResources(...(props.notResources || []));
     if (props.conditions !== undefined) {
       this.addConditions(props.conditions);
     }
@@ -144,7 +153,7 @@ export class PolicyStatement {
   public addActions(...actions: string[]) {
     this.assertNotFrozen('addActions');
     if (actions.length > 0 && this._notAction.length > 0) {
-      throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
+      throw new Error("Cannot add 'Actions' to policy statement if 'NotActions' have been added");
     }
     this.validatePolicyActions(actions);
     this._action.push(...actions);
@@ -161,7 +170,7 @@ export class PolicyStatement {
   public addNotActions(...notActions: string[]) {
     this.assertNotFrozen('addNotActions');
     if (notActions.length > 0 && this._action.length > 0) {
-      throw new Error('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
+      throw new Error("Cannot add 'NotActions' to policy statement if 'Actions' have been added");
     }
     this.validatePolicyActions(notActions);
     this._notAction.push(...notActions);
@@ -188,7 +197,9 @@ export class PolicyStatement {
   public addPrincipals(...principals: IPrincipal[]) {
     this.assertNotFrozen('addPrincipals');
     if (principals.length > 0 && this._notPrincipals.length > 0) {
-      throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
+      throw new Error(
+        "Cannot add 'Principals' to policy statement if 'NotPrincipals' have been added"
+      );
     }
     for (const principal of principals) {
       this.validatePolicyPrincipal(principal);
@@ -213,7 +224,9 @@ export class PolicyStatement {
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
     this.assertNotFrozen('addNotPrincipals');
     if (notPrincipals.length > 0 && this._principals.length > 0) {
-      throw new Error('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
+      throw new Error(
+        "Cannot add 'NotPrincipals' to policy statement if 'Principals' have been added"
+      );
     }
     for (const notPrincipal of notPrincipals) {
       this.validatePolicyPrincipal(notPrincipal);
@@ -232,14 +245,18 @@ export class PolicyStatement {
     if (cdk.Token.isUnresolved(actions)) return;
     for (const action of actions || []) {
       if (!cdk.Token.isUnresolved(action) && !/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
-        throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+        throw new Error(
+          `Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`
+        );
       }
     }
   }
 
   private validatePolicyPrincipal(principal: IPrincipal) {
     if (principal instanceof Group) {
-      throw new Error('Cannot use an IAM Group as the \'Principal\' or \'NotPrincipal\' in an IAM Policy');
+      throw new Error(
+        "Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy"
+      );
     }
   }
 
@@ -319,7 +336,9 @@ export class PolicyStatement {
   public addResources(...arns: string[]) {
     this.assertNotFrozen('addResources');
     if (arns.length > 0 && this._notResource.length > 0) {
-      throw new Error('Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
+      throw new Error(
+        "Cannot add 'Resources' to policy statement if 'NotResources' have been added"
+      );
     }
     this._resource.push(...arns);
   }
@@ -335,7 +354,9 @@ export class PolicyStatement {
   public addNotResources(...arns: string[]) {
     this.assertNotFrozen('addNotResources');
     if (arns.length > 0 && this._resource.length > 0) {
-      throw new Error('Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
+      throw new Error(
+        "Cannot add 'NotResources' to policy statement if 'Resources' have been added"
+      );
     }
     this._notResource.push(...arns);
   }
@@ -396,7 +417,7 @@ export class PolicyStatement {
    * See the `addCondition` function for a caveat on calling this method multiple times.
    */
   public addConditions(conditions: Conditions) {
-    Object.keys(conditions).map(key => {
+    Object.keys(conditions).map((key) => {
       this.addCondition(key, conditions[key]);
     });
   }
@@ -513,7 +534,9 @@ export class PolicyStatement {
       this.principalConditionsJson = theseConditions;
     } else {
       if (this.principalConditionsJson !== theseConditions) {
-        throw new Error(`All principals in a PolicyStatement must have the same Conditions (got '${this.principalConditionsJson}' and '${theseConditions}'). Use multiple statements instead.`);
+        throw new Error(
+          `All principals in a PolicyStatement must have the same Conditions (got '${this.principalConditionsJson}' and '${theseConditions}'). Use multiple statements instead.`
+        );
       }
     }
     this.addConditions(conditions);
@@ -527,7 +550,7 @@ export class PolicyStatement {
   public validateForAnyPolicy(): string[] {
     const errors = new Array<string>();
     if (this._action.length === 0 && this._notAction.length === 0) {
-      errors.push('A PolicyStatement must specify at least one \'action\' or \'notAction\'.');
+      errors.push("A PolicyStatement must specify at least one 'action' or 'notAction'.");
     }
     return errors;
   }
@@ -540,7 +563,9 @@ export class PolicyStatement {
   public validateForResourcePolicy(): string[] {
     const errors = this.validateForAnyPolicy();
     if (this._principals.length === 0 && this._notPrincipals.length === 0) {
-      errors.push('A PolicyStatement used in a resource-based policy must specify at least one IAM principal.');
+      errors.push(
+        'A PolicyStatement used in a resource-based policy must specify at least one IAM principal.'
+      );
     }
     return errors;
   }
@@ -553,10 +578,14 @@ export class PolicyStatement {
   public validateForIdentityPolicy(): string[] {
     const errors = this.validateForAnyPolicy();
     if (this._principals.length > 0 || this._notPrincipals.length > 0) {
-      errors.push('A PolicyStatement used in an identity-based policy cannot specify any IAM principals.');
+      errors.push(
+        'A PolicyStatement used in an identity-based policy cannot specify any IAM principals.'
+      );
     }
     if (this._resource.length === 0 && this._notResource.length === 0) {
-      errors.push('A PolicyStatement used in an identity-based policy must specify at least one resource.');
+      errors.push(
+        'A PolicyStatement used in an identity-based policy must specify at least one resource.'
+      );
     }
     return errors;
   }
@@ -661,8 +690,14 @@ export class PolicyStatement {
 
     function count(key: string, values: string[], tokenSize: number) {
       if (values.length > 0) {
-        ret += key.length + 5 /* quotes, colon, brackets */ +
-          sum(values.map(v => (cdk.Token.isUnresolved(v) ? tokenSize : v.length) + 3 /* quotes, separator */));
+        ret +=
+          key.length +
+          5 /* quotes, colon, brackets */ +
+          sum(
+            values.map(
+              (v) => (cdk.Token.isUnresolved(v) ? tokenSize : v.length) + 3 /* quotes, separator */
+            )
+          );
       }
     }
   }
@@ -672,7 +707,9 @@ export class PolicyStatement {
    */
   private assertNotFrozen(method: string) {
     if (this._frozen) {
-      throw new Error(`${method}: freeze() has been called on this PolicyStatement previously, so it can no longer be modified`);
+      throw new Error(
+        `${method}: freeze() has been called on this PolicyStatement previously, so it can no longer be modified`
+      );
     }
   }
 }
@@ -784,7 +821,7 @@ export interface PolicyStatementProps {
    *
    * @default - no condition
    */
-  readonly conditions?: {[key: string]: any};
+  readonly conditions?: { [key: string]: any };
 
   /**
    * Whether to allow or deny the actions in this statement
@@ -797,15 +834,15 @@ export interface PolicyStatementProps {
 class JsonPrincipal extends PrincipalBase {
   public readonly policyFragment: PrincipalPolicyFragment;
 
-  constructor(json: any = { }) {
+  constructor(json: any = {}) {
     super();
 
     // special case: if principal is a string, turn it into a "LiteralString" principal,
     // so we render the exact same string back out.
-    if (typeof(json) === 'string') {
+    if (typeof json === 'string') {
       json = { [LITERAL_STRING_KEY]: [json] };
     }
-    if (typeof(json) !== 'object') {
+    if (typeof json !== 'object') {
       throw new Error(`JSON IAM principal should be an object, got ${JSON.stringify(json)}`);
     }
 
@@ -847,9 +884,12 @@ export interface EstimateSizeOptions {
  */
 export function deriveEstimateSizeOptions(scope: IConstruct): EstimateSizeOptions {
   const actionEstimate = 20;
-  const arnEstimate = scope.node.tryGetContext(ARN_SIZE_ESTIMATE_CONTEXT_KEY) ?? DEFAULT_ARN_SIZE_ESTIMATE;
+  const arnEstimate =
+    scope.node.tryGetContext(ARN_SIZE_ESTIMATE_CONTEXT_KEY) ?? DEFAULT_ARN_SIZE_ESTIMATE;
   if (typeof arnEstimate !== 'number') {
-    throw new Error(`Context value ${ARN_SIZE_ESTIMATE_CONTEXT_KEY} should be a number, got ${JSON.stringify(arnEstimate)}`);
+    throw new Error(
+      `Context value ${ARN_SIZE_ESTIMATE_CONTEXT_KEY} should be a number, got ${JSON.stringify(arnEstimate)}`
+    );
   }
 
   return { actionEstimate, arnEstimate };

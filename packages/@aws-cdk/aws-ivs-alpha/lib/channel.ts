@@ -52,11 +52,11 @@ export enum LatencyMode {
 }
 
 /**
-  * The channel type, which determines the allowable resolution and bitrate.
-  * If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately.
-  *
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
-*/
+ * The channel type, which determines the allowable resolution and bitrate.
+ * If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+ */
 export enum ChannelType {
   /**
    * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
@@ -86,10 +86,10 @@ export enum ChannelType {
 }
 
 /**
-  * An optional transcode preset for the channel. This is selectable only for ADVANCED_HD and ADVANCED_SD channel types.
-  *
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
-*/
+ * An optional transcode preset for the channel. This is selectable only for ADVANCED_HD and ADVANCED_SD channel types.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+ */
 export enum Preset {
   /**
    * Use a lower bitrate than STANDARD for each quality level. Use it if you have low download bandwidth and/or simple video content (e.g., talking heads).
@@ -100,7 +100,6 @@ export enum Preset {
    * Use a higher bitrate for each quality level. Use it if you have high download bandwidth and/or complex video content (e.g., flashes and quick scene changes).
    */
   HIGHER_BANDWIDTH_DELIVERY = 'HIGHER_BANDWIDTH_DELIVERY',
-
 }
 
 /**
@@ -192,33 +191,46 @@ export class Channel extends ChannelBase {
   public readonly channelArn: string;
 
   /**
-  * Channel ingest endpoint, part of the definition of an ingest server, used when you set up streaming software.
-  * For example: a1b2c3d4e5f6.global-contribute.live-video.net
-  * @attribute
-  */
+   * Channel ingest endpoint, part of the definition of an ingest server, used when you set up streaming software.
+   * For example: a1b2c3d4e5f6.global-contribute.live-video.net
+   * @attribute
+   */
   public readonly channelIngestEndpoint: string;
 
   /**
-  * Channel playback URL. For example:
-  * https://a1b2c3d4e5f6.us-west-2.playback.live-video.net/api/video/v1/us-west-2.123456789012.channel.abcdEFGH.m3u8
-  * @attribute
-  */
+   * Channel playback URL. For example:
+   * https://a1b2c3d4e5f6.us-west-2.playback.live-video.net/api/video/v1/us-west-2.123456789012.channel.abcdEFGH.m3u8
+   * @attribute
+   */
   public readonly channelPlaybackUrl: string;
 
   constructor(scope: Construct, id: string, props: ChannelProps = {}) {
     super(scope, id, {
-      physicalName: props.channelName ?? Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
-      }),
+      physicalName:
+        props.channelName ??
+        Lazy.string({
+          produce: () =>
+            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
+        }),
     });
 
-    if (this.physicalName && !core.Token.isUnresolved(this.physicalName) && !/^[a-zA-Z0-9-_]*$/.test(this.physicalName)) {
-      throw new Error(`channelName must contain only numbers, letters, hyphens and underscores, got: '${this.physicalName}'`);
+    if (
+      this.physicalName &&
+      !core.Token.isUnresolved(this.physicalName) &&
+      !/^[a-zA-Z0-9-_]*$/.test(this.physicalName)
+    ) {
+      throw new Error(
+        `channelName must contain only numbers, letters, hyphens and underscores, got: '${this.physicalName}'`
+      );
     }
 
     let preset;
 
-    if (props.type && [ChannelType.STANDARD, ChannelType.BASIC].includes(props.type) && props.preset) {
+    if (
+      props.type &&
+      [ChannelType.STANDARD, ChannelType.BASIC].includes(props.type) &&
+      props.preset
+    ) {
       preset = '';
     } else {
       preset = props.preset;

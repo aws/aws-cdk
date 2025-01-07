@@ -123,7 +123,6 @@ export interface InstanceProps {
  * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html#USER_WorkingWithAutomatedBackups.BackupWindow
  */
 export interface BackupProps {
-
   /**
    * How many days to retain the backup
    */
@@ -198,7 +197,10 @@ export abstract class Credentials {
   /**
    * Creates Credentials with a password generated and stored in Secrets Manager.
    */
-  public static fromGeneratedSecret(username: string, options: CredentialsBaseOptions = {}): Credentials {
+  public static fromGeneratedSecret(
+    username: string,
+    options: CredentialsBaseOptions = {}
+  ): Credentials {
     return {
       ...options,
       username,
@@ -223,7 +225,10 @@ export abstract class Credentials {
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in Secrets Manager.
    */
-  public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
+  public static fromUsername(
+    username: string,
+    options: CredentialsFromUsernameOptions = {}
+  ): Credentials {
     return {
       ...options,
       username,
@@ -353,7 +358,10 @@ export abstract class SnapshotCredentials {
    *
    * Note - The username must match the existing master username of the snapshot.
    */
-  public static fromGeneratedSecret(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
+  public static fromGeneratedSecret(
+    username: string,
+    options: SnapshotCredentialsFromGeneratedPasswordOptions = {}
+  ): SnapshotCredentials {
     return {
       ...options,
       generatePassword: true,
@@ -371,7 +379,10 @@ export abstract class SnapshotCredentials {
    * `fromGeneratedPassword()` to `fromGeneratedSecret()` for already deployed Clusters
    * or Instances will update their master password.
    */
-  public static fromGeneratedPassword(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
+  public static fromGeneratedPassword(
+    username: string,
+    options: SnapshotCredentialsFromGeneratedPasswordOptions = {}
+  ): SnapshotCredentials {
     return {
       ...options,
       generatePassword: true,
@@ -523,8 +534,7 @@ export interface CommonRotationUserOptions {
 /**
  * Options to add the multi user rotation
  */
-export interface RotationSingleUserOptions extends CommonRotationUserOptions {
-}
+export interface RotationSingleUserOptions extends CommonRotationUserOptions {}
 
 /**
  * Options to add the multi user rotation

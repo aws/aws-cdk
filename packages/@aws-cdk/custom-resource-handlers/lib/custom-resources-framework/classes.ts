@@ -25,12 +25,7 @@ import {
   Runtime,
 } from './config';
 import { HandlerFrameworkModule } from './framework';
-import {
-  PATH_MODULE,
-  CONSTRUCTS_MODULE,
-  LAMBDA_MODULE,
-  CORE_MODULE,
-} from './modules';
+import { PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
 
 const CORE_INTERNAL_STACK_IMPORT_PATH = '../../stack';
@@ -110,7 +105,10 @@ export abstract class HandlerFrameworkClass extends ClassType {
   /**
    * Builds a code generated Lambda function class.
    */
-  public static buildFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
+  public static buildFunction(
+    scope: HandlerFrameworkModule,
+    props: HandlerFrameworkClassProps
+  ): HandlerFrameworkClass {
     return new (class Function extends HandlerFrameworkClass {
       public constructor() {
         super(scope, {
@@ -127,14 +125,19 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          [
+            'code',
+            $T(LAMBDA_MODULE.Code).fromAsset(
+              PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`))
+            ),
+          ],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime })],
         ]);
         const metadataStatements: Statement[] = [
-          expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
+          expr.directCode(
+            `this.node.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`
+          ),
         ];
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
@@ -150,7 +153,10 @@ export abstract class HandlerFrameworkClass extends ClassType {
   /**
    * Builds a code generated Lambda singleton function class.
    */
-  public static buildSingletonFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
+  public static buildSingletonFunction(
+    scope: HandlerFrameworkModule,
+    props: HandlerFrameworkClassProps
+  ): HandlerFrameworkClass {
     return new (class SingletonFunction extends HandlerFrameworkClass {
       public constructor() {
         super(scope, {
@@ -174,7 +180,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
           type: Type.STRING,
           immutable: true,
           docs: {
-            summary: 'A unique identifier to identify this Lambda.\n\nThe identifier should be unique across all custom resource providers.\nWe recommend generating a UUID per provider.',
+            summary:
+              'A unique identifier to identify this Lambda.\n\nThe identifier should be unique across all custom resource providers.\nWe recommend generating a UUID per provider.',
           },
         };
         const lambdaPurpose: PropertySpec = {
@@ -183,7 +190,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
           immutable: true,
           optional: true,
           docs: {
-            summary: 'A descriptive name for the purpose of this Lambda.\n\nIf the Lambda does not have a physical name, this string will be\nreflected in its generated name. The combination of lambdaPurpose\nand uuid must be unique.',
+            summary:
+              'A descriptive name for the purpose of this Lambda.\n\nIf the Lambda does not have a physical name, this string will be\nreflected in its generated name. The combination of lambdaPurpose\nand uuid must be unique.',
             docTags: {
               default: 'SingletonLambda',
             },
@@ -219,18 +227,30 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          [
+            'code',
+            $T(LAMBDA_MODULE.Code).fromAsset(
+              PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`))
+            ),
+          ],
           ['handler', expr.lit(props.handler)],
-          ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
+          [
+            'runtime',
+            this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider }),
+          ],
         ]);
         const metadataStatements: Statement[] = [
           expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_SINGLETON}', true)`),
-          expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
-          expr.directCode(`if (props?.logGroup) { this.logGroup.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}', true) }`),
+          expr.directCode(
+            `this.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`
+          ),
+          expr.directCode(
+            `if (props?.logGroup) { this.logGroup.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}', true) }`
+          ),
           // We need to access the private `_logRetention` custom resource, the only public property - `logGroup` - provides an ARN reference to the resource, instead of the resource itself.
-          expr.directCode(`if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION}', true) }`),
+          expr.directCode(
+            `if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION}', true) }`
+          ),
         ];
         this.buildConstructor({
           constructorPropsType: _interface.type,
@@ -245,7 +265,10 @@ export abstract class HandlerFrameworkClass extends ClassType {
   /**
    * Builds a code generated custom resource provider class.
    */
-  public static buildCustomResourceProvider(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
+  public static buildCustomResourceProvider(
+    scope: HandlerFrameworkModule,
+    props: HandlerFrameworkClassProps
+  ): HandlerFrameworkClass {
     return new (class CustomResourceProvider extends HandlerFrameworkClass {
       public constructor() {
         super(scope, {
@@ -281,7 +304,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
           static: true,
           returnType: Type.STRING,
           docs: {
-            summary: 'Returns a stack-level singleton ARN (service token) for the custom resource provider.',
+            summary:
+              'Returns a stack-level singleton ARN (service token) for the custom resource provider.',
           },
         });
         getOrCreateMethod.addParameter({
@@ -298,7 +322,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           optional: true,
         });
         getOrCreateMethod.addBody(
-          stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid, props).serviceToken')),
+          stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid, props).serviceToken'))
         );
 
         const getOrCreateProviderMethod = this.addMethod({
@@ -324,20 +348,34 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
-          stmt.constVar(expr.ident('stack'), $T(CORE_MODULE.Stack).of(expr.directCode(_scope.spec.name))),
-          stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
-          stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
+          stmt.constVar(
+            expr.ident('stack'),
+            $T(CORE_MODULE.Stack).of(expr.directCode(_scope.spec.name))
+          ),
+          stmt.constVar(
+            expr.ident('existing'),
+            expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)
+          ),
+          stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`))
         );
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['codeDirectory', PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`))],
-          ['runtimeName', this.buildRuntimeProperty(scope, {
-            runtime: props.runtime,
-            isCustomResourceProvider: true,
-          })],
+          [
+            'codeDirectory',
+            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+          ],
+          [
+            'runtimeName',
+            this.buildRuntimeProperty(scope, {
+              runtime: props.runtime,
+              isCustomResourceProvider: true,
+            }),
+          ],
         ]);
-        const metadataStatements: Statement[] = [expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_PROVIDER}', true)`)];
+        const metadataStatements: Statement[] = [
+          expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_PROVIDER}', true)`),
+        ];
         this.buildConstructor({
           constructorPropsType: CORE_MODULE.CustomResourceProviderOptions,
           superProps,
@@ -395,11 +433,16 @@ export abstract class HandlerFrameworkClass extends ClassType {
     }
   }
 
-  private buildRuntimeProperty(scope: HandlerFrameworkModule, options: BuildRuntimePropertyOptions = {}) {
+  private buildRuntimeProperty(
+    scope: HandlerFrameworkModule,
+    options: BuildRuntimePropertyOptions = {}
+  ) {
     const { runtime, isCustomResourceProvider, isEvalNodejsProvider } = options;
 
     if (runtime) {
-      return isCustomResourceProvider ? expr.lit(runtime) : expr.directCode(toLambdaRuntime(runtime));
+      return isCustomResourceProvider
+        ? expr.lit(runtime)
+        : expr.directCode(toLambdaRuntime(runtime));
     }
 
     if (isCustomResourceProvider) {

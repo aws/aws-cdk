@@ -1,7 +1,11 @@
 import { filterLogicalId, matchSection, formatSectionMatchFailure } from './section';
 import { Template } from './template';
 
-export function findOutputs(template: Template, logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+export function findOutputs(
+  template: Template,
+  logicalId: string,
+  props: any = {}
+): { [key: string]: { [key: string]: any } } {
   const section = template.Outputs ?? {};
   const result = matchSection(filterLogicalId(section, logicalId), props);
 

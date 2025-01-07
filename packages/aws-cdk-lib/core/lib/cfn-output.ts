@@ -60,7 +60,9 @@ export class CfnOutput extends CfnElement {
     } else if (Array.isArray(props.value)) {
       // `props.value` is a string, but because cross-stack exports allow passing any,
       // we need to check for lists here.
-      throw new Error(`CloudFormation output was given a string list instead of a string at path "${this.node.path}"`);
+      throw new Error(
+        `CloudFormation output was given a string list instead of a string at path "${this.node.path}"`
+      );
     }
 
     this._description = props.description;
@@ -147,18 +149,24 @@ export class CfnOutput extends CfnElement {
    */
   public get importValue() {
     // We made _exportName mutable so this will have to be lazy.
-    return Fn.importValue(Lazy.uncachedString({
-      produce: (ctx) => {
-        if (Stack.of(ctx.scope) === this.stack) {
-          throw new Error(`'importValue' property of '${this.node.path}' should only be used in a different Stack`);
-        }
-        if (!this._exportName) {
-          throw new Error(`Add an exportName to the CfnOutput at '${this.node.path}' in order to use 'output.importValue'`);
-        }
+    return Fn.importValue(
+      Lazy.uncachedString({
+        produce: (ctx) => {
+          if (Stack.of(ctx.scope) === this.stack) {
+            throw new Error(
+              `'importValue' property of '${this.node.path}' should only be used in a different Stack`
+            );
+          }
+          if (!this._exportName) {
+            throw new Error(
+              `Add an exportName to the CfnOutput at '${this.node.path}' in order to use 'output.importValue'`
+            );
+          }
 
-        return this._exportName;
-      },
-    }));
+          return this._exportName;
+        },
+      })
+    );
   }
 
   /**
@@ -184,10 +192,14 @@ export class CfnOutput extends CfnElement {
         errors.push('Export name cannot be empty');
       }
       if (this._exportName.length > 255) {
-        errors.push(`Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`);
+        errors.push(
+          `Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`
+        );
       }
       if (!/^[A-Za-z0-9-:]*$/.test(this._exportName)) {
-        errors.push(`Export name must only include alphanumeric characters, colons, or hyphens (got '${this._exportName}')`);
+        errors.push(
+          `Export name must only include alphanumeric characters, colons, or hyphens (got '${this._exportName}')`
+        );
       }
     }
     return errors;
@@ -200,4 +212,3 @@ import { Fn } from './cfn-fn';
 import { Lazy } from './lazy';
 import { Stack } from './stack';
 import { Token } from './token';
-

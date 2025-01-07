@@ -2,7 +2,12 @@ import { format } from 'util';
 import * as chalk from 'chalk';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
-import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
+import {
+  Difference,
+  isPropertyDifference,
+  ResourceDifference,
+  ResourceImpact,
+} from './diff-template';
 import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
@@ -31,12 +36,17 @@ export function formatDifferences(
   stream: FormatStream,
   templateDiff: TemplateDiff,
   logicalToPathMap: { [logicalId: string]: string } = {},
-  context: number = 3) {
+  context: number = 3
+) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
     formatter.printSectionHeader('Template');
-    formatter.formatDifference('AWSTemplateFormatVersion', 'AWSTemplateFormatVersion', templateDiff.awsTemplateFormatVersion);
+    formatter.formatDifference(
+      'AWSTemplateFormatVersion',
+      'AWSTemplateFormatVersion',
+      templateDiff.awsTemplateFormatVersion
+    );
     formatter.formatDifference('Transform', 'Transform', templateDiff.transform);
     formatter.formatDifference('Description', 'Description', templateDiff.description);
     formatter.printSectionFooter();
@@ -48,7 +58,12 @@ export function formatDifferences(
   formatter.formatSection('Metadata', 'Metadata', templateDiff.metadata);
   formatter.formatSection('Mappings', 'Mapping', templateDiff.mappings);
   formatter.formatSection('Conditions', 'Condition', templateDiff.conditions);
-  formatter.formatSection('Resources', 'Resource', templateDiff.resources, formatter.formatResourceDifference.bind(formatter));
+  formatter.formatSection(
+    'Resources',
+    'Resource',
+    templateDiff.resources,
+    formatter.formatResourceDifference.bind(formatter)
+  );
   formatter.formatSection('Outputs', 'Output', templateDiff.outputs);
   formatter.formatSection('Other Changes', 'Unknown', templateDiff.unknown);
 }
@@ -60,18 +75,23 @@ export function formatSecurityChanges(
   stream: NodeJS.WritableStream,
   templateDiff: TemplateDiff,
   logicalToPathMap: { [logicalId: string]: string } = {},
-  context?: number) {
+  context?: number
+) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   formatSecurityChangesWithBanner(formatter, templateDiff);
 }
 
 function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: TemplateDiff) {
-  if (!templateDiff.iamChanges.hasChanges && !templateDiff.securityGroupChanges.hasChanges) { return; }
+  if (!templateDiff.iamChanges.hasChanges && !templateDiff.securityGroupChanges.hasChanges) {
+    return;
+  }
   formatter.formatIamChanges(templateDiff.iamChanges);
   formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
 
-  formatter.warning('(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)');
+  formatter.warning(
+    '(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)'
+  );
   formatter.printSectionFooter();
 }
 
@@ -86,7 +106,8 @@ export class Formatter {
     private readonly stream: FormatStream,
     private readonly logicalToPathMap: { [logicalId: string]: string },
     diff?: TemplateDiff,
-    private readonly context: number = 3) {
+    private readonly context: number = 3
+  ) {
     // Read additional construct paths from the diff if it is supplied
     if (diff) {
       this.readConstructPathsFrom(diff);
@@ -105,8 +126,8 @@ export class Formatter {
     title: string,
     entryType: string,
     collection: DifferenceCollection<V, T>,
-    formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
-
+    formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)
+  ) {
     if (collection.differenceCount === 0) {
       return;
     }
@@ -131,7 +152,9 @@ export class Formatter {
    * @param diff the difference to be rendered.
    */
   public formatDifference(type: string, logicalId: string, diff: Difference<any> | undefined) {
-    if (!diff || !diff.isDifferent) { return; }
+    if (!diff || !diff.isDifferent) {
+      return;
+    }
 
     let value;
 
@@ -145,7 +168,9 @@ export class Formatter {
       value = oldValue;
     }
 
-    this.print(`${this.formatPrefix(diff)} ${chalk.cyan(type)} ${this.formatLogicalId(logicalId)}: ${value}`);
+    this.print(
+      `${this.formatPrefix(diff)} ${chalk.cyan(type)} ${this.formatLogicalId(logicalId)}: ${value}`
+    );
   }
 
   /**
@@ -155,12 +180,16 @@ export class Formatter {
    * @param diff      the change to be rendered.
    */
   public formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference) {
-    if (!diff.isDifferent) { return; }
+    if (!diff.isDifferent) {
+      return;
+    }
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // eslint-disable-next-line max-len
-    this.print(`${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`.trimEnd());
+    this.print(
+      `${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`.trimEnd()
+    );
 
     if (diff.isUpdate) {
       const differenceCount = diff.differenceCount;
@@ -173,15 +202,23 @@ export class Formatter {
   }
 
   public formatResourcePrefix(diff: ResourceDifference) {
-    if (diff.isImport) { return IMPORT; }
+    if (diff.isImport) {
+      return IMPORT;
+    }
 
     return this.formatPrefix(diff);
   }
 
   public formatPrefix<T>(diff: Difference<T>) {
-    if (diff.isAddition) { return ADDITION; }
-    if (diff.isUpdate) { return UPDATE; }
-    if (diff.isRemoval) { return REMOVAL; }
+    if (diff.isAddition) {
+      return ADDITION;
+    }
+    if (diff.isUpdate) {
+      return UPDATE;
+    }
+    if (diff.isRemoval) {
+      return REMOVAL;
+    }
     return chalk.white('[?]');
   }
 
@@ -192,8 +229,12 @@ export class Formatter {
    * @returns the formatted string, with color applied.
    */
   public formatValue(value: any, color: (str: string) => string) {
-    if (value == null) { return undefined; }
-    if (typeof value === 'string') { return color(value); }
+    if (value == null) {
+      return undefined;
+    }
+    if (typeof value === 'string') {
+      return color(value);
+    }
     return color(JSON.stringify(value));
   }
 
@@ -235,7 +276,13 @@ export class Formatter {
         additionalInfo = ' (requires replacement)';
       }
     }
-    this.print(' %s─ %s %s%s', last ? '└' : '├', this.changeTag(diff.oldValue, diff.newValue), name, additionalInfo);
+    this.print(
+      ' %s─ %s %s%s',
+      last ? '└' : '├',
+      this.changeTag(diff.oldValue, diff.newValue),
+      name,
+      additionalInfo
+    );
     return this.formatObjectDiff(diff.oldValue, diff.newValue, ` ${last ? ' ' : '│'}`);
   }
 
@@ -248,7 +295,12 @@ export class Formatter {
    * @param linePrefix a prefix (indent-like) to be used on every line.
    */
   public formatObjectDiff(oldObject: any, newObject: any, linePrefix: string) {
-    if ((typeof oldObject !== typeof newObject) || Array.isArray(oldObject) || typeof oldObject === 'string' || typeof oldObject === 'number') {
+    if (
+      typeof oldObject !== typeof newObject ||
+      Array.isArray(oldObject) ||
+      typeof oldObject === 'string' ||
+      typeof oldObject === 'number'
+    ) {
       if (oldObject !== undefined && newObject !== undefined) {
         if (typeof oldObject === 'object' || typeof newObject === 'object') {
           const oldStr = JSON.stringify(oldObject, null, 2);
@@ -259,30 +311,53 @@ export class Formatter {
           }
         } else {
           this.print('%s   ├─ %s %s', linePrefix, REMOVAL, this.formatValue(oldObject, chalk.red));
-          this.print('%s   └─ %s %s', linePrefix, ADDITION, this.formatValue(newObject, chalk.green));
+          this.print(
+            '%s   └─ %s %s',
+            linePrefix,
+            ADDITION,
+            this.formatValue(newObject, chalk.green)
+          );
         }
       } else if (oldObject !== undefined /* && newObject === undefined */) {
         this.print('%s   └─ %s', linePrefix, this.formatValue(oldObject, chalk.red));
-      } else /* if (oldObject === undefined && newObject !== undefined) */ {
+      } /* if (oldObject === undefined && newObject !== undefined) */ else {
         this.print('%s   └─ %s', linePrefix, this.formatValue(newObject, chalk.green));
       }
       return;
     }
     const keySet = new Set(Object.keys(oldObject));
-    Object.keys(newObject).forEach(k => keySet.add(k));
-    const keys = new Array(...keySet).filter(k => !deepEqual(oldObject[k], newObject[k])).sort();
+    Object.keys(newObject).forEach((k) => keySet.add(k));
+    const keys = new Array(...keySet).filter((k) => !deepEqual(oldObject[k], newObject[k])).sort();
     const lastKey = keys[keys.length - 1];
     for (const key of keys) {
       const oldValue = oldObject[key];
       const newValue = newObject[key];
       const treePrefix = key === lastKey ? '└' : '├';
       if (oldValue !== undefined && newValue !== undefined) {
-        this.print('%s   %s─ %s %s:', linePrefix, treePrefix, this.changeTag(oldValue, newValue), chalk.blue(`.${key}`));
+        this.print(
+          '%s   %s─ %s %s:',
+          linePrefix,
+          treePrefix,
+          this.changeTag(oldValue, newValue),
+          chalk.blue(`.${key}`)
+        );
         this.formatObjectDiff(oldValue, newValue, `${linePrefix}   ${key === lastKey ? ' ' : '│'}`);
       } else if (oldValue !== undefined /* && newValue === undefined */) {
-        this.print('%s   %s─ %s Removed: %s', linePrefix, treePrefix, REMOVAL, chalk.blue(`.${key}`));
-      } else /* if (oldValue === undefined && newValue !== undefined */ {
-        this.print('%s   %s─ %s Added: %s', linePrefix, treePrefix, ADDITION, chalk.blue(`.${key}`));
+        this.print(
+          '%s   %s─ %s Removed: %s',
+          linePrefix,
+          treePrefix,
+          REMOVAL,
+          chalk.blue(`.${key}`)
+        );
+      } /* if (oldValue === undefined && newValue !== undefined */ else {
+        this.print(
+          '%s   %s─ %s Added: %s',
+          linePrefix,
+          treePrefix,
+          ADDITION,
+          chalk.blue(`.${key}`)
+        );
       }
     }
   }
@@ -299,7 +374,7 @@ export class Formatter {
       return UPDATE;
     } else if (oldValue !== undefined /* && newValue === undefined*/) {
       return REMOVAL;
-    } else /* if (oldValue === undefined && newValue !== undefined) */ {
+    } /* if (oldValue === undefined && newValue !== undefined) */ else {
       return ADDITION;
     }
   }
@@ -312,7 +387,9 @@ export class Formatter {
    */
   public readConstructPathsFrom(templateDiff: TemplateDiff) {
     for (const [logicalId, resourceDiff] of Object.entries(templateDiff.resources)) {
-      if (!resourceDiff) { continue; }
+      if (!resourceDiff) {
+        continue;
+      }
 
       const oldPathMetadata = resourceDiff.oldValue?.Metadata?.[PATH_METADATA_KEY];
       if (oldPathMetadata && !(logicalId in this.logicalToPathMap)) {
@@ -371,48 +448,83 @@ export class Formatter {
   }
 
   public formatIamChanges(changes: IamChanges) {
-    if (!changes.hasChanges) { return; }
+    if (!changes.hasChanges) {
+      return;
+    }
 
     if (changes.statements.hasChanges) {
       this.printSectionHeader('IAM Statement Changes');
-      this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeStatements()), this.stream.columns));
+      this.print(
+        formatTable(
+          this.deepSubstituteBracedLogicalIds(changes.summarizeStatements()),
+          this.stream.columns
+        )
+      );
     }
 
     if (changes.managedPolicies.hasChanges) {
       this.printSectionHeader('IAM Policy Changes');
-      this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies()), this.stream.columns));
+      this.print(
+        formatTable(
+          this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies()),
+          this.stream.columns
+        )
+      );
     }
 
-    if (changes.ssoPermissionSets.hasChanges || changes.ssoInstanceACAConfigs.hasChanges || changes.ssoAssignments.hasChanges) {
+    if (
+      changes.ssoPermissionSets.hasChanges ||
+      changes.ssoInstanceACAConfigs.hasChanges ||
+      changes.ssoAssignments.hasChanges
+    ) {
       this.printSectionHeader('IAM Identity Center Changes');
       if (changes.ssoPermissionSets.hasChanges) {
-        this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoPermissionSets()), this.stream.columns));
+        this.print(
+          formatTable(
+            this.deepSubstituteBracedLogicalIds(changes.summarizeSsoPermissionSets()),
+            this.stream.columns
+          )
+        );
       }
       if (changes.ssoInstanceACAConfigs.hasChanges) {
-        this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoInstanceACAConfigs()), this.stream.columns));
+        this.print(
+          formatTable(
+            this.deepSubstituteBracedLogicalIds(changes.summarizeSsoInstanceACAConfigs()),
+            this.stream.columns
+          )
+        );
       }
       if (changes.ssoAssignments.hasChanges) {
-        this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeSsoAssignments()), this.stream.columns));
+        this.print(
+          formatTable(
+            this.deepSubstituteBracedLogicalIds(changes.summarizeSsoAssignments()),
+            this.stream.columns
+          )
+        );
       }
     }
   }
 
   public formatSecurityGroupChanges(changes: SecurityGroupChanges) {
-    if (!changes.hasChanges) { return; }
+    if (!changes.hasChanges) {
+      return;
+    }
 
     this.printSectionHeader('Security Group Changes');
-    this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarize()), this.stream.columns));
+    this.print(
+      formatTable(this.deepSubstituteBracedLogicalIds(changes.summarize()), this.stream.columns)
+    );
   }
 
   public deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
-    return rows.map(row => row.map(this.substituteBracedLogicalIds.bind(this)));
+    return rows.map((row) => row.map(this.substituteBracedLogicalIds.bind(this)));
   }
 
   /**
    * Substitute all strings like ${LogId.xxx} with the path instead of the logical ID
    */
   public substituteBracedLogicalIds(source: string): string {
-    return source.replace(/\$\{([^.}]+)(.[^}]+)?\}/ig, (_match, logId, suffix) => {
+    return source.replace(/\$\{([^.}]+)(.[^}]+)?\}/gi, (_match, logId, suffix) => {
       return '${' + (this.normalizedLogicalIdPath(logId) || logId) + (suffix || '') + '}';
     });
   }
@@ -452,11 +564,15 @@ function _diffStrings(oldStr: string, newStr: string, context: number): string[]
   const patch: Patch = structuredPatch(null, null, oldStr, newStr, null, null, { context });
   const result = new Array<string>();
   for (const hunk of patch.hunks) {
-    result.push(chalk.magenta(`@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@`));
+    result.push(
+      chalk.magenta(`@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@`)
+    );
     const baseIndent = _findIndent(hunk.lines);
     for (const line of hunk.lines) {
       // Don't care about termination newline.
-      if (line === '\\ No newline at end of file') { continue; }
+      if (line === '\\ No newline at end of file') {
+        continue;
+      }
       const marker = line.charAt(0);
       const text = line.slice(1 + baseIndent);
       switch (marker) {

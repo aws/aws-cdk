@@ -52,7 +52,10 @@ export abstract class ModelData {
 }
 
 class S3ModelData extends ModelData {
-  constructor(private readonly bucket: s3.IBucket, private readonly objectKey: string) {
+  constructor(
+    private readonly bucket: s3.IBucket,
+    private readonly objectKey: string
+  ) {
     super();
   }
 
@@ -68,10 +71,15 @@ class S3ModelData extends ModelData {
 class AssetModelData extends ModelData {
   private asset?: assets.Asset;
 
-  constructor(private readonly path: string, private readonly options: assets.AssetOptions) {
+  constructor(
+    private readonly path: string,
+    private readonly options: assets.AssetOptions
+  ) {
     super();
     if (!path.toLowerCase().endsWith(ARTIFACT_EXTENSION)) {
-      throw new Error(`Asset must be a gzipped tar file with extension ${ARTIFACT_EXTENSION} (${this.path})`);
+      throw new Error(
+        `Asset must be a gzipped tar file with extension ${ARTIFACT_EXTENSION} (${this.path})`
+      );
     }
   }
 

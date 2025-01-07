@@ -113,9 +113,13 @@ export class State {
    * @param options transition options including the condition that causes the state transition
    */
   public transitionTo(targetState: State, options: TransitionOptions) {
-    const alreadyAdded = this.transitionEvents.some(transitionEvent => transitionEvent.nextState === targetState);
+    const alreadyAdded = this.transitionEvents.some(
+      (transitionEvent) => transitionEvent.nextState === targetState
+    );
     if (alreadyAdded) {
-      throw new Error(`State '${this.stateName}' already has a transition defined to '${targetState.stateName}'`);
+      throw new Error(
+        `State '${this.stateName}' already has a transition defined to '${targetState.stateName}'`
+      );
     }
 
     this.transitionEvents.push({
@@ -133,7 +137,11 @@ export class State {
    *
    * @internal
    */
-  public _collectStateJsons(scope: Construct, actionBindOptions: ActionBindOptions, collectedStates: Set<State>): CfnDetectorModel.StateProperty[] {
+  public _collectStateJsons(
+    scope: Construct,
+    actionBindOptions: ActionBindOptions,
+    collectedStates: Set<State>
+  ): CfnDetectorModel.StateProperty[] {
     if (collectedStates.has(this)) {
       return [];
     }
@@ -141,8 +149,12 @@ export class State {
 
     return [
       this.toStateJson(scope, actionBindOptions),
-      ...this.transitionEvents.flatMap(transitionEvent => {
-        return transitionEvent.nextState._collectStateJsons(scope, actionBindOptions, collectedStates);
+      ...this.transitionEvents.flatMap((transitionEvent) => {
+        return transitionEvent.nextState._collectStateJsons(
+          scope,
+          actionBindOptions,
+          collectedStates
+        );
       }),
     ];
   }
@@ -153,20 +165,30 @@ export class State {
    * @internal
    */
   public _onEnterEventsHaveAtLeastOneCondition(): boolean {
-    return this.props.onEnter?.some(event => event.condition) ?? false;
+    return this.props.onEnter?.some((event) => event.condition) ?? false;
   }
 
-  private toStateJson(scope: Construct, actionBindOptions: ActionBindOptions): CfnDetectorModel.StateProperty {
+  private toStateJson(
+    scope: Construct,
+    actionBindOptions: ActionBindOptions
+  ): CfnDetectorModel.StateProperty {
     const { onEnter, onInput, onExit } = this.props;
     return {
       stateName: this.stateName,
       onEnter: onEnter && {
         events: toEventsJson(scope, actionBindOptions, onEnter),
       },
-      onInput: (onInput || this.transitionEvents.length !== 0) ? {
-        events: toEventsJson(scope, actionBindOptions, onInput),
-        transitionEvents: toTransitionEventsJson(scope, actionBindOptions, this.transitionEvents),
-      } : undefined,
+      onInput:
+        onInput || this.transitionEvents.length !== 0
+          ? {
+              events: toEventsJson(scope, actionBindOptions, onInput),
+              transitionEvents: toTransitionEventsJson(
+                scope,
+                actionBindOptions,
+                this.transitionEvents
+              ),
+            }
+          : undefined,
       onExit: onExit && {
         events: toEventsJson(scope, actionBindOptions, onExit),
       },
@@ -177,28 +199,30 @@ export class State {
 function toEventsJson(
   scope: Construct,
   actionBindOptions: ActionBindOptions,
-  events?: Event[],
+  events?: Event[]
 ): CfnDetectorModel.EventProperty[] | undefined {
-  return events?.map(event => ({
+  return events?.map((event) => ({
     eventName: event.eventName,
     condition: event.condition?.evaluate(),
-    actions: event.actions?.map(action => action._bind(scope, actionBindOptions).configuration),
+    actions: event.actions?.map((action) => action._bind(scope, actionBindOptions).configuration),
   }));
 }
 
 function toTransitionEventsJson(
   scope: Construct,
   actionBindOptions: ActionBindOptions,
-  transitionEvents: TransitionEvent[],
+  transitionEvents: TransitionEvent[]
 ): CfnDetectorModel.TransitionEventProperty[] | undefined {
   if (transitionEvents.length === 0) {
     return undefined;
   }
 
-  return transitionEvents.map(transitionEvent => ({
+  return transitionEvents.map((transitionEvent) => ({
     eventName: transitionEvent.eventName,
     condition: transitionEvent.condition.evaluate(),
-    actions: transitionEvent.actions?.map(action => action._bind(scope, actionBindOptions).configuration),
+    actions: transitionEvent.actions?.map(
+      (action) => action._bind(scope, actionBindOptions).configuration
+    ),
     nextState: transitionEvent.nextState.stateName,
   }));
 }

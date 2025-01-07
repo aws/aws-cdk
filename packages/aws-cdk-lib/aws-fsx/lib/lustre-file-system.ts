@@ -1,6 +1,12 @@
 import { Construct } from 'constructs';
 import { DailyAutomaticBackupStartTime } from './daily-automatic-backup-start-time';
-import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem, StorageType } from './file-system';
+import {
+  FileSystemAttributes,
+  FileSystemBase,
+  FileSystemProps,
+  IFileSystem,
+  StorageType,
+} from './file-system';
 import { CfnFileSystem } from './fsx.generated';
 import { LustreMaintenanceTime } from './maintenance-time';
 import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
@@ -86,17 +92,17 @@ export enum DriveCacheType {
 }
 
 /**
-  * The permitted Lustre data compression algorithms
-*/
+ * The permitted Lustre data compression algorithms
+ */
 export enum LustreDataCompressionType {
   /**
-  *
-  * `NONE` - (Default) Data compression is turned off when the file system is created.
-  */
+   *
+   * `NONE` - (Default) Data compression is turned off when the file system is created.
+   */
   NONE = 'NONE',
   /**
-  * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
-  */
+   * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
+   */
   LZ4 = 'LZ4',
 }
 
@@ -249,11 +255,14 @@ export interface LustreFileSystemProps extends FileSystemProps {
  * @resource AWS::FSx::FileSystem
  */
 export class LustreFileSystem extends FileSystemBase {
-
   /**
    * Import an existing FSx for Lustre file system from the given properties.
    */
-  public static fromLustreFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
+  public static fromLustreFileSystemAttributes(
+    scope: Construct,
+    id: string,
+    attrs: FileSystemAttributes
+  ): IFileSystem {
     class Import extends FileSystemBase {
       public readonly dnsName = attrs.dnsName;
       public readonly fileSystemId = attrs.fileSystemId;
@@ -281,7 +290,8 @@ export class LustreFileSystem extends FileSystemBase {
       securityGroups: [securityGroup],
       defaultPort: Port.tcpRange(
         LustreFileSystem.DEFAULT_PORT_RANGE.startPort,
-        LustreFileSystem.DEFAULT_PORT_RANGE.endPort),
+        LustreFileSystem.DEFAULT_PORT_RANGE.endPort
+      ),
     });
 
     return connections;
@@ -321,26 +331,36 @@ export class LustreFileSystem extends FileSystemBase {
 
     const updatedLustureProps = {
       importedFileChunkSize: props.lustreConfiguration.importedFileChunkSizeMiB,
-      weeklyMaintenanceStartTime: props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
+      weeklyMaintenanceStartTime:
+        props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
       automaticBackupRetentionDays: props.lustreConfiguration.automaticBackupRetention?.toDays(),
-      dailyAutomaticBackupStartTime: props.lustreConfiguration.dailyAutomaticBackupStartTime?.toTimestamp(),
-      driveCacheType: props.lustreConfiguration.driveCacheType ?? (props.storageType === StorageType.HDD ? DriveCacheType.NONE : undefined),
+      dailyAutomaticBackupStartTime:
+        props.lustreConfiguration.dailyAutomaticBackupStartTime?.toTimestamp(),
+      driveCacheType:
+        props.lustreConfiguration.driveCacheType ??
+        (props.storageType === StorageType.HDD ? DriveCacheType.NONE : undefined),
     };
     const lustreConfiguration = Object.assign({}, props.lustreConfiguration, updatedLustureProps);
 
-    const securityGroup = (props.securityGroup || new SecurityGroup(this, 'FsxLustreSecurityGroup', {
-      vpc: props.vpc,
-    }));
+    const securityGroup =
+      props.securityGroup ||
+      new SecurityGroup(this, 'FsxLustreSecurityGroup', {
+        vpc: props.vpc,
+      });
     securityGroup.addIngressRule(
       securityGroup,
-      Port.tcpRange(LustreFileSystem.DEFAULT_PORT_RANGE.startPort, LustreFileSystem.DEFAULT_PORT_RANGE.endPort));
+      Port.tcpRange(
+        LustreFileSystem.DEFAULT_PORT_RANGE.startPort,
+        LustreFileSystem.DEFAULT_PORT_RANGE.endPort
+      )
+    );
     this.connections = LustreFileSystem.configureConnections(securityGroup);
 
     this.fileSystem = new CfnFileSystem(this, 'Resource', {
       fileSystemType: LustreFileSystem.DEFAULT_FILE_SYSTEM_TYPE,
       subnetIds: [props.vpcSubnet.subnetId],
       backupId: props.backupId,
-      kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
+      kmsKeyId: props.kmsKey ? props.kmsKey.keyId : undefined,
       lustreConfiguration,
       securityGroupIds: [securityGroup.securityGroupId],
       storageCapacity: props.storageCapacityGiB,
@@ -367,51 +387,93 @@ export class LustreFileSystem extends FileSystemBase {
     this.validateExportPath(lustreConfiguration.exportPath, lustreConfiguration.importPath);
 
     this.validateImportedFileChunkSize(lustreConfiguration.importedFileChunkSizeMiB);
-    this.validateAutoImportPolicy(deploymentType, lustreConfiguration.importPath, lustreConfiguration.autoImportPolicy);
+    this.validateAutoImportPolicy(
+      deploymentType,
+      lustreConfiguration.importPath,
+      lustreConfiguration.autoImportPolicy
+    );
 
-    this.validateAutomaticBackupRetention(deploymentType, lustreConfiguration.automaticBackupRetention);
+    this.validateAutomaticBackupRetention(
+      deploymentType,
+      lustreConfiguration.automaticBackupRetention
+    );
 
-    this.validateDailyAutomaticBackupStartTime(lustreConfiguration.automaticBackupRetention, lustreConfiguration.dailyAutomaticBackupStartTime);
-    this.validatePerUnitStorageThroughput(deploymentType, perUnitStorageThroughput, props.storageType);
-    this.validateStorageCapacity(deploymentType, props.storageCapacityGiB, props.storageType, perUnitStorageThroughput);
+    this.validateDailyAutomaticBackupStartTime(
+      lustreConfiguration.automaticBackupRetention,
+      lustreConfiguration.dailyAutomaticBackupStartTime
+    );
+    this.validatePerUnitStorageThroughput(
+      deploymentType,
+      perUnitStorageThroughput,
+      props.storageType
+    );
+    this.validateStorageCapacity(
+      deploymentType,
+      props.storageCapacityGiB,
+      props.storageType,
+      perUnitStorageThroughput
+    );
     this.validateStorageType(deploymentType, props.storageType);
-    this.validateDriveCacheType(deploymentType, props.storageType, lustreConfiguration.driveCacheType);
+    this.validateDriveCacheType(
+      deploymentType,
+      props.storageType,
+      lustreConfiguration.driveCacheType
+    );
     this.validateFiileSystemTypeVersion(deploymentType, props.fileSystemTypeVersion);
   }
 
   /**
    * Validates the drive cache type is only set for the PERSISTENT_1 deployment type and HDD storage type.
    */
-  private validateDriveCacheType(deploymentType: LustreDeploymentType, storageType?: StorageType, driveCacheType?: DriveCacheType): void {
+  private validateDriveCacheType(
+    deploymentType: LustreDeploymentType,
+    storageType?: StorageType,
+    driveCacheType?: DriveCacheType
+  ): void {
     if (!driveCacheType) return;
 
     if (deploymentType !== LustreDeploymentType.PERSISTENT_1 || storageType !== StorageType.HDD) {
-      throw new Error(`driveCacheType can only be set for PERSISTENT_1 HDD storage type, got: ${deploymentType} and ${storageType}`);
+      throw new Error(
+        `driveCacheType can only be set for PERSISTENT_1 HDD storage type, got: ${deploymentType} and ${storageType}`
+      );
     }
   }
 
   /**
    * Validates if the storage type corresponds to the appropriate deployment type.
    */
-  private validateStorageType(deploymentType: LustreDeploymentType, storageType?: StorageType): void {
+  private validateStorageType(
+    deploymentType: LustreDeploymentType,
+    storageType?: StorageType
+  ): void {
     if (!storageType) return;
 
     if (storageType === StorageType.HDD && deploymentType !== LustreDeploymentType.PERSISTENT_1) {
-      throw new Error(`Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`);
+      throw new Error(
+        `Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`
+      );
     }
   }
 
   /**
    * Validates the file system type version
    */
-  private validateFiileSystemTypeVersion(deploymentType: LustreDeploymentType, fileSystemTypeVersion?: FileSystemTypeVersion): void {
+  private validateFiileSystemTypeVersion(
+    deploymentType: LustreDeploymentType,
+    fileSystemTypeVersion?: FileSystemTypeVersion
+  ): void {
     if (fileSystemTypeVersion === undefined) {
       return;
     }
 
     if (fileSystemTypeVersion === FileSystemTypeVersion.V_2_10) {
-      if (!deploymentType.startsWith('SCRATCH') && deploymentType !== LustreDeploymentType.PERSISTENT_1) {
-        throw new Error('fileSystemTypeVersion V_2_10 is only supported for SCRATCH and PERSISTENT_1 deployment types');
+      if (
+        !deploymentType.startsWith('SCRATCH') &&
+        deploymentType !== LustreDeploymentType.PERSISTENT_1
+      ) {
+        throw new Error(
+          'fileSystemTypeVersion V_2_10 is only supported for SCRATCH and PERSISTENT_1 deployment types'
+        );
       }
     }
 
@@ -421,8 +483,14 @@ export class LustreFileSystem extends FileSystemBase {
   /**
    * Validates the auto import policy
    */
-  private validateAutoImportPolicy(deploymentType: LustreDeploymentType, importPath?: string, autoImportPolicy?: LustreAutoImportPolicy): void {
-    if (autoImportPolicy === undefined) { return; }
+  private validateAutoImportPolicy(
+    deploymentType: LustreDeploymentType,
+    importPath?: string,
+    autoImportPolicy?: LustreAutoImportPolicy
+  ): void {
+    if (autoImportPolicy === undefined) {
+      return;
+    }
     if (importPath === undefined) {
       throw new Error('autoImportPolicy requires importPath to be defined');
     }
@@ -435,21 +503,31 @@ export class LustreFileSystem extends FileSystemBase {
    * Validates the export path is in the correct format and matches the import path.
    */
   private validateExportPath(exportPath?: string, importPath?: string): void {
-    if (exportPath === undefined) { return; }
+    if (exportPath === undefined) {
+      return;
+    }
     if (importPath === undefined) {
       throw new Error('Cannot define an export path without also defining an import path');
     }
 
-    if (Token.isUnresolved(exportPath) && Token.isUnresolved(importPath)) { return; }
+    if (Token.isUnresolved(exportPath) && Token.isUnresolved(importPath)) {
+      return;
+    }
 
     if (Token.isUnresolved(importPath) !== Token.isUnresolved(exportPath)) {
-      throw new Error('The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix');
+      throw new Error(
+        'The importPath and exportPath must each be Tokens or not Tokens, you cannot use a mix'
+      );
     }
     if (!exportPath.startsWith(importPath)) {
-      throw new Error(`The export path "${exportPath}" is invalid. Expecting the format: s3://{IMPORT_PATH}/optional-prefix`);
+      throw new Error(
+        `The export path "${exportPath}" is invalid. Expecting the format: s3://{IMPORT_PATH}/optional-prefix`
+      );
     }
     if (exportPath.length > 900) {
-      throw new Error(`The export path "${exportPath}" exceeds the maximum length of 900 characters`);
+      throw new Error(
+        `The export path "${exportPath}" exceeds the maximum length of 900 characters`
+      );
     }
   }
 
@@ -457,10 +535,14 @@ export class LustreFileSystem extends FileSystemBase {
    * Validates the importedFileChunkSize is in the correct range.
    */
   private validateImportedFileChunkSize(importedFileChunkSize?: number): void {
-    if (importedFileChunkSize === undefined) { return; }
+    if (importedFileChunkSize === undefined) {
+      return;
+    }
 
     if (importedFileChunkSize < 1 || importedFileChunkSize > 512000) {
-      throw new Error(`importedFileChunkSize cannot be ${importedFileChunkSize} MiB. It must be a value from 1 to 512,000 MiB`);
+      throw new Error(
+        `importedFileChunkSize cannot be ${importedFileChunkSize} MiB. It must be a value from 1 to 512,000 MiB`
+      );
     }
   }
 
@@ -468,15 +550,21 @@ export class LustreFileSystem extends FileSystemBase {
    * Validates the import path is the correct format.
    */
   private validateImportPath(importPath?: string): void {
-    if (importPath === undefined || Token.isUnresolved(importPath)) { return; }
+    if (importPath === undefined || Token.isUnresolved(importPath)) {
+      return;
+    }
 
     const regexp = /^s3:\/\//;
 
     if (importPath.search(regexp) === -1) {
-      throw new Error(`The import path "${importPath}" is invalid. Expecting the format: s3://{BUCKET_NAME}/optional-prefix`);
+      throw new Error(
+        `The import path "${importPath}" is invalid. Expecting the format: s3://{BUCKET_NAME}/optional-prefix`
+      );
     }
     if (importPath.length > 900) {
-      throw new Error(`The import path "${importPath}" exceeds the maximum length of 900 characters`);
+      throw new Error(
+        `The import path "${importPath}" exceeds the maximum length of 900 characters`
+      );
     }
   }
 
@@ -488,26 +576,44 @@ export class LustreFileSystem extends FileSystemBase {
   private validatePerUnitStorageThroughput(
     deploymentType: LustreDeploymentType,
     perUnitStorageThroughput?: number,
-    storageType?: StorageType,
+    storageType?: StorageType
   ): void {
-    if (perUnitStorageThroughput === undefined) { return; }
+    if (perUnitStorageThroughput === undefined) {
+      return;
+    }
 
-    if (deploymentType !== LustreDeploymentType.PERSISTENT_1 && deploymentType !== LustreDeploymentType.PERSISTENT_2) {
-      throw new Error('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types, received: ' + deploymentType);
+    if (
+      deploymentType !== LustreDeploymentType.PERSISTENT_1 &&
+      deploymentType !== LustreDeploymentType.PERSISTENT_2
+    ) {
+      throw new Error(
+        'perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types, received: ' +
+          deploymentType
+      );
     }
 
     if (deploymentType === LustreDeploymentType.PERSISTENT_1) {
       if (storageType === StorageType.HDD && ![12, 40].includes(perUnitStorageThroughput)) {
-        throw new Error(`perUnitStorageThroughput must be 12 or 40 MB/s/TiB for PERSISTENT_1 HDD storage, got: ${perUnitStorageThroughput}`);
+        throw new Error(
+          `perUnitStorageThroughput must be 12 or 40 MB/s/TiB for PERSISTENT_1 HDD storage, got: ${perUnitStorageThroughput}`
+        );
       }
-      if ((storageType === undefined || storageType === StorageType.SSD) && ![50, 100, 200].includes(perUnitStorageThroughput)) {
-        throw new Error('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 SSD storage, got: ' + perUnitStorageThroughput);
+      if (
+        (storageType === undefined || storageType === StorageType.SSD) &&
+        ![50, 100, 200].includes(perUnitStorageThroughput)
+      ) {
+        throw new Error(
+          'perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 SSD storage, got: ' +
+            perUnitStorageThroughput
+        );
       }
     }
 
     if (deploymentType === LustreDeploymentType.PERSISTENT_2) {
       if (![125, 250, 500, 1000].includes(perUnitStorageThroughput)) {
-        throw new Error(`perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ${perUnitStorageThroughput}`);
+        throw new Error(
+          `perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ${perUnitStorageThroughput}`
+        );
       }
     }
   }
@@ -521,34 +627,44 @@ export class LustreFileSystem extends FileSystemBase {
     deploymentType: LustreDeploymentType,
     storageCapacity: number,
     storageType?: StorageType,
-    perUnitStorageThroughput?: number,
+    perUnitStorageThroughput?: number
   ): void {
     if (deploymentType === LustreDeploymentType.SCRATCH_1) {
       if (![1200, 2400, 3600].includes(storageCapacity) && storageCapacity % 3600 !== 0) {
-        throw new Error(`storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600 for SCRATCH_1 deployment type, got ${storageCapacity}.`);
+        throw new Error(
+          `storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600 for SCRATCH_1 deployment type, got ${storageCapacity}.`
+        );
       }
     }
 
     if (
-      deploymentType === LustreDeploymentType.PERSISTENT_2
-      || deploymentType === LustreDeploymentType.SCRATCH_2
+      deploymentType === LustreDeploymentType.PERSISTENT_2 ||
+      deploymentType === LustreDeploymentType.SCRATCH_2
     ) {
       if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
-        throw new Error(`storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for SCRATCH_2 and PERSISTENT_2 deployment types, got ${storageCapacity}`);
+        throw new Error(
+          `storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for SCRATCH_2 and PERSISTENT_2 deployment types, got ${storageCapacity}`
+        );
       }
     }
 
     if (deploymentType === LustreDeploymentType.PERSISTENT_1) {
       if (storageType === StorageType.HDD) {
         if (perUnitStorageThroughput === 12 && storageCapacity % 6000 !== 0) {
-          throw new Error(`storageCapacity must be a multiple of 6,000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput, got ${storageCapacity}`);
+          throw new Error(
+            `storageCapacity must be a multiple of 6,000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput, got ${storageCapacity}`
+          );
         }
         if (perUnitStorageThroughput === 40 && storageCapacity % 1800 !== 0) {
-          throw new Error(`storageCapacity must be a multiple of 1,800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput, got ${storageCapacity}`);
+          throw new Error(
+            `storageCapacity must be a multiple of 1,800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput, got ${storageCapacity}`
+          );
         }
       } else {
         if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
-          throw new Error(`storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for PERSISTENT_1 SSD storage, got ${storageCapacity}`);
+          throw new Error(
+            `storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for PERSISTENT_1 SSD storage, got ${storageCapacity}`
+          );
         }
       }
     }
@@ -557,16 +673,24 @@ export class LustreFileSystem extends FileSystemBase {
   /**
    * Validates the automaticBackupRetention with a non-scratch deployment class and an acceptable day value.
    */
-  private validateAutomaticBackupRetention(deploymentType: LustreDeploymentType, automaticBackupRetention?: Duration): void {
+  private validateAutomaticBackupRetention(
+    deploymentType: LustreDeploymentType,
+    automaticBackupRetention?: Duration
+  ): void {
     if (automaticBackupRetention) {
       const automaticBackupRetentionDays = automaticBackupRetention.toDays();
 
-      if ([LustreDeploymentType.SCRATCH_1, LustreDeploymentType.SCRATCH_2].includes(deploymentType) && automaticBackupRetentionDays > 0) {
+      if (
+        [LustreDeploymentType.SCRATCH_1, LustreDeploymentType.SCRATCH_2].includes(deploymentType) &&
+        automaticBackupRetentionDays > 0
+      ) {
         throw new Error('automatic backups is not supported on scratch file systems');
       }
 
       if (automaticBackupRetentionDays > 90) {
-        throw new Error(`automaticBackupRetention period must be between 0 and 90 days. received: ${automaticBackupRetentionDays}`);
+        throw new Error(
+          `automaticBackupRetention period must be between 0 and 90 days. received: ${automaticBackupRetentionDays}`
+        );
       }
     }
   }
@@ -574,15 +698,19 @@ export class LustreFileSystem extends FileSystemBase {
   /**
    * Validates the dailyAutomaticBackupStartTime is set with a non-zero day automaticBackupRetention.
    */
-  private validateDailyAutomaticBackupStartTime(automaticBackupRetention?: Duration,
-    dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime): void {
+  private validateDailyAutomaticBackupStartTime(
+    automaticBackupRetention?: Duration,
+    dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime
+  ): void {
     if (!dailyAutomaticBackupStartTime) return;
 
-    const automaticBackupDisabled = !automaticBackupRetention || automaticBackupRetention?.toDays() === Duration.days(0).toDays();
+    const automaticBackupDisabled =
+      !automaticBackupRetention || automaticBackupRetention?.toDays() === Duration.days(0).toDays();
 
     if (dailyAutomaticBackupStartTime && automaticBackupDisabled) {
-      throw new Error('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
+      throw new Error(
+        'automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set'
+      );
     }
-
   }
 }

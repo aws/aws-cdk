@@ -27,7 +27,9 @@ export abstract class Schedule {
     if (duration.isUnresolved()) {
       const validDurationUnit = ['minute', 'minutes', 'hour', 'hours', 'day', 'days'];
       if (validDurationUnit.indexOf(duration.unitLabel()) === -1) {
-        throw new Error("Allowed units for scheduling are: 'minute', 'minutes', 'hour', 'hours', 'day', 'days'");
+        throw new Error(
+          "Allowed units for scheduling are: 'minute', 'minutes', 'hour', 'hours', 'day', 'days'"
+        );
       }
       return new LiteralSchedule(`rate(${duration.formatTokenToNumber()})`);
     }
@@ -36,8 +38,12 @@ export abstract class Schedule {
     }
 
     let rate = maybeRate(duration.toDays({ integral: false }), 'day');
-    if (rate === undefined) { rate = maybeRate(duration.toHours({ integral: false }), 'hour'); }
-    if (rate === undefined) { rate = makeRate(duration.toMinutes({ integral: true }), 'minute'); }
+    if (rate === undefined) {
+      rate = maybeRate(duration.toHours({ integral: false }), 'hour');
+    }
+    if (rate === undefined) {
+      rate = makeRate(duration.toMinutes({ integral: true }), 'minute');
+    }
     return new LiteralSchedule(rate);
   }
 
@@ -46,7 +52,7 @@ export abstract class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new Error("Cannot supply both 'day' and 'weekDay', use at most one");
     }
 
     const minute = fallback(options.minute, '*');
@@ -58,15 +64,18 @@ export abstract class Schedule {
     const day = fallback(options.day, options.weekDay !== undefined ? '?' : '*');
     const weekDay = fallback(options.weekDay, '?');
 
-    return new class extends Schedule {
+    return new (class extends Schedule {
       public readonly expressionString: string = `cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`;
       public _bind(scope: Construct) {
         if (!options.minute) {
-          Annotations.of(scope).addWarningV2('@aws-cdk/aws-events:scheduleWillRunEveryMinute', 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
+          Annotations.of(scope).addWarningV2(
+            '@aws-cdk/aws-events:scheduleWillRunEveryMinute',
+            "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead."
+          );
         }
         return new LiteralSchedule(this.expressionString);
       }
-    };
+    })();
   }
 
   /**
@@ -151,7 +160,9 @@ function fallback<T>(x: T | undefined, def: T): T {
  * Return the rate if the rate is whole number
  */
 function maybeRate(interval: number, singular: string) {
-  if (interval === 0 || !Number.isInteger(interval)) { return undefined; }
+  if (interval === 0 || !Number.isInteger(interval)) {
+    return undefined;
+  }
   return makeRate(interval, singular);
 }
 

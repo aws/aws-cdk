@@ -1,4 +1,9 @@
-import { EnrichmentParametersConfig, IEnrichment, IPipe, InputTransformation } from '@aws-cdk/aws-pipes-alpha';
+import {
+  EnrichmentParametersConfig,
+  IEnrichment,
+  IPipe,
+  InputTransformation,
+} from '@aws-cdk/aws-pipes-alpha';
 import { IApiDestination } from 'aws-cdk-lib/aws-events';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
@@ -47,7 +52,10 @@ export class ApiDestinationEnrichment implements IEnrichment {
   private readonly pathParameterValues?: string[];
   private readonly queryStringParameters?: Record<string, string>;
 
-  constructor(private readonly destination: IApiDestination, props?: ApiDestinationEnrichmentProps) {
+  constructor(
+    private readonly destination: IApiDestination,
+    props?: ApiDestinationEnrichmentProps
+  ) {
     this.enrichmentArn = destination.apiDestinationArn;
     this.inputTransformation = props?.inputTransformation;
     this.headerParameters = props?.headerParameters;
@@ -56,16 +64,13 @@ export class ApiDestinationEnrichment implements IEnrichment {
   }
 
   bind(pipe: IPipe): EnrichmentParametersConfig {
-
     const httpParameters: CfnPipe.PipeEnrichmentHttpParametersProperty | undefined =
-      this.headerParameters ??
-        this.pathParameterValues ??
-        this.queryStringParameters
+      (this.headerParameters ?? this.pathParameterValues ?? this.queryStringParameters)
         ? {
-          headerParameters: this.headerParameters,
-          pathParameterValues: this.pathParameterValues,
-          queryStringParameters: this.queryStringParameters,
-        }
+            headerParameters: this.headerParameters,
+            pathParameterValues: this.pathParameterValues,
+            queryStringParameters: this.queryStringParameters,
+          }
         : undefined;
 
     return {
@@ -77,10 +82,11 @@ export class ApiDestinationEnrichment implements IEnrichment {
   }
 
   grantInvoke(pipeRole: IRole): void {
-    pipeRole.addToPrincipalPolicy(new PolicyStatement({
-      resources: [this.destination.apiDestinationArn],
-      actions: ['events:InvokeApiDestination'],
-    }));
+    pipeRole.addToPrincipalPolicy(
+      new PolicyStatement({
+        resources: [this.destination.apiDestinationArn],
+        actions: ['events:InvokeApiDestination'],
+      })
+    );
   }
 }
-

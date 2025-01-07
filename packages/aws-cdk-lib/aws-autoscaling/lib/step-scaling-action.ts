@@ -76,13 +76,17 @@ export class StepScalingAction extends Construct {
     // in certain regions. We can't simply remove the property since it break existing users. Since setting
     // this value is ineffective, we can safely ignore the value of this property with a warning.
     if (props.cooldown) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-autoscaling:cooldownOnStepScaling', '\'Cooldown\' is valid only if the policy type is SimpleScaling. Default to ignore the values set.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-autoscaling:cooldownOnStepScaling',
+        "'Cooldown' is valid only if the policy type is SimpleScaling. Default to ignore the values set."
+      );
     }
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'StepScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
-      estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
+      estimatedInstanceWarmup:
+        props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,
       metricAggregationType: props.metricAggregationType,

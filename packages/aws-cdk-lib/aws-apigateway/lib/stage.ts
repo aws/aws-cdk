@@ -348,7 +348,10 @@ export abstract class StageBase extends Resource implements IStage {
     return this.cannedMetric(ApiGatewayMetrics.latencyAverage, props);
   }
 
-  private cannedMetric(fn: (dims: { ApiName: string; Stage: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions) {
+  private cannedMetric(
+    fn: (dims: { ApiName: string; Stage: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions
+  ) {
     return new cloudwatch.Metric({
       ...fn({ ApiName: this.restApi.restApiName, Stage: this.stageName }),
       ...props,
@@ -387,11 +390,14 @@ export class Stage extends StageBase {
     if (!accessLogDestination && !accessLogFormat) {
       accessLogSetting = undefined;
     } else {
-      if (accessLogFormat !== undefined &&
+      if (
+        accessLogFormat !== undefined &&
         !Token.isUnresolved(accessLogFormat.toString()) &&
-        !/.*\$context.(requestId|extendedRequestId)\b.*/.test(accessLogFormat.toString())) {
-
-        throw new Error('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+        !/.*\$context.(requestId|extendedRequestId)\b.*/.test(accessLogFormat.toString())
+      ) {
+        throw new Error(
+          'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`'
+        );
       }
       if (accessLogFormat !== undefined && accessLogDestination === undefined) {
         throw new Error('Access log format is specified without a destination');
@@ -399,7 +405,9 @@ export class Stage extends StageBase {
 
       accessLogSetting = {
         destinationArn: accessLogDestination?.bind(this).destinationArn,
-        format: accessLogFormat?.toString() ? accessLogFormat?.toString() : AccessLogFormat.clf().toString(),
+        format: accessLogFormat?.toString()
+          ? accessLogFormat?.toString()
+          : AccessLogFormat.clf().toString(),
       };
     }
 
@@ -408,11 +416,13 @@ export class Stage extends StageBase {
       if (this.enableCacheCluster === undefined) {
         this.enableCacheCluster = true;
       } else if (this.enableCacheCluster === false) {
-        throw new Error(`Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`);
+        throw new Error(
+          `Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`
+        );
       }
     }
 
-    const cacheClusterSize = this.enableCacheCluster ? (props.cacheClusterSize || '0.5') : undefined;
+    const cacheClusterSize = this.enableCacheCluster ? props.cacheClusterSize || '0.5' : undefined;
     const resource = new CfnStage(this, 'Resource', {
       stageName: props.stageName || 'prod',
       accessLogSetting,
@@ -453,7 +463,10 @@ export class Stage extends StageBase {
     };
 
     // if any of them are defined, add an entry for '/*/*'.
-    const hasCommonOptions = Object.keys(commonMethodOptions).map(v => (commonMethodOptions as any)[v]).filter(x => x !== undefined).length > 0;
+    const hasCommonOptions =
+      Object.keys(commonMethodOptions)
+        .map((v) => (commonMethodOptions as any)[v])
+        .filter((x) => x !== undefined).length > 0;
     if (hasCommonOptions) {
       settings.push(renderEntry('/*/*', commonMethodOptions));
     }
@@ -466,12 +479,17 @@ export class Stage extends StageBase {
 
     return settings.length === 0 ? undefined : settings;
 
-    function renderEntry(path: string, options: MethodDeploymentOptions): CfnStage.MethodSettingProperty {
+    function renderEntry(
+      path: string,
+      options: MethodDeploymentOptions
+    ): CfnStage.MethodSettingProperty {
       if (options.cachingEnabled) {
         if (self.enableCacheCluster === undefined) {
           self.enableCacheCluster = true;
         } else if (self.enableCacheCluster === false) {
-          throw new Error(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`);
+          throw new Error(
+            `Cannot enable caching for method ${path} since cache cluster is disabled on stage`
+          );
         }
       }
 

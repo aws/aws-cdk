@@ -60,10 +60,14 @@ export class BasePathMapping extends Resource {
         throw new Error(`A base path cannot start or end with /", received: ${props.basePath}`);
       }
       if (props.basePath.match(/\/{2,}/)) {
-        throw new Error(`A base path cannot have more than one consecutive /", received: ${props.basePath}`);
+        throw new Error(
+          `A base path cannot have more than one consecutive /", received: ${props.basePath}`
+        );
       }
       if (!props.basePath.match(/^[a-zA-Z0-9$_.+!*'()-/]+$/)) {
-        throw new Error(`A base path may only contain letters, numbers, and one of "$-_.+!*'()/", received: ${props.basePath}`);
+        throw new Error(
+          `A base path may only contain letters, numbers, and one of "$-_.+!*'()/", received: ${props.basePath}`
+        );
       }
     }
 
@@ -72,9 +76,11 @@ export class BasePathMapping extends Resource {
     // if restApi is an owned API and it has a deployment stage, map all requests
     // to that stage. otherwise, the stage will have to be specified in the URL.
     // if props.attachToStage is false, then do not attach to the stage.
-    const stage = props.stage ?? (props.restApi instanceof RestApiBase && attachToStage
-      ? props.restApi.deploymentStage
-      : undefined);
+    const stage =
+      props.stage ??
+      (props.restApi instanceof RestApiBase && attachToStage
+        ? props.restApi.deploymentStage
+        : undefined);
 
     new CfnBasePathMapping(this, 'Resource', {
       basePath: props.basePath,

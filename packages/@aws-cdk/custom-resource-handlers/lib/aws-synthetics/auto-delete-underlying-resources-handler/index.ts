@@ -21,7 +21,7 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
     case 'Delete':
       return onDelete(event.ResourceProperties?.CanaryName);
   }
-};
+}
 
 async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
@@ -43,9 +43,11 @@ async function onDelete(canaryName: string) {
   }
 
   try {
-    const response = (await synthetics.send(new GetCanaryCommand({
-      Name: canaryName,
-    })));
+    const response = await synthetics.send(
+      new GetCanaryCommand({
+        Name: canaryName,
+      })
+    );
 
     // Unlikely to happen but here so I don't have to write '?' everywhere
     if (response.Canary === undefined || response.Canary.Id === undefined) {
@@ -57,7 +59,9 @@ async function onDelete(canaryName: string) {
     }
 
     if (!isCanaryTaggedForDeletion(response.Canary.Tags)) {
-      console.log(`Canary does not have '${AUTO_DELETE_UNDERLYING_RESOURCES_TAG}' tag, skipping deletion.`);
+      console.log(
+        `Canary does not have '${AUTO_DELETE_UNDERLYING_RESOURCES_TAG}' tag, skipping deletion.`
+      );
       return;
     }
 
@@ -70,9 +74,11 @@ async function onDelete(canaryName: string) {
     const unqualifedFunctionArn = qualifiedFunctionArnComponents.join(':');
     console.log(`Deleting lambda ${unqualifedFunctionArn}`);
 
-    await lambda.send(new DeleteFunctionCommand({
-      FunctionName: unqualifedFunctionArn,
-    }));
+    await lambda.send(
+      new DeleteFunctionCommand({
+        FunctionName: unqualifedFunctionArn,
+      })
+    );
   } catch (error: any) {
     if (error.name !== 'ResourceNotFoundException') {
       throw error;
@@ -91,5 +97,7 @@ async function onDelete(canaryName: string) {
  */
 function isCanaryTaggedForDeletion(tags?: Record<string, string>): boolean {
   if (!tags) return false;
-  return Object.keys(tags).some((tag) => tag === AUTO_DELETE_UNDERLYING_RESOURCES_TAG && tags[tag] === 'true');
+  return Object.keys(tags).some(
+    (tag) => tag === AUTO_DELETE_UNDERLYING_RESOURCES_TAG && tags[tag] === 'true'
+  );
 }

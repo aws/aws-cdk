@@ -47,7 +47,6 @@ export interface LambdaAuthorizerProps {
 }
 
 abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
-
   /**
    * The id of the authorizer.
    * @attribute
@@ -80,7 +79,9 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.role = props.assumeRole;
 
     if (props.resultsCacheTtl && props.resultsCacheTtl?.toSeconds() > 3600) {
-      throw new Error('Lambda authorizer property \'resultsCacheTtl\' must not be greater than 3600 seconds (1 hour)');
+      throw new Error(
+        "Lambda authorizer property 'resultsCacheTtl' must not be greater than 3600 seconds (1 hour)"
+      );
     }
   }
 
@@ -96,7 +97,9 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.restApiId = restApi.restApiId;
 
     const deployment = restApi.latestDeployment;
-    const addToLogicalId = FeatureFlags.of(this).isEnabled(APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID);
+    const addToLogicalId = FeatureFlags.of(this).isEnabled(
+      APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID
+    );
 
     if (deployment && addToLogicalId) {
       let functionName;
@@ -143,14 +146,16 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * Add Lambda Invoke Permission for Lambda Authorizer's role
    */
   private addLambdaInvokePermission(role: iam.Role): void {
-    role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
-      statements: [
-        new iam.PolicyStatement({
-          resources: this.handler.resourceArnsForGrantInvoke,
-          actions: ['lambda:InvokeFunction'],
-        }),
-      ],
-    }));
+    role.attachInlinePolicy(
+      new iam.Policy(this, 'authorizerInvokePolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: this.handler.resourceArnsForGrantInvoke,
+            actions: ['lambda:InvokeFunction'],
+          }),
+        ],
+      })
+    );
   }
 
   /**
@@ -199,7 +204,6 @@ export interface TokenAuthorizerProps extends LambdaAuthorizerProps {
  * @resource AWS::ApiGateway::Authorizer
  */
 export class TokenAuthorizer extends LambdaAuthorizer {
-
   public readonly authorizerId: string;
 
   public readonly authorizerArn: string;
@@ -217,7 +221,8 @@ export class TokenAuthorizer extends LambdaAuthorizer {
       type: 'TOKEN',
       authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
+      authorizerResultTtlInSeconds:
+        props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
       identitySource: props.identitySource || IdentitySource.header('Authorization'),
       identityValidationExpression: props.validationRegex,
     };
@@ -264,7 +269,6 @@ export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
  * @resource AWS::ApiGateway::Authorizer
  */
 export class RequestAuthorizer extends LambdaAuthorizer {
-
   public readonly authorizerId: string;
 
   public readonly authorizerArn: string;
@@ -274,8 +278,13 @@ export class RequestAuthorizer extends LambdaAuthorizer {
   constructor(scope: Construct, id: string, props: RequestAuthorizerProps) {
     super(scope, id, props);
 
-    if ((props.resultsCacheTtl === undefined || props.resultsCacheTtl.toSeconds() !== 0) && props.identitySources.length === 0) {
-      throw new Error('At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');
+    if (
+      (props.resultsCacheTtl === undefined || props.resultsCacheTtl.toSeconds() !== 0) &&
+      props.identitySources.length === 0
+    ) {
+      throw new Error(
+        'At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.'
+      );
     }
 
     const restApiId = this.lazyRestApiId();
@@ -286,8 +295,9 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       type: 'REQUEST',
       authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
-      identitySource: props.identitySources.map(is => is.toString()).join(','),
+      authorizerResultTtlInSeconds:
+        props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
+      identitySource: props.identitySources.map((is) => is.toString()).join(','),
     };
 
     this.authorizerProps = authorizerProps;
@@ -309,6 +319,6 @@ export class RequestAuthorizer extends LambdaAuthorizer {
  * constructs the authorizerURIArn.
  */
 function lambdaAuthorizerArn(handler: lambda.IFunction) {
-  const { region, partition } = Arn.split( handler.functionArn, ArnFormat.COLON_RESOURCE_NAME);
+  const { region, partition } = Arn.split(handler.functionArn, ArnFormat.COLON_RESOURCE_NAME);
   return `arn:${partition}:apigateway:${region}:lambda:path/2015-03-31/functions/${handler.functionArn}/invocations`;
 }

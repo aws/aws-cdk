@@ -46,19 +46,26 @@ const integ = new IntegTest(app, 'integtest-schedule-dlq', {
 });
 
 // Check that dead-letter queue received messages with matching target queue url
-integ.assertions.awsApiCall('SQS', 'receiveMessage', {
-  QueueUrl: dlq.queueUrl,
-  MaxNumberOfMessages: 10,
-}).expect(ExpectedResult.objectLike({
-  Messages: Match.arrayWith([
-    Match.objectLike({
-      Body: Match.stringLikeRegexp(JSON.stringify({
-        MessageBody: payload,
-        QueueUrl: queue.queueUrl,
-      })),
-    }),
-  ]),
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(3),
-  interval: cdk.Duration.seconds(20),
-});
+integ.assertions
+  .awsApiCall('SQS', 'receiveMessage', {
+    QueueUrl: dlq.queueUrl,
+    MaxNumberOfMessages: 10,
+  })
+  .expect(
+    ExpectedResult.objectLike({
+      Messages: Match.arrayWith([
+        Match.objectLike({
+          Body: Match.stringLikeRegexp(
+            JSON.stringify({
+              MessageBody: payload,
+              QueueUrl: queue.queueUrl,
+            })
+          ),
+        }),
+      ]),
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(3),
+    interval: cdk.Duration.seconds(20),
+  });

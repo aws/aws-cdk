@@ -129,13 +129,13 @@ export class User extends UserBase {
    * Specify a Redshift user using credentials that already exist.
    */
   static fromUserAttributes(scope: Construct, id: string, attrs: UserAttributes): IUser {
-    return new class extends UserBase {
+    return new (class extends UserBase {
       readonly username = attrs.username;
       readonly password = attrs.password;
       readonly cluster = attrs.cluster;
       readonly databaseName = attrs.databaseName;
       protected readonly databaseProps = attrs;
-    }(scope, id);
+    })(scope, id);
   }
 
   readonly username: string;

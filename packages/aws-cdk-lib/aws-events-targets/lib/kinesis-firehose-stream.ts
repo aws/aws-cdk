@@ -24,9 +24,10 @@ export interface KinesisFirehoseStreamProps {
  * @deprecated Use KinesisFirehoseStreamV2
  */
 export class KinesisFirehoseStream implements events.IRuleTarget {
-
-  constructor(private readonly stream: firehose.CfnDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
-  }
+  constructor(
+    private readonly stream: firehose.CfnDeliveryStream,
+    private readonly props: KinesisFirehoseStreamProps = {}
+  ) {}
 
   /**
    * Returns a RuleTarget that can be used to trigger this Firehose Stream as a
@@ -34,10 +35,12 @@ export class KinesisFirehoseStream implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = singletonEventRole(this.stream);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
-      resources: [this.stream.attrArn],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
+        resources: [this.stream.attrArn],
+      })
+    );
 
     return {
       arn: this.stream.attrArn,
@@ -72,9 +75,10 @@ export interface IDeliveryStream extends IResource {
  * instead of L1 Cfn Kinesis Delivery Stream.
  */
 export class KinesisFirehoseStreamV2 implements events.IRuleTarget {
-
-  constructor(private readonly stream: IDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
-  }
+  constructor(
+    private readonly stream: IDeliveryStream,
+    private readonly props: KinesisFirehoseStreamProps = {}
+  ) {}
 
   /**
    * Returns a RuleTarget that can be used to trigger this Firehose Stream as a
@@ -82,10 +86,12 @@ export class KinesisFirehoseStreamV2 implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = singletonEventRole(this.stream);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
-      resources: [this.stream.deliveryStreamArn],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
+        resources: [this.stream.deliveryStreamArn],
+      })
+    );
 
     return {
       arn: this.stream.deliveryStreamArn,

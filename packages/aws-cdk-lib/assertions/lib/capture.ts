@@ -34,7 +34,9 @@ export class Capture extends Matcher {
     }
 
     if (this.pattern !== undefined) {
-      const innerMatcher = Matcher.isMatcher(this.pattern) ? this.pattern : Match.objectLike(this.pattern);
+      const innerMatcher = Matcher.isMatcher(this.pattern)
+        ? this.pattern
+        : Match.objectLike(this.pattern);
       const innerResult = innerMatcher.test(actual);
       if (innerResult.hasFailed()) {
         return innerResult;
@@ -129,7 +131,9 @@ export class Capture extends Matcher {
   }
 
   private reportIncorrectType(expected: Type): never {
-    throw new Error(`Captured value is expected to be ${expected} but found ${getType(this._captured[this.idx])}. ` +
-      `Value is ${JSON.stringify(this._captured[this.idx], undefined, 2)}`);
+    throw new Error(
+      `Captured value is expected to be ${expected} but found ${getType(this._captured[this.idx])}. ` +
+        `Value is ${JSON.stringify(this._captured[this.idx], undefined, 2)}`
+    );
   }
 }

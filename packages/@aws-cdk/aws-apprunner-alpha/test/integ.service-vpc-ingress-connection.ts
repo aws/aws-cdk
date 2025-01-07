@@ -39,4 +39,6 @@ new integ.IntegTest(app, 'AppRunnerVpcIngressConnection', {
   testCases: [stack],
 });
 
-new cdk.CfnOutput(stack, 'Vpc Ingress Connection Domain name', { value: `https://${vpcIngressConnection.domainName}` });
+new cdk.CfnOutput(stack, 'Vpc Ingress Connection Domain name', {
+  value: `https://${vpcIngressConnection.domainName}`,
+});

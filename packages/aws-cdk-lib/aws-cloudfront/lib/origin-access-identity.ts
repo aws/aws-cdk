@@ -58,15 +58,13 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
    * The ARN to include in S3 bucket policy to allow CloudFront access
    */
   protected arn(): string {
-    return cdk.Stack.of(this).formatArn(
-      {
-        service: 'iam',
-        region: '', // global
-        account: 'cloudfront',
-        resource: 'user',
-        resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityId}`,
-      },
-    );
+    return cdk.Stack.of(this).formatArn({
+      service: 'iam',
+      region: '', // global
+      account: 'cloudfront',
+      resource: 'user',
+      resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityId}`,
+    });
   }
 }
 
@@ -77,7 +75,10 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
  *
  * @resource AWS::CloudFront::CloudFrontOriginAccessIdentity
  */
-export class OriginAccessIdentity extends OriginAccessIdentityBase implements IOriginAccessIdentity {
+export class OriginAccessIdentity
+  extends OriginAccessIdentityBase
+  implements IOriginAccessIdentity
+{
   /**
    * Creates a OriginAccessIdentity by providing the OriginAccessIdentityId.
    * It is misnamed and superseded by the correctly named fromOriginAccessIdentityId.
@@ -87,7 +88,8 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
   public static fromOriginAccessIdentityName(
     scope: Construct,
     id: string,
-    originAccessIdentityName: string): IOriginAccessIdentity {
+    originAccessIdentityName: string
+  ): IOriginAccessIdentity {
     return OriginAccessIdentity.fromOriginAccessIdentityId(scope, id, originAccessIdentityName);
   }
 
@@ -97,8 +99,8 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
   public static fromOriginAccessIdentityId(
     scope: Construct,
     id: string,
-    originAccessIdentityId: string): IOriginAccessIdentity {
-
+    originAccessIdentityId: string
+  ): IOriginAccessIdentity {
     class Import extends OriginAccessIdentityBase {
       public readonly originAccessIdentityId = originAccessIdentityId;
       public readonly originAccessIdentityName = originAccessIdentityId;
@@ -167,6 +169,8 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     // import/export the OAI is anyway required so the principal is constructed
     // with it. But for the normal case the S3 Canonical User as a nicer
     // interface and does not require constructing the ARN.
-    this.grantPrincipal = new iam.CanonicalUserPrincipal(this.cloudFrontOriginAccessIdentityS3CanonicalUserId);
+    this.grantPrincipal = new iam.CanonicalUserPrincipal(
+      this.cloudFrontOriginAccessIdentityS3CanonicalUserId
+    );
   }
 }

@@ -73,8 +73,13 @@ export class EventInvokeConfig extends Resource {
   constructor(scope: Construct, id: string, props: EventInvokeConfigProps) {
     super(scope, id);
 
-    if (props.maxEventAge && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {
-      throw new Error('`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.');
+    if (
+      props.maxEventAge &&
+      (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)
+    ) {
+      throw new Error(
+        '`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.'
+      );
     }
 
     if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 2)) {
@@ -82,12 +87,25 @@ export class EventInvokeConfig extends Resource {
     }
 
     new CfnEventInvokeConfig(this, 'Resource', {
-      destinationConfig: props.onFailure || props.onSuccess
-        ? {
-          ...props.onFailure ? { onFailure: props.onFailure.bind(this, props.function, { type: DestinationType.FAILURE }) } : {},
-          ...props.onSuccess ? { onSuccess: props.onSuccess.bind(this, props.function, { type: DestinationType.SUCCESS }) } : {},
-        }
-        : undefined,
+      destinationConfig:
+        props.onFailure || props.onSuccess
+          ? {
+              ...(props.onFailure
+                ? {
+                    onFailure: props.onFailure.bind(this, props.function, {
+                      type: DestinationType.FAILURE,
+                    }),
+                  }
+                : {}),
+              ...(props.onSuccess
+                ? {
+                    onSuccess: props.onSuccess.bind(this, props.function, {
+                      type: DestinationType.SUCCESS,
+                    }),
+                  }
+                : {}),
+            }
+          : undefined,
       functionName: props.function.functionName,
       maximumEventAgeInSeconds: props.maxEventAge && props.maxEventAge.toSeconds(),
       maximumRetryAttempts: props.retryAttempts ?? undefined,

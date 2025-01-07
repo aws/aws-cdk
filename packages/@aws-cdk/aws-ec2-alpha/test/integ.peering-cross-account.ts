@@ -31,7 +31,7 @@
  * 4. Modify acceptorVpcId to actual physical Id and rerun the integration test to
  *    test cross account peering
  *    - `yarn integ test/integ.vpcpc.js`
-*/
+ */
 
 import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -82,10 +82,13 @@ class RequestorStack extends cdk.Stack {
       primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.2.0.0/16'),
     });
 
-    const peeringConnection = requestorVpc.createPeeringConnection('acceptorAccountCrossRegionPeering', {
-      acceptorVpc: acceptorVpc,
-      peerRoleArn: 'arn:aws:iam::916743627080:role/VpcPeeringRole',
-    });
+    const peeringConnection = requestorVpc.createPeeringConnection(
+      'acceptorAccountCrossRegionPeering',
+      {
+        acceptorVpc: acceptorVpc,
+        peerRoleArn: 'arn:aws:iam::916743627080:role/VpcPeeringRole',
+      }
+    );
 
     const routeTable = new RouteTable(this, 'RouteTable', {
       vpc: requestorVpc,

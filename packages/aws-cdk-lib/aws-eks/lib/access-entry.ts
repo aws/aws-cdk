@@ -1,9 +1,7 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAccessEntry } from './eks.generated';
-import {
-  Resource, IResource, Aws, Lazy,
-} from '../../core';
+import { Resource, IResource, Aws, Lazy } from '../../core';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -104,13 +102,17 @@ export class AccessPolicyArn {
    * principal administrator access to a cluster. When associated to an access entry, its access scope
    * is typically the cluster, rather than a Kubernetes namespace.
    */
-  public static readonly AMAZON_EKS_CLUSTER_ADMIN_POLICY = AccessPolicyArn.of('AmazonEKSClusterAdminPolicy');
+  public static readonly AMAZON_EKS_CLUSTER_ADMIN_POLICY = AccessPolicyArn.of(
+    'AmazonEKSClusterAdminPolicy'
+  );
 
   /**
    * The Amazon EKS Admin View Policy. This access policy includes permissions that grant an IAM principal
    * access to list/view all resources in a cluster.
    */
-  public static readonly AMAZON_EKS_ADMIN_VIEW_POLICY = AccessPolicyArn.of('AmazonEKSAdminViewPolicy');
+  public static readonly AMAZON_EKS_ADMIN_VIEW_POLICY = AccessPolicyArn.of(
+    'AmazonEKSAdminViewPolicy'
+  );
 
   /**
    * The Amazon EKS Edit Policy. This access policy includes permissions that allow an IAM principal
@@ -129,7 +131,9 @@ export class AccessPolicyArn {
    * @param policyName The name of the access policy.
    * @returns A new instance of the AccessPolicy class.
    */
-  public static of(policyName: string) { return new AccessPolicyArn(policyName); }
+  public static of(policyName: string) {
+    return new AccessPolicyArn(policyName);
+  }
 
   /**
    * The Amazon Resource Name (ARN) of the access policy.
@@ -143,7 +147,6 @@ export class AccessPolicyArn {
   constructor(public readonly policyName: string) {
     this.policyArn = `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`;
   }
-
 }
 
 /**
@@ -200,7 +203,10 @@ export class AccessPolicy implements IAccessPolicy {
   /**
    * Import AccessPolicy by name.
    */
-  public static fromAccessPolicyName(policyName: string, options: AccessPolicyNameOptions): IAccessPolicy {
+  public static fromAccessPolicyName(
+    policyName: string,
+    options: AccessPolicyNameOptions
+  ): IAccessPolicy {
     class Import implements IAccessPolicy {
       public readonly policy = `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`;
       public readonly accessScope: AccessScope = {
@@ -304,11 +310,14 @@ export class AccessEntry extends Resource implements IAccessEntry {
    * @param attrs - The attributes of the access entry to import.
    * @returns The imported access entry.
    */
-  public static fromAccessEntryAttributes(scope: Construct, id: string, attrs: AccessEntryAttributes): IAccessEntry {
+  public static fromAccessEntryAttributes(
+    scope: Construct,
+    id: string,
+    attrs: AccessEntryAttributes
+  ): IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;
-
     }
     return new Import(scope, id);
   }
@@ -324,7 +333,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
   private principal: string;
   private accessPolicies: IAccessPolicy[];
 
-  constructor(scope: Construct, id: string, props: AccessEntryProps ) {
+  constructor(scope: Construct, id: string, props: AccessEntryProps) {
     super(scope, id);
 
     this.cluster = props.cluster;
@@ -336,15 +345,15 @@ export class AccessEntry extends Resource implements IAccessEntry {
       principalArn: this.principal,
       type: props.accessEntryType,
       accessPolicies: Lazy.any({
-        produce: () => this.accessPolicies.map(p => ({
-          accessScope: {
-            type: p.accessScope.type,
-            namespaces: p.accessScope.namespaces,
-          },
-          policyArn: p.policy,
-        })),
+        produce: () =>
+          this.accessPolicies.map((p) => ({
+            accessScope: {
+              type: p.accessScope.type,
+              namespaces: p.accessScope.namespaces,
+            },
+            policyArn: p.policy,
+          })),
       }),
-
     });
     this.accessEntryName = this.getResourceNameAttribute(resource.ref);
     this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {

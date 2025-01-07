@@ -8,7 +8,6 @@ import { CustomerManagedEncryptionConfiguration } from '../../../aws-stepfunctio
  * Properties for invoking an Activity worker
  */
 export interface StepFunctionsInvokeActivityProps extends sfn.TaskStateBaseProps {
-
   /**
    * Step Functions Activity to invoke
    */
@@ -34,11 +33,19 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   // No IAM permissions necessary unless the Activity uses a customer managed KMS key
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: Construct, id: string, private readonly props: StepFunctionsInvokeActivityProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: StepFunctionsInvokeActivityProps
+  ) {
     super(scope, id, props);
 
-    if (this.props.activity.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
-      this.taskPolicies = this.createPolicyStatements(this.props.activity.encryptionConfiguration.kmsKey);
+    if (
+      this.props.activity.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration
+    ) {
+      this.taskPolicies = this.createPolicyStatements(
+        this.props.activity.encryptionConfiguration.kmsKey
+      );
     }
     this.taskMetrics = {
       metricDimensions: { ActivityArn: this.props.activity.activityArn },
@@ -53,7 +60,9 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   protected _renderTask(): any {
     return {
       Resource: this.props.activity.activityArn,
-      Parameters: this.props.parameters ? sfn.FieldUtils.renderObject(this.props.parameters) : undefined,
+      Parameters: this.props.parameters
+        ? sfn.FieldUtils.renderObject(this.props.parameters)
+        : undefined,
     };
   }
 
@@ -61,9 +70,7 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
   private createPolicyStatements(kmskey: IKey): iam.PolicyStatement[] {
     return [
       new iam.PolicyStatement({
-        actions: [
-          'kms:Decrypt', 'kms:GenerateDataKey',
-        ],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         resources: [`${kmskey.keyArn}`],
         conditions: {
           StringEquals: {

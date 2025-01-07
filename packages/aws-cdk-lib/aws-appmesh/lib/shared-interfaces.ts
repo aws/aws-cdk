@@ -97,7 +97,6 @@ export interface OutlierDetection {
  * All Properties for Envoy Access logs for mesh endpoints
  */
 export interface AccessLogConfig {
-
   /**
    * VirtualNode CFN configuration for Access Logging
    *
@@ -197,13 +196,13 @@ export abstract class LoggingFormat {
   /**
    * Generate logging format from json key pairs
    */
-  public static fromJson(jsonLoggingFormat :{[key:string]: string}): LoggingFormat {
+  public static fromJson(jsonLoggingFormat: { [key: string]: string }): LoggingFormat {
     if (Object.keys(jsonLoggingFormat).length == 0) {
       throw new Error('Json key pairs cannot be empty.');
     }
 
     return new JsonLoggingFormat(jsonLoggingFormat);
-  };
+  }
 
   /**
    * Called when the Access Log Format is initialized. Can be used to enforce
@@ -217,10 +216,10 @@ export abstract class LoggingFormat {
  */
 class JsonLoggingFormat extends LoggingFormat {
   /**
-  * Json pattern for the output logs
-  */
+   * Json pattern for the output logs
+   */
   private readonly json: Array<CfnVirtualNode.JsonFormatRefProperty>;
-  constructor(json: {[key:string]: string}) {
+  constructor(json: { [key: string]: string }) {
     super();
     this.json = Object.entries(json).map(([key, value]) => ({ key, value }));
   }
@@ -236,8 +235,8 @@ class JsonLoggingFormat extends LoggingFormat {
 
 class TextLoggingFormat extends LoggingFormat {
   /**
-  * Json pattern for the output logs
-  */
+   * Json pattern for the output logs
+   */
   private readonly text: string;
   constructor(text: string) {
     super();
@@ -269,7 +268,6 @@ export interface BackendDefaults {
  * Represents the properties needed to define a Virtual Service backend
  */
 export interface VirtualServiceBackendOptions {
-
   /**
    * TLS properties for  Client policy for the backend
    *
@@ -295,7 +293,10 @@ export abstract class Backend {
   /**
    * Construct a Virtual Service backend
    */
-  public static virtualService(virtualService: IVirtualService, props: VirtualServiceBackendOptions = {}): Backend {
+  public static virtualService(
+    virtualService: IVirtualService,
+    props: VirtualServiceBackendOptions = {}
+  ): Backend {
     return new VirtualServiceBackend(virtualService, props.tlsClientPolicy);
   }
 
@@ -309,9 +310,10 @@ export abstract class Backend {
  * Represents the properties needed to define a Virtual Service backend
  */
 class VirtualServiceBackend extends Backend {
-
-  constructor (private readonly virtualService: IVirtualService,
-    private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
+  constructor(
+    private readonly virtualService: IVirtualService,
+    private readonly tlsClientPolicy: TlsClientPolicy | undefined
+  ) {
     super();
   }
 
@@ -332,8 +334,8 @@ class VirtualServiceBackend extends Backend {
             : this.virtualService.virtualServiceName,
           clientPolicy: this.tlsClientPolicy
             ? {
-              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),
-            }
+                tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),
+              }
             : undefined,
         },
       },

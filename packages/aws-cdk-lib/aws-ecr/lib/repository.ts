@@ -159,7 +159,6 @@ export interface IRepository extends IResource {
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
-
   private readonly REPO_PULL_ACTIONS: string[] = [
     'ecr:BatchCheckLayerAvailability',
     'ecr:GetDownloadUrlForLayer',
@@ -188,7 +187,9 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Add a policy statement to the repository's resource policy
    */
-  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+  public abstract addToResourcePolicy(
+    statement: iam.PolicyStatement
+  ): iam.AddToResourcePolicyResult;
 
   /**
    * The URI of this repository (represents the latest image):
@@ -295,7 +296,10 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions = {}): events.Rule {
+  public onCloudTrailImagePushed(
+    id: string,
+    options: OnCloudTrailImagePushedOptions = {}
+  ): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {
@@ -364,13 +368,15 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       const crossAccountPrincipalStack = Stack.of(crossAccountPrincipal);
       const roleTag = `${crossAccountPrincipalStack.stackName}_${crossAccountPrincipal.node.addr}`;
       Tags.of(crossAccountPrincipal).add('aws-cdk:id', roleTag);
-      this.addToResourcePolicy(new iam.PolicyStatement({
-        actions,
-        principals: [new iam.AccountPrincipal(crossAccountPrincipalStack.account)],
-        conditions: {
-          StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
-        },
-      }));
+      this.addToResourcePolicy(
+        new iam.PolicyStatement({
+          actions,
+          principals: [new iam.AccountPrincipal(crossAccountPrincipalStack.account)],
+          conditions: {
+            StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
+          },
+        })
+      );
 
       return iam.Grant.addToPrincipal({
         grantee,
@@ -393,10 +399,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to read the images in this repository
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'ecr:DescribeRepositories',
-      'ecr:DescribeImages',
-    );
+    return this.grant(grantee, 'ecr:DescribeRepositories', 'ecr:DescribeImages');
   }
 
   /**
@@ -434,10 +437,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to pull and push images to this repository.
    */
   public grantPullPush(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee,
-      ...this.REPO_PULL_ACTIONS,
-      ...this.REPO_PUSH_ACTIONS,
-    );
+    const ret = this.grant(grantee, ...this.REPO_PULL_ACTIONS, ...this.REPO_PUSH_ACTIONS);
     iam.Grant.addToPrincipal({
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
@@ -453,7 +453,9 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * to the grantee in the resource policy of this ECR repository,
    * and 'undefined' in case we can.
    */
-  private unsafeCrossAccountResourcePolicyPrincipal(grantee: iam.IGrantable): IConstruct | undefined {
+  private unsafeCrossAccountResourcePolicyPrincipal(
+    grantee: iam.IGrantable
+  ): IConstruct | undefined {
     // A principal cannot be safely added to the Resource Policy of this ECR repository, if:
     // 1. The principal is from a different account, and
     // 2. The principal is a new resource (meaning, not just referenced), and
@@ -466,8 +468,10 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       return undefined;
     }
     const repoAndPrincipalAccountCompare = Token.compareStrings(this.env.account, principalAccount);
-    if (repoAndPrincipalAccountCompare === TokenComparison.BOTH_UNRESOLVED ||
-        repoAndPrincipalAccountCompare === TokenComparison.SAME) {
+    if (
+      repoAndPrincipalAccountCompare === TokenComparison.BOTH_UNRESOLVED ||
+      repoAndPrincipalAccountCompare === TokenComparison.SAME
+    ) {
       return undefined;
     }
 
@@ -611,7 +615,11 @@ export class Repository extends RepositoryBase {
   /**
    * Import a repository
    */
-  public static fromRepositoryAttributes(scope: Construct, id: string, attrs: RepositoryAttributes): IRepository {
+  public static fromRepositoryAttributes(
+    scope: Construct,
+    id: string,
+    attrs: RepositoryAttributes
+  ): IRepository {
     class Import extends RepositoryBase {
       public readonly repositoryName = attrs.repositoryName;
       public readonly repositoryArn = attrs.repositoryArn;
@@ -625,13 +633,18 @@ export class Repository extends RepositoryBase {
     return new Import(scope, id);
   }
 
-  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
-
+  public static fromRepositoryArn(
+    scope: Construct,
+    id: string,
+    repositoryArn: string
+  ): IRepository {
     // if repositoryArn is a token, the repository name is also required. this is because
     // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
     // parse the name from an ARN using CloudFormation's split/select.
     if (Token.isUnresolved(repositoryArn)) {
-      throw new Error('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
+      throw new Error(
+        '"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead'
+      );
     }
 
     validateRepositoryArn();
@@ -656,12 +669,18 @@ export class Repository extends RepositoryBase {
       const splitArn = repositoryArn.split(':');
 
       if (!splitArn[splitArn.length - 1].startsWith('repository/')) {
-        throw new Error(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
+        throw new Error(
+          `Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`
+        );
       }
     }
   }
 
-  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
+  public static fromRepositoryName(
+    scope: Construct,
+    id: string,
+    repositoryName: string
+  ): IRepository {
     class Import extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
@@ -679,7 +698,11 @@ export class Repository extends RepositoryBase {
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(repositoryName: string, scope: IConstruct, account?: string): string {
+  public static arnForLocalRepository(
+    repositoryName: string,
+    scope: IConstruct,
+    account?: string
+  ): string {
     return Stack.of(scope).formatArn({
       account,
       service: 'ecr',
@@ -702,13 +725,19 @@ export class Repository extends RepositoryBase {
     if (repositoryName.length < 2 || repositoryName.length > 256) {
       errors.push('Repository name must be at least 2 and no more than 256 characters');
     }
-    const isPatternMatch = /^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$/.test(repositoryName);
+    const isPatternMatch = /^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$/.test(
+      repositoryName
+    );
     if (!isPatternMatch) {
-      errors.push('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
+      errors.push(
+        'Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes'
+      );
     }
 
     if (errors.length > 0) {
-      throw new Error(`Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
+      throw new Error(
+        `Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`
+      );
     }
   }
 
@@ -731,7 +760,8 @@ export class Repository extends RepositoryBase {
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
-      imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
+      imageScanningConfiguration:
+        props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability || undefined,
       encryptionConfiguration: this.parseEncryption(props),
       emptyOnDelete: props.emptyOnDelete,
@@ -753,15 +783,21 @@ export class Repository extends RepositoryBase {
     });
 
     if (props.emptyOnDelete && props.removalPolicy !== RemovalPolicy.DESTROY) {
-      throw new Error('Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.');
+      throw new Error(
+        "Cannot use 'emptyOnDelete' property on a repository without setting removal policy to 'DESTROY'."
+      );
     } else if (props.emptyOnDelete == undefined && props.autoDeleteImages) {
       if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+        throw new Error(
+          "Cannot use 'autoDeleteImages' property on a repository without setting removal policy to 'DESTROY'."
+        );
       }
       this.enableAutoDeleteImages();
     }
 
-    this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
+    this.node.addValidation({
+      validate: () => this.policyDocument?.validateForResourcePolicy() ?? [],
+    });
   }
 
   /**
@@ -773,7 +809,10 @@ export class Repository extends RepositoryBase {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (statement.resources.length) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr:noResourceStatements', 'ECR resource policy does not allow resource statements.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecr:noResourceStatements',
+        'ECR resource policy does not allow resource statements.'
+      );
     }
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
@@ -791,34 +830,57 @@ export class Repository extends RepositoryBase {
   public addLifecycleRule(rule: LifecycleRule) {
     // Validate rule here so users get errors at the expected location
     if (rule.tagStatus === undefined) {
-      rule = { ...rule, tagStatus: rule.tagPrefixList === undefined && rule.tagPatternList === undefined ? TagStatus.ANY : TagStatus.TAGGED };
+      rule = {
+        ...rule,
+        tagStatus:
+          rule.tagPrefixList === undefined && rule.tagPatternList === undefined
+            ? TagStatus.ANY
+            : TagStatus.TAGGED,
+      };
     }
 
-    if (rule.tagStatus === TagStatus.TAGGED
-      && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)
-      && (rule.tagPatternList === undefined || rule.tagPatternList.length === 0)
+    if (
+      rule.tagStatus === TagStatus.TAGGED &&
+      (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0) &&
+      (rule.tagPatternList === undefined || rule.tagPatternList.length === 0)
     ) {
-      throw new Error('TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList');
+      throw new Error(
+        'TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList'
+      );
     }
-    if (rule.tagStatus !== TagStatus.TAGGED && (rule.tagPrefixList !== undefined || rule.tagPatternList !== undefined)) {
-      throw new Error('tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged');
+    if (
+      rule.tagStatus !== TagStatus.TAGGED &&
+      (rule.tagPrefixList !== undefined || rule.tagPatternList !== undefined)
+    ) {
+      throw new Error(
+        'tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged'
+      );
     }
     if (rule.tagPrefixList !== undefined && rule.tagPatternList !== undefined) {
-      throw new Error('Both tagPrefixList and tagPatternList cannot be specified together in a rule');
+      throw new Error(
+        'Both tagPrefixList and tagPatternList cannot be specified together in a rule'
+      );
     }
     if (rule.tagPatternList !== undefined) {
       rule.tagPatternList.forEach((pattern) => {
         const splitPatternLength = pattern.split('*').length;
         if (splitPatternLength > 5) {
-          throw new Error(`A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splitPatternLength - 1}`);
+          throw new Error(
+            `A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splitPatternLength - 1}`
+          );
         }
       });
     }
     if ((rule.maxImageAge !== undefined) === (rule.maxImageCount !== undefined)) {
-      throw new Error(`Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`);
+      throw new Error(
+        `Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`
+      );
     }
 
-    if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY).length > 0) {
+    if (
+      rule.tagStatus === TagStatus.ANY &&
+      this.lifecycleRules.filter((r) => r.tagStatus === TagStatus.ANY).length > 0
+    ) {
       throw new Error('Life cycle can only have one TagStatus.Any rule');
     }
 
@@ -832,12 +894,16 @@ export class Repository extends RepositoryBase {
     const stack = Stack.of(this);
     let lifecyclePolicyText: any;
 
-    if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }
+    if (this.lifecycleRules.length === 0 && !this.registryId) {
+      return undefined;
+    }
 
     if (this.lifecycleRules.length > 0) {
-      lifecyclePolicyText = JSON.stringify(stack.resolve({
-        rules: this.orderedLifecycleRules().map(renderLifecycleRule),
-      }));
+      lifecyclePolicyText = JSON.stringify(
+        stack.resolve({
+          rules: this.orderedLifecycleRules().map(renderLifecycleRule),
+        })
+      );
     }
 
     return {
@@ -852,17 +918,29 @@ export class Repository extends RepositoryBase {
    * Also applies validation of the 'any' rule.
    */
   private orderedLifecycleRules(): LifecycleRule[] {
-    if (this.lifecycleRules.length === 0) { return []; }
-
-    const prioritizedRules = this.lifecycleRules.filter(r => r.rulePriority !== undefined && r.tagStatus !== TagStatus.ANY);
-    const autoPrioritizedRules = this.lifecycleRules.filter(r => r.rulePriority === undefined && r.tagStatus !== TagStatus.ANY);
-    const anyRules = this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY);
-    if (anyRules.length > 0 && anyRules[0].rulePriority !== undefined && autoPrioritizedRules.length > 0) {
-      // Supporting this is too complex for very little value. We just prohibit it.
-      throw new Error("Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.");
+    if (this.lifecycleRules.length === 0) {
+      return [];
     }
 
-    const prios = prioritizedRules.map(r => r.rulePriority!);
+    const prioritizedRules = this.lifecycleRules.filter(
+      (r) => r.rulePriority !== undefined && r.tagStatus !== TagStatus.ANY
+    );
+    const autoPrioritizedRules = this.lifecycleRules.filter(
+      (r) => r.rulePriority === undefined && r.tagStatus !== TagStatus.ANY
+    );
+    const anyRules = this.lifecycleRules.filter((r) => r.tagStatus === TagStatus.ANY);
+    if (
+      anyRules.length > 0 &&
+      anyRules[0].rulePriority !== undefined &&
+      autoPrioritizedRules.length > 0
+    ) {
+      // Supporting this is too complex for very little value. We just prohibit it.
+      throw new Error(
+        "Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule."
+      );
+    }
+
+    const prios = prioritizedRules.map((r) => r.rulePriority!);
     let autoPrio = (prios.length > 0 ? Math.max(...prios) : 0) + 1;
 
     const ret = new Array<LifecycleRule>();
@@ -882,14 +960,19 @@ export class Repository extends RepositoryBase {
    * Set up key properties and return the Repository encryption property from the
    * user's configuration.
    */
-  private parseEncryption(props: RepositoryProps): CfnRepository.EncryptionConfigurationProperty | undefined {
-
+  private parseEncryption(
+    props: RepositoryProps
+  ): CfnRepository.EncryptionConfigurationProperty | undefined {
     // default based on whether encryptionKey is specified
-    const encryptionType = props.encryption ?? (props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256);
+    const encryptionType =
+      props.encryption ??
+      (props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256);
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== RepositoryEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`);
+      throw new Error(
+        `encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`
+      );
     }
 
     if (encryptionType === RepositoryEncryption.AES_256) {
@@ -907,11 +990,18 @@ export class Repository extends RepositoryBase {
   }
 
   private enableAutoDeleteImages() {
-    const firstTime = Stack.of(this).node.tryFindChild(`${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`) === undefined;
-    const provider = AutoDeleteImagesProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
-      useCfnResponseWrapper: false,
-      description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
-    });
+    const firstTime =
+      Stack.of(this).node.tryFindChild(
+        `${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`
+      ) === undefined;
+    const provider = AutoDeleteImagesProvider.getOrCreateProvider(
+      this,
+      AUTO_DELETE_IMAGES_RESOURCE_TYPE,
+      {
+        useCfnResponseWrapper: false,
+        description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
+      }
+    );
 
     if (firstTime) {
       // Use a iam policy to allow the custom resource to list & delete
@@ -924,7 +1014,9 @@ export class Repository extends RepositoryBase {
           'ecr:ListImages',
           'ecr:ListTagsForResource',
         ],
-        Resource: [`arn:${Aws.PARTITION}:ecr:${Stack.of(this).region}:${Stack.of(this).account}:repository/*`],
+        Resource: [
+          `arn:${Aws.PARTITION}:ecr:${Stack.of(this).region}:${Stack.of(this).account}:repository/*`,
+        ],
         Condition: {
           StringEquals: {
             ['ecr:ResourceTag/' + AUTO_DELETE_IMAGES_TAG]: 'true',
@@ -952,11 +1044,13 @@ export class Repository extends RepositoryBase {
 }
 
 function validateAnyRuleLast(rules: LifecycleRule[]) {
-  const anyRules = rules.filter(r => r.tagStatus === TagStatus.ANY);
+  const anyRules = rules.filter((r) => r.tagStatus === TagStatus.ANY);
   if (anyRules.length === 1) {
-    const maxPrio = Math.max(...rules.map(r => r.rulePriority!));
+    const maxPrio = Math.max(...rules.map((r) => r.rulePriority!));
     if (anyRules[0].rulePriority !== maxPrio) {
-      throw new Error(`TagStatus.Any rule must have highest priority, has ${anyRules[0].rulePriority} which is smaller than ${maxPrio}`);
+      throw new Error(
+        `TagStatus.Any rule must have highest priority, has ${anyRules[0].rulePriority} which is smaller than ${maxPrio}`
+      );
     }
   }
 }
@@ -972,7 +1066,10 @@ function renderLifecycleRule(rule: LifecycleRule) {
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
       tagPatternList: rule.tagPatternList,
-      countType: rule.maxImageAge !== undefined ? CountType.SINCE_IMAGE_PUSHED : CountType.IMAGE_COUNT_MORE_THAN,
+      countType:
+        rule.maxImageAge !== undefined
+          ? CountType.SINCE_IMAGE_PUSHED
+          : CountType.IMAGE_COUNT_MORE_THAN,
       countNumber: rule.maxImageAge?.toDays() ?? rule.maxImageCount,
       countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
     },
@@ -1010,7 +1107,6 @@ export enum TagMutability {
    * all image tags within the repository will be immutable which will prevent them from being overwritten.
    */
   IMMUTABLE = 'IMMUTABLE',
-
 }
 
 /**
@@ -1031,5 +1127,5 @@ export class RepositoryEncryption {
   /**
    * @param value the string value of the encryption
    */
-  protected constructor(public readonly value: string) { }
+  protected constructor(public readonly value: string) {}
 }

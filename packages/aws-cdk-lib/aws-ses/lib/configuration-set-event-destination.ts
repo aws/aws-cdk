@@ -84,7 +84,8 @@ export abstract class EventDestination {
 /**
  * Properties for a configuration set event destination
  */
-export interface ConfigurationSetEventDestinationProps extends ConfigurationSetEventDestinationOptions {
+export interface ConfigurationSetEventDestinationProps
+  extends ConfigurationSetEventDestinationOptions {
   /**
    * The configuration set that contains the event destination.
    */
@@ -217,14 +218,18 @@ export enum CloudWatchDimensionSource {
 /**
  * A configuration set event destination
  */
-export class ConfigurationSetEventDestination extends Resource implements IConfigurationSetEventDestination {
+export class ConfigurationSetEventDestination
+  extends Resource
+  implements IConfigurationSetEventDestination
+{
   /**
    * Use an existing configuration set
    */
   public static fromConfigurationSetEventDestinationId(
     scope: Construct,
     id: string,
-    configurationSetEventDestinationId: string): IConfigurationSetEventDestination {
+    configurationSetEventDestinationId: string
+  ): IConfigurationSetEventDestination {
     class Import extends Resource implements IConfigurationSetEventDestination {
       public readonly configurationSetEventDestinationId = configurationSetEventDestinationId;
     }
@@ -244,15 +249,17 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
         name: this.physicalName,
         enabled: props.enabled ?? true,
         matchingEventTypes: props.events ?? Object.values(EmailSendingEvent),
-        snsDestination: props.destination.topic ? { topicArn: props.destination.topic.topicArn } : undefined,
+        snsDestination: props.destination.topic
+          ? { topicArn: props.destination.topic.topicArn }
+          : undefined,
         cloudWatchDestination: props.destination.dimensions
           ? {
-            dimensionConfigurations: props.destination.dimensions.map(dimension => ({
-              dimensionValueSource: dimension.source,
-              dimensionName: dimension.name,
-              defaultDimensionValue: dimension.defaultValue,
-            })),
-          }
+              dimensionConfigurations: props.destination.dimensions.map((dimension) => ({
+                dimensionValueSource: dimension.source,
+                dimensionName: dimension.name,
+                defaultDimensionValue: dimension.defaultValue,
+              })),
+            }
           : undefined,
       },
     });
@@ -260,17 +267,19 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     this.configurationSetEventDestinationId = configurationSet.attrId;
 
     if (props.destination.topic) {
-      const result = props.destination.topic.addToResourcePolicy(new iam.PolicyStatement({
-        actions: ['sns:Publish'],
-        resources: [props.destination.topic.topicArn],
-        principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
-        conditions: {
-          StringEquals: {
-            'AWS:SourceAccount': this.env.account,
-            'AWS:SourceArn': `arn:${Aws.PARTITION}:ses:${this.env.region}:${this.env.account}:configuration-set/${props.configurationSet.configurationSetName}`,
+      const result = props.destination.topic.addToResourcePolicy(
+        new iam.PolicyStatement({
+          actions: ['sns:Publish'],
+          resources: [props.destination.topic.topicArn],
+          principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
+          conditions: {
+            StringEquals: {
+              'AWS:SourceAccount': this.env.account,
+              'AWS:SourceArn': `arn:${Aws.PARTITION}:ses:${this.env.region}:${this.env.account}:configuration-set/${props.configurationSet.configurationSetName}`,
+            },
           },
-        },
-      }));
+        })
+      );
       if (result.policyDependable) {
         this.node.addDependency(result.policyDependable);
       }

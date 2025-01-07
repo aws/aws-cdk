@@ -41,10 +41,10 @@ export enum TableEncryption {
 
 export interface S3TableProps extends TableBaseProps {
   /**
- * S3 bucket in which to store data.
- *
- * @default one is created for you
- */
+   * S3 bucket in which to store data.
+   *
+   * @default one is created for you
+   */
   readonly bucket?: s3.IBucket;
 
   /**
@@ -138,8 +138,8 @@ export class S3Table extends TableBase {
         partitionKeys: renderColumns(props.partitionKeys),
 
         parameters: {
-          'classification': props.dataFormat.classificationString?.value,
-          'has_encrypted_data': true,
+          classification: props.dataFormat.classificationString?.value,
+          has_encrypted_data: true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
           ...this.parameters,
         },
@@ -153,14 +153,19 @@ export class S3Table extends TableBase {
           serdeInfo: {
             serializationLibrary: props.dataFormat.serializationLibrary.className,
           },
-          parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
-            if (param.key in acc) {
-              throw new Error(`Duplicate storage parameter key: ${param.key}`);
-            }
-            const key = param.key;
-            acc[key] = param.value;
-            return acc;
-          }, {} as { [key: string]: string }) : undefined,
+          parameters: props.storageParameters
+            ? props.storageParameters.reduce(
+                (acc, param) => {
+                  if (param.key in acc) {
+                    throw new Error(`Duplicate storage parameter key: ${param.key}`);
+                  }
+                  const key = param.key;
+                  acc[key] = param.value;
+                  return acc;
+                },
+                {} as { [key: string]: string }
+              )
+            : undefined,
         },
 
         tableType: 'EXTERNAL_TABLE',
@@ -189,7 +194,9 @@ export class S3Table extends TableBase {
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
+    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) {
+      this.encryptionKey.grantDecrypt(grantee);
+    }
     this.bucket.grantRead(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
@@ -201,7 +208,9 @@ export class S3Table extends TableBase {
    */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
+    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) {
+      this.encryptionKey.grantEncrypt(grantee);
+    }
     this.bucket.grantWrite(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
@@ -213,7 +222,9 @@ export class S3Table extends TableBase {
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
+    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) {
+      this.encryptionKey.grantEncryptDecrypt(grantee);
+    }
     this.bucket.grantReadWrite(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
@@ -253,7 +264,11 @@ const encryptionMappings = {
 function createBucket(table: S3Table, props: S3TableProps) {
   let bucket = props.bucket;
 
-  if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
+  if (
+    bucket &&
+    props.encryption !== undefined &&
+    props.encryption !== TableEncryption.CLIENT_SIDE_KMS
+  ) {
     throw new Error('you can not specify encryption settings if you also provide a bucket');
   }
 
@@ -292,7 +307,7 @@ function renderColumns(columns?: Array<Column | Column>) {
   if (columns === undefined) {
     return undefined;
   }
-  return columns.map(column => {
+  return columns.map((column) => {
     return {
       name: column.name,
       type: column.type.inputString,

@@ -59,7 +59,12 @@ enum DependencyOperation {
  *
  * @internal
  */
-function operateOnDependency(operation: DependencyOperation, source: Element, target: Element, description?: string) {
+function operateOnDependency(
+  operation: DependencyOperation,
+  source: Element,
+  target: Element,
+  description?: string
+) {
   if (source === target) {
     return;
   }
@@ -71,7 +76,9 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
   const targetStage = Stage.of(targetStack);
   if (sourceStage !== targetStage) {
     // eslint-disable-next-line max-len
-    throw new Error(`You cannot have a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
+    throw new Error(
+      `You cannot have a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`
+    );
   }
 
   // find the deepest common stack between the two elements
@@ -118,7 +125,9 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
   // `source` is a direct or indirect nested stack of `target`, and this is not
   // possible (nested stacks cannot depend on their parents).
   if (commonStack === target) {
-    throw new Error(`Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}'`);
+    throw new Error(
+      `Nested stack '${sourceStack.node.path}' cannot depend on a parent stack '${targetStack.node.path}'`
+    );
   }
 
   // we have a common stack from which we can reach both `source` and `target`
@@ -165,7 +174,9 @@ export function obtainDependencies(source: Element) {
  * @internal
  */
 function resourceInCommonStackFor(element: Element, commonStack: Stack): CfnResource {
-  const resource: CfnResource = (Stack.isStack(element) ? element.nestedStackResource : element) as CfnResource;
+  const resource: CfnResource = (
+    Stack.isStack(element) ? element.nestedStackResource : element
+  ) as CfnResource;
   if (!resource) {
     // see "assertion" in operateOnDependency above
     throw new Error(`Unexpected value for resource when looking at ${element}!`);
@@ -185,7 +196,11 @@ function resourceInCommonStackFor(element: Element, commonStack: Stack): CfnReso
  * Return a string representation of the given assembler, for use in error messages
  */
 function describeStage(assembly: Stage | undefined): string {
-  if (!assembly) { return 'an unrooted construct tree'; }
-  if (!assembly.parentStage) { return 'the App'; }
+  if (!assembly) {
+    return 'an unrooted construct tree';
+  }
+  if (!assembly.parentStage) {
+    return 'the App';
+  }
   return `Stage '${assembly.node.path}'`;
 }

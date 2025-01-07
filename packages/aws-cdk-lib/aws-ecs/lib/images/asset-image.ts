@@ -6,8 +6,7 @@ import { ContainerImage, ContainerImageConfig } from '../container-image';
 /**
  * The properties for building an AssetImage.
  */
-export interface AssetImageProps extends DockerImageAssetOptions {
-}
+export interface AssetImageProps extends DockerImageAssetOptions {}
 
 /**
  * An image that will be built from a local directory with a Dockerfile
@@ -18,7 +17,10 @@ export class AssetImage extends ContainerImage {
    *
    * @param directory The directory containing the Dockerfile
    */
-  constructor(private readonly directory: string, private readonly props: AssetImageProps = {}) {
+  constructor(
+    private readonly directory: string,
+    private readonly props: AssetImageProps = {}
+  ) {
     super();
   }
 

@@ -22,8 +22,10 @@ export function renderAttributes(attributes: Attributes) {
  */
 export function defaultPortForProtocol(proto: ApplicationProtocol): number {
   switch (proto) {
-    case ApplicationProtocol.HTTP: return 80;
-    case ApplicationProtocol.HTTPS: return 443;
+    case ApplicationProtocol.HTTP:
+      return 80;
+    case ApplicationProtocol.HTTPS:
+      return 443;
     default:
       throw new Error(`Unrecognized protocol: ${proto}`);
   }
@@ -53,13 +55,20 @@ export function defaultProtocolForPort(port: number): ApplicationProtocol {
  * Given a protocol and a port, try to guess the other one if it's undefined
  */
 // eslint-disable-next-line max-len
-export function determineProtocolAndPort(protocol: ApplicationProtocol | undefined, port: number | undefined): [ApplicationProtocol | undefined, number | undefined] {
+export function determineProtocolAndPort(
+  protocol: ApplicationProtocol | undefined,
+  port: number | undefined
+): [ApplicationProtocol | undefined, number | undefined] {
   if (protocol === undefined && port === undefined) {
     return [undefined, undefined];
   }
 
-  if (protocol === undefined) { protocol = defaultProtocolForPort(port!); }
-  if (port === undefined) { port = defaultPortForProtocol(protocol!); }
+  if (protocol === undefined) {
+    protocol = defaultProtocolForPort(port!);
+  }
+  if (port === undefined) {
+    port = defaultPortForProtocol(protocol!);
+  }
 
   return [protocol, port];
 }
@@ -88,8 +97,7 @@ export function validateNetworkProtocol(protocol: Protocol) {
  * @internal
  */
 export function mapTagMapToCxschema(tagMap: Record<string, string>): cxschema.Tag[] {
-  return Object.entries(tagMap)
-    .map(([key, value]) => ({ key, value }));
+  return Object.entries(tagMap).map(([key, value]) => ({ key, value }));
 }
 
 export function parseLoadBalancerFullName(arn: string): string {

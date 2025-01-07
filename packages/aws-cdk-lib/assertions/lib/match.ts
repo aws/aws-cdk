@@ -46,7 +46,7 @@ export abstract class Match {
    * The keys and their values (or matchers) must be present in the target but the target can be a superset.
    * @param pattern the pattern to match
    */
-  public static objectLike(pattern: {[key: string]: any}): Matcher {
+  public static objectLike(pattern: { [key: string]: any }): Matcher {
     return new ObjectMatch('objectLike', pattern);
   }
 
@@ -55,7 +55,7 @@ export abstract class Match {
    * The keys and their values (or matchers) must match exactly with the target.
    * @param pattern the pattern to match
    */
-  public static objectEquals(pattern: {[key: string]: any}): Matcher {
+  public static objectEquals(pattern: { [key: string]: any }): Matcher {
     return new ObjectMatch('objectEquals', pattern, { partial: false });
   }
 
@@ -111,24 +111,31 @@ class LiteralMatch extends Matcher {
   constructor(
     public readonly name: string,
     private readonly pattern: any,
-    options: LiteralMatchOptions = {}) {
-
+    options: LiteralMatchOptions = {}
+  ) {
     super();
     this.partialObjects = options.partialObjects ?? false;
 
     if (Matcher.isMatcher(this.pattern)) {
-      throw new Error('LiteralMatch cannot directly contain another matcher. ' +
-        'Remove the top-level matcher or nest it more deeply.');
+      throw new Error(
+        'LiteralMatch cannot directly contain another matcher. ' +
+          'Remove the top-level matcher or nest it more deeply.'
+      );
     }
   }
 
   public test(actual: any): MatchResult {
     if (Array.isArray(this.pattern)) {
-      return new ArrayMatch(this.name, this.pattern, { subsequence: false, partialObjects: this.partialObjects }).test(actual);
+      return new ArrayMatch(this.name, this.pattern, {
+        subsequence: false,
+        partialObjects: this.partialObjects,
+      }).test(actual);
     }
 
     if (typeof this.pattern === 'object') {
-      return new ObjectMatch(this.name, this.pattern, { partial: this.partialObjects }).test(actual);
+      return new ObjectMatch(this.name, this.pattern, { partial: this.partialObjects }).test(
+        actual
+      );
     }
 
     const result = new MatchResult(actual);
@@ -183,8 +190,8 @@ class ArrayMatch extends Matcher {
   constructor(
     public readonly name: string,
     private readonly pattern: any[],
-    options: ArrayMatchOptions = {}) {
-
+    options: ArrayMatchOptions = {}
+  ) {
     super();
     this.subsequence = options.subsequence ?? true;
     this.partialObjects = options.partialObjects ?? false;
@@ -275,16 +282,21 @@ class ArrayMatch extends Matcher {
       // Succeeded Pattern Index
       for (let spi = 0; spi < patternIdx; spi++) {
         const foundMatch = matches.row(spi).find(([, r]) => r.isSuccess);
-        if (!foundMatch) { continue; } // Should never fail but let's be defensive
+        if (!foundMatch) {
+          continue;
+        } // Should never fail but let's be defensive
 
         const [index] = foundMatch;
 
-        result.compose(`${index}`, new MatchResult(actual[index]).recordFailure({
-          matcher: this,
-          message: `arrayWith pattern ${spi} matched here`,
-          path: [],
-          cost: 0, // This is an informational message so it would be unfair to assign it cost
-        }));
+        result.compose(
+          `${index}`,
+          new MatchResult(actual[index]).recordFailure({
+            matcher: this,
+            message: `arrayWith pattern ${spi} matched here`,
+            path: [],
+            cost: 0, // This is an informational message so it would be unfair to assign it cost
+          })
+        );
       }
 
       const failedMatches = matches.row(patternIdx);
@@ -332,9 +344,9 @@ class ObjectMatch extends Matcher {
 
   constructor(
     public readonly name: string,
-    private readonly pattern: {[key: string]: any},
-    options: ObjectMatchOptions = {}) {
-
+    private readonly pattern: { [key: string]: any },
+    options: ObjectMatchOptions = {}
+  ) {
     super();
     this.partial = options.partial ?? true;
   }
@@ -370,9 +382,9 @@ class ObjectMatch extends Matcher {
         });
         continue;
       }
-      const matcher = Matcher.isMatcher(patternVal) ?
-        patternVal :
-        new LiteralMatch(this.name, patternVal, { partialObjects: this.partial });
+      const matcher = Matcher.isMatcher(patternVal)
+        ? patternVal
+        : new LiteralMatch(this.name, patternVal, { partialObjects: this.partial });
       const inner = matcher.test(actual[patternKey]);
       result.compose(patternKey, inner);
     }
@@ -384,10 +396,10 @@ class ObjectMatch extends Matcher {
 class SerializedJson extends Matcher {
   constructor(
     public readonly name: string,
-    private readonly pattern: any,
+    private readonly pattern: any
   ) {
     super();
-  };
+  }
 
   public test(actual: any): MatchResult {
     if (getType(actual) !== 'string') {
@@ -412,7 +424,9 @@ class SerializedJson extends Matcher {
       }
     }
 
-    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+    const matcher = Matcher.isMatcher(this.pattern)
+      ? this.pattern
+      : new LiteralMatch(this.name, this.pattern);
     const innerResult = matcher.test(parsed);
     if (innerResult.hasFailed()) {
       innerResult.recordFailure({
@@ -428,13 +442,15 @@ class SerializedJson extends Matcher {
 class NotMatch extends Matcher {
   constructor(
     public readonly name: string,
-    private readonly pattern: {[key: string]: any}) {
-
+    private readonly pattern: { [key: string]: any }
+  ) {
     super();
   }
 
   public test(actual: any): MatchResult {
-    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+    const matcher = Matcher.isMatcher(this.pattern)
+      ? this.pattern
+      : new LiteralMatch(this.name, this.pattern);
 
     const innerResult = matcher.test(actual);
     const result = new MatchResult(actual);
@@ -470,8 +486,8 @@ class AnyMatch extends Matcher {
 class StringLikeRegexpMatch extends Matcher {
   constructor(
     public readonly name: string,
-    private readonly pattern: string) {
-
+    private readonly pattern: string
+  ) {
     super();
   }
 
@@ -498,5 +514,4 @@ class StringLikeRegexpMatch extends Matcher {
 
     return result;
   }
-
 }

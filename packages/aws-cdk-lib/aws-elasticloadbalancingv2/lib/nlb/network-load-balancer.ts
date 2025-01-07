@@ -6,7 +6,12 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Lazy, Resource } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
+import {
+  BaseLoadBalancer,
+  BaseLoadBalancerLookupOptions,
+  BaseLoadBalancerProps,
+  ILoadBalancerV2,
+} from '../shared/base-load-balancer';
 import { IpAddressType, Protocol } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
@@ -128,8 +133,7 @@ export interface NetworkLoadBalancerAttributes {
 /**
  * Options for looking up an NetworkLoadBalancer
  */
-export interface NetworkLoadBalancerLookupOptions extends BaseLoadBalancerLookupOptions {
-}
+export interface NetworkLoadBalancerLookupOptions extends BaseLoadBalancerLookupOptions {}
 
 /**
  * The metrics for a network load balancer.
@@ -183,7 +187,7 @@ class NetworkLoadBalancerMetrics implements INetworkLoadBalancerMetrics {
 
   private cannedMetric(
     fn: (dims: { LoadBalancer: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions,
+    props?: cloudwatch.MetricOptions
   ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ LoadBalancer: this.loadBalancerFullName }),
@@ -201,7 +205,11 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   /**
    * Looks up the network load balancer.
    */
-  public static fromLookup(scope: Construct, id: string, options: NetworkLoadBalancerLookupOptions): INetworkLoadBalancer {
+  public static fromLookup(
+    scope: Construct,
+    id: string,
+    options: NetworkLoadBalancerLookupOptions
+  ): INetworkLoadBalancer {
     const props = BaseLoadBalancer._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.NETWORK,
@@ -210,16 +218,23 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     return new LookedUpNetworkLoadBalancer(scope, id, props);
   }
 
-  public static fromNetworkLoadBalancerAttributes(scope: Construct, id: string, attrs: NetworkLoadBalancerAttributes): INetworkLoadBalancer {
+  public static fromNetworkLoadBalancerAttributes(
+    scope: Construct,
+    id: string,
+    attrs: NetworkLoadBalancerAttributes
+  ): INetworkLoadBalancer {
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly connections: ec2.Connections = new ec2.Connections({
-        securityGroups: attrs.loadBalancerSecurityGroups?.map(
-          (securityGroupId, index) => ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup-${index}`, securityGroupId),
+        securityGroups: attrs.loadBalancerSecurityGroups?.map((securityGroupId, index) =>
+          ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup-${index}`, securityGroupId)
         ),
       });
       public readonly loadBalancerArn = attrs.loadBalancerArn;
       public readonly vpc?: ec2.IVpc = attrs.vpc;
-      public readonly metrics: INetworkLoadBalancerMetrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(attrs.loadBalancerArn));
+      public readonly metrics: INetworkLoadBalancerMetrics = new NetworkLoadBalancerMetrics(
+        this,
+        parseLoadBalancerFullName(attrs.loadBalancerArn)
+      );
       public readonly securityGroups?: string[] = attrs.loadBalancerSecurityGroups;
 
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
@@ -230,15 +245,23 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       }
 
       public get loadBalancerCanonicalHostedZoneId(): string {
-        if (attrs.loadBalancerCanonicalHostedZoneId) { return attrs.loadBalancerCanonicalHostedZoneId; }
+        if (attrs.loadBalancerCanonicalHostedZoneId) {
+          return attrs.loadBalancerCanonicalHostedZoneId;
+        }
         // eslint-disable-next-line max-len
-        throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
+        throw new Error(
+          `'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`
+        );
       }
 
       public get loadBalancerDnsName(): string {
-        if (attrs.loadBalancerDnsName) { return attrs.loadBalancerDnsName; }
+        if (attrs.loadBalancerDnsName) {
+          return attrs.loadBalancerDnsName;
+        }
         // eslint-disable-next-line max-len
-        throw new Error(`'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
+        throw new Error(
+          `'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`
+        );
       }
     }
 
@@ -260,7 +283,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    */
   public get securityGroups(): string[] | undefined {
     return this.isSecurityGroupsPropertyDefined || this.connections.securityGroups.length
-      ? this.connections.securityGroups.map(sg => sg.securityGroupId)
+      ? this.connections.securityGroups.map((sg) => sg.securityGroupId)
       : undefined;
   }
 
@@ -272,7 +295,12 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: Lazy.string({
         produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
       }),
-      enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
+      enablePrefixForIpv6SourceNat:
+        props.enablePrefixForIpv6SourceNat === true
+          ? 'on'
+          : props.enablePrefixForIpv6SourceNat === false
+            ? 'off'
+            : undefined,
     });
 
     this.enablePrefixForIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
@@ -286,7 +314,8 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     if (props.zonalShift !== undefined) {
       this.setAttribute('zonal_shift.config.enabled', props.zonalShift ? 'true' : 'false');
     }
-    this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
+    this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic =
+      props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
   }
 
   public get enforceSecurityGroupInboundRulesOnPrivateLinkTraffic(): string | undefined {
@@ -303,10 +332,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     // UDP listener with dual stack NLB requires prefix IPv6 source NAT to be enabled
     if (
       (props.protocol === Protocol.UDP || props.protocol === Protocol.TCP_UDP) &&
-      (this.ipAddressType === IpAddressType.DUAL_STACK || this.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) &&
+      (this.ipAddressType === IpAddressType.DUAL_STACK ||
+        this.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) &&
       this.enablePrefixForIpv6SourceNat !== true
     ) {
-      throw new Error('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.');
+      throw new Error(
+        "To add a listener with UDP protocol to a dual stack NLB, 'enablePrefixForIpv6SourceNat' must be set to true."
+      );
     }
     return new NetworkListener(this, id, {
       loadBalancer: this,
@@ -445,7 +477,6 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
  * Contains all metrics for a Network Load Balancer.
  */
 export interface INetworkLoadBalancerMetrics {
-
   /**
    * Return the given named metric for this Network Load Balancer
    *
@@ -514,8 +545,10 @@ export interface INetworkLoadBalancerMetrics {
 /**
  * A network load balancer
  */
-export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointServiceLoadBalancer, ec2.IConnectable {
-
+export interface INetworkLoadBalancer
+  extends ILoadBalancerV2,
+    ec2.IVpcEndpointServiceLoadBalancer,
+    ec2.IConnectable {
   /**
    * The VPC this load balancer has been created in (if available)
    */
@@ -569,11 +602,14 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
     this.loadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
     this.loadBalancerDnsName = props.loadBalancerDnsName;
-    this.metrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
+    this.metrics = new NetworkLoadBalancerMetrics(
+      this,
+      parseLoadBalancerFullName(props.loadBalancerArn)
+    );
     this.securityGroups = props.securityGroupIds;
     this.connections = new ec2.Connections({
-      securityGroups: props.securityGroupIds.map(
-        (securityGroupId, index) => ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${index}`, securityGroupId),
+      securityGroups: props.securityGroupIds.map((securityGroupId, index) =>
+        ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${index}`, securityGroupId)
       ),
     });
 

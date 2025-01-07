@@ -200,7 +200,6 @@ export class InsightType {
  *
  */
 export class Trail extends Resource {
-
   /**
    * Create an event rule for when an event is recorded by any Trail in the account.
    *
@@ -209,7 +208,11 @@ export class Trail extends Resource {
    *
    * Be sure to filter the event further down using an event pattern.
    */
-  public static onEvent(scope: Construct, id: string, options: events.OnEventOptions = {}): events.Rule {
+  public static onEvent(
+    scope: Construct,
+    id: string,
+    options: events.OnEventOptions = {}
+  ): events.Rule {
     const rule = new events.Rule(scope, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -253,37 +256,43 @@ export class Trail extends Resource {
 
     this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { enforceSSL: true });
 
-    this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [this.s3bucket.bucketArn],
-      actions: ['s3:GetBucketAcl'],
-      principals: [cloudTrailPrincipal],
-    }));
+    this.s3bucket.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: [this.s3bucket.bucketArn],
+        actions: ['s3:GetBucketAcl'],
+        principals: [cloudTrailPrincipal],
+      })
+    );
 
-    this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [this.s3bucket.arnForObjects(
-        `${props.s3KeyPrefix ? `${props.s3KeyPrefix}/` : ''}AWSLogs/${Stack.of(this).account}/*`,
-      )],
-      actions: ['s3:PutObject'],
-      principals: [cloudTrailPrincipal],
-      conditions: {
-        StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
-      },
-    }));
-
-    if (props.isOrganizationTrail) {
-      this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [this.s3bucket.arnForObjects(
-          `AWSLogs/${props.orgId}/*`,
-        )],
+    this.s3bucket.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: [
+          this.s3bucket.arnForObjects(
+            `${props.s3KeyPrefix ? `${props.s3KeyPrefix}/` : ''}AWSLogs/${Stack.of(this).account}/*`
+          ),
+        ],
         actions: ['s3:PutObject'],
         principals: [cloudTrailPrincipal],
         conditions: {
-          StringEquals: {
-            's3:x-amz-acl': 'bucket-owner-full-control',
-            'aws:SourceArn': `arn:${this.stack.partition}:cloudtrail:${this.s3bucket.stack.region}:${this.s3bucket.stack.account}:trail/${props.trailName}`,
-          },
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
         },
-      }));
+      })
+    );
+
+    if (props.isOrganizationTrail) {
+      this.s3bucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: [this.s3bucket.arnForObjects(`AWSLogs/${props.orgId}/*`)],
+          actions: ['s3:PutObject'],
+          principals: [cloudTrailPrincipal],
+          conditions: {
+            StringEquals: {
+              's3:x-amz-acl': 'bucket-owner-full-control',
+              'aws:SourceArn': `arn:${this.stack.partition}:cloudtrail:${this.s3bucket.stack.region}:${this.s3bucket.stack.account}:trail/${props.trailName}`,
+            },
+          },
+        })
+      );
     }
 
     this.topic = props.snsTopic;
@@ -304,10 +313,12 @@ export class Trail extends Resource {
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
-      logsRole.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-        resources: [this.logGroup.logGroupArn],
-      }));
+      logsRole.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+          resources: [this.logGroup.logGroupArn],
+        })
+      );
     }
 
     this.managementEvents = props.managementEvents;
@@ -320,11 +331,13 @@ export class Trail extends Resource {
     this.node.addValidation({ validate: () => this.validateEventSelectors() });
 
     if (props.kmsKey && props.encryptionKey) {
-      throw new Error('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey');
+      throw new Error(
+        'Both kmsKey and encryptionKey must not be specified. Use only encryptionKey'
+      );
     }
 
     if (props.insightTypes) {
-      this.insightTypeValues = props.insightTypes.map(function(t) {
+      this.insightTypeValues = props.insightTypes.map(function (t) {
         return { insightType: t.value };
       });
     }
@@ -332,9 +345,11 @@ export class Trail extends Resource {
     // TODO: not all regions support validation. Use service configuration data to fail gracefully
     const trail = new CfnTrail(this, 'Resource', {
       isLogging: true,
-      enableLogFileValidation: props.enableFileValidation == null ? true : props.enableFileValidation,
+      enableLogFileValidation:
+        props.enableFileValidation == null ? true : props.enableFileValidation,
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
-      includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
+      includeGlobalServiceEvents:
+        props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
       trailName: this.physicalName,
       kmsKeyId: props.encryptionKey?.keyArn ?? props.kmsKey?.keyArn,
       s3BucketName: this.s3bucket.bucketName,
@@ -379,7 +394,11 @@ export class Trail extends Resource {
    * @param dataResourceValues the list of data resource ARNs to include in logging (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
-  public addEventSelector(dataResourceType: DataResourceType, dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
+  public addEventSelector(
+    dataResourceType: DataResourceType,
+    dataResourceValues: string[],
+    options: AddEventSelectorOptions = {}
+  ) {
     if (dataResourceValues.length > 250) {
       throw new Error('A maximum of 250 data elements can be in one event selector');
     }
@@ -394,10 +413,12 @@ export class Trail extends Resource {
     }
 
     this.eventSelectors.push({
-      dataResources: [{
-        type: dataResourceType,
-        values: dataResourceValues,
-      }],
+      dataResources: [
+        {
+          type: dataResourceType,
+          values: dataResourceValues,
+        },
+      ],
       includeManagementEvents: options.includeManagementEvents ?? includeAllManagementEvents,
       excludeManagementEventSources: options.excludeManagementEventSources,
       readWriteType: options.readWriteType,
@@ -416,8 +437,13 @@ export class Trail extends Resource {
    * @param handlers the list of lambda function handlers whose data events should be logged (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
-  public addLambdaEventSelector(handlers: lambda.IFunction[], options: AddEventSelectorOptions = {}) {
-    if (handlers.length === 0) { return; }
+  public addLambdaEventSelector(
+    handlers: lambda.IFunction[],
+    options: AddEventSelectorOptions = {}
+  ) {
+    if (handlers.length === 0) {
+      return;
+    }
     const dataResourceValues = handlers.map((h) => h.functionArn);
     return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, dataResourceValues, options);
   }
@@ -428,7 +454,11 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllLambdaDataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [`arn:${this.stack.partition}:lambda`], options);
+    return this.addEventSelector(
+      DataResourceType.LAMBDA_FUNCTION,
+      [`arn:${this.stack.partition}:lambda`],
+      options
+    );
   }
 
   /**
@@ -444,8 +474,12 @@ export class Trail extends Resource {
    * @param options the options to configure logging of management and data events.
    */
   public addS3EventSelector(s3Selector: S3EventSelector[], options: AddEventSelectorOptions = {}) {
-    if (s3Selector.length === 0) { return; }
-    const dataResourceValues = s3Selector.map((sel) => `${sel.bucket.bucketArn}/${sel.objectPrefix ?? ''}`);
+    if (s3Selector.length === 0) {
+      return;
+    }
+    const dataResourceValues = s3Selector.map(
+      (sel) => `${sel.bucket.bucketArn}/${sel.objectPrefix ?? ''}`
+    );
     return this.addEventSelector(DataResourceType.S3_OBJECT, dataResourceValues, options);
   }
 
@@ -455,7 +489,11 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.S3_OBJECT, [`arn:${this.stack.partition}:s3:::`], options);
+    return this.addEventSelector(
+      DataResourceType.S3_OBJECT,
+      [`arn:${this.stack.partition}:s3:::`],
+      options
+    );
   }
 
   /**
@@ -476,7 +514,9 @@ export class Trail extends Resource {
     const errors: string[] = [];
     // Ensure that there is at least one event selector when management events are set to None
     if (this.managementEvents === ReadWriteType.NONE && this.eventSelectors.length === 0) {
-      errors.push('At least one event selector must be added when management event recording is set to None');
+      errors.push(
+        'At least one event selector must be added when management event recording is set to None'
+      );
     }
     return errors;
   }

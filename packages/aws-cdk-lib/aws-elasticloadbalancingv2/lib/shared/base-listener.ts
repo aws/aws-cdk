@@ -76,11 +76,18 @@ export abstract class BaseListener extends Resource implements IListener {
    * listener info.
    * @internal
    */
-  protected static _queryContextProvider(scope: Construct, options: ListenerQueryContextProviderOptions) {
-    if (Token.isUnresolved(options.userOptions.loadBalancerArn)
-      || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)
-      || Token.isUnresolved(options.userOptions.listenerPort)) {
-      throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
+  protected static _queryContextProvider(
+    scope: Construct,
+    options: ListenerQueryContextProviderOptions
+  ) {
+    if (
+      Token.isUnresolved(options.userOptions.loadBalancerArn) ||
+      Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved) ||
+      Token.isUnresolved(options.userOptions.listenerPort)
+    ) {
+      throw new Error(
+        'All arguments to look up a load balancer listener must be concrete (no Tokens)'
+      );
     }
 
     let cxschemaTags: cxschema.Tag[] | undefined;
@@ -126,7 +133,10 @@ export abstract class BaseListener extends Resource implements IListener {
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
       defaultActions: Lazy.any({ produce: () => this.defaultAction?.renderActions() ?? [] }),
-      listenerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
+      listenerAttributes: Lazy.any(
+        { produce: () => renderAttributes(this.attributes) },
+        { omitEmptyArray: true }
+      ),
     });
 
     this.listenerArn = resource.ref;
@@ -154,7 +164,9 @@ export abstract class BaseListener extends Resource implements IListener {
    */
   protected validateListener(): string[] {
     if (!this.defaultAction) {
-      return ['Listener needs at least one default action or target group (call addTargetGroups or addAction)'];
+      return [
+        'Listener needs at least one default action or target group (call addTargetGroups or addAction)',
+      ];
     }
     return [];
   }
@@ -175,7 +187,10 @@ export abstract class BaseListener extends Resource implements IListener {
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
     if (this.defaultAction) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:listenerExistingDefaultActionReplaced', 'A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-elbv2:listenerExistingDefaultActionReplaced',
+        'A default Action already existed on this Listener and was replaced. Configure exactly one default Action.'
+      );
     }
 
     this.defaultAction = action;

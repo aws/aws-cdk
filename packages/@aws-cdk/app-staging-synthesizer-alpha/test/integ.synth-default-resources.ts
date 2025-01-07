@@ -28,7 +28,7 @@ new lambda.Function(stack, 'lambda-s3', {
   runtime: lambda.Runtime.PYTHON_3_10,
 });
 
-for (let i = 1; i < IMAGE_COPIES+1; i++) {
+for (let i = 1; i < IMAGE_COPIES + 1; i++) {
   new lambda.Function(stack, `lambda-ecr-${i}`, {
     code: lambda.EcrImageCode.fromAssetImage(path.join(__dirname, 'assets'), {
       assetName: `ecr-asset/${i}`,
@@ -56,7 +56,9 @@ new lambda.Function(stack, 'lambda-ecr-two', {
   runtime: lambda.Runtime.FROM_IMAGE,
 });
 
-const defaultStagingStack = app.node.tryFindChild(`StagingStack-${APP_ID_MAX}-ACCOUNT-REGION`) as Stack;
+const defaultStagingStack = app.node.tryFindChild(
+  `StagingStack-${APP_ID_MAX}-ACCOUNT-REGION`
+) as Stack;
 if (!defaultStagingStack) {
   throw new Error('Default Staging Stack not found');
 }

@@ -7,26 +7,31 @@ import { EventPattern } from './event-pattern';
  * See `rule.addEventPattern` for details.
  */
 export function mergeEventPattern(dest: any, src: any) {
-  dest = dest || { };
+  dest = dest || {};
 
   mergeObject(dest, src);
 
   return dest;
 
   function mergeObject(destObj: any, srcObj: any) {
-    if (typeof(srcObj) !== 'object') {
-      throw new Error(`Invalid event pattern '${JSON.stringify(srcObj)}', expecting an object or an array`);
+    if (typeof srcObj !== 'object') {
+      throw new Error(
+        `Invalid event pattern '${JSON.stringify(srcObj)}', expecting an object or an array`
+      );
     }
 
     for (const field of Object.keys(srcObj)) {
-
       const srcValue = srcObj[field];
       const destValue = destObj[field];
 
-      if (srcValue === undefined) { continue; }
+      if (srcValue === undefined) {
+        continue;
+      }
 
-      if (typeof(srcValue) !== 'object') {
-        throw new Error(`Invalid event pattern field { ${field}: ${JSON.stringify(srcValue)} }. All fields must be arrays`);
+      if (typeof srcValue !== 'object') {
+        throw new Error(
+          `Invalid event pattern field { ${field}: ${JSON.stringify(srcValue)} }. All fields must be arrays`
+        );
       }
 
       // dest doesn't have this field
@@ -36,15 +41,19 @@ export function mergeEventPattern(dest: any, src: any) {
       }
 
       if (Array.isArray(srcValue) !== Array.isArray(destValue)) {
-        throw new Error(`Invalid event pattern field ${field}. ` +
-          `Type mismatch between existing pattern ${JSON.stringify(destValue)} and added pattern ${JSON.stringify(srcValue)}`);
+        throw new Error(
+          `Invalid event pattern field ${field}. ` +
+            `Type mismatch between existing pattern ${JSON.stringify(destValue)} and added pattern ${JSON.stringify(srcValue)}`
+        );
       }
 
       // if this is an array, concat and deduplicate the values
       if (Array.isArray(srcValue)) {
         const result = [...destValue, ...srcValue];
-        const resultJson = result.map(i => JSON.stringify(i));
-        destObj[field] = result.filter((value, index) => resultJson.indexOf(JSON.stringify(value)) === index);
+        const resultJson = result.map((i) => JSON.stringify(i));
+        destObj[field] = result.filter(
+          (value, index) => resultJson.indexOf(JSON.stringify(value)) === index
+        );
         continue;
       }
 

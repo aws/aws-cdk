@@ -25,17 +25,17 @@ const awsConfig = {
 let eks: EKS | undefined;
 
 const defaultEksClient: EksClient = {
-  createCluster: req => getEksClient().createCluster(req),
-  deleteCluster: req => getEksClient().deleteCluster(req),
-  describeCluster: req => getEksClient().describeCluster(req),
-  describeUpdate: req => getEksClient().describeUpdate(req),
-  updateClusterConfig: req => getEksClient().updateClusterConfig(req),
-  updateClusterVersion: req => getEksClient().updateClusterVersion(req),
-  createFargateProfile: req => getEksClient().createFargateProfile(req),
-  deleteFargateProfile: req => getEksClient().deleteFargateProfile(req),
-  describeFargateProfile: req => getEksClient().describeFargateProfile(req),
-  tagResource: req => getEksClient().tagResource(req),
-  untagResource: req => getEksClient().untagResource(req),
+  createCluster: (req) => getEksClient().createCluster(req),
+  deleteCluster: (req) => getEksClient().deleteCluster(req),
+  describeCluster: (req) => getEksClient().describeCluster(req),
+  describeUpdate: (req) => getEksClient().describeUpdate(req),
+  updateClusterConfig: (req) => getEksClient().updateClusterConfig(req),
+  updateClusterVersion: (req) => getEksClient().updateClusterVersion(req),
+  createFargateProfile: (req) => getEksClient().createFargateProfile(req),
+  deleteFargateProfile: (req) => getEksClient().deleteFargateProfile(req),
+  describeFargateProfile: (req) => getEksClient().describeFargateProfile(req),
+  tagResource: (req) => getEksClient().tagResource(req),
+  untagResource: (req) => getEksClient().untagResource(req),
   configureAssumeRole: (req) => {
     eks = new EKS({
       ...awsConfig,
@@ -59,15 +59,19 @@ export async function onEvent(event: AWSLambda.CloudFormationCustomResourceEvent
   return provider.onEvent();
 }
 
-export async function isComplete(event: AWSLambda.CloudFormationCustomResourceEvent): Promise<IsCompleteResponse> {
+export async function isComplete(
+  event: AWSLambda.CloudFormationCustomResourceEvent
+): Promise<IsCompleteResponse> {
   const provider = createResourceHandler(event);
   return provider.isComplete();
 }
 
 function createResourceHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.ResourceType) {
-    case consts.CLUSTER_RESOURCE_TYPE: return new ClusterResourceHandler(defaultEksClient, event);
-    case consts.FARGATE_PROFILE_RESOURCE_TYPE: return new FargateProfileResourceHandler(defaultEksClient, event);
+    case consts.CLUSTER_RESOURCE_TYPE:
+      return new ClusterResourceHandler(defaultEksClient, event);
+    case consts.FARGATE_PROFILE_RESOURCE_TYPE:
+      return new FargateProfileResourceHandler(defaultEksClient, event);
     default:
       throw new Error(`Unsupported resource type "${event.ResourceType}`);
   }

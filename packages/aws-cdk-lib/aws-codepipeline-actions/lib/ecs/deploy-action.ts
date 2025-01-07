@@ -70,42 +70,48 @@ export class EcsDeployAction extends Action {
 
     const deploymentTimeout = props.deploymentTimeout?.toMinutes({ integral: true });
     if (deploymentTimeout !== undefined && (deploymentTimeout < 1 || deploymentTimeout > 60)) {
-      throw new Error(`Deployment timeout must be between 1 and 60 minutes, got: ${deploymentTimeout}`);
+      throw new Error(
+        `Deployment timeout must be between 1 and 60 minutes, got: ${deploymentTimeout}`
+      );
     }
 
     this.props = props;
     this.deploymentTimeout = deploymentTimeout;
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     // permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
-    options.role.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'ecs:DescribeServices',
-        'ecs:DescribeTaskDefinition',
-        'ecs:DescribeTasks',
-        'ecs:ListTasks',
-        'ecs:RegisterTaskDefinition',
-        'ecs:TagResource',
-        'ecs:UpdateService',
-      ],
-      resources: ['*'],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'ecs:DescribeServices',
+          'ecs:DescribeTaskDefinition',
+          'ecs:DescribeTasks',
+          'ecs:ListTasks',
+          'ecs:RegisterTaskDefinition',
+          'ecs:TagResource',
+          'ecs:UpdateService',
+        ],
+        resources: ['*'],
+      })
+    );
 
-    options.role.addToPolicy(new iam.PolicyStatement({
-      actions: ['iam:PassRole'],
-      resources: ['*'],
-      conditions: {
-        StringEqualsIfExists: {
-          'iam:PassedToService': [
-            'ec2.amazonaws.com',
-            'ecs-tasks.amazonaws.com',
-          ],
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: ['*'],
+        conditions: {
+          StringEqualsIfExists: {
+            'iam:PassedToService': ['ec2.amazonaws.com', 'ecs-tasks.amazonaws.com'],
+          },
         },
-      },
-    }));
+      })
+    );
 
     options.bucket.grantRead(options.role);
 
@@ -122,7 +128,9 @@ export class EcsDeployAction extends Action {
 
 function determineInputArtifact(props: EcsDeployActionProps): codepipeline.Artifact {
   if (props.imageFile && props.input) {
-    throw new Error("Exactly one of 'input' or 'imageFile' can be provided in the ECS deploy Action");
+    throw new Error(
+      "Exactly one of 'input' or 'imageFile' can be provided in the ECS deploy Action"
+    );
   }
   if (props.imageFile) {
     return props.imageFile.artifact;

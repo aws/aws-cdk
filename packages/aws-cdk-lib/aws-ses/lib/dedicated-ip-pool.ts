@@ -64,7 +64,11 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
   /**
    * Use an existing dedicated IP pool
    */
-  public static fromDedicatedIpPoolName(scope: Construct, id: string, dedicatedIpPoolName: string): IDedicatedIpPool {
+  public static fromDedicatedIpPoolName(
+    scope: Construct,
+    id: string,
+    dedicatedIpPoolName: string
+  ): IDedicatedIpPool {
     class Import extends Resource implements IDedicatedIpPool {
       public readonly dedicatedIpPoolName = dedicatedIpPoolName;
     }
@@ -79,7 +83,9 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
     });
 
     if (props.dedicatedIpPoolName && !/^[a-z0-9_-]{0,64}$/.test(props.dedicatedIpPoolName)) {
-      throw new Error(`Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`);
+      throw new Error(
+        `Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`
+      );
     }
 
     const pool = new CfnDedicatedIpPool(this, 'Resource', {

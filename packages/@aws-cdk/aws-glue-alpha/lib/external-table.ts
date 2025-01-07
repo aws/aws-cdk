@@ -65,10 +65,10 @@ export class ExternalTable extends TableBase {
         partitionKeys: renderColumns(props.partitionKeys),
 
         parameters: {
-          'classification': props.dataFormat.classificationString?.value,
-          'has_encrypted_data': true,
+          classification: props.dataFormat.classificationString?.value,
+          has_encrypted_data: true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
-          'connectionName': props.connection.connectionName,
+          connectionName: props.connection.connectionName,
           ...props.parameters,
         },
         storageDescriptor: {
@@ -81,14 +81,19 @@ export class ExternalTable extends TableBase {
           serdeInfo: {
             serializationLibrary: props.dataFormat.serializationLibrary.className,
           },
-          parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
-            if (param.key in acc) {
-              throw new Error(`Duplicate storage parameter key: ${param.key}`);
-            }
-            const key = param.key;
-            acc[key] = param.value;
-            return acc;
-          }, {} as { [key: string]: string }) : undefined,
+          parameters: props.storageParameters
+            ? props.storageParameters.reduce(
+                (acc, param) => {
+                  if (param.key in acc) {
+                    throw new Error(`Duplicate storage parameter key: ${param.key}`);
+                  }
+                  const key = param.key;
+                  acc[key] = param.value;
+                  return acc;
+                },
+                {} as { [key: string]: string }
+              )
+            : undefined,
         },
 
         tableType: 'EXTERNAL_TABLE',
@@ -163,7 +168,7 @@ function renderColumns(columns?: Array<Column | Column>) {
   if (columns === undefined) {
     return undefined;
   }
-  return columns.map(column => {
+  return columns.map((column) => {
     return {
       name: column.name,
       type: column.type.inputString,

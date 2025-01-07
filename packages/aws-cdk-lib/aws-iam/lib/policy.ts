@@ -3,7 +3,12 @@ import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import {
+  AddToPrincipalPolicyResult,
+  IGrantable,
+  IPrincipal,
+  PrincipalPolicyFragment,
+} from './principals';
 import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
@@ -103,7 +108,6 @@ export interface PolicyProps {
  * in the IAM User Guide guide.
  */
 export class Policy extends Resource implements IPolicy, IGrantable {
-
   /**
    * Import a policy in this app based on its name
    */
@@ -131,7 +135,8 @@ export class Policy extends Resource implements IPolicy, IGrantable {
 
   constructor(scope: Construct, id: string, props: PolicyProps = {}) {
     super(scope, id, {
-      physicalName: props.policyName ||
+      physicalName:
+        props.policyName ||
         // generatePolicyName will take the last 128 characters of the logical id since
         // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
         // that shouod be sufficient to ensure uniqueness within a principal.
@@ -158,28 +163,28 @@ export class Policy extends Resource implements IPolicy, IGrantable {
     const resource = new CfnPolicyConditional(this, 'Resource', {
       policyDocument: this.document,
       policyName: this.physicalName,
-      roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
-      users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
-      groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
+      roles: undefinedIfEmpty(() => this.roles.map((r) => r.roleName)),
+      users: undefinedIfEmpty(() => this.users.map((u) => u.userName)),
+      groups: undefinedIfEmpty(() => this.groups.map((g) => g.groupName)),
     });
 
     this._policyName = this.physicalName!;
     this.force = props.force ?? false;
 
     if (props.users) {
-      props.users.forEach(u => this.attachToUser(u));
+      props.users.forEach((u) => this.attachToUser(u));
     }
 
     if (props.groups) {
-      props.groups.forEach(g => this.attachToGroup(g));
+      props.groups.forEach((g) => this.attachToGroup(g));
     }
 
     if (props.roles) {
-      props.roles.forEach(r => this.attachToRole(r));
+      props.roles.forEach((r) => this.attachToRole(r));
     }
 
     if (props.statements) {
-      props.statements.forEach(p => this.addStatements(p));
+      props.statements.forEach((p) => this.addStatements(p));
     }
 
     this.grantPrincipal = new PolicyGrantPrincipal(this);
@@ -198,7 +203,9 @@ export class Policy extends Resource implements IPolicy, IGrantable {
    * Attaches this policy to a user.
    */
   public attachToUser(user: IUser) {
-    if (this.users.find(u => u.userArn === user.userArn)) { return; }
+    if (this.users.find((u) => u.userArn === user.userArn)) {
+      return;
+    }
     this.users.push(user);
     user.attachInlinePolicy(this);
   }
@@ -207,7 +214,9 @@ export class Policy extends Resource implements IPolicy, IGrantable {
    * Attaches this policy to a role.
    */
   public attachToRole(role: IRole) {
-    if (this.roles.find(r => r.roleArn === role.roleArn)) { return; }
+    if (this.roles.find((r) => r.roleArn === role.roleArn)) {
+      return;
+    }
     this.roles.push(role);
     role.attachInlinePolicy(this);
   }
@@ -216,7 +225,9 @@ export class Policy extends Resource implements IPolicy, IGrantable {
    * Attaches this policy to a group.
    */
   public attachToGroup(group: IGroup) {
-    if (this.groups.find(g => g.groupArn === group.groupArn)) { return; }
+    if (this.groups.find((g) => g.groupArn === group.groupArn)) {
+      return;
+    }
     this.groups.push(group);
     group.attachInlinePolicy(this);
   }
@@ -237,20 +248,28 @@ export class Policy extends Resource implements IPolicy, IGrantable {
     // validate that the policy document is not empty
     if (this.document.isEmpty) {
       if (this.force) {
-        result.push('Policy created with force=true is empty. You must add statements to the policy');
+        result.push(
+          'Policy created with force=true is empty. You must add statements to the policy'
+        );
       }
       if (!this.force && this.referenceTaken) {
-        result.push('This Policy has been referenced by a resource, so it must contain at least one statement.');
+        result.push(
+          'This Policy has been referenced by a resource, so it must contain at least one statement.'
+        );
       }
     }
 
     // validate that the policy is attached to at least one principal (role, user or group).
     if (!this.isAttached) {
       if (this.force) {
-        result.push('Policy created with force=true must be attached to at least one principal: user, group or role');
+        result.push(
+          'Policy created with force=true must be attached to at least one principal: user, group or role'
+        );
       }
       if (!this.force && this.referenceTaken) {
-        result.push('This Policy has been referenced by a resource, so it must be attached to at least one user, group or role.');
+        result.push(
+          'This Policy has been referenced by a resource, so it must be attached to at least one user, group or role.'
+        );
       }
     }
 
@@ -281,7 +300,9 @@ class PolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a resource-based policy.
     // We should fail because a policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new Error(`Cannot use a Policy '${this._policy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    throw new Error(
+      `Cannot use a Policy '${this._policy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`
+    );
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

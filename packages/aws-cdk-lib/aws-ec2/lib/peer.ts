@@ -78,12 +78,14 @@ export class Peer {
   /**
    * A security group ID
    */
-  public static securityGroupId(securityGroupId: string, sourceSecurityGroupOwnerId?: string): IPeer {
+  public static securityGroupId(
+    securityGroupId: string,
+    sourceSecurityGroupOwnerId?: string
+  ): IPeer {
     return new SecurityGroupId(securityGroupId, sourceSecurityGroupOwnerId);
   }
 
-  protected constructor() {
-  }
+  protected constructor() {}
 }
 
 /**
@@ -150,7 +152,9 @@ class CidrIPv6 implements IPeer {
       }
 
       if (!cidrMatch[3]) {
-        throw new Error(`CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`);
+        throw new Error(
+          `CIDR mask is missing in IPv6: "${cidrIpv6}". Did you mean "${cidrIpv6}/128"?`
+        );
       }
     }
 
@@ -219,7 +223,10 @@ class SecurityGroupId implements IPeer {
   public readonly connections: Connections = new Connections({ peer: this });
   public readonly uniqueId: string;
 
-  constructor(private readonly securityGroupId: string, private readonly sourceSecurityGroupOwnerId?: string) {
+  constructor(
+    private readonly securityGroupId: string,
+    private readonly sourceSecurityGroupOwnerId?: string
+  ) {
     if (!Token.isUnresolved(securityGroupId)) {
       const securityGroupMatch = securityGroupId.match(/^sg-[a-z0-9]{8,17}$/);
 
@@ -244,7 +251,9 @@ class SecurityGroupId implements IPeer {
   public toIngressRuleConfig(): any {
     return {
       sourceSecurityGroupId: this.securityGroupId,
-      ...(this.sourceSecurityGroupOwnerId && { sourceSecurityGroupOwnerId: this.sourceSecurityGroupOwnerId }),
+      ...(this.sourceSecurityGroupOwnerId && {
+        sourceSecurityGroupOwnerId: this.sourceSecurityGroupOwnerId,
+      }),
     };
   }
 

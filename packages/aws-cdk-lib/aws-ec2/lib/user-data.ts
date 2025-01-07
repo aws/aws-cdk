@@ -36,7 +36,6 @@ export interface WindowsUserDataOptions {
  * Options when downloading files from S3
  */
 export interface S3DownloadOptions {
-
   /**
    * Name of the S3 bucket to download from
    */
@@ -60,14 +59,12 @@ export interface S3DownloadOptions {
    * @default none
    */
   readonly region?: string;
-
 }
 
 /**
  * Options when executing a file.
  */
 export interface ExecuteFileOptions {
-
   /**
    * The path to the file.
    */
@@ -79,7 +76,6 @@ export interface ExecuteFileOptions {
    * @default No arguments are passed to the file.
    */
   readonly arguments?: string;
-
 }
 
 /**
@@ -111,9 +107,12 @@ export abstract class UserData {
 
   public static forOperatingSystem(os: OperatingSystemType): UserData {
     switch (os) {
-      case OperatingSystemType.LINUX: return UserData.forLinux();
-      case OperatingSystemType.WINDOWS: return UserData.forWindows();
-      case OperatingSystemType.UNKNOWN: throw new Error('Cannot determine UserData for unknown operating system type');
+      case OperatingSystemType.LINUX:
+        return UserData.forLinux();
+      case OperatingSystemType.WINDOWS:
+        return UserData.forWindows();
+      case OperatingSystemType.UNKNOWN:
+        throw new Error('Cannot determine UserData for unknown operating system type');
     }
   }
 
@@ -142,13 +141,12 @@ export abstract class UserData {
   /**
    * Adds commands to execute a file
    */
-  public abstract addExecuteFileCommand( params: ExecuteFileOptions): void;
+  public abstract addExecuteFileCommand(params: ExecuteFileOptions): void;
 
   /**
    * Adds a command which will send a cfn-signal when the user data script ends
    */
-  public abstract addSignalOnExitCommand( resource: Resource ): void;
-
+  public abstract addSignalOnExitCommand(resource: Resource): void;
 }
 
 /**
@@ -172,37 +170,49 @@ class LinuxUserData extends UserData {
 
   public render(): string {
     const shebang = this.props.shebang ?? '#!/bin/bash';
-    return [shebang, ...(this.renderOnExitLines()), ...this.lines].join('\n');
+    return [shebang, ...this.renderOnExitLines(), ...this.lines].join('\n');
   }
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
     const s3Path = `s3://${params.bucket.bucketName}/${params.bucketKey}`;
-    const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
+    const localPath =
+      params.localFile && params.localFile.length !== 0
+        ? params.localFile
+        : `/tmp/${params.bucketKey}`;
     this.addCommands(
       `mkdir -p $(dirname '${localPath}')`,
-      `aws s3 cp '${s3Path}' '${localPath}'` + (params.region !== undefined ? ` --region ${params.region}` : ''),
+      `aws s3 cp '${s3Path}' '${localPath}'` +
+        (params.region !== undefined ? ` --region ${params.region}` : '')
     );
 
     return localPath;
   }
 
-  public addExecuteFileCommand( params: ExecuteFileOptions): void {
+  public addExecuteFileCommand(params: ExecuteFileOptions): void {
     this.addCommands(
       'set -e',
       `chmod +x '${params.filePath}'`,
-      `'${params.filePath}' ${params.arguments ?? ''}`.trim(),
+      `'${params.filePath}' ${params.arguments ?? ''}`.trim()
     );
   }
 
-  public addSignalOnExitCommand( resource: Resource ): void {
+  public addSignalOnExitCommand(resource: Resource): void {
     const stack = Stack.of(resource);
     const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
-    this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
+    this.addOnExitCommands(
+      `/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`
+    );
   }
 
   private renderOnExitLines(): string[] {
-    if ( this.onExitLines.length > 0 ) {
-      return ['function exitTrap(){', 'exitCode=$?', ...this.onExitLines, '}', 'trap exitTrap EXIT'];
+    if (this.onExitLines.length > 0) {
+      return [
+        'function exitTrap(){',
+        'exitCode=$?',
+        ...this.onExitLines,
+        '}',
+        'trap exitTrap EXIT',
+      ];
     }
     return [];
   }
@@ -228,39 +238,51 @@ class WindowsUserData extends UserData {
   }
 
   public render(): string {
-    return `<powershell>${
-      [...(this.renderOnExitLines()),
-        ...this.lines,
-        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )].join('\n')
-    }</powershell>${(this.props.persist ?? false) ? '<persist>true</persist>' : ''}`;
+    return `<powershell>${[
+      ...this.renderOnExitLines(),
+      ...this.lines,
+      ...(this.onExitLines.length > 0 ? ['throw "Success"'] : []),
+    ].join('\n')}</powershell>${(this.props.persist ?? false) ? '<persist>true</persist>' : ''}`;
   }
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
-    const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
+    const localPath =
+      params.localFile && params.localFile.length !== 0
+        ? params.localFile
+        : `C:/temp/${params.bucketKey}`;
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
+      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` +
+        (params.region !== undefined ? ` -Region ${params.region}` : '')
     );
     return localPath;
   }
 
-  public addExecuteFileCommand( params: ExecuteFileOptions): void {
+  public addExecuteFileCommand(params: ExecuteFileOptions): void {
     this.addCommands(
       `&'${params.filePath}' ${params.arguments ?? ''}`.trim(),
-      `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`,
+      `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`
     );
   }
 
-  public addSignalOnExitCommand( resource: Resource ): void {
+  public addSignalOnExitCommand(resource: Resource): void {
     const stack = Stack.of(resource);
     const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
 
-    this.addOnExitCommands(`cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success ($success.ToString().ToLower())`);
+    this.addOnExitCommands(
+      `cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success ($success.ToString().ToLower())`
+    );
   }
 
   private renderOnExitLines(): string[] {
-    if ( this.onExitLines.length > 0 ) {
-      return ['trap {', '$success=($PSItem.Exception.Message -eq "Success")', ...this.onExitLines, 'break', '}'];
+    if (this.onExitLines.length > 0) {
+      return [
+        'trap {',
+        '$success=($PSItem.Exception.Message -eq "Success")',
+        ...this.onExitLines,
+        'break',
+        '}',
+      ];
     }
     return [];
   }
@@ -281,7 +303,9 @@ class CustomUserData extends UserData {
   }
 
   public addOnExitCommands(): void {
-    throw new Error('CustomUserData does not support addOnExitCommands, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new Error(
+      'CustomUserData does not support addOnExitCommands, use UserData.forLinux() or UserData.forWindows() instead.'
+    );
   }
 
   public render(): string {
@@ -289,15 +313,21 @@ class CustomUserData extends UserData {
   }
 
   public addS3DownloadCommand(): string {
-    throw new Error('CustomUserData does not support addS3DownloadCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new Error(
+      'CustomUserData does not support addS3DownloadCommand, use UserData.forLinux() or UserData.forWindows() instead.'
+    );
   }
 
   public addExecuteFileCommand(): void {
-    throw new Error('CustomUserData does not support addExecuteFileCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new Error(
+      'CustomUserData does not support addExecuteFileCommand, use UserData.forLinux() or UserData.forWindows() instead.'
+    );
   }
 
   public addSignalOnExitCommand(): void {
-    throw new Error('CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new Error(
+      'CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.'
+    );
   }
 }
 
@@ -305,7 +335,6 @@ class CustomUserData extends UserData {
  * Options when creating `MultipartBody`.
  */
 export interface MultipartBodyOptions {
-
   /**
    * `Content-Type` header of this part.
    *
@@ -369,8 +398,7 @@ export abstract class MultipartBody {
     return new MultipartBodyRaw(opts);
   }
 
-  public constructor() {
-  }
+  public constructor() {}
 
   /**
    * Render body part as the string.
@@ -417,7 +445,10 @@ class MultipartBodyRaw extends MultipartBody {
 class MultipartBodyUserDataWrapper extends MultipartBody {
   private readonly contentType: string;
 
-  public constructor(private readonly userData: UserData, contentType?: string) {
+  public constructor(
+    private readonly userData: UserData,
+    contentType?: string
+  ) {
     super();
 
     this.contentType = contentType || MultipartBody.SHELL_SCRIPT;
@@ -460,7 +491,8 @@ export interface MultipartUserDataOptions {
  *
  */
 export class MultipartUserData extends UserData {
-  private static readonly USE_PART_ERROR = 'MultipartUserData only supports this operation if it has a default UserData. Call addUserDataPart with makeDefault=true.';
+  private static readonly USE_PART_ERROR =
+    'MultipartUserData only supports this operation if it has a default UserData. Call addUserDataPart with makeDefault=true.';
   private static readonly BOUNDRY_PATTERN = '[^a-zA-Z0-9()+,-./:=?]';
 
   private parts: MultipartBody[] = [];
@@ -477,7 +509,9 @@ export class MultipartUserData extends UserData {
     // Validate separator
     if (opts?.partsSeparator != null) {
       if (new RegExp(MultipartUserData.BOUNDRY_PATTERN).test(opts!.partsSeparator)) {
-        throw new Error(`Invalid characters in separator. Separator has to match pattern ${MultipartUserData.BOUNDRY_PATTERN}`);
+        throw new Error(
+          `Invalid characters in separator. Separator has to match pattern ${MultipartUserData.BOUNDRY_PATTERN}`
+        );
       } else {
         partsSeparator = opts!.partsSeparator;
       }
@@ -540,7 +574,7 @@ export class MultipartUserData extends UserData {
     resultArchive.push('');
 
     // Add parts - each part starts with boundary
-    this.parts.forEach(part => {
+    this.parts.forEach((part) => {
       resultArchive.push(`--${boundary}`);
       resultArchive.push(...part.renderBodyPart());
     });

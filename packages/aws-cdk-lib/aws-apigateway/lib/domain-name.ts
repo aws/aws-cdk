@@ -115,11 +115,14 @@ export interface IDomainName extends IResource {
 }
 
 export class DomainName extends Resource implements IDomainName {
-
   /**
    * Imports an existing domain name.
    */
-  public static fromDomainNameAttributes(scope: Construct, id: string, attrs: DomainNameAttributes): IDomainName {
+  public static fromDomainNameAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DomainNameAttributes
+  ): IDomainName {
     class Import extends Resource implements IDomainName {
       public readonly domainName = attrs.domainName;
       public readonly domainNameAliasDomainName = attrs.domainNameAliasTarget;
@@ -182,10 +185,14 @@ export class DomainName extends Resource implements IDomainName {
   private validateBasePath(path?: string): boolean {
     if (this.isMultiLevel(path)) {
       if (this.endpointType === EndpointType.EDGE) {
-        throw new Error('multi-level basePath is only supported when endpointType is EndpointType.REGIONAL');
+        throw new Error(
+          'multi-level basePath is only supported when endpointType is EndpointType.REGIONAL'
+        );
       }
       if (this.securityPolicy && this.securityPolicy !== SecurityPolicy.TLS_1_2) {
-        throw new Error('securityPolicy must be set to TLS_1_2 if multi-level basePath is provided');
+        throw new Error(
+          'securityPolicy must be set to TLS_1_2 if multi-level basePath is provided'
+        );
       }
       return true;
     }
@@ -193,7 +200,7 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   private isMultiLevel(path?: string): boolean {
-    return (path?.split('/').filter(x => !!x) ?? []).length >= 2;
+    return (path?.split('/').filter((x) => !!x) ?? []).length >= 2;
   }
 
   /**
@@ -206,12 +213,19 @@ export class DomainName extends Resource implements IDomainName {
    * @param targetApi That target API endpoint, requests will be mapped to the deployment stage.
    * @param options Options for mapping to base path with or without a stage
    */
-  public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = { }): BasePathMapping {
+  public addBasePathMapping(
+    targetApi: IRestApi,
+    options: BasePathMappingOptions = {}
+  ): BasePathMapping {
     if (this.basePaths.has(options.basePath)) {
-      throw new Error(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`);
+      throw new Error(
+        `DomainName ${this.node.id} already has a mapping for path ${options.basePath}`
+      );
     }
     if (this.isMultiLevel(options.basePath)) {
-      throw new Error('BasePathMapping does not support multi-level paths. Use "addApiMapping instead.');
+      throw new Error(
+        'BasePathMapping does not support multi-level paths. Use "addApiMapping instead.'
+      );
     }
 
     this.basePaths.add(options.basePath);
@@ -237,7 +251,9 @@ export class DomainName extends Resource implements IDomainName {
    */
   public addApiMapping(targetStage: IStage, options: ApiMappingOptions = {}): void {
     if (this.basePaths.has(options.basePath)) {
-      throw new Error(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`);
+      throw new Error(
+        `DomainName ${this.node.id} already has a mapping for path ${options.basePath}`
+      );
     }
     this.validateBasePath(options.basePath);
     this.basePaths.add(options.basePath);
@@ -250,7 +266,9 @@ export class DomainName extends Resource implements IDomainName {
     });
   }
 
-  private configureMTLS(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
+  private configureMTLS(
+    mtlsConfig?: MTLSConfig
+  ): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
     if (!mtlsConfig) return undefined;
     return {
       truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),

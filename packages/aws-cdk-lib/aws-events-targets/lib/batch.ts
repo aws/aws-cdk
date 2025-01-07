@@ -1,5 +1,10 @@
 import { IConstruct } from 'constructs';
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import {
+  addToDeadLetterQueueResourcePolicy,
+  bindBaseTargetConfig,
+  singletonEventRole,
+  TargetBaseProps,
+} from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import { Names, Token } from '../../core';
@@ -69,8 +74,8 @@ export class BatchJob implements events.IRuleTarget {
      * The JobQueue Resource
      */
     private readonly jobDefinitionScope: IConstruct,
-    private readonly props: BatchJobProps = {},
-  ) { }
+    private readonly props: BatchJobProps = {}
+  ) {}
 
   /**
    * Returns a RuleTarget that can be used to trigger queue this batch job as a
@@ -78,9 +83,11 @@ export class BatchJob implements events.IRuleTarget {
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     this.validateJobName(this.props.jobName);
-    const jobName = this.props.jobName ?? Names.uniqueResourceName(rule, {
-      maxLength: 128,
-    });
+    const jobName =
+      this.props.jobName ??
+      Names.uniqueResourceName(rule, {
+        maxLength: 128,
+      });
     const batchParameters: events.CfnRule.BatchParametersProperty = {
       jobDefinition: this.jobDefinitionArn,
       jobName,
@@ -95,13 +102,12 @@ export class BatchJob implements events.IRuleTarget {
     // When scoping resource-level access for job submission, you must provide both job queue and job definition resource types.
     // https://docs.aws.amazon.com/batch/latest/userguide/ExamplePolicies_BATCH.html#iam-example-restrict-job-def
     const role = singletonEventRole(this.jobDefinitionScope);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['batch:SubmitJob'],
-      resources: [
-        this.jobDefinitionArn,
-        this.jobQueueArn,
-      ],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['batch:SubmitJob'],
+        resources: [this.jobDefinitionArn, this.jobQueueArn],
+      })
+    );
 
     return {
       ...bindBaseTargetConfig(this.props),
@@ -115,7 +121,9 @@ export class BatchJob implements events.IRuleTarget {
 
   private validateJobName(name?: string) {
     if (!Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 128)) {
-      throw new Error(`Invalid jobName value ${name}, must have length between 1 and 128, got: ${name.length}`);
+      throw new Error(
+        `Invalid jobName value ${name}, must have length between 1 and 128, got: ${name.length}`
+      );
     }
   }
 }

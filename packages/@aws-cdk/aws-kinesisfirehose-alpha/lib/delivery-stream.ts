@@ -11,10 +11,7 @@ import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { StreamEncryption } from './encryption';
 import { ISource } from './source';
 
-const PUT_RECORD_ACTIONS = [
-  'firehose:PutRecord',
-  'firehose:PutRecordBatch',
-];
+const PUT_RECORD_ACTIONS = ['firehose:PutRecord', 'firehose:PutRecordBatch'];
 
 /**
  * Represents a Kinesis Data Firehose delivery stream.
@@ -91,7 +88,6 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
  * Base class for new and imported Kinesis Data Firehose delivery streams.
  */
 abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStream {
-
   public abstract readonly deliveryStreamName: string;
 
   public abstract readonly deliveryStreamArn: string;
@@ -152,7 +148,10 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
     return this.cannedMetric(FirehoseMetrics.backupToS3RecordsSum, props);
   }
 
-  private cannedMetric(fn: (dims: { DeliveryStreamName: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  private cannedMetric(
+    fn: (dims: { DeliveryStreamName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ DeliveryStreamName: this.deliveryStreamName }),
       ...props,
@@ -261,36 +260,54 @@ export class DeliveryStream extends DeliveryStreamBase {
   /**
    * Import an existing delivery stream from its name.
    */
-  static fromDeliveryStreamName(scope: Construct, id: string, deliveryStreamName: string): IDeliveryStream {
+  static fromDeliveryStreamName(
+    scope: Construct,
+    id: string,
+    deliveryStreamName: string
+  ): IDeliveryStream {
     return this.fromDeliveryStreamAttributes(scope, id, { deliveryStreamName });
   }
 
   /**
    * Import an existing delivery stream from its ARN.
    */
-  static fromDeliveryStreamArn(scope: Construct, id: string, deliveryStreamArn: string): IDeliveryStream {
+  static fromDeliveryStreamArn(
+    scope: Construct,
+    id: string,
+    deliveryStreamArn: string
+  ): IDeliveryStream {
     return this.fromDeliveryStreamAttributes(scope, id, { deliveryStreamArn });
   }
 
   /**
    * Import an existing delivery stream from its attributes.
    */
-  static fromDeliveryStreamAttributes(scope: Construct, id: string, attrs: DeliveryStreamAttributes): IDeliveryStream {
+  static fromDeliveryStreamAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DeliveryStreamAttributes
+  ): IDeliveryStream {
     if (!attrs.deliveryStreamName && !attrs.deliveryStreamArn) {
-      throw new Error('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes');
+      throw new Error(
+        'Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes'
+      );
     }
-    const deliveryStreamName = attrs.deliveryStreamName ??
-      cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    const deliveryStreamName =
+      attrs.deliveryStreamName ??
+      cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME)
+        .resourceName;
 
     if (!deliveryStreamName) {
       throw new Error(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`);
     }
-    const deliveryStreamArn = attrs.deliveryStreamArn ?? cdk.Stack.of(scope).formatArn({
-      service: 'firehose',
-      resource: 'deliverystream',
-      resourceName: attrs.deliveryStreamName,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    });
+    const deliveryStreamArn =
+      attrs.deliveryStreamArn ??
+      cdk.Stack.of(scope).formatArn({
+        service: 'firehose',
+        resource: 'deliverystream',
+        resourceName: attrs.deliveryStreamName,
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      });
     class Import extends DeliveryStreamBase {
       public readonly deliveryStreamName = deliveryStreamName!;
       public readonly deliveryStreamArn = deliveryStreamArn;
@@ -323,22 +340,34 @@ export class DeliveryStream extends DeliveryStreamBase {
     this._role = props.role;
 
     if (props.encryption?.encryptionKey || props.source) {
-      this._role = this._role ?? new iam.Role(this, 'Service Role', {
-        assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
-      });
+      this._role =
+        this._role ??
+        new iam.Role(this, 'Service Role', {
+          assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+        });
     }
 
     if (
       props.source &&
-        (props.encryption?.type === StreamEncryptionType.AWS_OWNED || props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED)
+      (props.encryption?.type === StreamEncryptionType.AWS_OWNED ||
+        props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED)
     ) {
-      throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+      throw new Error(
+        'Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.'
+      );
     }
-    const encryptionKey = props.encryption?.encryptionKey ?? (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
-    const encryptionConfig = (encryptionKey || (props.encryption?.type === StreamEncryptionType.AWS_OWNED)) ? {
-      keyArn: encryptionKey?.keyArn,
-      keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
-    } : undefined;
+    const encryptionKey =
+      props.encryption?.encryptionKey ??
+      (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED
+        ? new kms.Key(this, 'Key')
+        : undefined);
+    const encryptionConfig =
+      encryptionKey || props.encryption?.type === StreamEncryptionType.AWS_OWNED
+        ? {
+            keyArn: encryptionKey?.keyArn,
+            keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
+          }
+        : undefined;
     /*
      * In order for the service role to have access to the encryption key before the delivery stream is created, the
      * CfnDeliveryStream below should have a dependency on the grant returned by the function call below:
@@ -369,7 +398,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       ...destinationConfig,
     });
 
-    destinationConfig.dependables?.forEach(dependable => resource.node.addDependency(dependable));
+    destinationConfig.dependables?.forEach((dependable) => resource.node.addDependency(dependable));
 
     if (readStreamGrant) {
       resource.node.addDependency(readStreamGrant);
@@ -391,7 +420,7 @@ function setConnections(scope: Construct) {
   let cfnMapping = Node.of(stack).tryFindChild(mappingId) as cdk.CfnMapping;
 
   if (!cfnMapping) {
-    const mapping: {[region: string]: { FirehoseCidrBlock: string }} = {};
+    const mapping: { [region: string]: { FirehoseCidrBlock: string } } = {};
     RegionInfo.regions.forEach((regionInfo) => {
       if (regionInfo.firehoseCidrBlock) {
         mapping[regionInfo.name] = {

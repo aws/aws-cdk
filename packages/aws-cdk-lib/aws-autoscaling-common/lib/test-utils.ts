@@ -30,7 +30,7 @@ export function generateArbitraryIntervals(mrng: IRandomGenerator): ArbitraryInt
 
   // Take away parts from this. First we see if we do something to the 0-change alarms.
   // The actions can be: remove it OR turn it into a regular change value.
-  const noChanges = ret.filter(x => x.change === bias);
+  const noChanges = ret.filter((x) => x.change === bias);
 
   if (!absolute) {
     if (mrng.nextBoolean()) {
@@ -62,10 +62,10 @@ export function generateArbitraryIntervals(mrng: IRandomGenerator): ArbitraryInt
   // We might also take away either the bottom or the upper half
   if (mrng.nextInt(0, 2) === 0) {
     const signToStrip = mrng.nextBoolean() ? -1 : 1;
-    let ix = ret.findIndex(x => Math.sign(x.change - bias) === signToStrip);
+    let ix = ret.findIndex((x) => Math.sign(x.change - bias) === signToStrip);
     while (ix >= 0) {
       ret.splice(ix, 1);
-      ix = ret.findIndex(x => Math.sign(x.change - bias) === signToStrip);
+      ix = ret.findIndex((x) => Math.sign(x.change - bias) === signToStrip);
     }
   }
 

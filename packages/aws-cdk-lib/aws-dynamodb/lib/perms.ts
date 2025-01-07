@@ -7,10 +7,7 @@ export const READ_DATA_ACTIONS = [
   'dynamodb:Scan',
   'dynamodb:ConditionCheckItem',
 ];
-export const KEY_READ_ACTIONS = [
-  'kms:Decrypt',
-  'kms:DescribeKey',
-];
+export const KEY_READ_ACTIONS = ['kms:Decrypt', 'kms:DescribeKey'];
 
 export const WRITE_DATA_ACTIONS = [
   'dynamodb:BatchWriteItem',
@@ -18,11 +15,7 @@ export const WRITE_DATA_ACTIONS = [
   'dynamodb:UpdateItem',
   'dynamodb:DeleteItem',
 ];
-export const KEY_WRITE_ACTIONS = [
-  'kms:Encrypt',
-  'kms:ReEncrypt*',
-  'kms:GenerateDataKey*',
-];
+export const KEY_WRITE_ACTIONS = ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'];
 
 export const READ_STREAM_DATA_ACTIONS = [
   'dynamodb:DescribeStream',

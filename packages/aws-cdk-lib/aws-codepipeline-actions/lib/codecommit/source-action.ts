@@ -173,7 +173,10 @@ export class CodeCommitSourceAction extends Action {
     }
 
     if (props.codeBuildCloneOutput === true) {
-      props.output.setMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY, props.repository.repositoryArn);
+      props.output.setMetadata(
+        CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY,
+        props.repository.repositoryArn
+      );
     }
 
     super({
@@ -201,12 +204,15 @@ export class CodeCommitSourceAction extends Action {
     };
   }
 
-  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    _scope: Construct,
+    stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     const branchOrDefault = this.getBranchOrDefault(_scope);
 
-    const createEvent = this.props.trigger === undefined ||
-      this.props.trigger === CodeCommitTrigger.EVENTS;
+    const createEvent =
+      this.props.trigger === undefined || this.props.trigger === CodeCommitTrigger.EVENTS;
     const eventId = this.generateEventId(stage);
 
     if (createEvent && this.props.customEventRule === undefined) {
@@ -229,39 +235,45 @@ export class CodeCommitSourceAction extends Action {
     options.bucket.grantReadWrite(options.role);
     // when this action is cross-account,
     // the Role needs the s3:PutObjectAcl permission for some not yet fully understood reason
-    if (Token.compareStrings(this.props.repository.env.account, Stack.of(stage.pipeline).account) === TokenComparison.DIFFERENT) {
+    if (
+      Token.compareStrings(this.props.repository.env.account, Stack.of(stage.pipeline).account) ===
+      TokenComparison.DIFFERENT
+    ) {
       options.bucket.grantPutAcl(options.role);
     }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.props.repository.repositoryArn],
-      actions: [
-        'codecommit:GetBranch',
-        'codecommit:GetCommit',
-        'codecommit:UploadArchive',
-        'codecommit:GetUploadArchiveStatus',
-        'codecommit:CancelUploadArchive',
-        ...(this.props.codeBuildCloneOutput === true ? ['codecommit:GetRepository'] : []),
-      ],
-    }));
+    options.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        resources: [this.props.repository.repositoryArn],
+        actions: [
+          'codecommit:GetBranch',
+          'codecommit:GetCommit',
+          'codecommit:UploadArchive',
+          'codecommit:GetUploadArchiveStatus',
+          'codecommit:CancelUploadArchive',
+          ...(this.props.codeBuildCloneOutput === true ? ['codecommit:GetRepository'] : []),
+        ],
+      })
+    );
 
     return {
       configuration: {
         RepositoryName: this.props.repository.repositoryName,
         BranchName: branchOrDefault,
         PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
-        OutputArtifactFormat: this.props.codeBuildCloneOutput === true
-          ? 'CODEBUILD_CLONE_REF'
-          : undefined,
+        OutputArtifactFormat:
+          this.props.codeBuildCloneOutput === true ? 'CODEBUILD_CLONE_REF' : undefined,
       },
     };
   }
 
   private getBranchOrDefault(scope: Construct) {
-    const defaultBranch = FeatureFlags.of(scope).isEnabled(CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME) ?
-      CodeCommitSourceAction.NEW_DEFAULT_BRANCH_NAME :
-      CodeCommitSourceAction.OLD_DEFAULT_BRANCH_NAME;
+    const defaultBranch = FeatureFlags.of(scope).isEnabled(
+      CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME
+    )
+      ? CodeCommitSourceAction.NEW_DEFAULT_BRANCH_NAME
+      : CodeCommitSourceAction.OLD_DEFAULT_BRANCH_NAME;
     return this.props.branch === undefined ? defaultBranch : this.branch;
   }
 
@@ -278,7 +290,8 @@ export class CodeCommitSourceAction extends Action {
     } else {
       // To not break backwards compatibility it needs to be checked if the branch was set to master or if no branch was provided
       const branchIdDisambiguator =
-        this.props.branch === undefined || this.branch === CodeCommitSourceAction.OLD_DEFAULT_BRANCH_NAME
+        this.props.branch === undefined ||
+        this.branch === CodeCommitSourceAction.OLD_DEFAULT_BRANCH_NAME
           ? ''
           : `-${this.branch}-`;
       return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);

@@ -1,4 +1,13 @@
-import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput, AspectPriority } from 'aws-cdk-lib/core';
+import {
+  ArnFormat,
+  CfnResource,
+  CustomResource,
+  Lazy,
+  Stack,
+  Aspects,
+  CfnOutput,
+  AspectPriority,
+} from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { ApiCallBase, IApiCall } from './api-call-base';
 import { ExpectedResult } from './common';
@@ -42,7 +51,7 @@ export interface AwsApiCallOptions {
  * Construct that creates a custom resource that will perform
  * a query using the AWS SDK
  */
-export interface AwsApiCallProps extends AwsApiCallOptions { }
+export interface AwsApiCallProps extends AwsApiCallOptions {}
 
 /**
  * Construct that creates a custom resource that will perform
@@ -110,22 +119,25 @@ export class AwsApiCall extends ApiCallBase {
 
     // if expectedResult has been configured then that means
     // we are making assertions and we should output the results
-    Aspects.of(this).add({
-      visit(node: IConstruct) {
-        if (node instanceof AwsApiCall) {
-          if (node.expectedResult) {
-            const result = node.apiCallResource.getAttString('assertion');
+    Aspects.of(this).add(
+      {
+        visit(node: IConstruct) {
+          if (node instanceof AwsApiCall) {
+            if (node.expectedResult) {
+              const result = node.apiCallResource.getAttString('assertion');
 
-            new CfnOutput(node, 'AssertionResults', {
-              value: result,
-              // Remove the at sign, slash, and hyphen because when using the v3 package name or client name as the service name,
-              // the `id` includes them, but they are not allowed in the `CfnOutput` logical id
-              // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html#outputs-section-syntax
-            }).overrideLogicalId(`AssertionResults${id}`.replace(/[\@\/\-]/g, ''));
+              new CfnOutput(node, 'AssertionResults', {
+                value: result,
+                // Remove the at sign, slash, and hyphen because when using the v3 package name or client name as the service name,
+                // the `id` includes them, but they are not allowed in the `CfnOutput` logical id
+                // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html#outputs-section-syntax
+              }).overrideLogicalId(`AssertionResults${id}`.replace(/[\@\/\-]/g, ''));
+            }
           }
-        }
+        },
       },
-    }, { priority: AspectPriority.MUTATING });
+      { priority: AspectPriority.MUTATING }
+    );
   }
 
   public assertAtPath(path: string, expected: ExpectedResult): IApiCall {
@@ -261,26 +273,33 @@ export class LambdaInvokeFunction extends AwsApiCall {
 
     // the api call is 'invoke', but the permission is 'invokeFunction'
     // so need to handle it specially
-    this.provider.addPolicyStatementFromSdkCall('Lambda', 'invokeFunction', [stack.formatArn({
-      service: 'lambda',
-      resource: 'function',
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      resourceName: props.functionName,
-    })]);
+    this.provider.addPolicyStatementFromSdkCall('Lambda', 'invokeFunction', [
+      stack.formatArn({
+        service: 'lambda',
+        resource: 'function',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        resourceName: props.functionName,
+      }),
+    ]);
 
     // If using `waitForAssertions`, do the same for `waiterProvider` as above.
     // Aspects are used here because we do not know if the user is using `waitForAssertions` at this point.
-    Aspects.of(this).add({
-      visit(node: IConstruct) {
-        if (node instanceof AwsApiCall && node.waiterProvider) {
-          node.waiterProvider.addPolicyStatementFromSdkCall('Lambda', 'invokeFunction', [stack.formatArn({
-            service: 'lambda',
-            resource: 'function',
-            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-            resourceName: props.functionName,
-          })]);
-        }
+    Aspects.of(this).add(
+      {
+        visit(node: IConstruct) {
+          if (node instanceof AwsApiCall && node.waiterProvider) {
+            node.waiterProvider.addPolicyStatementFromSdkCall('Lambda', 'invokeFunction', [
+              stack.formatArn({
+                service: 'lambda',
+                resource: 'function',
+                arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+                resourceName: props.functionName,
+              }),
+            ]);
+          }
+        },
       },
-    }, { priority: AspectPriority.MUTATING });
+      { priority: AspectPriority.MUTATING }
+    );
   }
 }

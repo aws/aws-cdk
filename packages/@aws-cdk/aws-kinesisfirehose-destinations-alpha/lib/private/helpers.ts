@@ -52,9 +52,15 @@ export interface DestinationBackupConfig extends ConfigWithDependables {
   readonly backupConfig: CfnDeliveryStream.S3DestinationConfigurationProperty;
 }
 
-export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingConfig | undefined {
+export function createLoggingOptions(
+  scope: Construct,
+  props: DestinationLoggingProps
+): DestinationLoggingConfig | undefined {
   if (props.loggingConfig?.logging !== false || props.loggingConfig?.logGroup) {
-    const logGroup = props.loggingConfig?.logGroup ?? Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup ?? new logs.LogGroup(scope, 'LogGroup');
+    const logGroup =
+      props.loggingConfig?.logGroup ??
+      (Node.of(scope).tryFindChild('LogGroup') as logs.ILogGroup) ??
+      new logs.LogGroup(scope, 'LogGroup');
     const logGroupGrant = logGroup.grantWrite(props.role);
     return {
       loggingOptions: {
@@ -70,7 +76,7 @@ export function createLoggingOptions(scope: Construct, props: DestinationLogging
 
 export function createBufferingHints(
   interval?: cdk.Duration,
-  size?: cdk.Size,
+  size?: cdk.Size
 ): CfnDeliveryStream.BufferingHintsProperty | undefined {
   if (!interval && !size) {
     return undefined;
@@ -78,18 +84,22 @@ export function createBufferingHints(
 
   const intervalInSeconds = interval?.toSeconds() ?? 300;
   if (intervalInSeconds > 900) {
-    throw new Error(`Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`);
+    throw new Error(
+      `Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`
+    );
   }
   const sizeInMBs = size?.toMebibytes() ?? 5;
   if (sizeInMBs < 1 || sizeInMBs > 128) {
-    throw new Error(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`);
+    throw new Error(
+      `Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`
+    );
   }
   return { intervalInSeconds, sizeInMBs };
 }
 
 export function createEncryptionConfig(
   role: iam.IRole,
-  encryptionKey?: kms.IKey,
+  encryptionKey?: kms.IKey
 ): CfnDeliveryStream.EncryptionConfigurationProperty | undefined {
   encryptionKey?.grantEncryptDecrypt(role);
   return encryptionKey
@@ -100,32 +110,41 @@ export function createEncryptionConfig(
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessor?: firehose.IDataProcessor,
+  dataProcessor?: firehose.IDataProcessor
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
   return dataProcessor
     ? {
-      enabled: true,
-      processors: [renderDataProcessor(dataProcessor, scope, role)],
-    }
+        enabled: true,
+        processors: [renderDataProcessor(dataProcessor, scope, role)],
+      }
     : undefined;
 }
 
 function renderDataProcessor(
   processor: firehose.IDataProcessor,
   scope: Construct,
-  role: iam.IRole,
+  role: iam.IRole
 ): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
   const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
   parameters.push(processorConfig.processorIdentifier);
   if (processor.props.bufferInterval) {
-    parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
+    parameters.push({
+      parameterName: 'BufferIntervalInSeconds',
+      parameterValue: processor.props.bufferInterval.toSeconds().toString(),
+    });
   }
   if (processor.props.bufferSize) {
-    parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
+    parameters.push({
+      parameterName: 'BufferSizeInMBs',
+      parameterValue: processor.props.bufferSize.toMebibytes().toString(),
+    });
   }
   if (processor.props.retries) {
-    parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
+    parameters.push({
+      parameterName: 'NumberOfRetries',
+      parameterValue: processor.props.retries.toString(),
+    });
   }
   return {
     type: processorConfig.processorType,
@@ -133,7 +152,11 @@ function renderDataProcessor(
   };
 }
 
-export function createBackupConfig(scope: Construct, role: iam.IRole, props?: DestinationS3BackupProps): DestinationBackupConfig | undefined {
+export function createBackupConfig(
+  scope: Construct,
+  role: iam.IRole,
+  props?: DestinationS3BackupProps
+): DestinationBackupConfig | undefined {
   if (!props || (props.mode === undefined && !props.bucket)) {
     return undefined;
   }
@@ -141,11 +164,12 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
   const bucket = props.bucket ?? new s3.Bucket(scope, 'BackupBucket');
   const bucketGrant = bucket.grantReadWrite(role);
 
-  const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {
-    loggingConfig: props.loggingConfig,
-    role,
-    streamId: 'S3Backup',
-  }) ?? {};
+  const { loggingOptions, dependables: loggingDependables } =
+    createLoggingOptions(scope, {
+      loggingConfig: props.loggingConfig,
+      role,
+      streamId: 'S3Backup',
+    }) ?? {};
 
   return {
     backupConfig: {

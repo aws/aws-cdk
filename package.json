@@ -12,7 +12,9 @@
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b"
+    "build-all": "tsc -b",
+    "format-all": "prettier --write 'packages/aws-cdk-lib/**/*.ts' 'packages/@aws-cdk/**/*.ts'",
+    "format-check": "prettier --check 'packages/aws-cdk-lib/**/*.ts' 'packages/@aws-cdk/**/*.ts'"
   },
   "devDependencies": {
     "@nx/workspace": "^19.8.6",
@@ -31,6 +33,7 @@
     "lerna": "^8.1.8",
     "nx": "^19.8.6",
     "semver": "^7.6.3",
+    "prettier": "3.4.2",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",

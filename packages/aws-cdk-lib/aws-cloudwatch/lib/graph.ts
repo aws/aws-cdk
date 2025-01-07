@@ -100,24 +100,26 @@ export class AlarmWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    return [{
-      type: 'metric',
-      width: this.width,
-      height: this.height,
-      x: this.x,
-      y: this.y,
-      properties: {
-        view: 'timeSeries',
-        title: this.props.title,
-        region: this.props.region || cdk.Aws.REGION,
-        annotations: {
-          alarms: [this.props.alarm.alarmArn],
-        },
-        yAxis: {
-          left: this.props.leftYAxis ?? undefined,
+    return [
+      {
+        type: 'metric',
+        width: this.width,
+        height: this.height,
+        x: this.x,
+        y: this.y,
+        properties: {
+          view: 'timeSeries',
+          title: this.props.title,
+          region: this.props.region || cdk.Aws.REGION,
+          annotations: {
+            alarms: [this.props.alarm.alarmArn],
+          },
+          yAxis: {
+            left: this.props.leftYAxis ?? undefined,
+          },
         },
       },
-    }];
+    ];
   }
 }
 
@@ -231,7 +233,6 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
  * A dashboard gauge widget that displays metrics
  */
 export class GaugeWidget extends ConcreteWidget {
-
   private readonly props: GaugeWidgetProps;
 
   private readonly metrics: IMetric[];
@@ -258,37 +259,44 @@ export class GaugeWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-
     const metrics = allMetricsGraphJson(this.metrics, []);
     const leftYAxis = {
       ...this.props.leftYAxis,
       min: this.props.leftYAxis?.min ?? 0,
       max: this.props.leftYAxis?.max ?? 100,
     };
-    return [{
-      type: 'metric',
-      width: this.width,
-      height: this.height,
-      x: this.x,
-      y: this.y,
-      properties: {
-        view: 'gauge',
-        title: this.props.title,
-        region: this.props.region || cdk.Aws.REGION,
-        metrics: metrics.length > 0 ? metrics : undefined,
-        annotations: (this.props.annotations ?? []).length > 0 ? { horizontal: this.props.annotations } : undefined,
-        yAxis: {
-          left: leftYAxis ?? undefined,
+    return [
+      {
+        type: 'metric',
+        width: this.width,
+        height: this.height,
+        x: this.x,
+        y: this.y,
+        properties: {
+          view: 'gauge',
+          title: this.props.title,
+          region: this.props.region || cdk.Aws.REGION,
+          metrics: metrics.length > 0 ? metrics : undefined,
+          annotations:
+            (this.props.annotations ?? []).length > 0
+              ? { horizontal: this.props.annotations }
+              : undefined,
+          yAxis: {
+            left: leftYAxis ?? undefined,
+          },
+          legend:
+            this.props.legendPosition !== undefined
+              ? { position: this.props.legendPosition }
+              : undefined,
+          liveData: this.props.liveData,
+          setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+          period: this.props.period?.toSeconds(),
+          stat: this.props.statistic,
+          start: this.props.start,
+          end: this.props.end,
         },
-        legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
-        liveData: this.props.liveData,
-        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
-        period: this.props.period?.toSeconds(),
-        stat: this.props.statistic,
-        start: this.props.start,
-        end: this.props.end,
       },
-    }];
+    ];
   }
 }
 
@@ -426,8 +434,8 @@ export interface GraphWidgetProps extends MetricWidgetProps {
  * A dashboard widget that displays metrics
  */
 export class GraphWidget extends ConcreteWidget {
-
-  private static readonly ISO8601_REGEX = /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z)?$/;
+  private static readonly ISO8601_REGEX =
+    /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z)?$/;
 
   private static isIso8601(date: string): boolean {
     return this.ISO8601_REGEX.test(date);
@@ -440,7 +448,7 @@ export class GraphWidget extends ConcreteWidget {
 
   constructor(props: GraphWidgetProps) {
     super(props.width || 6, props.height || 6);
-    props.verticalAnnotations?.forEach(annotation => {
+    props.verticalAnnotations?.forEach((annotation) => {
       const date = annotation.date;
       if (!GraphWidget.isIso8601(date)) {
         throw new Error(`Given date ${date} is not in ISO 8601 format`);
@@ -485,37 +493,45 @@ export class GraphWidget extends ConcreteWidget {
       value: date,
       ...rest,
     }));
-    const annotations = horizontalAnnotations.length > 0 || verticalAnnotations.length > 0 ? ({
-      horizontal: horizontalAnnotations.length > 0 ? horizontalAnnotations : undefined,
-      vertical: verticalAnnotations.length > 0 ? verticalAnnotations : undefined,
-    }) : undefined;
+    const annotations =
+      horizontalAnnotations.length > 0 || verticalAnnotations.length > 0
+        ? {
+            horizontal: horizontalAnnotations.length > 0 ? horizontalAnnotations : undefined,
+            vertical: verticalAnnotations.length > 0 ? verticalAnnotations : undefined,
+          }
+        : undefined;
     const metrics = allMetricsGraphJson(this.leftMetrics, this.rightMetrics);
-    return [{
-      type: 'metric',
-      width: this.width,
-      height: this.height,
-      x: this.x,
-      y: this.y,
-      properties: {
-        view: this.props.view ?? GraphWidgetView.TIME_SERIES,
-        title: this.props.title,
-        region: this.props.region || cdk.Aws.REGION,
-        stacked: this.props.stacked,
-        metrics: metrics.length > 0 ? metrics : undefined,
-        annotations,
-        yAxis: {
-          left: this.props.leftYAxis ?? undefined,
-          right: this.props.rightYAxis ?? undefined,
+    return [
+      {
+        type: 'metric',
+        width: this.width,
+        height: this.height,
+        x: this.x,
+        y: this.y,
+        properties: {
+          view: this.props.view ?? GraphWidgetView.TIME_SERIES,
+          title: this.props.title,
+          region: this.props.region || cdk.Aws.REGION,
+          stacked: this.props.stacked,
+          metrics: metrics.length > 0 ? metrics : undefined,
+          annotations,
+          yAxis: {
+            left: this.props.leftYAxis ?? undefined,
+            right: this.props.rightYAxis ?? undefined,
+          },
+          legend:
+            this.props.legendPosition !== undefined
+              ? { position: this.props.legendPosition }
+              : undefined,
+          liveData: this.props.liveData,
+          setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+          period: this.props.period?.toSeconds(),
+          stat: this.props.statistic,
+          start: this.props.start,
+          end: this.props.end,
         },
-        legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
-        liveData: this.props.liveData,
-        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
-        period: this.props.period?.toSeconds(),
-        stat: this.props.statistic,
-        start: this.props.start,
-        end: this.props.end,
       },
-    }];
+    ];
   }
 }
 
@@ -625,7 +641,12 @@ export class TableThreshold {
   private readonly color?: string;
   private readonly comparator?: Shading;
 
-  private constructor(lowerBound: number, upperBound?: number, color?: string, comparator?: Shading) {
+  private constructor(
+    lowerBound: number,
+    upperBound?: number,
+    color?: string,
+    comparator?: Shading
+  ) {
     this.lowerBound = lowerBound;
     this.upperBound = upperBound;
     this.color = color;
@@ -634,10 +655,7 @@ export class TableThreshold {
 
   public toJson(): any {
     if (this.upperBound) {
-      return [
-        { value: this.lowerBound, color: this.color },
-        { value: this.upperBound },
-      ];
+      return [{ value: this.lowerBound, color: this.color }, { value: this.upperBound }];
     }
     return { value: this.lowerBound, color: this.color, fill: this.comparator };
   }
@@ -749,7 +767,6 @@ export interface TableWidgetProps extends MetricWidgetProps {
  * A dashboard widget that displays metrics
  */
 export class TableWidget extends ConcreteWidget {
-
   private readonly metrics: IMetric[];
 
   constructor(private readonly props: TableWidgetProps) {
@@ -775,43 +792,52 @@ export class TableWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    const horizontalAnnotations = (this.props.thresholds ?? []).map(threshold => threshold.toJson());
-    const annotations = horizontalAnnotations.length > 0 ? ({
-      horizontal: horizontalAnnotations,
-    }) : undefined;
+    const horizontalAnnotations = (this.props.thresholds ?? []).map((threshold) =>
+      threshold.toJson()
+    );
+    const annotations =
+      horizontalAnnotations.length > 0
+        ? {
+            horizontal: horizontalAnnotations,
+          }
+        : undefined;
     const metrics = allMetricsGraphJson(this.metrics, []);
-    return [{
-      type: 'metric',
-      width: this.width,
-      height: this.height,
-      x: this.x,
-      y: this.y,
-      properties: {
-        title: this.props.title,
-        view: 'table',
-        table: {
-          layout: this.props.layout ?? TableLayout.HORIZONTAL,
-          showTimeSeriesData: !(this.props.summary?.hideNonSummaryColumns ?? false),
-          stickySummary: this.props.summary?.sticky ?? false,
-          summaryColumns: this.props.summary?.columns ?? [],
+    return [
+      {
+        type: 'metric',
+        width: this.width,
+        height: this.height,
+        x: this.x,
+        y: this.y,
+        properties: {
+          title: this.props.title,
+          view: 'table',
+          table: {
+            layout: this.props.layout ?? TableLayout.HORIZONTAL,
+            showTimeSeriesData: !(this.props.summary?.hideNonSummaryColumns ?? false),
+            stickySummary: this.props.summary?.sticky ?? false,
+            summaryColumns: this.props.summary?.columns ?? [],
+          },
+          region: this.props.region || cdk.Aws.REGION,
+          metrics: metrics.length > 0 ? metrics : undefined,
+          annotations,
+          yAxis: {
+            left: this.props.showUnitsInLabel
+              ? {
+                  showUnits: true,
+                }
+              : undefined,
+          },
+          liveData: this.props.liveData,
+          singleValueFullPrecision: this.props.fullPrecision,
+          setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+          period: this.props.period?.toSeconds(),
+          stat: this.props.statistic,
+          start: this.props.start,
+          end: this.props.end,
         },
-        region: this.props.region || cdk.Aws.REGION,
-        metrics: metrics.length > 0 ? metrics : undefined,
-        annotations,
-        yAxis: {
-          left: this.props.showUnitsInLabel ? {
-            showUnits: true,
-          } : undefined,
-        },
-        liveData: this.props.liveData,
-        singleValueFullPrecision: this.props.fullPrecision,
-        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
-        period: this.props.period?.toSeconds(),
-        stat: this.props.statistic,
-        start: this.props.start,
-        end: this.props.end,
       },
-    }];
+    ];
   }
 }
 
@@ -898,25 +924,27 @@ export class SingleValueWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    return [{
-      type: 'metric',
-      width: this.width,
-      height: this.height,
-      x: this.x,
-      y: this.y,
-      properties: {
-        view: 'singleValue',
-        title: this.props.title,
-        region: this.props.region || cdk.Aws.REGION,
-        sparkline: this.props.sparkline,
-        metrics: allMetricsGraphJson(this.props.metrics, []),
-        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
-        singleValueFullPrecision: this.props.fullPrecision,
-        period: this.props.period?.toSeconds(),
-        start: this.props.start,
-        end: this.props.end,
+    return [
+      {
+        type: 'metric',
+        width: this.width,
+        height: this.height,
+        x: this.x,
+        y: this.y,
+        properties: {
+          view: 'singleValue',
+          title: this.props.title,
+          region: this.props.region || cdk.Aws.REGION,
+          sparkline: this.props.sparkline,
+          metrics: allMetricsGraphJson(this.props.metrics, []),
+          setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+          singleValueFullPrecision: this.props.fullPrecision,
+          period: this.props.period?.toSeconds(),
+          start: this.props.start,
+          end: this.props.end,
+        },
       },
-    }];
+    ];
   }
 }
 
@@ -982,7 +1010,6 @@ export interface CustomWidgetProps {
  * A CustomWidget shows the result of a AWS lambda function
  */
 export class CustomWidget extends ConcreteWidget {
-
   private readonly props: CustomWidgetProps;
 
   public constructor(props: CustomWidgetProps) {
@@ -991,23 +1018,25 @@ export class CustomWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    return [{
-      type: 'custom',
-      width: this.width,
-      height: this.height,
-      x: this.x,
-      y: this.y,
-      properties: {
-        endpoint: this.props.functionArn,
-        params: this.props.params,
-        title: this.props.title,
-        updateOn: {
-          refresh: this.props.updateOnRefresh ?? true,
-          resize: this.props.updateOnResize ?? true,
-          timeRange: this.props.updateOnTimeRangeChange ?? true,
+    return [
+      {
+        type: 'custom',
+        width: this.width,
+        height: this.height,
+        x: this.x,
+        y: this.y,
+        properties: {
+          endpoint: this.props.functionArn,
+          params: this.props.params,
+          title: this.props.title,
+          updateOn: {
+            refresh: this.props.updateOnRefresh ?? true,
+            resize: this.props.updateOnResize ?? true,
+            timeRange: this.props.updateOnTimeRangeChange ?? true,
+          },
         },
       },
-    }];
+    ];
   }
 }
 
@@ -1180,7 +1209,7 @@ export enum LegendPosition {
   HIDDEN = 'hidden',
 }
 
-function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
+function mapAnnotation(yAxis: string): (x: HorizontalAnnotation) => any {
   return (a: HorizontalAnnotation) => {
     return { ...a, yAxis };
   };

@@ -39,7 +39,11 @@ export class IntegTestCase extends Construct {
 
   private readonly _assert: DeployAssert;
 
-  constructor(scope: Construct, id: string, private readonly props: IntegTestCaseProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: IntegTestCaseProps
+  ) {
     super(scope, id);
 
     this._assert = new DeployAssert(this, { stack: props.assertionStack });
@@ -62,7 +66,7 @@ export class IntegTestCase extends Construct {
       ...props,
       assertionStack: this._assert.scope.node.path,
       assertionStackName: this._assert.scope.stackName,
-      stacks: props.stacks.map(s => s.node.path),
+      stacks: props.stacks.map((s) => s.node.path),
     };
   }
 }
@@ -70,7 +74,7 @@ export class IntegTestCase extends Construct {
 /**
  * Properties of an integration test case stack
  */
-export interface IntegTestCaseStackProps extends TestOptions, StackProps { }
+export interface IntegTestCaseStackProps extends TestOptions, StackProps {}
 
 /**
  * An integration test case stack. Allows the definition of test properties
@@ -85,7 +89,7 @@ export class IntegTestCaseStack extends Stack {
    * Returns whether the construct is a IntegTestCaseStack
    */
   public static isIntegTestCaseStack(x: any): x is IntegTestCaseStack {
-    return x !== null && typeof (x) === 'object' && TEST_CASE_STACK_SYMBOL in x;
+    return x !== null && typeof x === 'object' && TEST_CASE_STACK_SYMBOL in x;
   }
 
   /**
@@ -111,7 +115,6 @@ export class IntegTestCaseStack extends Stack {
       stacks: [this],
     });
   }
-
 }
 
 /**
@@ -157,7 +160,7 @@ export class IntegTest extends Construct {
 
     this.enableLookups = props.enableLookups;
     const defaultTestCase = new IntegTestCase(this, 'DefaultTest', {
-      stacks: props.testCases.filter(stack => !IntegTestCaseStack.isIntegTestCaseStack(stack)),
+      stacks: props.testCases.filter((stack) => !IntegTestCaseStack.isIntegTestCaseStack(stack)),
       hooks: props.hooks,
       regions: props.regions,
       diffAssets: props.diffAssets,
@@ -171,8 +174,8 @@ export class IntegTest extends Construct {
     this.testCases = [
       defaultTestCase,
       ...props.testCases
-        .filter(stack => IntegTestCaseStack.isIntegTestCaseStack(stack))
-        .map(stack => (stack as IntegTestCaseStack)._testCase),
+        .filter((stack) => IntegTestCaseStack.isIntegTestCaseStack(stack))
+        .map((stack) => (stack as IntegTestCaseStack)._testCase),
     ];
 
     this.node.addValidation({

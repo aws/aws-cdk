@@ -49,12 +49,15 @@ const test = new integ.IntegTest(app, 'TrackerTest', {
   testCases: [stack],
 });
 
-test.assertions.awsApiCall('location', 'ListTrackerConsumersCommand', { TrackerName: stack.tracker.trackerName })
-  .expect(integ.ExpectedResult.objectLike({
-    ConsumerArns: [
-      stack.geofenceCollection1.geofenceCollectionArn,
-      stack.geofenceCollection2.geofenceCollectionArn,
-      stack.geofenceCollectionForAdd1.geofenceCollectionArn,
-      stack.geofenceCollectionForAdd2.geofenceCollectionArn,
-    ],
-  }));
+test.assertions
+  .awsApiCall('location', 'ListTrackerConsumersCommand', { TrackerName: stack.tracker.trackerName })
+  .expect(
+    integ.ExpectedResult.objectLike({
+      ConsumerArns: [
+        stack.geofenceCollection1.geofenceCollectionArn,
+        stack.geofenceCollection2.geofenceCollectionArn,
+        stack.geofenceCollectionForAdd1.geofenceCollectionArn,
+        stack.geofenceCollectionForAdd2.geofenceCollectionArn,
+      ],
+    })
+  );

@@ -18,9 +18,7 @@ export async function onEvent(event: ResourceEvent) {
   return provider.onEvent();
 }
 
-export async function isComplete(
-  event: ResourceEvent,
-): Promise<IsCompleteResponse> {
+export async function isComplete(event: ResourceEvent): Promise<IsCompleteResponse> {
   const provider = createResourceHandler(event);
   return provider.isComplete();
 }

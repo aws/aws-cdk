@@ -2,12 +2,30 @@ import { Construct } from 'constructs';
 import { Certificate, CertificateValidation, ICertificate } from '../../../aws-certificatemanager';
 import { IVpc } from '../../../aws-ec2';
 import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
+  AwsLogDriver,
+  BaseService,
+  CloudMapOptions,
+  Cluster,
+  ContainerImage,
+  DeploymentController,
+  DeploymentCircuitBreaker,
+  ICluster,
+  LogDriver,
+  PropagatedTagSource,
+  Secret,
+  CapacityProviderStrategy,
 } from '../../../aws-ecs';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
+  ApplicationListener,
+  ApplicationLoadBalancer,
+  ApplicationProtocol,
+  ApplicationProtocolVersion,
+  ApplicationTargetGroup,
+  IApplicationLoadBalancer,
+  ListenerCertificate,
+  ListenerAction,
+  AddApplicationTargetsProps,
+  SslPolicy,
   IpAddressType,
   ApplicationLoadBalancerProps,
 } from '../../../aws-elasticloadbalancingv2';
@@ -375,29 +393,29 @@ export interface ApplicationLoadBalancedTaskImageOptions {
   readonly dockerLabels?: { [key: string]: string };
 
   /**
-  * The entry point that's passed to the container.
-  *
-  * This parameter maps to `Entrypoint` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
-  * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `--entrypoint` option to
-  * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
-  *
-  * For more information about the Docker `ENTRYPOINT` parameter, see https://docs.docker.com/engine/reference/builder/#entrypoint.
-  *
-  * @default none
-  */
+   * The entry point that's passed to the container.
+   *
+   * This parameter maps to `Entrypoint` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
+   * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `--entrypoint` option to
+   * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
+   *
+   * For more information about the Docker `ENTRYPOINT` parameter, see https://docs.docker.com/engine/reference/builder/#entrypoint.
+   *
+   * @default none
+   */
   readonly entryPoint?: string[];
 
   /**
-  * The command that's passed to the container. If there are multiple arguments, make sure that each argument is a separated string in the array.
-  *
-  * This parameter maps to `Cmd` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
-  * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `COMMAND` parameter to
-  * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
-  *
-  * For more information about the Docker `CMD` parameter, see https://docs.docker.com/engine/reference/builder/#cmd.
-  *
-  * @default none
-  */
+   * The command that's passed to the container. If there are multiple arguments, make sure that each argument is a separated string in the array.
+   *
+   * This parameter maps to `Cmd` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
+   * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `COMMAND` parameter to
+   * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
+   *
+   * For more information about the Docker `CMD` parameter, see https://docs.docker.com/engine/reference/builder/#cmd.
+   *
+   * @default none
+   */
   readonly command?: string[];
 }
 
@@ -405,7 +423,6 @@ export interface ApplicationLoadBalancedTaskImageOptions {
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
 export abstract class ApplicationLoadBalancedServiceBase extends Construct {
-
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * @deprecated - Use `internalDesiredCount` instead.
@@ -424,7 +441,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
    */
   public get loadBalancer(): ApplicationLoadBalancer {
     if (!this._applicationLoadBalancer) {
-      throw new Error('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer');
+      throw new Error(
+        '.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer'
+      );
     }
     return this._applicationLoadBalancer;
   }
@@ -463,11 +482,17 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
+      throw new Error(
+        'You can only specify either vpc or cluster. Alternatively, you can leave both blank'
+      );
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (props.desiredCount !== undefined && !cdk.Token.isUnresolved(props.desiredCount) && props.desiredCount < 1) {
+    if (
+      props.desiredCount !== undefined &&
+      !cdk.Token.isUnresolved(props.desiredCount) &&
+      props.desiredCount < 1
+    ) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
 
@@ -478,7 +503,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     if (props.idleTimeout) {
       const idleTimeout = props.idleTimeout.toSeconds();
-      if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
+      if (
+        idleTimeout > Duration.seconds(4000).toSeconds() ||
+        idleTimeout < Duration.seconds(1).toSeconds()
+      ) {
         throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
       }
     }
@@ -493,10 +521,15 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
 
-    if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
+    if (
+      props.certificate !== undefined &&
+      props.protocol !== undefined &&
+      props.protocol !== ApplicationProtocol.HTTPS
+    ) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
-    const protocol = props.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+    const protocol =
+      props.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
       throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');
@@ -516,7 +549,6 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
-
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
@@ -531,7 +563,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       }
     }
     if (this.certificate !== undefined) {
-      this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
+      this.listener.addCertificates('Arns', [
+        ListenerCertificate.fromCertificateManager(this.certificate),
+      ]);
     }
     if (props.redirectHTTP) {
       this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
@@ -549,7 +583,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
-        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
+        throw new Error(
+          'A Route53 hosted domain zone name is required to configure the specified domain name'
+        );
       }
 
       switch (props.recordType ?? ApplicationLoadBalancedServiceRecordType.ALIAS) {
@@ -590,7 +626,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return (
+      (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) ||
+      new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc })
+    );
   }
 
   /**

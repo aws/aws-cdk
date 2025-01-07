@@ -50,7 +50,9 @@ export class SnsTopicAction implements iot.IAction {
    */
   constructor(topic: sns.ITopic, props: SnsTopicActionProps = {}) {
     if (topic.fifo) {
-      throw Error('IoT Rule actions cannot be used with FIFO SNS Topics, please pass a non-FIFO Topic instead');
+      throw Error(
+        'IoT Rule actions cannot be used with FIFO SNS Topics, please pass a non-FIFO Topic instead'
+      );
     }
 
     this.topic = topic;

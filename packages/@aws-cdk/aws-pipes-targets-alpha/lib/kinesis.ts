@@ -55,6 +55,8 @@ export class KinesisTarget implements ITarget {
 
 function validatePartitionKey(pk: string) {
   if (!Token.isUnresolved(pk) && pk.length > 256) {
-    throw new Error(`Partition key must be less than or equal to 256 characters, received ${pk.length}`);
+    throw new Error(
+      `Partition key must be less than or equal to 256 characters, received ${pk.length}`
+    );
   }
 }

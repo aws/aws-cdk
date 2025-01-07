@@ -8,7 +8,8 @@ export function disableSleepForTesting() {
   FAKE_SLEEP = true;
 }
 
-interface LogRetentionEvent extends Omit<AWSLambda.CloudFormationCustomResourceEvent, 'ResourceProperties'> {
+interface LogRetentionEvent
+  extends Omit<AWSLambda.CloudFormationCustomResourceEvent, 'ResourceProperties'> {
   ResourceProperties: {
     ServiceToken: string;
     LogGroupName: string;
@@ -24,13 +25,16 @@ interface LogRetentionEvent extends Omit<AWSLambda.CloudFormationCustomResourceE
 /**
  * Creates a log group and doesn't throw if it exists.
  */
-async function createLogGroupSafe(logGroupName: string, client: Logs.CloudWatchLogsClient, withDelay: (block: () => Promise<void>) => Promise<void>) {
+async function createLogGroupSafe(
+  logGroupName: string,
+  client: Logs.CloudWatchLogsClient,
+  withDelay: (block: () => Promise<void>) => Promise<void>
+) {
   await withDelay(async () => {
     try {
       const params = { logGroupName };
       const command = new Logs.CreateLogGroupCommand(params);
       await client.send(command);
-
     } catch (error: any) {
       if (error.name === 'ResourceAlreadyExistsException') {
         // The log group is already created by the lambda execution
@@ -45,13 +49,16 @@ async function createLogGroupSafe(logGroupName: string, client: Logs.CloudWatchL
 /**
  * Deletes a log group and doesn't throw if it does not exist.
  */
-async function deleteLogGroup(logGroupName: string, client: Logs.CloudWatchLogsClient, withDelay: (block: () => Promise<void>) => Promise<void>) {
+async function deleteLogGroup(
+  logGroupName: string,
+  client: Logs.CloudWatchLogsClient,
+  withDelay: (block: () => Promise<void>) => Promise<void>
+) {
   await withDelay(async () => {
     try {
       const params = { logGroupName };
       const command = new Logs.DeleteLogGroupCommand(params);
       await client.send(command);
-
     } catch (error: any) {
       if (error.name === 'ResourceNotFoundException') {
         // The log group doesn't exist
@@ -70,9 +77,8 @@ async function setRetentionPolicy(
   logGroupName: string,
   client: Logs.CloudWatchLogsClient,
   withDelay: (block: () => Promise<void>) => Promise<void>,
-  retentionInDays?: number,
+  retentionInDays?: number
 ) {
-
   await withDelay(async () => {
     if (!retentionInDays) {
       const params = { logGroupName };
@@ -109,7 +115,12 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
       await createLogGroupSafe(logGroupName, client, withDelay);
-      await setRetentionPolicy(logGroupName, client, withDelay, parseIntOptional(event.ResourceProperties.RetentionInDays));
+      await setRetentionPolicy(
+        logGroupName,
+        client,
+        withDelay,
+        parseIntOptional(event.ResourceProperties.RetentionInDays)
+      );
 
       // Configure the Log Group for the Custom Resource function itself
       if (event.RequestType === 'Create') {
@@ -121,11 +132,20 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
         // Due to the async nature of the log group creation, the log group for this function might
         // still be not created yet at this point. Therefore we attempt to create it.
         // In case it is being created, createLogGroupSafe will handle the conflict.
-        await createLogGroupSafe(`/aws/lambda/${context.functionName}`, clientForCustomResourceFunction, withDelay);
+        await createLogGroupSafe(
+          `/aws/lambda/${context.functionName}`,
+          clientForCustomResourceFunction,
+          withDelay
+        );
         // If createLogGroupSafe fails, the log group is not created even after multiple attempts.
         // In this case we have nothing to set the retention policy on but an exception will skip
         // the next line.
-        await setRetentionPolicy(`/aws/lambda/${context.functionName}`, clientForCustomResourceFunction, withDelay, 1);
+        await setRetentionPolicy(
+          `/aws/lambda/${context.functionName}`,
+          clientForCustomResourceFunction,
+          withDelay,
+          1
+        );
       }
     }
 
@@ -194,7 +214,7 @@ function parseIntOptional(value?: string, base = 10): number | undefined {
 function makeWithDelay(
   maxRetries: number,
   delayBase: number = 1_000,
-  delayCap = 60_000, // 60s
+  delayCap = 60_000 // 60s
 ): (block: () => Promise<void>) => Promise<void> {
   // If we try to update the log group, then due to the async nature of
   // Lambda logging there could be a race condition when the same log group is
@@ -210,10 +230,10 @@ function makeWithDelay(
         return await block();
       } catch (error: any) {
         if (
-          isException('OperationAbortedException', error)
-          || isException('ThrottlingException', error) // There is no class to check with instanceof, see https://github.com/aws/aws-sdk-js-v3/issues/5140
+          isException('OperationAbortedException', error) ||
+          isException('ThrottlingException', error) // There is no class to check with instanceof, see https://github.com/aws/aws-sdk-js-v3/issues/5140
         ) {
-          if (attempts < maxRetries ) {
+          if (attempts < maxRetries) {
             attempts++;
             await sleep(calculateDelay(attempts, delayBase, delayCap));
             continue;
@@ -241,5 +261,5 @@ async function sleep(timeMs: number): Promise<void> {
   if (FAKE_SLEEP) {
     timeMs = 0;
   }
-  await new Promise<void>(resolve => setTimeout(resolve, timeMs));
+  await new Promise<void>((resolve) => setTimeout(resolve, timeMs));
 }

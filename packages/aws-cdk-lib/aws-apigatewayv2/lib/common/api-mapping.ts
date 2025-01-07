@@ -65,7 +65,11 @@ export class ApiMapping extends Resource implements IApiMapping {
   /**
    * import from API ID
    */
-  public static fromApiMappingAttributes(scope: Construct, id: string, attrs: ApiMappingAttributes): IApiMapping {
+  public static fromApiMappingAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ApiMappingAttributes
+  ): IApiMapping {
     class Import extends Resource implements IApiMapping {
       public readonly apiMappingId = attrs.apiMappingId;
     }

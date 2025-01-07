@@ -18,7 +18,6 @@ export interface IIdentityPoolRoleAttachment extends IResource {
  * Props for an Identity Pool Role Attachment
  */
 export interface IdentityPoolRoleAttachmentProps {
-
   /**
    * ID of the Attachment's underlying Identity Pool
    */
@@ -146,7 +145,8 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
     super(scope, id);
     this.identityPoolId = props.identityPool.identityPoolId;
     const mappings = props.roleMappings || [];
-    let roles: any = undefined, roleMappings: any = undefined;
+    let roles: any = undefined,
+      roleMappings: any = undefined;
     if (props.authenticatedRole || props.unauthenticatedRole) {
       roles = {};
       if (props.authenticatedRole) roles.authenticated = props.authenticatedRole.roleArn;
@@ -167,42 +167,45 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
    */
   private configureRoleMappings(
     ...props: IdentityPoolRoleMapping[]
-  ): { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty } | undefined {
+  ): { [name: string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty } | undefined {
     if (!props || !props.length) return undefined;
-    return props.reduce((acc, prop) => {
-      let mappingKey;
-      if (prop.mappingKey) {
-        mappingKey = prop.mappingKey;
-      } else {
-        const providerUrl = prop.providerUrl.value;
-        if (Token.isUnresolved(providerUrl)) {
-          throw new Error('mappingKey must be provided when providerUrl.value is a token');
+    return props.reduce(
+      (acc, prop) => {
+        let mappingKey;
+        if (prop.mappingKey) {
+          mappingKey = prop.mappingKey;
+        } else {
+          const providerUrl = prop.providerUrl.value;
+          if (Token.isUnresolved(providerUrl)) {
+            throw new Error('mappingKey must be provided when providerUrl.value is a token');
+          }
+          mappingKey = providerUrl;
         }
-        mappingKey = providerUrl;
-      }
 
-      let roleMapping: any = {
-        ambiguousRoleResolution: prop.resolveAmbiguousRoles ? 'AuthenticatedRole' : 'Deny',
-        type: prop.useToken ? 'Token' : 'Rules',
-        identityProvider: prop.providerUrl.value,
-      };
-      if (roleMapping.type === 'Rules') {
-        if (!prop.rules) {
-          throw new Error('IdentityPoolRoleMapping.rules is required when useToken is false');
-        }
-        roleMapping.rulesConfiguration = {
-          rules: prop.rules.map(rule => {
-            return {
-              claim: rule.claim,
-              value: rule.claimValue,
-              matchType: rule.matchType || RoleMappingMatchType.EQUALS,
-              roleArn: rule.mappedRole.roleArn,
-            };
-          }),
+        let roleMapping: any = {
+          ambiguousRoleResolution: prop.resolveAmbiguousRoles ? 'AuthenticatedRole' : 'Deny',
+          type: prop.useToken ? 'Token' : 'Rules',
+          identityProvider: prop.providerUrl.value,
         };
-      };
-      acc[mappingKey] = roleMapping;
-      return acc;
-    }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
+        if (roleMapping.type === 'Rules') {
+          if (!prop.rules) {
+            throw new Error('IdentityPoolRoleMapping.rules is required when useToken is false');
+          }
+          roleMapping.rulesConfiguration = {
+            rules: prop.rules.map((rule) => {
+              return {
+                claim: rule.claim,
+                value: rule.claimValue,
+                matchType: rule.matchType || RoleMappingMatchType.EQUALS,
+                roleArn: rule.mappedRole.roleArn,
+              };
+            }),
+          };
+        }
+        acc[mappingKey] = roleMapping;
+        return acc;
+      },
+      {} as { [name: string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty }
+    );
   }
 }

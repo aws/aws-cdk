@@ -136,29 +136,29 @@ export interface EventBridgeSchedulerTargetProps {
   readonly arn: string;
 
   /**
-  * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked.
-  */
+   * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked.
+   */
   readonly role: iam.IRole;
 
   /**
-  * The input to the target.
-  *
-  * @default - EventBridge Scheduler delivers a default notification to the target
-  */
+   * The input to the target.
+   *
+   * @default - EventBridge Scheduler delivers a default notification to the target
+   */
   readonly input?: string;
 
   /**
-  * The retry policy settings
-  *
-  * @default - Do not retry
-  */
+   * The retry policy settings
+   *
+   * @default - Do not retry
+   */
   readonly retryPolicy?: RetryPolicy;
 
   /**
-  * Dead letter queue for failed events
-  *
-  * @default - No dead letter queue
-  */
+   * Dead letter queue for failed events
+   *
+   * @default - No dead letter queue
+   */
   readonly deadLetterQueue?: sqs.IQueue;
 }
 
@@ -204,13 +204,17 @@ export class EventBridgeSchedulerTarget {
       Arn: this.arn,
       RoleArn: this.role.roleArn,
       Input: this.input,
-      RetryPolicy: this.retryPolicy ? {
-        MaximumEventAgeInSeconds: this.retryPolicy.maximumEventAge.toSeconds(),
-        MaximumRetryAttempts: this.retryPolicy.maximumRetryAttempts,
-      } : undefined,
-      DeadLetterConfig: this.deadLetterQueue ? {
-        Arn: this.deadLetterQueue.queueArn,
-      } : undefined,
+      RetryPolicy: this.retryPolicy
+        ? {
+            MaximumEventAgeInSeconds: this.retryPolicy.maximumEventAge.toSeconds(),
+            MaximumRetryAttempts: this.retryPolicy.maximumRetryAttempts,
+          }
+        : undefined,
+      DeadLetterConfig: this.deadLetterQueue
+        ? {
+            Arn: this.deadLetterQueue.queueArn,
+          }
+        : undefined,
     };
   }
 
@@ -225,10 +229,13 @@ export class EventBridgeSchedulerTarget {
         props.retryPolicy.maximumRetryAttempts < 0 ||
         props.retryPolicy.maximumRetryAttempts > 185
       ) {
-        throw new Error(`MaximumRetryAttempts must be an integer between 0 and 185, got ${props.retryPolicy.maximumRetryAttempts}`);
+        throw new Error(
+          `MaximumRetryAttempts must be an integer between 0 and 185, got ${props.retryPolicy.maximumRetryAttempts}`
+        );
       }
       if (
-        props.retryPolicy.maximumEventAge.toMilliseconds() < Duration.seconds(60).toMilliseconds() ||
+        props.retryPolicy.maximumEventAge.toMilliseconds() <
+          Duration.seconds(60).toMilliseconds() ||
         props.retryPolicy.maximumEventAge.toSeconds() > 86400
       ) {
         throw new Error('MaximumEventAgeInSeconds must be between 60 and 86400 seconds');
@@ -258,13 +265,16 @@ export interface RetryPolicy {
  * @see https://docs.aws.amazon.com/scheduler/latest/APIReference/API_CreateSchedule.html
  */
 export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
-
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EventBridgeSchedulerCreateScheduleTaskProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EventBridgeSchedulerCreateScheduleTaskProps
+  ) {
     super(scope, id, props);
 
     this.validateProps(props);
@@ -281,15 +291,11 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
             resourceName: `${this.props.groupName ?? 'default'}/${this.props.scheduleName}`,
           }),
         ],
-        actions: [
-          'scheduler:CreateSchedule',
-        ],
+        actions: ['scheduler:CreateSchedule'],
       }),
       new iam.PolicyStatement({
         resources: [props.target.role.roleArn],
-        actions: [
-          'iam:PassRole',
-        ],
+        actions: ['iam:PassRole'],
       }),
     ];
   }
@@ -299,7 +305,11 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('aws-sdk:scheduler', 'createSchedule', this.integrationPattern),
+      Resource: integrationResourceArn(
+        'aws-sdk:scheduler',
+        'createSchedule',
+        this.integrationPattern
+      ),
       Parameters: {
         ActionAfterCompletion: this.props.actionAfterCompletion ?? ActionAfterCompletion.NONE,
         ClientToken: this.props.clientToken,
@@ -323,41 +333,62 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
 
   private validateProps(props: EventBridgeSchedulerCreateScheduleTaskProps) {
     if (props.startDate && props.endDate && props.startDate >= props.endDate) {
-      throw new Error('\'startDate\' must be before \'endDate\'');
+      throw new Error("'startDate' must be before 'endDate'");
     }
 
     if (props.clientToken !== undefined && !Token.isUnresolved(props.clientToken)) {
       if (props.clientToken.length > 64 || props.clientToken.length < 1) {
-        throw new Error(`ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`);
+        throw new Error(
+          `ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`
+        );
       }
       if (!/^[a-zA-Z0-9-_]+$/.test(props.clientToken)) {
-        throw new Error(`ClientToken must consist of alphanumeric characters, dashes, and underscores only, Got: ${props.clientToken}`);
+        throw new Error(
+          `ClientToken must consist of alphanumeric characters, dashes, and underscores only, Got: ${props.clientToken}`
+        );
       }
     }
 
-    if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 512) {
-      throw new Error(`Description must be less than 512 characters long. Got: ${props.description.length}`);
+    if (
+      props.description !== undefined &&
+      !Token.isUnresolved(props.description) &&
+      props.description.length > 512
+    ) {
+      throw new Error(
+        `Description must be less than 512 characters long. Got: ${props.description.length}`
+      );
     }
 
-    if (props.flexibleTimeWindow && (
+    if (
+      props.flexibleTimeWindow &&
       // To handle durations of less than one minute, comparisons will be made in milliseconds
-      props.flexibleTimeWindow.toMilliseconds() < Duration.minutes(1).toMilliseconds() ||
-      props.flexibleTimeWindow.toMinutes() > 1440
-    )) {
+      (props.flexibleTimeWindow.toMilliseconds() < Duration.minutes(1).toMilliseconds() ||
+        props.flexibleTimeWindow.toMinutes() > 1440)
+    ) {
       throw new Error('FlexibleTimeWindow must be between 1 and 1440 minutes');
     }
 
     if (props.groupName !== undefined && !Token.isUnresolved(props.groupName)) {
       if (props.groupName.length < 1 || props.groupName.length > 64) {
-        throw new Error(`GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`);
+        throw new Error(
+          `GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`
+        );
       }
       if (!/^[a-zA-Z0-9-_.]+$/.test(props.groupName)) {
-        throw new Error(`GroupName must consist of alphanumeric characters, dashes, underscores, and periods only, Got: ${props.groupName}`);
+        throw new Error(
+          `GroupName must consist of alphanumeric characters, dashes, underscores, and periods only, Got: ${props.groupName}`
+        );
       }
     }
 
-    if (props.timezone !== undefined && !Token.isUnresolved(props.timezone) && (props.timezone.length < 1 || props.timezone.length > 50)) {
-      throw new Error(`Timezone must be between 1 and 50 characters long. Got: ${props.timezone.length}`);
+    if (
+      props.timezone !== undefined &&
+      !Token.isUnresolved(props.timezone) &&
+      (props.timezone.length < 1 || props.timezone.length > 50)
+    ) {
+      throw new Error(
+        `Timezone must be between 1 and 50 characters long. Got: ${props.timezone.length}`
+      );
     }
   }
 }

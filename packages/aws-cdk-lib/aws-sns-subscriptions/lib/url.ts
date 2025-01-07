@@ -41,7 +41,10 @@ export class UrlSubscription implements sns.ITopicSubscription {
   private readonly protocol: sns.SubscriptionProtocol;
   private readonly unresolvedUrl: boolean;
 
-  constructor(private readonly url: string, private readonly props: UrlSubscriptionProps = {}) {
+  constructor(
+    private readonly url: string,
+    private readonly props: UrlSubscriptionProps = {}
+  ) {
     this.unresolvedUrl = Token.isUnresolved(url);
     if (!this.unresolvedUrl && !url.startsWith('http://') && !url.startsWith('https://')) {
       throw new Error('URL must start with either http:// or https://');
@@ -54,7 +57,9 @@ export class UrlSubscription implements sns.ITopicSubscription {
     if (this.unresolvedUrl) {
       this.protocol = props.protocol!;
     } else {
-      this.protocol = this.url.startsWith('https:') ? sns.SubscriptionProtocol.HTTPS : sns.SubscriptionProtocol.HTTP;
+      this.protocol = this.url.startsWith('https:')
+        ? sns.SubscriptionProtocol.HTTPS
+        : sns.SubscriptionProtocol.HTTP;
     }
   }
 

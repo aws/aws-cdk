@@ -62,7 +62,6 @@ export abstract class ClientVpnRouteTarget {
  * Properties for a ClientVpnRoute
  */
 export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
-
   /**
    * The client VPN endpoint to which to add the route.
    * @default clientVpnEndpoint is required
@@ -84,13 +83,13 @@ export class ClientVpnRoute extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnRouteProps) {
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
       throw new Error(
-        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
+        'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified'
       );
     }
     if (props.clientVpnEndoint && props.clientVpnEndpoint) {
       throw new Error(
         'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
-          ', but not both',
+          ', but not both'
       );
     }
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;

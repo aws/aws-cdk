@@ -16,7 +16,11 @@ import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../../
 import { ArtifactMap } from '../artifact-map';
 import { CodeBuildStep } from '../codebuild-step';
 import { CodeBuildOptions } from '../codepipeline';
-import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from '../codepipeline-action-factory';
+import {
+  ICodePipelineActionFactory,
+  ProduceActionOptions,
+  CodePipelineActionFactoryResult,
+} from '../codepipeline-action-factory';
 
 export interface CodeBuildFactoryProps {
   /**
@@ -133,7 +137,11 @@ export interface CodeBuildFactoryProps {
  */
 export class CodeBuildFactory implements ICodePipelineActionFactory {
   // eslint-disable-next-line max-len
-  public static fromShellStep(constructId: string, shellStep: ShellStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
+  public static fromShellStep(
+    constructId: string,
+    shellStep: ShellStep,
+    additional?: Partial<CodeBuildFactoryProps>
+  ): ICodePipelineActionFactory {
     return new CodeBuildFactory(constructId, {
       commands: shellStep.commands,
       env: shellStep.env,
@@ -147,7 +155,11 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     });
   }
 
-  public static fromCodeBuildStep(constructId: string, step: CodeBuildStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
+  public static fromCodeBuildStep(
+    constructId: string,
+    step: CodeBuildStep,
+    additional?: Partial<CodeBuildFactoryProps>
+  ): ICodePipelineActionFactory {
     const factory = CodeBuildFactory.fromShellStep(constructId, step, {
       projectName: step.projectName,
       role: step.role,
@@ -183,8 +195,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 
   private constructor(
     private readonly constructId: string,
-    private readonly props: CodeBuildFactoryProps) {
-
+    private readonly props: CodeBuildFactoryProps
+  ) {
     this.stepId = props.stepId ?? constructId;
   }
 
@@ -195,35 +207,48 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     return this._project;
   }
 
-  public produceAction(stage: codepipeline.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
-    const projectOptions = mergeCodeBuildOptions(options.codeBuildDefaults, this.props.projectOptions);
+  public produceAction(
+    stage: codepipeline.IStage,
+    options: ProduceActionOptions
+  ): CodePipelineActionFactoryResult {
+    const projectOptions = mergeCodeBuildOptions(
+      options.codeBuildDefaults,
+      this.props.projectOptions
+    );
 
-    if ((!projectOptions.buildEnvironment?.privileged || projectOptions.vpc === undefined) &&
-      (projectOptions.fileSystemLocations !== undefined && projectOptions.fileSystemLocations.length != 0)) {
-      throw new Error('Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.');
+    if (
+      (!projectOptions.buildEnvironment?.privileged || projectOptions.vpc === undefined) &&
+      projectOptions.fileSystemLocations !== undefined &&
+      projectOptions.fileSystemLocations.length != 0
+    ) {
+      throw new Error(
+        'Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.'
+      );
     }
 
     const inputs = this.props.inputs ?? [];
     const outputs = this.props.outputs ?? [];
 
-    const mainInput = inputs.find(x => x.directory === '.');
-    const extraInputs = inputs.filter(x => x.directory !== '.');
+    const mainInput = inputs.find((x) => x.directory === '.');
+    const extraInputs = inputs.filter((x) => x.directory !== '.');
 
     const inputArtifact = mainInput
       ? options.artifacts.toCodePipeline(mainInput.fileSet)
       : options.fallbackArtifact;
-    const extraInputArtifacts = extraInputs.map(x => options.artifacts.toCodePipeline(x.fileSet));
-    const outputArtifacts = outputs.map(x => options.artifacts.toCodePipeline(x.fileSet));
+    const extraInputArtifacts = extraInputs.map((x) => options.artifacts.toCodePipeline(x.fileSet));
+    const outputArtifacts = outputs.map((x) => options.artifacts.toCodePipeline(x.fileSet));
 
     if (!inputArtifact) {
       // This should actually never happen because CodeBuild projects shouldn't be added before the
       // Source, which always produces at least an artifact.
-      throw new Error(`CodeBuild action '${this.stepId}' requires an input (and the pipeline doesn't have a Source to fall back to). Add an input or a pipeline source.`);
+      throw new Error(
+        `CodeBuild action '${this.stepId}' requires an input (and the pipeline doesn't have a Source to fall back to). Add an input or a pipeline source.`
+      );
     }
 
     const installCommands = [
       ...generateInputArtifactLinkCommands(options.artifacts, extraInputs),
-      ...this.props.installCommands ?? [],
+      ...(this.props.installCommands ?? []),
     ];
 
     const buildSpecHere = codebuild.BuildSpec.fromObject({
@@ -232,28 +257,31 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         install: (installCommands.length ?? 0) > 0 ? { commands: installCommands } : undefined,
         build: this.props.commands.length > 0 ? { commands: this.props.commands } : undefined,
       },
-      artifacts: noEmptyObject<any>(renderArtifactsBuildSpec(options.artifacts, this.props.outputs ?? [])),
+      artifacts: noEmptyObject<any>(
+        renderArtifactsBuildSpec(options.artifacts, this.props.outputs ?? [])
+      ),
     });
 
     // Partition environment variables into environment variables that can go on the project
     // and environment variables that MUST go in the pipeline (those that reference CodePipeline variables)
     const env = noUndefined(this.props.env ?? {});
 
-    const [actionEnvs, projectEnvs] = partition(Object.entries(env ?? {}), ([, v]) => containsPipelineVariable(v));
+    const [actionEnvs, projectEnvs] = partition(Object.entries(env ?? {}), ([, v]) =>
+      containsPipelineVariable(v)
+    );
 
-    const environment = mergeBuildEnvironments(
-      projectOptions?.buildEnvironment ?? {},
-      {
-        environmentVariables: noEmptyObject(mapValues(mkdict(projectEnvs), value => ({ value }))),
-      });
+    const environment = mergeBuildEnvironments(projectOptions?.buildEnvironment ?? {}, {
+      environmentVariables: noEmptyObject(mapValues(mkdict(projectEnvs), (value) => ({ value }))),
+    });
 
     const fullBuildSpec = projectOptions?.partialBuildSpec
       ? codebuild.mergeBuildSpecs(projectOptions.partialBuildSpec, buildSpecHere)
       : buildSpecHere;
 
-    const osFromEnvironment = environment.buildImage && environment.buildImage instanceof codebuild.WindowsBuildImage
-      ? ec2.OperatingSystemType.WINDOWS
-      : ec2.OperatingSystemType.LINUX;
+    const osFromEnvironment =
+      environment.buildImage && environment.buildImage instanceof codebuild.WindowsBuildImage
+        ? ec2.OperatingSystemType.WINDOWS
+        : ec2.OperatingSystemType.LINUX;
 
     const actualBuildSpec = filterBuildSpecCommands(fullBuildSpec, osFromEnvironment);
 
@@ -270,7 +298,9 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       const fileContents = Stack.of(scope).resolve(actualBuildSpec.toBuildSpec());
 
       if (typeof fileContents !== 'string') {
-        throw new Error(`This BuildSpec contains CloudFormation references and is supported by publishInParallel=false: ${JSON.stringify(fileContents, undefined, 2)}`);
+        throw new Error(
+          `This BuildSpec contains CloudFormation references and is supported by publishInParallel=false: ${JSON.stringify(fileContents, undefined, 2)}`
+        );
       }
       fs.writeFileSync(absSpecFile, fileContents, { encoding: 'utf-8' });
       projectBuildSpec = codebuild.BuildSpec.fromSourceFilename(relativeSpecFile);
@@ -282,10 +312,12 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     // to restart the pipeline if one of them changes). projectName is not necessary to include
     // here because the pipeline will definitely restart if projectName changes.
     // (Resolve tokens)
-    const projectConfigHash = hash(Stack.of(scope).resolve({
-      environment: serializeBuildEnvironment(environment),
-      buildSpecString: actualBuildSpec.toBuildSpec(),
-    }));
+    const projectConfigHash = hash(
+      Stack.of(scope).resolve({
+        environment: serializeBuildEnvironment(environment),
+        buildSpecString: actualBuildSpec.toBuildSpec(),
+      })
+    );
 
     const actionName = options.actionName ?? this.stepId;
 
@@ -300,7 +332,10 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 
     const project = new codebuild.PipelineProject(projectScope, this.constructId, {
       projectName: this.props.projectName,
-      description: `Pipeline step ${safePipelineName}/${stage.stageName}/${actionName}`.substring(0, 255),
+      description: `Pipeline step ${safePipelineName}/${stage.stageName}/${actionName}`.substring(
+        0,
+        255
+      ),
       environment,
       vpc: projectOptions.vpc,
       subnetSelection: projectOptions.subnetSelection,
@@ -318,13 +353,13 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     }
 
     if (projectOptions.rolePolicy !== undefined) {
-      projectOptions.rolePolicy.forEach(policyStatement => {
+      projectOptions.rolePolicy.forEach((policyStatement) => {
         project.addToRolePolicy(policyStatement);
       });
     }
 
-    const stackOutputEnv = mapValues(this.props.envFromCfnOutputs ?? {}, outputRef =>
-      options.stackOutputsMap.toCodePipeline(outputRef),
+    const stackOutputEnv = mapValues(this.props.envFromCfnOutputs ?? {}, (outputRef) =>
+      options.stackOutputsMap.toCodePipeline(outputRef)
     );
 
     const configHashEnv = options.beforeSelfMutation
@@ -334,32 +369,37 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     // Start all CodeBuild projects from a single (shared) Action Role, so that we don't have to generate an Action Role for each
     // individual CodeBuild Project and blow out the pipeline policy size (and potentially # of resources in the stack).
     const actionRoleCid = 'CodeBuildActionRole';
-    const actionRole = this.props.actionRole
-      ?? options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole
-      ?? new iam.Role(options.pipeline, actionRoleCid, {
+    const actionRole =
+      this.props.actionRole ??
+      (options.pipeline.node.tryFindChild(actionRoleCid) as iam.IRole) ??
+      new iam.Role(options.pipeline, actionRoleCid, {
         assumedBy: options.pipeline.pipeline.role,
       });
 
-    stage.addAction(new codepipeline_actions.CodeBuildAction({
-      actionName: actionName,
-      input: inputArtifact,
-      extraInputs: extraInputArtifacts,
-      outputs: outputArtifacts,
-      project,
-      runOrder: options.runOrder,
-      variablesNamespace: options.variablesNamespace,
-      role: actionRole,
+    stage.addAction(
+      new codepipeline_actions.CodeBuildAction({
+        actionName: actionName,
+        input: inputArtifact,
+        extraInputs: extraInputArtifacts,
+        outputs: outputArtifacts,
+        project,
+        runOrder: options.runOrder,
+        variablesNamespace: options.variablesNamespace,
+        role: actionRole,
 
-      // Inclusion of the hash here will lead to the pipeline structure for any changes
-      // made the config of the underlying CodeBuild Project.
-      // Hence, the pipeline will be restarted. This is necessary if the users
-      // adds (for example) build or test commands to the buildspec.
-      environmentVariables: noEmptyObject(cbEnv({
-        ...mkdict(actionEnvs),
-        ...configHashEnv,
-        ...stackOutputEnv,
-      })),
-    }));
+        // Inclusion of the hash here will lead to the pipeline structure for any changes
+        // made the config of the underlying CodeBuild Project.
+        // Hence, the pipeline will be restarted. This is necessary if the users
+        // adds (for example) build or test commands to the buildspec.
+        environmentVariables: noEmptyObject(
+          cbEnv({
+            ...mkdict(actionEnvs),
+            ...configHashEnv,
+            ...stackOutputEnv,
+          })
+        ),
+      })
+    );
 
     this._project = project;
 
@@ -370,11 +410,16 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 /**
  * Generate commands to move additional input artifacts into the right place
  */
-function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileSetLocation[]): string[] {
-  return inputs.map(input => {
+function generateInputArtifactLinkCommands(
+  artifacts: ArtifactMap,
+  inputs: FileSetLocation[]
+): string[] {
+  return inputs.map((input) => {
     const fragments = [];
 
-    fragments.push(`[ ! -d "${input.directory}" ] || { echo 'additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.'; exit 1; }`);
+    fragments.push(
+      `[ ! -d "${input.directory}" ] || { echo 'additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.'; exit 1; }`
+    );
 
     const parentDirectory = path.dirname(input.directory);
     if (!['.', '..'].includes(parentDirectory)) {
@@ -393,12 +438,14 @@ function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLoca
   // save the generated files in the output artifact
   // This part of the buildspec has to look completely different depending on whether we're
   // using secondary artifacts or not.
-  if (outputs.length === 0) { return {}; }
+  if (outputs.length === 0) {
+    return {};
+  }
 
   if (outputs.length === 1) {
     return {
       'base-directory': outputs[0].directory,
-      'files': '**/*',
+      files: '**/*',
     };
   }
 
@@ -411,7 +458,7 @@ function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLoca
     }
     secondary[art.artifactName] = {
       'base-directory': output.directory,
-      'files': '**/*',
+      files: '**/*',
     };
   }
 
@@ -429,24 +476,38 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
   function merge2(a: CodeBuildOptions, b: CodeBuildOptions): CodeBuildOptions {
     return {
       buildEnvironment: mergeBuildEnvironments(a.buildEnvironment, b.buildEnvironment),
-      rolePolicy: definedArray([...a.rolePolicy ?? [], ...b.rolePolicy ?? []]),
-      securityGroups: definedArray([...a.securityGroups ?? [], ...b.securityGroups ?? []]),
+      rolePolicy: definedArray([...(a.rolePolicy ?? []), ...(b.rolePolicy ?? [])]),
+      securityGroups: definedArray([...(a.securityGroups ?? []), ...(b.securityGroups ?? [])]),
       partialBuildSpec: mergeBuildSpecs(a.partialBuildSpec, b.partialBuildSpec),
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
       cache: b.cache ?? a.cache,
-      fileSystemLocations: definedArray([...a.fileSystemLocations ?? [], ...b.fileSystemLocations ?? []]),
+      fileSystemLocations: definedArray([
+        ...(a.fileSystemLocations ?? []),
+        ...(b.fileSystemLocations ?? []),
+      ]),
       logging: b.logging ?? a.logging,
     };
   }
 }
 
-function mergeBuildEnvironments(a: codebuild.BuildEnvironment, b?: codebuild.BuildEnvironment): codebuild.BuildEnvironment;
-function mergeBuildEnvironments(a: codebuild.BuildEnvironment | undefined, b: codebuild.BuildEnvironment): codebuild.BuildEnvironment;
-function mergeBuildEnvironments(a?: codebuild.BuildEnvironment, b?: codebuild.BuildEnvironment): codebuild.BuildEnvironment | undefined;
+function mergeBuildEnvironments(
+  a: codebuild.BuildEnvironment,
+  b?: codebuild.BuildEnvironment
+): codebuild.BuildEnvironment;
+function mergeBuildEnvironments(
+  a: codebuild.BuildEnvironment | undefined,
+  b: codebuild.BuildEnvironment
+): codebuild.BuildEnvironment;
+function mergeBuildEnvironments(
+  a?: codebuild.BuildEnvironment,
+  b?: codebuild.BuildEnvironment
+): codebuild.BuildEnvironment | undefined;
 function mergeBuildEnvironments(a?: codebuild.BuildEnvironment, b?: codebuild.BuildEnvironment) {
-  if (!a || !b) { return a ?? b; }
+  if (!a || !b) {
+    return a ?? b;
+  }
 
   return {
     buildImage: b.buildImage ?? a.buildImage,
@@ -488,10 +549,14 @@ function containsPipelineVariable(s: string) {
 /**
  * Turn a collection into a collection of CodePipeline environment variables
  */
-function cbEnv(xs: Record<string, string | undefined>): Record<string, codebuild.BuildEnvironmentVariable> {
-  return mkdict(Object.entries(xs)
-    .filter(([, v]) => v !== undefined)
-    .map(([k, v]) => [k, { value: v }] as const));
+function cbEnv(
+  xs: Record<string, string | undefined>
+): Record<string, codebuild.BuildEnvironmentVariable> {
+  return mkdict(
+    Object.entries(xs)
+      .filter(([, v]) => v !== undefined)
+      .map(([k, v]) => [k, { value: v }] as const)
+  );
 }
 
 function definedArray<A>(xs: A[]): A[] | undefined {
@@ -504,7 +569,9 @@ function definedArray<A>(xs: A[]): A[] | undefined {
  * Very private protocol for now, but may come in handy in other libraries as well.
  */
 function filterBuildSpecCommands(buildSpec: codebuild.BuildSpec, osType: ec2.OperatingSystemType) {
-  if (!buildSpec.isImmediate) { return buildSpec; }
+  if (!buildSpec.isImmediate) {
+    return buildSpec;
+  }
   const spec = (buildSpec as any).spec;
 
   const winTag = '!WINDOWS!';
@@ -531,9 +598,13 @@ function filterBuildSpecCommands(buildSpec: codebuild.BuildSpec, osType: ec2.Ope
   }
 
   function extractTag(x: any): [string | undefined, any] {
-    if (typeof x !== 'string') { return [undefined, x]; }
+    if (typeof x !== 'string') {
+      return [undefined, x];
+    }
     for (const tag of [winTag, linuxTag]) {
-      if (x.startsWith(tag)) { return [tag, x.slice(tag.length)]; }
+      if (x.startsWith(tag)) {
+        return [tag, x.slice(tag.length)];
+      }
     }
     return [undefined, x];
   }

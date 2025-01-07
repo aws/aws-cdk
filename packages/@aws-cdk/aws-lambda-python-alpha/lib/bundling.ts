@@ -1,6 +1,12 @@
 import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from 'aws-cdk-lib/core';
+import {
+  AssetStaging,
+  BundlingFileAccess,
+  BundlingOptions as CdkBundlingOptions,
+  DockerImage,
+  DockerVolume,
+} from 'aws-cdk-lib/core';
 import { Packaging, DependenciesFile } from './packaging';
 import { BundlingOptions, ICommandHooks } from './types';
 
@@ -99,13 +105,15 @@ export class Bundling implements CdkBundlingOptions {
       assetExcludes,
     });
 
-    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
-      buildArgs: {
-        ...props.buildArgs,
-        IMAGE: runtime.bundlingImage.image,
-      },
-      platform: architecture.dockerPlatform,
-    });
+    this.image =
+      image ??
+      DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
+        buildArgs: {
+          ...props.buildArgs,
+          IMAGE: runtime.bundlingImage.image,
+        },
+        platform: architecture.dockerPlatform,
+      });
     this.command = props.command ?? ['bash', '-c', chain(bundlingCommands)];
     this.entrypoint = props.entrypoint;
     this.volumes = props.volumes;
@@ -119,19 +127,31 @@ export class Bundling implements CdkBundlingOptions {
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
-    const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes, options.poetryWithoutUrls);
+    const packaging = Packaging.fromEntry(
+      options.entry,
+      options.poetryIncludeHashes,
+      options.poetryWithoutUrls
+    );
     let bundlingCommands: string[] = [];
-    bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
-    const exclusionStr = options.assetExcludes?.map(item => `--exclude='${item}'`).join(' ');
-    bundlingCommands.push([
-      'rsync', '-rLv', exclusionStr ?? '', `${options.inputDir}/`, options.outputDir,
-    ].filter(item => item).join(' '));
+    bundlingCommands.push(
+      ...(options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [])
+    );
+    const exclusionStr = options.assetExcludes?.map((item) => `--exclude='${item}'`).join(' ');
+    bundlingCommands.push(
+      ['rsync', '-rLv', exclusionStr ?? '', `${options.inputDir}/`, options.outputDir]
+        .filter((item) => item)
+        .join(' ')
+    );
     bundlingCommands.push(`cd ${options.outputDir}`);
     bundlingCommands.push(packaging.exportCommand ?? '');
     if (packaging.dependenciesFile) {
-      bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
+      bundlingCommands.push(
+        `python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`
+      );
     }
-    bundlingCommands.push(...options.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []);
+    bundlingCommands.push(
+      ...(options.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [])
+    );
     return bundlingCommands;
   }
 }
@@ -150,5 +170,5 @@ interface BundlingCommandOptions {
  * Chain commands
  */
 function chain(commands: string[]): string {
-  return commands.filter(c => !!c).join(' && ');
+  return commands.filter((c) => !!c).join(' && ');
 }

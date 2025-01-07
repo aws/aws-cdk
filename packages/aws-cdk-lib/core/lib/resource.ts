@@ -1,7 +1,10 @@
 import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { IStringProducer, Lazy } from './lazy';
-import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
+import {
+  generatePhysicalName,
+  isGeneratedWhenNeededMarker,
+} from './private/physical-name-generator';
 import { Reference } from './reference';
 import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
@@ -124,14 +127,16 @@ export abstract class Resource extends Construct implements IResource {
    * Check whether the given construct is a Resource
    */
   public static isResource(construct: IConstruct): construct is Resource {
-    return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
+    return construct !== null && typeof construct === 'object' && RESOURCE_SYMBOL in construct;
   }
 
   /**
    * Returns true if the construct was created by CDK, and false otherwise
    */
   public static isOwnedResource(construct: IConstruct): boolean {
-    return construct.node.defaultChild ? CfnResource.isCfnResource(construct.node.defaultChild) : false;
+    return construct.node.defaultChild
+      ? CfnResource.isCfnResource(construct.node.defaultChild)
+      : false;
   }
 
   public readonly stack: Stack;
@@ -156,17 +161,22 @@ export abstract class Resource extends Construct implements IResource {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
 
-    if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
-      throw new Error(`Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`);
+    if (
+      (props.account !== undefined || props.region !== undefined) &&
+      props.environmentFromArn !== undefined
+    ) {
+      throw new Error(
+        `Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`
+      );
     }
 
     Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
 
     this.stack = Stack.of(this);
 
-    const parsedArn = props.environmentFromArn ?
-      // Since we only want the region and account, NO_RESOURCE_NAME is good enough
-      this.stack.splitArn(props.environmentFromArn, ArnFormat.NO_RESOURCE_NAME)
+    const parsedArn = props.environmentFromArn
+      ? // Since we only want the region and account, NO_RESOURCE_NAME is good enough
+        this.stack.splitArn(props.environmentFromArn, ArnFormat.NO_RESOURCE_NAME)
       : undefined;
     this.env = {
       account: props.account ?? parsedArn?.account ?? this.stack.account,
@@ -208,8 +218,10 @@ export abstract class Resource extends Construct implements IResource {
   public _enableCrossEnvironment(): void {
     if (!this._allowCrossEnvironment) {
       // error out - a deploy-time name cannot be used across environments
-      throw new Error(`Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
-        "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`");
+      throw new Error(
+        `Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
+          "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`"
+      );
     }
 
     if (!this._physicalName) {
@@ -231,7 +243,9 @@ export abstract class Resource extends Construct implements IResource {
   public applyRemovalPolicy(policy: RemovalPolicy) {
     const child = this.node.defaultChild;
     if (!child || !CfnResource.isCfnResource(child)) {
-      throw new Error('Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.');
+      throw new Error(
+        'Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.'
+      );
     }
     child.applyRemovalPolicy(policy);
   }
@@ -256,9 +270,10 @@ export abstract class Resource extends Construct implements IResource {
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
 
-        if (this.stack.account !== consumingStack.account ||
-          (this.stack.region !== consumingStack.region &&
-            !consumingStack._crossRegionReferences)) {
+        if (
+          this.stack.account !== consumingStack.account ||
+          (this.stack.region !== consumingStack.region && !consumingStack._crossRegionReferences)
+        ) {
           this._enableCrossEnvironment();
           return this.physicalName;
         } else {
@@ -289,9 +304,10 @@ export abstract class Resource extends Construct implements IResource {
     return mimicReference(arnAttr, {
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
-        if (this.stack.account !== consumingStack.account ||
-          (this.stack.region !== consumingStack.region &&
-            !consumingStack._crossRegionReferences)) {
+        if (
+          this.stack.account !== consumingStack.account ||
+          (this.stack.region !== consumingStack.region && !consumingStack._crossRegionReferences)
+        ) {
           this._enableCrossEnvironment();
           return this.stack.formatArn(arnComponents);
         } else {
@@ -320,9 +336,11 @@ function mimicReference(refSource: any, producer: IStringProducer): string {
     return Lazy.uncachedString(producer);
   }
 
-  return Token.asString(new class extends Reference {
-    public resolve(context: IResolveContext) {
-      return producer.produce(context);
-    }
-  }(reference, reference.target, reference.displayName));
+  return Token.asString(
+    new (class extends Reference {
+      public resolve(context: IResolveContext) {
+        return producer.produce(context);
+      }
+    })(reference, reference.target, reference.displayName)
+  );
 }

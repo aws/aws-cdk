@@ -102,10 +102,10 @@ export interface EventBusProps {
   readonly description?: string;
 
   /**
-  * The customer managed key that encrypt events on this event bus.
-  *
-  * @default - Use an AWS managed key
-  */
+   * The customer managed key that encrypt events on this event bus.
+   *
+   * @default - Use an AWS managed key
+   */
   readonly kmsKey?: kms.IKey;
 }
 
@@ -190,7 +190,6 @@ abstract class EventBusBase extends Resource implements IEventBus {
  * @resource AWS::Events::EventBus
  */
 export class EventBus extends EventBusBase {
-
   /**
    * Import an existing event bus resource
    * @param scope Parent construct
@@ -233,7 +232,11 @@ export class EventBus extends EventBusBase {
    * @param id Construct ID
    * @param attrs Imported event bus properties
    */
-  public static fromEventBusAttributes(scope: Construct, id: string, attrs: EventBusAttributes): IEventBus {
+  public static fromEventBusAttributes(
+    scope: Construct,
+    id: string,
+    attrs: EventBusAttributes
+  ): IEventBus {
     return new ImportedEventBus(scope, id, attrs);
   }
 
@@ -273,25 +276,17 @@ export class EventBus extends EventBusBase {
     const eventBusNameRegex = /^[\/\.\-_A-Za-z0-9]{1,256}$/;
 
     if (eventBusName !== undefined && eventSourceName !== undefined) {
-      throw new Error(
-        '\'eventBusName\' and \'eventSourceName\' cannot both be provided',
-      );
+      throw new Error("'eventBusName' and 'eventSourceName' cannot both be provided");
     }
 
     if (eventBusName !== undefined) {
       if (!Token.isUnresolved(eventBusName)) {
         if (eventBusName === 'default') {
-          throw new Error(
-            '\'eventBusName\' must not be \'default\'',
-          );
+          throw new Error("'eventBusName' must not be 'default'");
         } else if (eventBusName.indexOf('/') > -1) {
-          throw new Error(
-            '\'eventBusName\' must not contain \'/\'',
-          );
+          throw new Error("'eventBusName' must not contain '/'");
         } else if (!eventBusNameRegex.test(eventBusName)) {
-          throw new Error(
-            `'eventBusName' must satisfy: ${eventBusNameRegex}`,
-          );
+          throw new Error(`'eventBusName' must satisfy: ${eventBusNameRegex}`);
         }
       }
       return { eventBusName };
@@ -302,13 +297,9 @@ export class EventBus extends EventBusBase {
         // Ex: aws.partner/PartnerName/acct1/repo1
         const eventSourceNameRegex = /^aws\.partner(\/[\.\-_A-Za-z0-9]+){2,}$/;
         if (!eventSourceNameRegex.test(eventSourceName)) {
-          throw new Error(
-            `'eventSourceName' must satisfy: ${eventSourceNameRegex}`,
-          );
+          throw new Error(`'eventSourceName' must satisfy: ${eventSourceNameRegex}`);
         } else if (!eventBusNameRegex.test(eventSourceName)) {
-          throw new Error(
-            `'eventSourceName' must satisfy: ${eventBusNameRegex}`,
-          );
+          throw new Error(`'eventSourceName' must satisfy: ${eventBusNameRegex}`);
         }
       }
       return { eventBusName: eventSourceName, eventSourceName };
@@ -341,21 +332,29 @@ export class EventBus extends EventBusBase {
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
       Lazy.string({ produce: () => Names.uniqueId(this) }),
-      props,
+      props
     );
 
     super(scope, id, { physicalName: eventBusName });
 
-    if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
-      throw new Error(`description must be less than or equal to 512 characters, got ${props.description.length}`);
+    if (
+      props?.description &&
+      !Token.isUnresolved(props.description) &&
+      props.description.length > 512
+    ) {
+      throw new Error(
+        `description must be less than or equal to 512 characters, got ${props.description.length}`
+      );
     }
 
     const eventBus = new CfnEventBus(this, 'Resource', {
       name: this.physicalName,
       eventSourceName,
-      deadLetterConfig: props?.deadLetterQueue ? {
-        arn: props.deadLetterQueue.queueArn,
-      } : undefined,
+      deadLetterConfig: props?.deadLetterQueue
+        ? {
+            arn: props.deadLetterQueue.queueArn,
+          }
+        : undefined,
       description: props?.description,
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
     });
@@ -372,26 +371,28 @@ export class EventBus extends EventBusBase {
      * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-key-policy.html#eb-encryption-key-policy-bus
      */
     if (props?.kmsKey) {
-      props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey'],
-        principals: [new iam.ServicePrincipal('events.amazonaws.com')],
-        conditions: {
-          StringEquals: {
-            'aws:SourceAccount': this.stack.account,
-            'aws:SourceArn': Stack.of(this).formatArn({
-              service: 'events',
-              resource: 'event-bus',
-              resourceName: eventBusName,
-            }),
-            'kms:EncryptionContext:aws:events:event-bus:arn': Stack.of(this).formatArn({
-              service: 'events',
-              resource: 'event-bus',
-              resourceName: eventBusName,
-            }),
+      props?.kmsKey.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey'],
+          principals: [new iam.ServicePrincipal('events.amazonaws.com')],
+          conditions: {
+            StringEquals: {
+              'aws:SourceAccount': this.stack.account,
+              'aws:SourceArn': Stack.of(this).formatArn({
+                service: 'events',
+                resource: 'event-bus',
+                resourceName: eventBusName,
+              }),
+              'kms:EncryptionContext:aws:events:event-bus:arn': Stack.of(this).formatArn({
+                service: 'events',
+                resource: 'event-bus',
+                resourceName: eventBusName,
+              }),
+            },
           },
-        },
-      }));
+        })
+      );
     }
 
     this.eventBusName = this.getResourceNameAttribute(eventBus.ref);

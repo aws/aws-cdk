@@ -11,7 +11,12 @@
 import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { GatewayVpcEndpointAwsService, InterfaceVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import {
+  GatewayVpcEndpointAwsService,
+  InterfaceVpcEndpointAwsService,
+  SubnetType,
+  VpnConnectionType,
+} from 'aws-cdk-lib/aws-ec2';
 import { SubnetV2, IpCidr } from '../lib/subnet-v2';
 import { NatConnectivityType, Route, RouteTable } from '../lib';
 
@@ -87,7 +92,7 @@ const vpnGateway = vpc.enableVpnGatewayV2({
 });
 
 //Can define a route with VPN gateway as a target
-const routeTable = new RouteTable(stack, 'routeTable', { vpc } );
+const routeTable = new RouteTable(stack, 'routeTable', { vpc });
 
 new Route(stack, 'route', {
   destination: '172.31.0.0/24',
@@ -101,15 +106,16 @@ vpc.addInternetGateway({
 });
 
 //Add a NAT Gateway
-vpc.addNatGateway({
-  subnet: subnet,
-  connectivityType: NatConnectivityType.PRIVATE,
-}).node.addDependency(vpnGateway);
+vpc
+  .addNatGateway({
+    subnet: subnet,
+    connectivityType: NatConnectivityType.PRIVATE,
+  })
+  .node.addDependency(vpnGateway);
 
 //Can define a route with Nat gateway as a target
-routeTable.addRoute( 'NATGWRoute', '172.32.0.0/24', { gateway: vpnGateway });
+routeTable.addRoute('NATGWRoute', '172.32.0.0/24', { gateway: vpnGateway });
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
 });
-

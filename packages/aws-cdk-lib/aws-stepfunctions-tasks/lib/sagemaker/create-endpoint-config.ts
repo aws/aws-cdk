@@ -52,10 +52,17 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: SageMakerCreateEndpointConfigProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: SageMakerCreateEndpointConfigProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, SageMakerCreateEndpointConfig.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      SageMakerCreateEndpointConfig.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     this.validateProductionVariants();
     this.taskPolicies = this.makePolicyStatements();
@@ -66,7 +73,11 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('sagemaker', 'createEndpointConfig', this.integrationPattern),
+      Resource: integrationResourceArn(
+        'sagemaker',
+        'createEndpointConfig',
+        this.integrationPattern
+      ),
       Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
     };
   }
@@ -79,13 +90,13 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
       ProductionVariants: this.props.productionVariants.map((variant) => ({
         InitialInstanceCount: variant.initialInstanceCount ? variant.initialInstanceCount : 1,
         InstanceType: sfn.JsonPath.isEncodedJsonPath(variant.instanceType.toString())
-          ? variant.instanceType.toString() : `ml.${variant.instanceType}`,
+          ? variant.instanceType.toString()
+          : `ml.${variant.instanceType}`,
         ModelName: variant.modelName,
         VariantName: variant.variantName,
         AcceleratorType: variant.acceleratorType,
         InitialVariantWeight: variant.initialVariantWeight,
-      }),
-      ),
+      })),
     };
   }
 
@@ -101,7 +112,9 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
             resource: 'endpoint-config',
             // If the endpoint configuration name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointConfigName) ? '*' : `${this.props.endpointConfigName.toLowerCase()}`,
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointConfigName)
+              ? '*'
+              : `${this.props.endpointConfigName.toLowerCase()}`,
           }),
         ],
       }),
@@ -118,8 +131,9 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
       throw new Error('Must specify from 1 to 10 production variants per endpoint configuration');
     }
     this.props.productionVariants.forEach((variant) => {
-      if (variant.initialInstanceCount && variant.initialInstanceCount < 1) throw new Error('Must define at least one instance');
-      if ( variant.initialVariantWeight && variant.initialVariantWeight <= 0) {
+      if (variant.initialInstanceCount && variant.initialInstanceCount < 1)
+        throw new Error('Must define at least one instance');
+      if (variant.initialVariantWeight && variant.initialVariantWeight <= 0) {
         throw new Error('InitialVariantWeight has minimum value of 0');
       }
     });

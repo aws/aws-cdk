@@ -39,7 +39,7 @@ export class Compression {
   /**
    * @param value the string value of the Compression.
    */
-  private constructor(public readonly value: string) { }
+  private constructor(public readonly value: string) {}
 }
 
 /**
@@ -141,7 +141,9 @@ export interface CommonDestinationS3Props {
  *
  * S3 backup is available for all destinations, regardless of whether the final destination is S3 or not.
  */
-export interface DestinationS3BackupProps extends DestinationLoggingProps, CommonDestinationS3Props {
+export interface DestinationS3BackupProps
+  extends DestinationLoggingProps,
+    CommonDestinationS3Props {
   /**
    * The S3 bucket that will store data and failed records.
    *
@@ -156,7 +158,7 @@ export interface DestinationS3BackupProps extends DestinationLoggingProps, Commo
    *
    * @default - If `bucket` is provided, the default will be `BackupMode.ALL`. Otherwise,
    * source records are not backed up to S3.
-  */
+   */
   readonly mode?: BackupMode;
 }
 

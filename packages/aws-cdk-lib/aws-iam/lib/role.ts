@@ -6,15 +6,38 @@ import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AccountPrincipal, AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, ServicePrincipal } from './principals';
+import {
+  AccountPrincipal,
+  AddToPrincipalPolicyResult,
+  ArnPrincipal,
+  IPrincipal,
+  PrincipalPolicyFragment,
+  ServicePrincipal,
+} from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority } from '../../core';
-import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
+import {
+  ArnFormat,
+  Duration,
+  Resource,
+  Stack,
+  Token,
+  TokenComparison,
+  Aspects,
+  Annotations,
+  RemovalPolicy,
+  AspectPriority,
+} from '../../core';
+import {
+  getCustomizeRolesConfig,
+  getPrecreatedRoleConfig,
+  CUSTOMIZE_ROLES_CONTEXT_KEY,
+  CustomizeRoleConfig,
+} from '../../core/lib/helpers-internal';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
@@ -226,7 +249,7 @@ export interface CustomizeRolesOptions {
 /**
  * Options allowing customizing the behavior of `Role.fromRoleName`.
  */
-export interface FromRoleNameOptions extends FromRoleArnOptions { }
+export interface FromRoleNameOptions extends FromRoleArnOptions {}
 
 /**
  * IAM Role
@@ -252,7 +275,12 @@ export class Role extends Resource implements IRole {
    * @param roleArn the ARN of the role to import
    * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleArn(scope: Construct, id: string, roleArn: string, options: FromRoleArnOptions = {}): IRole {
+  public static fromRoleArn(
+    scope: Construct,
+    id: string,
+    roleArn: string,
+    options: FromRoleArnOptions = {}
+  ): IRole {
     const scopeStack = Stack.of(scope);
     const parsedArn = scopeStack.splitArn(roleArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = parsedArn.resourceName!;
@@ -275,17 +303,22 @@ export class Role extends Resource implements IRole {
     }
 
     if (options.addGrantsToResources !== undefined && options.mutable !== false) {
-      throw new Error('\'addGrantsToResources\' can only be passed if \'mutable: false\'');
+      throw new Error("'addGrantsToResources' can only be passed if 'mutable: false'");
     }
 
-    const roleArnAndScopeStackAccountComparison = Token.compareStrings(roleAccount ?? '', scopeStack.account);
-    const equalOrAnyUnresolved = roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
+    const roleArnAndScopeStackAccountComparison = Token.compareStrings(
+      roleAccount ?? '',
+      scopeStack.account
+    );
+    const equalOrAnyUnresolved =
+      roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
       roleArnAndScopeStackAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
       roleArnAndScopeStackAccountComparison === TokenComparison.ONE_UNRESOLVED;
 
     // if we are returning an immutable role then the 'importedRole' is just a throwaway construct
     // so give it a different id
-    const mutableRoleId = (options.mutable !== false && equalOrAnyUnresolved) ? id : `MutableRole${id}`;
+    const mutableRoleId =
+      options.mutable !== false && equalOrAnyUnresolved ? id : `MutableRole${id}`;
     const importedRole = new ImportedRole(scope, mutableRoleId, {
       roleArn,
       roleName,
@@ -302,8 +335,8 @@ export class Role extends Resource implements IRole {
   /**
    * Return whether the given object is a Role
    */
-  public static isRole(x: any) : x is Role {
-    return x !== null && typeof(x) === 'object' && IAM_ROLE_SYMBOL in x;
+  public static isRole(x: any): x is Role {
+    return x !== null && typeof x === 'object' && IAM_ROLE_SYMBOL in x;
   }
 
   /**
@@ -317,13 +350,23 @@ export class Role extends Resource implements IRole {
    * @param roleName the name of the role to import
    * @param options allow customizing the behavior of the returned role
    */
-  public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleNameOptions = {}) {
-    return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
-      region: '',
-      service: 'iam',
-      resource: 'role',
-      resourceName: roleName,
-    }), options);
+  public static fromRoleName(
+    scope: Construct,
+    id: string,
+    roleName: string,
+    options: FromRoleNameOptions = {}
+  ) {
+    return Role.fromRoleArn(
+      scope,
+      id,
+      Stack.of(scope).formatArn({
+        region: '',
+        service: 'iam',
+        resource: 'role',
+        resourceName: roleName,
+      }),
+      options
+    );
   }
 
   /**
@@ -413,8 +456,14 @@ export class Role extends Resource implements IRole {
       physicalName: props.roleName,
     });
 
-    if (props.roleName && !Token.isUnresolved(props.roleName) && !/^[\w+=,.@-]{1,64}$/.test(props.roleName)) {
-      throw new Error('Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.');
+    if (
+      props.roleName &&
+      !Token.isUnresolved(props.roleName) &&
+      !/^[\w+=,.@-]{1,64}$/.test(props.roleName)
+    ) {
+      throw new Error(
+        'Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.'
+      );
     }
 
     const externalIds = props.externalIds || [];
@@ -423,12 +472,13 @@ export class Role extends Resource implements IRole {
     }
 
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, externalIds);
-    this.managedPolicies.push(...props.managedPolicies || []);
+    this.managedPolicies.push(...(props.managedPolicies || []));
     this.inlinePolicies = props.inlinePolicies || {};
     this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
-    const description = (props.description && props.description?.length > 0) ? props.description : undefined;
+    const description =
+      props.description && props.description?.length > 0 ? props.description : undefined;
 
     if (description && description.length > 1000) {
       throw new Error('Role description must be no longer than 1000 characters.');
@@ -443,7 +493,7 @@ export class Role extends Resource implements IRole {
       resource: 'role',
       resourceName: config.precreatedRoleName,
     });
-    const importedRole = new ImportedRole(this, 'Import'+id, {
+    const importedRole = new ImportedRole(this, 'Import' + id, {
       roleArn,
       roleName: config.precreatedRoleName ?? id,
       account: Stack.of(this).account,
@@ -451,13 +501,13 @@ export class Role extends Resource implements IRole {
     this.roleName = importedRole.roleName;
     this.roleArn = importedRole.roleArn;
     if (config.enabled) {
-      const role = new PrecreatedRole(this, 'PrecreatedRole'+id, {
+      const role = new PrecreatedRole(this, 'PrecreatedRole' + id, {
         rolePath: this.node.path,
         role: importedRole,
         missing: !config.precreatedRoleName,
         assumeRolePolicy: this.assumeRolePolicy,
       });
-      this.managedPolicies.forEach(policy => role.addManagedPolicy(policy));
+      this.managedPolicies.forEach((policy) => role.addManagedPolicy(policy));
       Object.entries(this.inlinePolicies).forEach(([name, policy]) => {
         role.attachInlinePolicy(new Policy(this, name, { document: policy }));
       });
@@ -469,10 +519,14 @@ export class Role extends Resource implements IRole {
     if (!config.preventSynthesis) {
       const role = new CfnRole(this, 'Resource', {
         assumeRolePolicyDocument: this.assumeRolePolicy as any,
-        managedPolicyArns: UniqueStringSet.from(() => this.managedPolicies.map(p => p.managedPolicyArn)),
+        managedPolicyArns: UniqueStringSet.from(() =>
+          this.managedPolicies.map((p) => p.managedPolicyArn)
+        ),
         policies: _flatten(this.inlinePolicies),
         path: props.path,
-        permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
+        permissionsBoundary: this.permissionsBoundary
+          ? this.permissionsBoundary.managedPolicyArn
+          : undefined,
         roleName: this.physicalName,
         maxSessionDuration,
         description,
@@ -487,13 +541,16 @@ export class Role extends Resource implements IRole {
         resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
       });
       this.roleName = this.getResourceNameAttribute(role.ref);
-      Aspects.of(this).add({
-        visit: (c) => {
-          if (c === this) {
-            this.splitLargePolicy();
-          }
+      Aspects.of(this).add(
+        {
+          visit: (c) => {
+            if (c === this) {
+              this.splitLargePolicy();
+            }
+          },
         },
-      }, { priority: AspectPriority.MUTATING });
+        { priority: AspectPriority.MUTATING }
+      );
     }
 
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
@@ -553,7 +610,9 @@ export class Role extends Resource implements IRole {
     if (this._precreatedRole) {
       return this._precreatedRole.addManagedPolicy(policy);
     } else {
-      if (this.managedPolicies.some(mp => mp.managedPolicyArn === policy.managedPolicyArn)) { return; }
+      if (this.managedPolicies.some((mp) => mp.managedPolicyArn === policy.managedPolicyArn)) {
+        return;
+      }
       this.managedPolicies.push(policy);
     }
   }
@@ -596,7 +655,9 @@ export class Role extends Resource implements IRole {
   public grantAssumeRole(identity: IPrincipal) {
     // Service and account principals must use assumeRolePolicy
     if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
-      throw new Error('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
+      throw new Error(
+        'Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.'
+      );
     }
     return this.grant(identity, 'sts:AssumeRole');
   }
@@ -625,7 +686,12 @@ export class Role extends Resource implements IRole {
    */
   public withoutPolicyUpdates(options: WithoutPolicyUpdatesOptions = {}): IRole {
     if (!this.immutableRole) {
-      this.immutableRole = new ImmutableRole(Node.of(this).scope as Construct, `ImmutableRole${this.node.id}`, this, options.addGrantsToResources ?? false);
+      this.immutableRole = new ImmutableRole(
+        Node.of(this).scope as Construct,
+        `ImmutableRole${this.node.id}`,
+        this,
+        options.addGrantsToResources ?? false
+      );
     }
 
     return this.immutableRole;
@@ -646,7 +712,7 @@ export class Role extends Resource implements IRole {
 
   private validateRole(): string[] {
     const errors = new Array<string>();
-    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() ?? []);
+    errors.push(...(this.assumeRolePolicy?.validateForResourcePolicy() ?? []));
     for (const policy of Object.values(this.inlinePolicies)) {
       errors.push(...policy.validateForIdentityPolicy());
     }
@@ -673,9 +739,15 @@ export class Role extends Resource implements IRole {
 
     const mpCount = this.managedPolicies.length + (splitOffDocs.size - 1);
     if (mpCount > 20) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:rolePolicyTooLarge', `Policy too large: ${mpCount} exceeds the maximum of 20 managed policies attached to a Role`);
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-iam:rolePolicyTooLarge',
+        `Policy too large: ${mpCount} exceeds the maximum of 20 managed policies attached to a Role`
+      );
     } else if (mpCount > 10) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:rolePolicyLarge', `Policy large: ${mpCount} exceeds 10 managed policies attached to a Role, this requires a quota increase`);
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-iam:rolePolicyLarge',
+        `Policy large: ${mpCount} exceeds 10 managed policies attached to a Role, this requires a quota increase`
+      );
     }
 
     // Create the managed policies and fix up the dependencies
@@ -683,7 +755,9 @@ export class Role extends Resource implements IRole {
 
     let i = 1;
     for (const newDoc of splitOffDocs.keys()) {
-      if (newDoc === originalDoc) { continue; }
+      if (newDoc === originalDoc) {
+        continue;
+      }
 
       const mp = new ManagedPolicy(this, `OverflowPolicy${i++}`, {
         description: `Part of the policies for ${this.node.path}`,
@@ -709,7 +783,6 @@ export class Role extends Resource implements IRole {
   private getPrecreatedRoleConfig(): CustomizeRoleConfig {
     return getPrecreatedRoleConfig(this);
   }
-
 }
 
 /**
@@ -750,14 +823,15 @@ function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   const actualDoc = new PolicyDocument();
 
   // If requested, add externalIds to every statement added to this doc
-  const addDoc = externalIds.length === 0
-    ? actualDoc
-    : new MutatingPolicyDocumentAdapter(actualDoc, (statement) => {
-      statement.addCondition('StringEquals', {
-        'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds,
-      });
-      return statement;
-    });
+  const addDoc =
+    externalIds.length === 0
+      ? actualDoc
+      : new MutatingPolicyDocumentAdapter(actualDoc, (statement) => {
+          statement.addCondition('StringEquals', {
+            'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds,
+          });
+          return statement;
+        });
 
   defaultAddPrincipalToAssumeRole(principal, addDoc);
 
@@ -772,11 +846,14 @@ function validateRolePath(path?: string) {
   const validRolePath = /^(\/|\/[\u0021-\u007F]+\/)$/;
 
   if (path.length == 0 || path.length > 512) {
-    throw new Error(`Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`);
+    throw new Error(
+      `Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`
+    );
   } else if (!validRolePath.test(path)) {
     throw new Error(
-      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
-      + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`);
+      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. ' +
+        `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`
+    );
   }
 }
 
@@ -786,7 +863,9 @@ function validateMaxSessionDuration(duration?: number) {
   }
 
   if (duration < 3600 || duration > 43200) {
-    throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
+    throw new Error(
+      `maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`
+    );
   }
 }
 

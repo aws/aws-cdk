@@ -66,17 +66,37 @@ export async function main(): Promise<void> {
     registerFact(region, 'PARTITION', partition);
     registerFact(region, 'DOMAIN_SUFFIX', domainSuffix);
 
-    registerFact(region, 'CDK_METADATA_RESOURCE_AVAILABLE', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
+    registerFact(
+      region,
+      'CDK_METADATA_RESOURCE_AVAILABLE',
+      AWS_CDK_METADATA.has(region) ? 'YES' : 'NO'
+    );
 
-    registerFact(region, 'IS_OPT_IN_REGION', partition === 'aws' && after(region, RULE_CLASSIC_PARTITION_BECOMES_OPT_IN) ? 'YES' : 'NO');
+    registerFact(
+      region,
+      'IS_OPT_IN_REGION',
+      partition === 'aws' && after(region, RULE_CLASSIC_PARTITION_BECOMES_OPT_IN) ? 'YES' : 'NO'
+    );
 
-    registerFact(region, 'S3_STATIC_WEBSITE_ENDPOINT', before(region, RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN)
-      ? `s3-website-${region}.${domainSuffix}`
-      : `s3-website.${region}.${domainSuffix}`);
+    registerFact(
+      region,
+      'S3_STATIC_WEBSITE_ENDPOINT',
+      before(region, RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN)
+        ? `s3-website-${region}.${domainSuffix}`
+        : `s3-website.${region}.${domainSuffix}`
+    );
 
-    registerFact(region, 'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID', ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || '');
+    registerFact(
+      region,
+      'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID',
+      ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || ''
+    );
 
-    registerFact(region, 'EBS_ENV_ENDPOINT_HOSTED_ZONE_ID', EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS[region] || '');
+    registerFact(
+      region,
+      'EBS_ENV_ENDPOINT_HOSTED_ZONE_ID',
+      EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS[region] || ''
+    );
 
     registerFact(region, 'ELBV2_ACCOUNT', ELBV2_ACCOUNTS[region]);
 
@@ -98,14 +118,21 @@ export async function main(): Promise<void> {
 
     for (const version in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS) {
       for (const arch in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
-        registerFact(region, ['cloudwatchLambdaInsightsVersion', version, arch], CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][arch][region]);
-
+        registerFact(
+          region,
+          ['cloudwatchLambdaInsightsVersion', version, arch],
+          CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][arch][region]
+        );
       }
     }
 
     for (const version in APPCONFIG_LAMBDA_LAYER_ARNS) {
       for (const arch in APPCONFIG_LAMBDA_LAYER_ARNS[version]) {
-        registerFact(region, ['appConfigLambdaLayerVersion', version, arch], APPCONFIG_LAMBDA_LAYER_ARNS[version][arch][region]);
+        registerFact(
+          region,
+          ['appConfigLambdaLayerVersion', version, arch],
+          APPCONFIG_LAMBDA_LAYER_ARNS[version][arch][region]
+        );
       }
     }
 
@@ -115,7 +142,7 @@ export async function main(): Promise<void> {
           registerFact(
             region,
             ['adotLambdaLayer', type, version, arch],
-            ADOT_LAMBDA_LAYER_ARNS[type][version][arch][region],
+            ADOT_LAMBDA_LAYER_ARNS[type][version][arch][region]
           );
         }
       }
@@ -123,7 +150,11 @@ export async function main(): Promise<void> {
 
     for (const version in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS) {
       for (const arch in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version]) {
-        registerFact(region, ['paramsAndSecretsLambdaLayer', version, arch], PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version][arch][region]);
+        registerFact(
+          region,
+          ['paramsAndSecretsLambdaLayer', version, arch],
+          PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS[version][arch][region]
+        );
       }
     }
   }
@@ -132,11 +163,22 @@ export async function main(): Promise<void> {
   lines.push('  private constructor() {}');
   lines.push('}');
 
-  await fs.writeFile(path.resolve(__dirname, '..', 'lib', 'built-ins.generated.ts'), lines.join('\n'));
+  await fs.writeFile(
+    path.resolve(__dirname, '..', 'lib', 'built-ins.generated.ts'),
+    lines.join('\n')
+  );
 
   function registerFact(region: string, name: string | string[], value: string) {
-    const factName = typeof name === 'string' ? name : `${name[0]}(${name.slice(1).map(s => JSON.stringify(s)).join(', ')})`;
-    lines.push(`    Fact.register({ region: ${JSON.stringify(region)}, name: FactName.${factName}, value: ${JSON.stringify(value)} });`);
+    const factName =
+      typeof name === 'string'
+        ? name
+        : `${name[0]}(${name
+            .slice(1)
+            .map((s) => JSON.stringify(s))
+            .join(', ')})`;
+    lines.push(
+      `    Fact.register({ region: ${JSON.stringify(region)}, name: FactName.${factName}, value: ${JSON.stringify(value)} });`
+    );
   }
 }
 
@@ -166,7 +208,6 @@ function checkRegionsSubMap(map: Record<string, Record<string, Record<string, un
           throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
         }
       }
-
     }
   }
 }
@@ -175,7 +216,7 @@ export function after(region: string, ruleOrRegion: string | symbol) {
   return region !== ruleOrRegion && !before(region, ruleOrRegion);
 }
 
-main().catch(e => {
+main().catch((e) => {
   // eslint-disable-next-line no-console
   console.error(e);
   process.exit(-1);

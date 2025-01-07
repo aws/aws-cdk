@@ -57,10 +57,12 @@ export class ApiDestinationTarget implements ITarget {
   }
 
   grantPush(grantee: IRole): void {
-    grantee.addToPrincipalPolicy(new PolicyStatement({
-      resources: [this.destination.apiDestinationArn],
-      actions: ['events:InvokeApiDestination'],
-    }));
+    grantee.addToPrincipalPolicy(
+      new PolicyStatement({
+        resources: [this.destination.apiDestinationArn],
+        actions: ['events:InvokeApiDestination'],
+      })
+    );
   }
 
   bind(pipe: IPipe): TargetConfig {

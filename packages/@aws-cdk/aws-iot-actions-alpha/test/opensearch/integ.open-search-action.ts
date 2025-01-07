@@ -19,15 +19,17 @@ const domain = new opensearch.Domain(stack, 'Domain', {
 
 const topicRule = new iot.TopicRule(stack, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323(
-    "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+    "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'"
   ),
 });
 
-topicRule.addAction(new actions.OpenSearchAction(domain, {
-  id: 'my-id',
-  index: 'my-index',
-  type: 'my-type',
-}));
+topicRule.addAction(
+  new actions.OpenSearchAction(domain, {
+    id: 'my-id',
+    index: 'my-index',
+    type: 'my-type',
+  })
+);
 
 new IntegTest(app, 'iot-opensearch-action-integ-test', {
   testCases: [stack],

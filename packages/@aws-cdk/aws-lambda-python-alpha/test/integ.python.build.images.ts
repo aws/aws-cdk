@@ -18,8 +18,13 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const runtimes: Runtime[]= [
-      Runtime.PYTHON_3_8, Runtime.PYTHON_3_9, Runtime.PYTHON_3_10, Runtime.PYTHON_3_11, Runtime.PYTHON_3_12, Runtime.PYTHON_3_13,
+    const runtimes: Runtime[] = [
+      Runtime.PYTHON_3_8,
+      Runtime.PYTHON_3_9,
+      Runtime.PYTHON_3_10,
+      Runtime.PYTHON_3_11,
+      Runtime.PYTHON_3_12,
+      Runtime.PYTHON_3_13,
     ];
 
     runtimes.forEach((runtime, index) => {
@@ -39,14 +44,16 @@ const integ = new IntegTest(app, 'lambda-python-build-images', {
   stackUpdateWorkflow: false,
 });
 
-testCase.functionNames.forEach(functionName => {
+testCase.functionNames.forEach((functionName) => {
   const invoke = integ.assertions.invokeFunction({
     functionName: functionName,
   });
 
-  invoke.expect(ExpectedResult.objectLike({
-    Payload: '200',
-  }));
+  invoke.expect(
+    ExpectedResult.objectLike({
+      Payload: '200',
+    })
+  );
 });
 
 app.synth();

@@ -1,5 +1,13 @@
 import { randomUUID } from 'crypto';
-import { IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import {
+  IPipe,
+  ISource,
+  ITarget,
+  InputTransformation,
+  Pipe,
+  SourceConfig,
+  TargetConfig,
+} from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
@@ -49,7 +57,8 @@ class TestTarget implements ITarget {
   }
 }
 
-const enrichmentHandlerCode = 'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-enriched` }) ) };';
+const enrichmentHandlerCode =
+  'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-enriched` }) ) };';
 const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', {
   code: Code.fromInline(enrichmentHandlerCode),
   handler: 'index.handler',
@@ -74,18 +83,23 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: uniqueIdentifier,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
-  {
-    QueueUrl: targetQueue.queueUrl,
-  })).expect(ExpectedResult.objectLike({
-  Messages: [
-    {
-      Body: uniqueIdentifier + '-enriched',
-    },
-  ],
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(30),
-});
+putMessageOnQueue
+  .next(
+    test.assertions.awsApiCall('SQS', 'receiveMessage', {
+      QueueUrl: targetQueue.queueUrl,
+    })
+  )
+  .expect(
+    ExpectedResult.objectLike({
+      Messages: [
+        {
+          Body: uniqueIdentifier + '-enriched',
+        },
+      ],
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.seconds(30),
+  });
 
 app.synth();
-

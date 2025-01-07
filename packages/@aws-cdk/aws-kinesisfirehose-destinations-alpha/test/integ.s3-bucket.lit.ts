@@ -89,15 +89,20 @@ testCase.assertions.awsApiCall('Firehose', 'putRecord', {
   },
 });
 
-const s3ApiCall = testCase.assertions.awsApiCall('S3', 'listObjectsV2', {
-  Bucket: bucket.bucketName,
-  MaxKeys: 1,
-}).expect(ExpectedResult.objectLike({
-  KeyCount: 1,
-})).waitForAssertions({
-  interval: cdk.Duration.seconds(30),
-  totalTimeout: cdk.Duration.minutes(10),
-});
+const s3ApiCall = testCase.assertions
+  .awsApiCall('S3', 'listObjectsV2', {
+    Bucket: bucket.bucketName,
+    MaxKeys: 1,
+  })
+  .expect(
+    ExpectedResult.objectLike({
+      KeyCount: 1,
+    })
+  )
+  .waitForAssertions({
+    interval: cdk.Duration.seconds(30),
+    totalTimeout: cdk.Duration.minutes(10),
+  });
 
 if (s3ApiCall instanceof AwsApiCall && s3ApiCall.waiterProvider) {
   s3ApiCall.waiterProvider.addToRolePolicy({

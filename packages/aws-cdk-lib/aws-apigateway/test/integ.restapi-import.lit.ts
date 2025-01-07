@@ -62,17 +62,23 @@ class PetsStack extends NestedStack {
       rootResourceId: props.rootResourceId,
     });
 
-    const method = api.root.addResource('pets').addMethod('GET', new MockIntegration({
-      integrationResponses: [{
-        statusCode: '200',
-      }],
-      passthroughBehavior: PassthroughBehavior.NEVER,
-      requestTemplates: {
-        'application/json': '{ "statusCode": 200 }',
-      },
-    }), {
-      methodResponses: [{ statusCode: '200' }],
-    });
+    const method = api.root.addResource('pets').addMethod(
+      'GET',
+      new MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: '200',
+          },
+        ],
+        passthroughBehavior: PassthroughBehavior.NEVER,
+        requestTemplates: {
+          'application/json': '{ "statusCode": 200 }',
+        },
+      }),
+      {
+        methodResponses: [{ statusCode: '200' }],
+      }
+    );
 
     this.methods.push(method);
   }
@@ -89,17 +95,23 @@ class BooksStack extends NestedStack {
       rootResourceId: props.rootResourceId,
     });
 
-    const method = api.root.addResource('books').addMethod('GET', new MockIntegration({
-      integrationResponses: [{
-        statusCode: '200',
-      }],
-      passthroughBehavior: PassthroughBehavior.NEVER,
-      requestTemplates: {
-        'application/json': '{ "statusCode": 200 }',
-      },
-    }), {
-      methodResponses: [{ statusCode: '200' }],
-    });
+    const method = api.root.addResource('books').addMethod(
+      'GET',
+      new MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: '200',
+          },
+        ],
+        passthroughBehavior: PassthroughBehavior.NEVER,
+        requestTemplates: {
+          'application/json': '{ "statusCode": 200 }',
+        },
+      }),
+      {
+        methodResponses: [{ statusCode: '200' }],
+      }
+    );
 
     this.methods.push(method);
   }

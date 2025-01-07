@@ -63,7 +63,11 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
   /**
    * Use an existing geofence collection by name
    */
-  public static fromGeofenceCollectionName(scope: Construct, id: string, geofenceCollectionName: string): IGeofenceCollection {
+  public static fromGeofenceCollectionName(
+    scope: Construct,
+    id: string,
+    geofenceCollectionName: string
+  ): IGeofenceCollection {
     const geofenceCollectionArn = Stack.of(scope).formatArn({
       service: 'geo',
       resource: 'geofence-collection',
@@ -76,11 +80,20 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
   /**
    * Use an existing geofence collection by ARN
    */
-  public static fromGeofenceCollectionArn(scope: Construct, id: string, geofenceCollectionArn: string): IGeofenceCollection {
-    const parsedArn = Stack.of(scope).splitArn(geofenceCollectionArn, ArnFormat.SLASH_RESOURCE_NAME);
+  public static fromGeofenceCollectionArn(
+    scope: Construct,
+    id: string,
+    geofenceCollectionArn: string
+  ): IGeofenceCollection {
+    const parsedArn = Stack.of(scope).splitArn(
+      geofenceCollectionArn,
+      ArnFormat.SLASH_RESOURCE_NAME
+    );
 
     if (!parsedArn.resourceName) {
-      throw new Error(`Geofence Collection Arn ${geofenceCollectionArn} does not have a resource name.`);
+      throw new Error(
+        `Geofence Collection Arn ${geofenceCollectionArn} does not have a resource name.`
+      );
     }
 
     class Import extends Resource implements IGeofenceCollection {
@@ -113,23 +126,36 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
   public readonly geofenceCollectionUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: GeofenceCollectionProps = {}) {
-
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
+    if (
+      props.description &&
+      !Token.isUnresolved(props.description) &&
+      props.description.length > 1000
+    ) {
+      throw new Error(
+        `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`
+      );
     }
 
-    if (props.geofenceCollectionName !== undefined && !Token.isUnresolved(props.geofenceCollectionName)) {
+    if (
+      props.geofenceCollectionName !== undefined &&
+      !Token.isUnresolved(props.geofenceCollectionName)
+    ) {
       if (props.geofenceCollectionName.length < 1 || props.geofenceCollectionName.length > 100) {
-        throw new Error(`\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${props.geofenceCollectionName.length} characters.`);
+        throw new Error(
+          `\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${props.geofenceCollectionName.length} characters.`
+        );
       }
 
       if (!/^[-._\w]+$/.test(props.geofenceCollectionName)) {
-        throw new Error(`\`geofenceCollectionName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.geofenceCollectionName}.`);
+        throw new Error(
+          `\`geofenceCollectionName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.geofenceCollectionName}.`
+        );
       }
     }
 
     super(scope, id, {
-      physicalName: props.geofenceCollectionName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
+      physicalName:
+        props.geofenceCollectionName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
 
     const geofenceCollection = new CfnGeofenceCollection(this, 'Resource', {
@@ -161,9 +187,6 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-geofences
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'geo:ListGeofences',
-      'geo:GetGeofence',
-    );
+    return this.grant(grantee, 'geo:ListGeofences', 'geo:GetGeofence');
   }
 }

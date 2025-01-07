@@ -37,7 +37,7 @@ export interface SubscriptionOptions {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicy? : { [attribute: string]: SubscriptionFilter };
+  readonly filterPolicy?: { [attribute: string]: SubscriptionFilter };
 
   /**
    * The filter policy that is applied on the message body.
@@ -93,7 +93,6 @@ export interface SubscriptionProps extends SubscriptionOptions {
  * this class.
  */
 export class Subscription extends Resource {
-
   /**
    * The DLQ associated with this subscription if present.
    */
@@ -101,20 +100,23 @@ export class Subscription extends Resource {
 
   private readonly filterPolicy?: { [attribute: string]: any[] };
 
-  private readonly filterPolicyWithMessageBody? : {[attribute: string]: FilterOrPolicy };
+  private readonly filterPolicyWithMessageBody?: { [attribute: string]: FilterOrPolicy };
 
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
 
-    if (props.rawMessageDelivery &&
+    if (
+      props.rawMessageDelivery &&
       [
         SubscriptionProtocol.HTTP,
         SubscriptionProtocol.HTTPS,
         SubscriptionProtocol.SQS,
         SubscriptionProtocol.FIREHOSE,
-      ]
-        .indexOf(props.protocol) < 0) {
-      throw new Error('Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.');
+      ].indexOf(props.protocol) < 0
+    ) {
+      throw new Error(
+        'Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.'
+      );
     }
 
     if (props.filterPolicy) {
@@ -122,14 +124,15 @@ export class Subscription extends Resource {
         throw new Error('A filter policy can have a maximum of 5 attribute names.');
       }
 
-      this.filterPolicy = Object.entries(props.filterPolicy)
-        .reduce(
-          (acc, [k, v]) => ({ ...acc, [k]: v.conditions }),
-          {},
-        );
+      this.filterPolicy = Object.entries(props.filterPolicy).reduce(
+        (acc, [k, v]) => ({ ...acc, [k]: v.conditions }),
+        {}
+      );
 
       let total = 1;
-      Object.values(this.filterPolicy).forEach(filter => { total *= filter.length; });
+      Object.values(this.filterPolicy).forEach((filter) => {
+        total *= filter.length;
+      });
       if (total > 150) {
         throw new Error(`The total combination of values (${total}) must not exceed 150.`);
       }
@@ -141,7 +144,9 @@ export class Subscription extends Resource {
     }
 
     if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
-      throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
+      throw new Error(
+        'Subscription role arn is required field for subscriptions with a firehose protocol.'
+      );
     }
 
     // Format filter policy
@@ -160,14 +165,20 @@ export class Subscription extends Resource {
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
       subscriptionRoleArn: props.subscriptionRoleArn,
-      deliveryPolicy: props.deliveryPolicy ? this.renderDeliveryPolicy(props.deliveryPolicy, props.protocol): undefined,
+      deliveryPolicy: props.deliveryPolicy
+        ? this.renderDeliveryPolicy(props.deliveryPolicy, props.protocol)
+        : undefined,
     });
-
   }
 
-  private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy, protocol: SubscriptionProtocol): any {
+  private renderDeliveryPolicy(
+    deliveryPolicy: DeliveryPolicy,
+    protocol: SubscriptionProtocol
+  ): any {
     if (![SubscriptionProtocol.HTTP, SubscriptionProtocol.HTTPS].includes(protocol)) {
-      throw new Error(`Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`);
+      throw new Error(
+        `Delivery policy is only supported for HTTP and HTTPS subscriptions, got: ${protocol}`
+      );
     }
     const { healthyRetryPolicy, throttlePolicy } = deliveryPolicy;
     if (healthyRetryPolicy) {
@@ -176,66 +187,103 @@ export class Subscription extends Resource {
       const maxDelayTarget = healthyRetryPolicy.maxDelayTarget;
       if (minDelayTarget !== undefined) {
         if (minDelayTarget.toMilliseconds() % 1000 !== 0) {
-          throw new Error(`minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`);
+          throw new Error(
+            `minDelayTarget must be a whole number of seconds, got: ${minDelayTarget}`
+          );
         }
         const minDelayTargetSecs = minDelayTarget.toSeconds();
         if (minDelayTargetSecs < 1 || minDelayTargetSecs > delayTargetLimitSecs) {
-          throw new Error(`minDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${minDelayTargetSecs}s`);
+          throw new Error(
+            `minDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${minDelayTargetSecs}s`
+          );
         }
       }
       if (maxDelayTarget !== undefined) {
         if (maxDelayTarget.toMilliseconds() % 1000 !== 0) {
-          throw new Error(`maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`);
+          throw new Error(
+            `maxDelayTarget must be a whole number of seconds, got: ${maxDelayTarget}`
+          );
         }
         const maxDelayTargetSecs = maxDelayTarget.toSeconds();
         if (maxDelayTargetSecs < 1 || maxDelayTargetSecs > delayTargetLimitSecs) {
-          throw new Error(`maxDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${maxDelayTargetSecs}s`);
+          throw new Error(
+            `maxDelayTarget must be between 1 and ${delayTargetLimitSecs} seconds inclusive, got: ${maxDelayTargetSecs}s`
+          );
         }
-        if ((minDelayTarget !== undefined) && minDelayTarget.toSeconds() > maxDelayTargetSecs) {
+        if (minDelayTarget !== undefined && minDelayTarget.toSeconds() > maxDelayTargetSecs) {
           throw new Error('minDelayTarget must not exceed maxDelayTarget');
         }
       }
 
       const numRetriesLimit = 100;
-      if (healthyRetryPolicy.numRetries && (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit)) {
-        throw new Error(`numRetries must be between 0 and ${numRetriesLimit} inclusive, got: ${healthyRetryPolicy.numRetries}`);
+      if (
+        healthyRetryPolicy.numRetries &&
+        (healthyRetryPolicy.numRetries < 0 || healthyRetryPolicy.numRetries > numRetriesLimit)
+      ) {
+        throw new Error(
+          `numRetries must be between 0 and ${numRetriesLimit} inclusive, got: ${healthyRetryPolicy.numRetries}`
+        );
       }
       const { numNoDelayRetries, numMinDelayRetries, numMaxDelayRetries } = healthyRetryPolicy;
       if (numNoDelayRetries && (numNoDelayRetries < 0 || !Number.isInteger(numNoDelayRetries))) {
-        throw new Error(`numNoDelayRetries must be an integer zero or greater, got: ${numNoDelayRetries}`);
+        throw new Error(
+          `numNoDelayRetries must be an integer zero or greater, got: ${numNoDelayRetries}`
+        );
       }
       if (numMinDelayRetries && (numMinDelayRetries < 0 || !Number.isInteger(numMinDelayRetries))) {
-        throw new Error(`numMinDelayRetries must be an integer zero or greater, got: ${numMinDelayRetries}`);
+        throw new Error(
+          `numMinDelayRetries must be an integer zero or greater, got: ${numMinDelayRetries}`
+        );
       }
       if (numMaxDelayRetries && (numMaxDelayRetries < 0 || !Number.isInteger(numMaxDelayRetries))) {
-        throw new Error(`numMaxDelayRetries must be an integer zero or greater, got: ${numMaxDelayRetries}`);
+        throw new Error(
+          `numMaxDelayRetries must be an integer zero or greater, got: ${numMaxDelayRetries}`
+        );
       }
     }
     if (throttlePolicy) {
       const maxReceivesPerSecond = throttlePolicy.maxReceivesPerSecond;
-      if (maxReceivesPerSecond !== undefined && (maxReceivesPerSecond < 1 || !Number.isInteger(maxReceivesPerSecond))) {
-        throw new Error(`maxReceivesPerSecond must be an integer greater than zero, got: ${maxReceivesPerSecond}`);
+      if (
+        maxReceivesPerSecond !== undefined &&
+        (maxReceivesPerSecond < 1 || !Number.isInteger(maxReceivesPerSecond))
+      ) {
+        throw new Error(
+          `maxReceivesPerSecond must be an integer greater than zero, got: ${maxReceivesPerSecond}`
+        );
       }
     }
     return {
-      healthyRetryPolicy: healthyRetryPolicy ? {
-        // minDelayTarget, maxDelayTarget and numRetries are (empirically) mandatory when healthyRetryPolicy is specified,
-        // but for user-friendliness we allow them to be undefined and set them here instead.
-        // The defaults we use here are the same used in the event healthyRetryPolicy is not specified, see https://docs.aws.amazon.com/sns/latest/dg/creating-delivery-policy.html.
-        minDelayTarget: (healthyRetryPolicy.minDelayTarget === undefined) ? 20 : healthyRetryPolicy.minDelayTarget.toSeconds(),
-        maxDelayTarget: (healthyRetryPolicy.maxDelayTarget === undefined) ? 20 : healthyRetryPolicy.maxDelayTarget.toSeconds(),
-        numRetries: (healthyRetryPolicy.numRetries === undefined) ? 3: healthyRetryPolicy.numRetries,
-        numNoDelayRetries: healthyRetryPolicy.numNoDelayRetries,
-        numMinDelayRetries: healthyRetryPolicy.numMinDelayRetries,
-        numMaxDelayRetries: healthyRetryPolicy.numMaxDelayRetries,
-        backoffFunction: healthyRetryPolicy.backoffFunction,
-      }: undefined,
-      throttlePolicy: deliveryPolicy.throttlePolicy ? {
-        maxReceivesPerSecond: deliveryPolicy.throttlePolicy.maxReceivesPerSecond,
-      }: undefined,
-      requestPolicy: deliveryPolicy.requestPolicy ? {
-        headerContentType: deliveryPolicy.requestPolicy.headerContentType,
-      }: undefined,
+      healthyRetryPolicy: healthyRetryPolicy
+        ? {
+            // minDelayTarget, maxDelayTarget and numRetries are (empirically) mandatory when healthyRetryPolicy is specified,
+            // but for user-friendliness we allow them to be undefined and set them here instead.
+            // The defaults we use here are the same used in the event healthyRetryPolicy is not specified, see https://docs.aws.amazon.com/sns/latest/dg/creating-delivery-policy.html.
+            minDelayTarget:
+              healthyRetryPolicy.minDelayTarget === undefined
+                ? 20
+                : healthyRetryPolicy.minDelayTarget.toSeconds(),
+            maxDelayTarget:
+              healthyRetryPolicy.maxDelayTarget === undefined
+                ? 20
+                : healthyRetryPolicy.maxDelayTarget.toSeconds(),
+            numRetries:
+              healthyRetryPolicy.numRetries === undefined ? 3 : healthyRetryPolicy.numRetries,
+            numNoDelayRetries: healthyRetryPolicy.numNoDelayRetries,
+            numMinDelayRetries: healthyRetryPolicy.numMinDelayRetries,
+            numMaxDelayRetries: healthyRetryPolicy.numMaxDelayRetries,
+            backoffFunction: healthyRetryPolicy.backoffFunction,
+          }
+        : undefined,
+      throttlePolicy: deliveryPolicy.throttlePolicy
+        ? {
+            maxReceivesPerSecond: deliveryPolicy.throttlePolicy.maxReceivesPerSecond,
+          }
+        : undefined,
+      requestPolicy: deliveryPolicy.requestPolicy
+        ? {
+            headerContentType: deliveryPolicy.requestPolicy.headerContentType,
+          }
+        : undefined,
     };
   }
 
@@ -246,14 +294,16 @@ export class Subscription extends Resource {
 
     const deadLetterQueue = props.deadLetterQueue;
 
-    deadLetterQueue.addToResourcePolicy(new PolicyStatement({
-      resources: [deadLetterQueue.queueArn],
-      actions: ['sqs:SendMessage'],
-      principals: [new ServicePrincipal('sns.amazonaws.com')],
-      conditions: {
-        ArnEquals: { 'aws:SourceArn': props.topic.topicArn },
-      },
-    }));
+    deadLetterQueue.addToResourcePolicy(
+      new PolicyStatement({
+        resources: [deadLetterQueue.queueArn],
+        actions: ['sqs:SendMessage'],
+        principals: [new ServicePrincipal('sns.amazonaws.com')],
+        conditions: {
+          ArnEquals: { 'aws:SourceArn': props.topic.topicArn },
+        },
+      })
+    );
 
     return deadLetterQueue;
   }
@@ -322,13 +372,17 @@ export enum SubscriptionProtocol {
 function buildFilterPolicyWithMessageBody(
   inputObject: { [key: string]: FilterOrPolicy },
   depth = 1,
-  totalCombinationValues = [1],
+  totalCombinationValues = [1]
 ): { [key: string]: any } {
   const result: { [key: string]: any } = {};
 
   for (const [key, filterOrPolicy] of Object.entries(inputObject)) {
     if (filterOrPolicy.isPolicy()) {
-      result[key] = buildFilterPolicyWithMessageBody(filterOrPolicy.policyDoc, depth + 1, totalCombinationValues);
+      result[key] = buildFilterPolicyWithMessageBody(
+        filterOrPolicy.policyDoc,
+        depth + 1,
+        totalCombinationValues
+      );
     } else if (filterOrPolicy.isFilter()) {
       const filter = filterOrPolicy.filterDoc.conditions;
       result[key] = filter;
@@ -338,11 +392,13 @@ function buildFilterPolicyWithMessageBody(
 
   // https://docs.aws.amazon.com/sns/latest/dg/subscription-filter-policy-constraints.html
   if (totalCombinationValues[0] > 150) {
-    throw new Error(`The total combination of values (${totalCombinationValues}) must not exceed 150.`);
+    throw new Error(
+      `The total combination of values (${totalCombinationValues}) must not exceed 150.`
+    );
   }
 
   return result;
-};
+}
 
 /**
  * The type of the MessageBody at a given key value pair

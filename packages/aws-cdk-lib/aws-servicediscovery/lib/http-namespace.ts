@@ -5,7 +5,7 @@ import { CfnHttpNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
-export interface IHttpNamespace extends INamespace { }
+export interface IHttpNamespace extends INamespace {}
 export interface HttpNamespaceAttributes {
   /**
    * A name for the Namespace.
@@ -27,8 +27,11 @@ export interface HttpNamespaceAttributes {
  * Define an HTTP Namespace
  */
 export class HttpNamespace extends Resource implements IHttpNamespace {
-
-  public static fromHttpNamespaceAttributes(scope: Construct, id: string, attrs: HttpNamespaceAttributes): IHttpNamespace {
+  public static fromHttpNamespaceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: HttpNamespaceAttributes
+  ): IHttpNamespace {
     class Import extends Resource implements IHttpNamespace {
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
@@ -73,13 +76,19 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
   }
 
   /** @attribute */
-  public get httpNamespaceArn() { return this.namespaceArn; }
+  public get httpNamespaceArn() {
+    return this.namespaceArn;
+  }
 
   /** @attribute */
-  public get httpNamespaceName() { return this.namespaceName; }
+  public get httpNamespaceName() {
+    return this.namespaceName;
+  }
 
   /** @attribute */
-  public get httpNamespaceId() { return this.namespaceId; }
+  public get httpNamespaceId() {
+    return this.namespaceId;
+  }
 
   /**
    * Creates a service within the namespace

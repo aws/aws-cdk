@@ -56,13 +56,17 @@ export class StageDeployment {
     if (assembly.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
       // error will be thrown come deployment time.
-      throw new Error(`The given Stage construct ('${stage.node.path}') should contain at least one Stack`);
+      throw new Error(
+        `The given Stage construct ('${stage.node.path}') should contain at least one Stack`
+      );
     }
 
     const stepFromArtifact = new Map<CloudFormationStackArtifact, StackDeployment>();
     for (const artifact of assembly.stacks) {
       if (artifact.assumeRoleAdditionalOptions?.Tags && artifact.assumeRoleArn) {
-        throw new Error(`Deployment of stack ${artifact.stackName} requires assuming the role ${artifact.assumeRoleArn} with session tags, but assuming roles with session tags is not supported by CodePipeline.`);
+        throw new Error(
+          `Deployment of stack ${artifact.stackName} requires assuming the role ${artifact.assumeRoleArn} with session tags, but assuming roles with session tags is not supported by CodePipeline.`
+        );
       }
       const step = StackDeployment.fromArtifact(artifact);
       stepFromArtifact.set(artifact, step);
@@ -72,9 +76,15 @@ export class StageDeployment {
         const stackArtifact = assembly.getStackArtifact(stackstep.stack.artifactId);
         const thisStep = stepFromArtifact.get(stackArtifact);
         if (!thisStep) {
-          throw new Error('Logic error: we just added a step for this artifact but it disappeared.');
+          throw new Error(
+            'Logic error: we just added a step for this artifact but it disappeared.'
+          );
         }
-        thisStep.addStackSteps(stackstep.pre ?? [], stackstep.changeSet ?? [], stackstep.post ?? []);
+        thisStep.addStackSteps(
+          stackstep.pre ?? [],
+          stackstep.changeSet ?? [],
+          stackstep.post ?? []
+        );
       }
     }
 
@@ -88,7 +98,9 @@ export class StageDeployment {
       for (const dep of stackDependencies) {
         const depStep = stepFromArtifact.get(dep);
         if (!depStep) {
-          throw new Error(`Stack '${artifact.id}' depends on stack not found in same Stage: '${dep.id}'`);
+          throw new Error(
+            `Stack '${artifact.id}' depends on stack not found in same Stage: '${dep.id}'`
+          );
         }
         thisStep.addStackDependency(depStep);
       }
@@ -128,7 +140,9 @@ export class StageDeployment {
 
   private constructor(
     /** The stacks deployed in this stage */
-    public readonly stacks: StackDeployment[], props: StageDeploymentProps = {}) {
+    public readonly stacks: StackDeployment[],
+    props: StageDeploymentProps = {}
+  ) {
     this.stageName = props.stageName ?? '';
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];

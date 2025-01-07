@@ -126,16 +126,20 @@ export class Grant implements IDependable {
     });
 
     const resourceAndPrincipalAccountComparison = options.grantee.grantPrincipal.principalAccount
-      ? cdk.Token.compareStrings(options.resource.env.account, options.grantee.grantPrincipal.principalAccount)
+      ? cdk.Token.compareStrings(
+          options.resource.env.account,
+          options.grantee.grantPrincipal.principalAccount
+        )
       : undefined;
     // if both accounts are tokens, we assume here they are the same
-    const equalOrBothUnresolved = resourceAndPrincipalAccountComparison === cdk.TokenComparison.SAME
-      || resourceAndPrincipalAccountComparison == cdk.TokenComparison.BOTH_UNRESOLVED;
+    const equalOrBothUnresolved =
+      resourceAndPrincipalAccountComparison === cdk.TokenComparison.SAME ||
+      resourceAndPrincipalAccountComparison == cdk.TokenComparison.BOTH_UNRESOLVED;
     const sameAccount: boolean = resourceAndPrincipalAccountComparison
       ? equalOrBothUnresolved
-      // if the principal doesn't have an account (for example, a service principal),
-      // we should modify the resource's trust policy
-      : false;
+      : // if the principal doesn't have an account (for example, a service principal),
+        // we should modify the resource's trust policy
+        false;
     // If we added to the principal AND we're in the same account, then we're done.
     // If not, it's a different account and we must also add a trust policy on the resource.
     if (result.success && sameAccount) {
@@ -144,7 +148,7 @@ export class Grant implements IDependable {
 
     const statement = new PolicyStatement({
       actions: options.actions,
-      resources: (options.resourceSelfArns || options.resourceArns),
+      resources: options.resourceSelfArns || options.resourceArns,
       principals: [options.grantee!.grantPrincipal],
     });
 
@@ -153,7 +157,9 @@ export class Grant implements IDependable {
     return new Grant({
       resourceStatement: statement,
       options,
-      policyDependable: resourceResult.statementAdded ? resourceResult.policyDependable ?? options.resource : undefined,
+      policyDependable: resourceResult.statementAdded
+        ? (resourceResult.policyDependable ?? options.resource)
+        : undefined,
     });
   }
 
@@ -176,10 +182,16 @@ export class Grant implements IDependable {
     }
 
     if (!addedToPrincipal.policyDependable) {
-      throw new Error('Contract violation: when Principal returns statementAdded=true, it should return a dependable');
+      throw new Error(
+        'Contract violation: when Principal returns statementAdded=true, it should return a dependable'
+      );
     }
 
-    return new Grant({ principalStatement: statement, options, policyDependable: addedToPrincipal.policyDependable });
+    return new Grant({
+      principalStatement: statement,
+      options,
+      policyDependable: addedToPrincipal.policyDependable,
+    });
   }
 
   /**
@@ -199,18 +211,22 @@ export class Grant implements IDependable {
 
     const statement = new PolicyStatement({
       actions: options.actions,
-      resources: (options.resourceSelfArns || options.resourceArns),
+      resources: options.resourceSelfArns || options.resourceArns,
       principals: [options.resourcePolicyPrincipal || options.grantee!.grantPrincipal],
     });
 
     const resourceResult = options.resource.addToResourcePolicy(statement);
-    const resourceDependable = resourceResult.statementAdded ? resourceResult.policyDependable ?? options.resource : undefined;
+    const resourceDependable = resourceResult.statementAdded
+      ? (resourceResult.policyDependable ?? options.resource)
+      : undefined;
 
     return new Grant({
       principalStatement: statement,
       resourceStatement: result.resourceStatement,
       options,
-      policyDependable: resourceDependable ? new CompositeDependable(result, resourceDependable) : result,
+      policyDependable: resourceDependable
+        ? new CompositeDependable(result, resourceDependable)
+        : result,
     });
   }
 
@@ -280,7 +296,9 @@ export class Grant implements IDependable {
     const self = this;
     Dependable.implement(this, {
       get dependencyRoots() {
-        return Array.from(new Set(self.dependables.flatMap(d => Dependable.of(d).dependencyRoots)));
+        return Array.from(
+          new Set(self.dependables.flatMap((d) => Dependable.of(d).dependencyRoots))
+        );
       },
     });
   }
@@ -298,7 +316,9 @@ export class Grant implements IDependable {
   public assertSuccess(): void {
     if (!this.success) {
       // eslint-disable-next-line max-len
-      throw new Error(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
+      throw new Error(
+        `${describeGrant(this.options)} could not be added on either identity or resource policy.`
+      );
     }
   }
 
@@ -388,7 +408,10 @@ export class CompositeDependable implements IDependable {
   constructor(...dependables: IDependable[]) {
     Dependable.implement(this, {
       get dependencyRoots(): IConstruct[] {
-        return Array.prototype.concat.apply([], dependables.map(d => Dependable.of(d).dependencyRoots));
+        return Array.prototype.concat.apply(
+          [],
+          dependables.map((d) => Dependable.of(d).dependencyRoots)
+        );
       },
     });
   }

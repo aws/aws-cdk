@@ -106,8 +106,8 @@ export class Stage extends Construct {
    * Test whether the given construct is a stage.
    *
    */
-  public static isStage(x: any ): x is Stage {
-    return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
+  public static isStage(x: any): x is Stage {
+    return x !== null && typeof x === 'object' && STAGE_SYMBOL in x;
   }
 
   /**
@@ -164,7 +164,9 @@ export class Stage extends Construct {
     super(scope, id);
 
     if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
-      throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
+      throw new Error(
+        `invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`
+      );
     }
 
     Object.defineProperty(this, STAGE_SYMBOL, { value: true });
@@ -178,7 +180,9 @@ export class Stage extends Construct {
     props.permissionsBoundary?._bind(this);
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
+    this.stageName = [this.parentStage?.stageName, props.stageName ?? id]
+      .filter((x) => x)
+      .join('-');
 
     if (props.policyValidationBeta1) {
       this.policyValidationBeta1 = props.policyValidationBeta1;
@@ -206,7 +210,9 @@ export class Stage extends Construct {
    * Derived from the construct path.
    */
   public get artifactId() {
-    if (!this.node.path) { return ''; }
+    if (!this.node.path) {
+      return '';
+    }
     return `assembly-${this.node.path.replace(/\//g, '-').replace(/^-+|-+$/g, '')}`;
   }
 
@@ -216,8 +222,7 @@ export class Stage extends Construct {
    * Once an assembly has been synthesized, it cannot be modified. Subsequent
    * calls will return the same assembly.
    */
-  public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-
+  public synth(options: StageSynthesisOptions = {}): cxapi.CloudAssembly {
     let newConstructPaths = this.listAllConstructPaths(this);
 
     // If the assembly cache is uninitiazed, run synthesize and reset construct paths cache
@@ -225,7 +230,10 @@ export class Stage extends Construct {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
-        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ?? false,
+        aspectStabilization:
+          options.aspectStabilization ??
+          FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ??
+          false,
       });
       newConstructPaths = this.listAllConstructPaths(this);
       this.constructPathsCache = newConstructPaths;
@@ -233,12 +241,19 @@ export class Stage extends Construct {
 
     // If the construct paths set has changed
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
-      const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
+      const errorMessage =
+        'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
       if (options.errorOnDuplicateSynth ?? true) {
-        throw new Error(errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().');
+        throw new Error(
+          errorMessage +
+            ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().'
+        );
       } else {
         // eslint-disable-next-line no-console
-        console.error(errorMessage + ' Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called unless this is intentional.');
+        console.error(
+          errorMessage +
+            ' Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called unless this is intentional.'
+        );
       }
     }
 

@@ -1,6 +1,11 @@
 import { Construct } from 'constructs';
 import { ContainerOverride } from './ecs-task-properties';
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import {
+  addToDeadLetterQueueResourcePolicy,
+  bindBaseTargetConfig,
+  singletonEventRole,
+  TargetBaseProps,
+} from './util';
 import * as ec2 from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import * as events from '../../aws-events';
@@ -8,10 +13,9 @@ import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 
 /**
-  * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
-  */
+ * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
+ */
 export interface Tag {
-
   /**
    * Key is the name of the tag
    */
@@ -179,7 +183,10 @@ export class EcsTask implements events.IRuleTarget {
     this.enableExecuteCommand = props.enableExecuteCommand;
     this.launchType = props.launchType;
 
-    const propagateTagsValidValues = [ecs.PropagatedTagSource.TASK_DEFINITION, ecs.PropagatedTagSource.NONE];
+    const propagateTagsValidValues = [
+      ecs.PropagatedTagSource.TASK_DEFINITION,
+      ecs.PropagatedTagSource.NONE,
+    ];
     if (props.propagateTags && !propagateTagsValidValues.includes(props.propagateTags)) {
       throw new Error('When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
     }
@@ -195,7 +202,10 @@ export class EcsTask implements events.IRuleTarget {
     // Security groups are only configurable with the "awsvpc" network mode.
     if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
       if (props.securityGroup !== undefined || props.securityGroups !== undefined) {
-        cdk.Annotations.of(this.taskDefinition).addWarningV2('@aws-cdk/aws-events-targets:ecsTaskSecurityGroupIgnored', 'security groups are ignored when network mode is not awsvpc');
+        cdk.Annotations.of(this.taskDefinition).addWarningV2(
+          '@aws-cdk/aws-events-targets:ecsTaskSecurityGroupIgnored',
+          'security groups are ignored when network mode is not awsvpc'
+        );
       }
       return;
     }
@@ -205,13 +215,19 @@ export class EcsTask implements events.IRuleTarget {
     }
 
     if (!Construct.isConstruct(this.taskDefinition)) {
-      throw new Error('Cannot create a security group for ECS task. ' +
-        'The task definition in ECS task is not a Construct. ' +
-        'Please pass a taskDefinition as a Construct in EcsTaskProps.');
+      throw new Error(
+        'Cannot create a security group for ECS task. ' +
+          'The task definition in ECS task is not a Construct. ' +
+          'Please pass a taskDefinition as a Construct in EcsTaskProps.'
+      );
     }
 
-    let securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
-    securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+    let securityGroup =
+      props.securityGroup ||
+      (this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup);
+    securityGroup =
+      securityGroup ||
+      new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     this.securityGroup = securityGroup; // Maintain backwards-compatibility for customers that read the generated security group.
     this.securityGroups = [securityGroup];
   }
@@ -222,8 +238,12 @@ export class EcsTask implements events.IRuleTarget {
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const arn = this.cluster.clusterArn;
     const role = this.role;
-    const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
-      .map(({ containerName, ...overrides }) => ({ name: containerName, ...overrides }));
+    const containerOverrides =
+      this.props.containerOverrides &&
+      this.props.containerOverrides.map(({ containerName, ...overrides }) => ({
+        name: containerName,
+        ...overrides,
+      }));
     const input = { containerOverrides };
     const taskCount = this.taskCount;
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
@@ -231,36 +251,49 @@ export class EcsTask implements events.IRuleTarget {
     const tagList = this.tags;
     const enableExecuteCommand = this.enableExecuteCommand;
 
-    const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
+    const subnetSelection = this.props.subnetSelection || {
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+    };
 
     // throw an error if assignPublicIp is true and the subnet type is not PUBLIC
     if (this.assignPublicIp && subnetSelection.subnetType !== ec2.SubnetType.PUBLIC) {
       throw new Error('assignPublicIp should be set to true only for PUBLIC subnets');
     }
 
-    const assignPublicIp = (this.assignPublicIp ?? subnetSelection.subnetType === ec2.SubnetType.PUBLIC) ? 'ENABLED' : 'DISABLED';
+    const assignPublicIp =
+      (this.assignPublicIp ?? subnetSelection.subnetType === ec2.SubnetType.PUBLIC)
+        ? 'ENABLED'
+        : 'DISABLED';
     const launchType = this.launchType ?? (this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE');
 
     if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
       throw new Error('assignPublicIp is only supported for FARGATE tasks');
+    }
+
+    const baseEcsParameters = {
+      taskCount,
+      taskDefinitionArn,
+      propagateTags,
+      tagList,
+      enableExecuteCommand,
     };
 
-    const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList, enableExecuteCommand };
-
-    const ecsParameters: events.CfnRule.EcsParametersProperty = this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC
-      ? {
-        ...baseEcsParameters,
-        launchType,
-        platformVersion: this.platformVersion,
-        networkConfiguration: {
-          awsVpcConfiguration: {
-            subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-            assignPublicIp,
-            securityGroups: this.securityGroups && this.securityGroups.map(sg => sg.securityGroupId),
-          },
-        },
-      }
-      : baseEcsParameters;
+    const ecsParameters: events.CfnRule.EcsParametersProperty =
+      this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC
+        ? {
+            ...baseEcsParameters,
+            launchType,
+            platformVersion: this.platformVersion,
+            networkConfiguration: {
+              awsVpcConfiguration: {
+                subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
+                assignPublicIp,
+                securityGroups:
+                  this.securityGroups && this.securityGroups.map((sg) => sg.securityGroupId),
+              },
+            },
+          }
+        : baseEcsParameters;
 
     if (this.props.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
@@ -295,25 +328,31 @@ export class EcsTask implements events.IRuleTarget {
       }),
       new iam.PolicyStatement({
         actions: ['ecs:TagResource'],
-        resources: [`arn:${this.cluster.stack.partition}:ecs:${this.cluster.env.region}:*:task/${this.cluster.clusterName}/*`],
+        resources: [
+          `arn:${this.cluster.stack.partition}:ecs:${this.cluster.env.region}:*:task/${this.cluster.clusterName}/*`,
+        ],
       }),
     ];
 
     // If it so happens that a Task Execution Role was created for the TaskDefinition,
     // then the EventBridge Role must have permissions to pass it (otherwise it doesn't).
     if (this.taskDefinition.executionRole !== undefined) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this.taskDefinition.executionRole.roleArn],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['iam:PassRole'],
+          resources: [this.taskDefinition.executionRole.roleArn],
+        })
+      );
     }
 
     // For Fargate task we need permission to pass the task role.
     if (this.taskDefinition.isFargateCompatible) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this.taskDefinition.taskRole.roleArn],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['iam:PassRole'],
+          resources: [this.taskDefinition.taskRole.roleArn],
+        })
+      );
     }
 
     return policyStatements;

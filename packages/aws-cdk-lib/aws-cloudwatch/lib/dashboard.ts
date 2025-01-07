@@ -98,12 +98,11 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 export class Dashboard extends Resource {
-
   /**
    * The name of this dashboard
    *
    * @attribute
-  */
+   */
   public readonly dashboardName: string;
 
   /**
@@ -125,10 +124,12 @@ export class Dashboard extends Resource {
     {
       const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
-        throw new Error([
-          `The value ${dashboardName} for field dashboardName contains invalid characters.`,
-          'It can only contain alphanumerics, dash (-) and underscore (_).',
-        ].join(' '));
+        throw new Error(
+          [
+            `The value ${dashboardName} for field dashboardName contains invalid characters.`,
+            'It can only contain alphanumerics, dash (-) and underscore (_).',
+          ].join(' ')
+        );
       }
     }
 
@@ -147,11 +148,17 @@ export class Dashboard extends Resource {
           const column = new Column(...this.rows);
           column.position(0, 0);
           return Stack.of(this).toJsonString({
-            start: props.defaultInterval !== undefined ? `-${props.defaultInterval?.toIsoString()}` : props.start,
+            start:
+              props.defaultInterval !== undefined
+                ? `-${props.defaultInterval?.toIsoString()}`
+                : props.start,
             end: props.defaultInterval !== undefined ? undefined : props.end,
             periodOverride: props.periodOverride,
             widgets: column.toJson(),
-            variables: this.variables.length > 0 ? this.variables.map(variable => variable.toJson()) : undefined,
+            variables:
+              this.variables.length > 0
+                ? this.variables.map((variable) => variable.toJson())
+                : undefined,
           });
         },
       }),
@@ -159,11 +166,11 @@ export class Dashboard extends Resource {
 
     this.dashboardName = this.getResourceNameAttribute(dashboard.ref);
 
-    (props.widgets || []).forEach(row => {
+    (props.widgets || []).forEach((row) => {
       this.addWidgets(...row);
     });
 
-    (props.variables || []).forEach(variable => this.addVariable(variable));
+    (props.variables || []).forEach((variable) => this.addVariable(variable));
 
     this.dashboardArn = Stack.of(this).formatArn({
       service: 'cloudwatch',
@@ -187,12 +194,15 @@ export class Dashboard extends Resource {
       return;
     }
 
-    const warnings = allWidgetsDeep(widgets).reduce((prev, curr) => {
-      return {
-        ...prev,
-        ...curr.warningsV2,
-      };
-    }, {} as { [id: string]: string });
+    const warnings = allWidgetsDeep(widgets).reduce(
+      (prev, curr) => {
+        return {
+          ...prev,
+          ...curr.warningsV2,
+        };
+      },
+      {} as { [id: string]: string }
+    );
     for (const [id, message] of Object.entries(warnings ?? {})) {
       Annotations.of(this).addWarningV2(id, message);
     }

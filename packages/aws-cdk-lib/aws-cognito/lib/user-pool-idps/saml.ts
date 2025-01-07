@@ -87,19 +87,24 @@ export enum UserPoolIdentityProviderSamlMetadataType {
  * Metadata for a SAML user pool identity provider.
  */
 export class UserPoolIdentityProviderSamlMetadata {
-
   /**
    * Specify SAML metadata via a URL.
    */
   public static url(url: string): UserPoolIdentityProviderSamlMetadata {
-    return new UserPoolIdentityProviderSamlMetadata(url, UserPoolIdentityProviderSamlMetadataType.URL);
+    return new UserPoolIdentityProviderSamlMetadata(
+      url,
+      UserPoolIdentityProviderSamlMetadataType.URL
+    );
   }
 
   /**
    * Specify SAML metadata via the contents of a file.
    */
   public static file(fileContent: string): UserPoolIdentityProviderSamlMetadata {
-    return new UserPoolIdentityProviderSamlMetadata(fileContent, UserPoolIdentityProviderSamlMetadataType.FILE);
+    return new UserPoolIdentityProviderSamlMetadata(
+      fileContent,
+      UserPoolIdentityProviderSamlMetadataType.FILE
+    );
   }
 
   /**
@@ -108,8 +113,10 @@ export class UserPoolIdentityProviderSamlMetadata {
    * @param metadataContent A URL hosting SAML metadata, or the content of a file containing SAML metadata.
    * @param metadataType The type of metadata, either a URL or file content.
    */
-  private constructor(public readonly metadataContent: string, public readonly metadataType: UserPoolIdentityProviderSamlMetadataType) {
-  }
+  private constructor(
+    public readonly metadataContent: string,
+    public readonly metadataType: UserPoolIdentityProviderSamlMetadataType
+  ) {}
 }
 
 /**
@@ -132,8 +139,14 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
       providerType: 'SAML',
       providerDetails: {
         IDPSignout: props.idpSignout ?? false,
-        MetadataURL: metadataType === UserPoolIdentityProviderSamlMetadataType.URL ? metadataContent : undefined,
-        MetadataFile: metadataType === UserPoolIdentityProviderSamlMetadataType.FILE ? metadataContent : undefined,
+        MetadataURL:
+          metadataType === UserPoolIdentityProviderSamlMetadataType.URL
+            ? metadataContent
+            : undefined,
+        MetadataFile:
+          metadataType === UserPoolIdentityProviderSamlMetadataType.FILE
+            ? metadataContent
+            : undefined,
         EncryptedResponses: props.encryptedResponses ?? undefined,
         RequestSigningAlgorithm: props.requestSigningAlgorithm,
         IDPInit: props.idpInitiated ?? undefined,
@@ -164,7 +177,9 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
 
   private validateName(name?: string) {
     if (name && !Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
-      throw new Error(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`);
+      throw new Error(
+        `Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`
+      );
     }
   }
 }

@@ -30,7 +30,7 @@ export abstract class Code {
    * 1. `objectVersion` to set S3 object version
    * 2. `sourceKMSKey` to set KMS Key for encryption of code
    */
-  public static fromBucketV2 (bucket: s3.IBucket, key: string, options?: BucketOptions): S3CodeV2 {
+  public static fromBucketV2(bucket: s3.IBucket, key: string, options?: BucketOptions): S3CodeV2 {
     return new S3CodeV2(bucket, key, options);
   }
 
@@ -80,24 +80,29 @@ export abstract class Code {
   public static fromCustomCommand(
     output: string,
     command: string[],
-    options?: CustomCommandOptions,
+    options?: CustomCommandOptions
   ): AssetCode {
     if (command.length === 0) {
-      throw new Error('command must contain at least one argument. For example, ["node", "buildFile.js"].');
+      throw new Error(
+        'command must contain at least one argument. For example, ["node", "buildFile.js"].'
+      );
     }
 
     const cmd = command[0];
     const commandArguments = command.splice(1);
 
-    const proc = options?.commandOptions === undefined
-      ? spawnSync(cmd, commandArguments) // use the default spawnSyncOptions
-      : spawnSync(cmd, commandArguments, options.commandOptions);
+    const proc =
+      options?.commandOptions === undefined
+        ? spawnSync(cmd, commandArguments) // use the default spawnSyncOptions
+        : spawnSync(cmd, commandArguments, options.commandOptions);
 
     if (proc.error) {
       throw new Error(`Failed to execute custom command: ${proc.error}`);
     }
     if (proc.status !== 0) {
-      throw new Error(`${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`);
+      throw new Error(
+        `${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`
+      );
     }
 
     return new AssetCode(output, options);
@@ -122,9 +127,7 @@ export abstract class Code {
       imagePath = `${imagePath}/.`;
     }
 
-    const assetPath = cdk.DockerImage
-      .fromBuild(path, options)
-      .cp(imagePath, options.outputPath);
+    const assetPath = cdk.DockerImage.fromBuild(path, options).cp(imagePath, options.outputPath);
 
     return new AssetCode(assetPath);
   }
@@ -271,7 +274,11 @@ export class S3Code extends Code {
   public readonly isInline = false;
   private bucketName: string;
 
-  constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  constructor(
+    bucket: s3.IBucket,
+    private key: string,
+    private objectVersion?: string
+  ) {
     super();
 
     if (!bucket.bucketName) {
@@ -279,7 +286,6 @@ export class S3Code extends Code {
     }
 
     this.bucketName = bucket.bucketName;
-
   }
 
   public bind(_scope: Construct): CodeConfig {
@@ -300,14 +306,17 @@ export class S3CodeV2 extends Code {
   public readonly isInline = false;
   private bucketName: string;
 
-  constructor(bucket: s3.IBucket, private key: string, private options?: BucketOptions) {
+  constructor(
+    bucket: s3.IBucket,
+    private key: string,
+    private options?: BucketOptions
+  ) {
     super();
     if (!bucket.bucketName) {
       throw new Error('bucketName is undefined for the provided bucket');
     }
 
     this.bucketName = bucket.bucketName;
-
   }
 
   public bind(_scope: Construct): CodeConfig {
@@ -353,7 +362,10 @@ export class AssetCode extends Code {
   /**
    * @param path The path to the asset file or directory.
    */
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(
+    public readonly path: string,
+    private readonly options: s3_assets.AssetOptions = {}
+  ) {
     super();
   }
 
@@ -366,8 +378,10 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Code instance for every stack.');
+      throw new Error(
+        `Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+          'Create a new Code instance for every stack.'
+      );
     }
 
     if (!this.asset.isZipArchive) {
@@ -383,7 +397,7 @@ export class AssetCode extends Code {
     };
   }
 
-  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = {}) {
     if (!this.asset) {
       throw new Error('bindToResource() must be called after bind()');
     }
@@ -497,7 +511,9 @@ export class CfnParametersCode extends Code {
     if (this._bucketNameParam) {
       return this._bucketNameParam.logicalId;
     } else {
-      throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the bucketNameParam property');
+      throw new Error(
+        'Pass CfnParametersCode to a Lambda Function before accessing the bucketNameParam property'
+      );
     }
   }
 
@@ -505,7 +521,9 @@ export class CfnParametersCode extends Code {
     if (this._objectKeyParam) {
       return this._objectKeyParam.logicalId;
     } else {
-      throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property');
+      throw new Error(
+        'Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property'
+      );
     }
   }
 }
@@ -551,7 +569,6 @@ export interface EcrImageCodeProps {
    * @default 'latest'
    */
   readonly tagOrDigest?: string;
-
 }
 
 /**
@@ -560,7 +577,10 @@ export interface EcrImageCodeProps {
 export class EcrImageCode extends Code {
   public readonly isInline: boolean = false;
 
-  constructor(private readonly repository: ecr.IRepository, private readonly props: EcrImageCodeProps = {}) {
+  constructor(
+    private readonly repository: ecr.IRepository,
+    private readonly props: EcrImageCodeProps = {}
+  ) {
     super();
   }
 
@@ -569,7 +589,9 @@ export class EcrImageCode extends Code {
 
     return {
       image: {
-        imageUri: this.repository.repositoryUriForTagOrDigest(this.props?.tagOrDigest ?? this.props?.tag ?? 'latest'),
+        imageUri: this.repository.repositoryUriForTagOrDigest(
+          this.props?.tagOrDigest ?? this.props?.tag ?? 'latest'
+        ),
         cmd: this.props.cmd,
         entrypoint: this.props.entrypoint,
         workingDirectory: this.props.workingDirectory,
@@ -615,7 +637,10 @@ export class AssetImageCode extends Code {
   public readonly isInline: boolean = false;
   private asset?: ecr_assets.DockerImageAsset;
 
-  constructor(private readonly directory: string, private readonly props: AssetImageCodeProps) {
+  constructor(
+    private readonly directory: string,
+    private readonly props: AssetImageCodeProps
+  ) {
     super();
   }
 
@@ -628,8 +653,10 @@ export class AssetImageCode extends Code {
       });
       this.asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Code instance for every stack.');
+      throw new Error(
+        `Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+          'Create a new Code instance for every stack.'
+      );
     }
 
     return {
@@ -642,7 +669,7 @@ export class AssetImageCode extends Code {
     };
   }
 
-  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = {}) {
     if (!this.asset) {
       throw new Error('bindToResource() must be called after bind()');
     }

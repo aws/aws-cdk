@@ -62,7 +62,6 @@ export interface MessageAttribute {
  * Properties for publishing a message to an SNS topic
  */
 export interface SnsPublishProps extends sfn.TaskStateBaseProps {
-
   /**
    * The SNS topic that the task will publish to.
    */
@@ -145,7 +144,6 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps {
  *
  */
 export class SnsPublish extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -156,7 +154,11 @@ export class SnsPublish extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: SnsPublishProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: SnsPublishProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
@@ -164,22 +166,30 @@ export class SnsPublish extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new Error('Task Token is required in `message` Use JsonPath.taskToken to set the token.');
+        throw new Error(
+          'Task Token is required in `message` Use JsonPath.taskToken to set the token.'
+        );
       }
     }
 
     if (props.topic.fifo) {
       if (!props.messageGroupId) {
-        throw new Error('\'messageGroupId\' is required for FIFO topics');
+        throw new Error("'messageGroupId' is required for FIFO topics");
       }
       if (props.messageGroupId.length > 128) {
-        throw new Error(`\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`);
+        throw new Error(
+          `\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`
+        );
       }
       if (!props.topic.contentBasedDeduplication && !props.messageDeduplicationId) {
-        throw new Error('\'messageDeduplicationId\' is required for FIFO topics with \'contentBasedDeduplication\' disabled');
+        throw new Error(
+          "'messageDeduplicationId' is required for FIFO topics with 'contentBasedDeduplication' disabled"
+        );
       }
       if (props.messageDeduplicationId && props.messageDeduplicationId.length > 128) {
-        throw new Error(`\'messageDeduplicationId\' must be at most 128 characters long, got ${props.messageDeduplicationId.length}`);
+        throw new Error(
+          `\'messageDeduplicationId\' must be at most 128 characters long, got ${props.messageDeduplicationId.length}`
+        );
       }
     }
 
@@ -220,7 +230,9 @@ interface MessageAttributeValue {
 }
 
 function renderMessageAttributes(attributes?: { [key: string]: MessageAttribute }): any {
-  if (attributes === undefined) { return undefined; }
+  if (attributes === undefined) {
+    return undefined;
+  }
   const renderedAttributes: { [key: string]: MessageAttributeValue } = {};
   Object.entries(attributes).map(([key, val]) => {
     renderedAttributes[key] = renderMessageAttributeValue(val);
@@ -248,7 +260,10 @@ function renderMessageAttributeValue(attribute: MessageAttribute): MessageAttrib
 
   validateMessageAttribute(attribute);
   if (Array.isArray(attribute.value)) {
-    return { DataType: MessageAttributeDataType.STRING_ARRAY, StringValue: JSON.stringify(attribute.value) };
+    return {
+      DataType: MessageAttributeDataType.STRING_ARRAY,
+      StringValue: JSON.stringify(attribute.value),
+    };
   }
   const value = attribute.value;
   if (typeof value === 'number') {
@@ -266,33 +281,45 @@ function validateMessageAttribute(attribute: MessageAttribute): void {
   }
   if (Array.isArray(value)) {
     if (dataType !== MessageAttributeDataType.STRING_ARRAY) {
-      throw new Error(`Requested SNS message attribute type was ${dataType} but ${value} was of type Array`);
+      throw new Error(
+        `Requested SNS message attribute type was ${dataType} but ${value} was of type Array`
+      );
     }
     const validArrayTypes = ['string', 'boolean', 'number'];
     value.forEach((v) => {
       if (v !== null || !validArrayTypes.includes(typeof v)) {
-        throw new Error(`Requested SNS message attribute type was ${typeof value} but Array values must be one of ${validArrayTypes}`);
+        throw new Error(
+          `Requested SNS message attribute type was ${typeof value} but Array values must be one of ${validArrayTypes}`
+        );
       }
     });
     return;
   }
-  const error = new Error(`Requested SNS message attribute type was ${dataType} but ${value} was of type ${typeof value}`);
+  const error = new Error(
+    `Requested SNS message attribute type was ${dataType} but ${value} was of type ${typeof value}`
+  );
   switch (typeof value) {
     case 'string':
       // trust the user or will default to string
       if (sfn.JsonPath.isEncodedJsonPath(attribute.value)) {
         return;
       }
-      if (dataType === MessageAttributeDataType.STRING ||
-        dataType === MessageAttributeDataType.BINARY) {
+      if (
+        dataType === MessageAttributeDataType.STRING ||
+        dataType === MessageAttributeDataType.BINARY
+      ) {
         return;
       }
       throw error;
     case 'number':
-      if (dataType === MessageAttributeDataType.NUMBER) { return; }
+      if (dataType === MessageAttributeDataType.NUMBER) {
+        return;
+      }
       throw error;
     case 'boolean':
-      if (dataType === MessageAttributeDataType.STRING) { return; }
+      if (dataType === MessageAttributeDataType.STRING) {
+        return;
+      }
       throw error;
     default:
       throw error;

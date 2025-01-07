@@ -77,7 +77,11 @@ export class GoFunction extends lambda.Function {
   public static readonly GOOGLE_GOPROXY = 'https://proxy.golang.org';
 
   constructor(scope: Construct, id: string, props: GoFunctionProps) {
-    if (props.runtime && (props.runtime.family !== lambda.RuntimeFamily.GO && props.runtime.family != lambda.RuntimeFamily.OTHER)) {
+    if (
+      props.runtime &&
+      props.runtime.family !== lambda.RuntimeFamily.GO &&
+      props.runtime.family != lambda.RuntimeFamily.OTHER
+    ) {
       throw new Error('Only `go` and `provided` runtimes are supported.');
     }
 
@@ -100,7 +104,7 @@ export class GoFunction extends lambda.Function {
     } else {
       const modFile = findUp('go.mod', entry);
       if (!modFile) {
-        throw new Error ('Cannot find go.mod. Please specify it with `moduleDir`.');
+        throw new Error('Cannot find go.mod. Please specify it with `moduleDir`.');
       }
       moduleDir = modFile;
     }
@@ -112,7 +116,7 @@ export class GoFunction extends lambda.Function {
       ...props,
       runtime,
       code: Bundling.bundle({
-        ...props.bundling ?? {},
+        ...(props.bundling ?? {}),
         entry,
         runtime,
         architecture,
@@ -122,4 +126,3 @@ export class GoFunction extends lambda.Function {
     });
   }
 }
-

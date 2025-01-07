@@ -18,7 +18,9 @@ export abstract class TimerDuration {
       throw new Error(`duration cannot be less than 60 seconds, got: ${duration.toString()}`);
     }
     if (seconds > 31622400) {
-      throw new Error(`duration cannot be greater than 31622400 seconds, got: ${duration.toString()}`);
+      throw new Error(
+        `duration cannot be greater than 31622400 seconds, got: ${duration.toString()}`
+      );
     }
     return new TimerDurationImpl(seconds.toString());
   }

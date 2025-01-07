@@ -18,6 +18,8 @@ export function rimraf(fsPath: string) {
     }
   } catch (e: any) {
     // We will survive ENOENT
-    if (e.code !== 'ENOENT') { throw e; }
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
   }
 }

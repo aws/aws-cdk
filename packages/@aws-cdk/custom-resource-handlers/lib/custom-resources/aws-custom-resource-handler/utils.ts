@@ -37,7 +37,9 @@ export function decodeSpecialValues(object: object, physicalResourceId: string):
  * Parses a stringified JSON API call.
  */
 export function decodeCall(call: string | undefined): any {
-  if (!call) { return undefined; }
+  if (!call) {
+    return undefined;
+  }
   return JSON.parse(call);
 }
 
@@ -49,7 +51,8 @@ export function respond(
   responseStatus: string,
   reason: string,
   physicalResourceId: string,
-  data: any, logApiResponseData: boolean,
+  data: any,
+  logApiResponseData: boolean
 ): Promise<void> {
   const responseObject = {
     Status: responseStatus,
@@ -98,10 +101,13 @@ export function respond(
 /**
  * Gets credentials used to make an API call.
  */
-export async function getCredentials(call: AwsSdkCall, physicalResourceId: string): Promise<AwsCredentialIdentityProvider | undefined> {
+export async function getCredentials(
+  call: AwsSdkCall,
+  physicalResourceId: string
+): Promise<AwsCredentialIdentityProvider | undefined> {
   let credentials;
   if (call.assumedRoleArn) {
-    const timestamp = (new Date()).getTime();
+    const timestamp = new Date().getTime();
 
     const params = {
       RoleArn: call.assumedRoleArn,
@@ -120,7 +126,10 @@ export async function getCredentials(call: AwsSdkCall, physicalResourceId: strin
 /**
  * Formats API response data based on outputPath or outputPaths configured in the SDK call.
  */
-export function formatData(call: AwsSdkCall, flatData: { [key: string]: string }): { [key: string]: string } {
+export function formatData(
+  call: AwsSdkCall,
+  flatData: { [key: string]: string }
+): { [key: string]: string } {
   let outputPaths: string[] | undefined;
   if (call.outputPath) {
     outputPaths = [call.outputPath];
@@ -140,7 +149,7 @@ export function formatData(call: AwsSdkCall, flatData: { [key: string]: string }
  * search strings.
  */
 function startsWithOneOf(searchStrings: string[]): (string: string) => boolean {
-  return function(string: string): boolean {
+  return function (string: string): boolean {
     for (const searchString of searchStrings) {
       if (string.startsWith(searchString)) {
         return true;
@@ -154,11 +163,5 @@ function startsWithOneOf(searchStrings: string[]): (string: string) => boolean {
  * Filters the keys of an object.
  */
 function filterKeys(object: object, pred: (key: string) => boolean): {} {
-  return Object.entries(object)
-    .reduce(
-      (acc, [k, v]) => pred(k)
-        ? { ...acc, [k]: v }
-        : acc,
-      {},
-    );
+  return Object.entries(object).reduce((acc, [k, v]) => (pred(k) ? { ...acc, [k]: v } : acc), {});
 }

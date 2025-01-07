@@ -24,12 +24,17 @@ export interface KinesisStreamPutRecordProps extends ScheduleTargetBaseProps {
 export class KinesisStreamPutRecord extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly stream: kinesis.IStream,
-    private readonly props: KinesisStreamPutRecordProps,
+    private readonly props: KinesisStreamPutRecordProps
   ) {
     super(props, stream.streamArn);
 
-    if (!Token.isUnresolved(props.partitionKey) && (props.partitionKey.length < 1 || props.partitionKey.length > 256)) {
-      throw new Error(`partitionKey length must be between 1 and 256, got ${props.partitionKey.length}`);
+    if (
+      !Token.isUnresolved(props.partitionKey) &&
+      (props.partitionKey.length < 1 || props.partitionKey.length > 256)
+    ) {
+      throw new Error(
+        `partitionKey length must be between 1 and 256, got ${props.partitionKey.length}`
+      );
     }
   }
 

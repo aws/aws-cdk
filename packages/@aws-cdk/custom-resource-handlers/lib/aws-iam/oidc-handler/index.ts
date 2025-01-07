@@ -2,9 +2,15 @@ import { arrayDiff } from './diff';
 import { external } from './external';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  if (event.RequestType === 'Create') { return onCreate(event); }
-  if (event.RequestType === 'Update') { return onUpdate(event); }
-  if (event.RequestType === 'Delete') { return onDelete(event); }
+  if (event.RequestType === 'Create') {
+    return onCreate(event);
+  }
+  if (event.RequestType === 'Update') {
+    return onUpdate(event);
+  }
+  if (event.RequestType === 'Delete') {
+    return onDelete(event);
+  }
   throw new Error('invalid request type');
 }
 

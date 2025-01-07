@@ -67,9 +67,13 @@ export class SsmAction implements cloudwatch.IAlarmAction {
    */
   bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     if (this.category === undefined) {
-      return { alarmActionArn: `arn:${Stack.of(_scope).partition}:ssm:${Stack.of(_scope).region}:${Stack.of(_scope).account}:opsitem:${this.severity}` };
+      return {
+        alarmActionArn: `arn:${Stack.of(_scope).partition}:ssm:${Stack.of(_scope).region}:${Stack.of(_scope).account}:opsitem:${this.severity}`,
+      };
     } else {
-      return { alarmActionArn: `arn:${Stack.of(_scope).partition}:ssm:${Stack.of(_scope).region}:${Stack.of(_scope).account}:opsitem:${this.severity}#CATEGORY=${this.category}` };
+      return {
+        alarmActionArn: `arn:${Stack.of(_scope).partition}:ssm:${Stack.of(_scope).region}:${Stack.of(_scope).account}:opsitem:${this.severity}#CATEGORY=${this.category}`,
+      };
     }
   }
 }
@@ -90,4 +94,3 @@ export class SsmIncidentAction implements cloudwatch.IAlarmAction {
     };
   }
 }
-

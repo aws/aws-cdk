@@ -9,11 +9,18 @@ import { Stack } from '../stack';
  *
  * Add to an existing CfnMapping if possible.
  */
-export function deployTimeLookup(stack: Stack, factName: string, lookupMap: Record<string, string>, defaultValue?: string) {
+export function deployTimeLookup(
+  stack: Stack,
+  factName: string,
+  lookupMap: Record<string, string>,
+  defaultValue?: string
+) {
   // If there are no lookups, just return the default
   if (Object.values(lookupMap).length === 0) {
     if (defaultValue === undefined) {
-      throw new Error(`region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`);
+      throw new Error(
+        `region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`
+      );
     }
     return defaultValue;
   }
@@ -28,7 +35,7 @@ export function deployTimeLookup(stack: Stack, factName: string, lookupMap: Reco
   // Derive map name and lookup key from the factName, splitting on ':' if it exists
   const [factClass, factParam] = factName.includes(':')
     ? factName.split(':')
-    : [factName, 'value'] as const;
+    : ([factName, 'value'] as const);
 
   const mapId = `${ucfirst(factClass)}Map`;
   const factKey = factParam.replace(/[^a-zA-Z0-9]/g, 'x');
@@ -64,7 +71,10 @@ function findValuePattern(regionMap: Record<string, string>): string | undefined
   // among some values in the list (we don't want to tokenize unnecessarily, i.e. we don't
   // want to replace `amazonaws.com` with URL_SUFFIX if it's not necessary)
   const urlSuffixes = Object.keys(simplified).map(urlSuffix);
-  if (!allSame(urlSuffixes) && Object.entries(simplified).every(([region, value]) => value.includes(urlSuffix(region)))) {
+  if (
+    !allSame(urlSuffixes) &&
+    Object.entries(simplified).every(([region, value]) => value.includes(urlSuffix(region)))
+  ) {
     for (const region in simplified) {
       simplified[region] = replaceAll(simplified[region], urlSuffix(region), Aws.URL_SUFFIX);
     }
@@ -99,4 +109,3 @@ function urlSuffix(region: string) {
 function replaceAll(x: string, pat: string, replacement: string) {
   return x.split(pat).join(replacement);
 }
-

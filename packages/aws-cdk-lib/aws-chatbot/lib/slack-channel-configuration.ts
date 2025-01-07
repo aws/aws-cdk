@@ -11,7 +11,6 @@ import * as cdk from '../../core';
  * Properties for a new Slack channel configuration
  */
 export interface SlackChannelConfigurationProps {
-
   /**
    * The name of Slack channel configuration
    */
@@ -119,8 +118,10 @@ export enum LoggingLevel {
 /**
  * Represents a Slack channel configuration
  */
-export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantable, notifications.INotificationRuleTarget {
-
+export interface ISlackChannelConfiguration
+  extends cdk.IResource,
+    iam.IGrantable,
+    notifications.INotificationRuleTarget {
   /**
    * The ARN of the Slack channel configuration
    * In the form of arn:aws:chatbot:{region}:{account}:chat-configuration/slack-channel/{slackChannelName}
@@ -156,7 +157,10 @@ export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantabl
 /**
  * Either a new or imported Slack channel configuration
  */
-abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISlackChannelConfiguration {
+abstract class SlackChannelConfigurationBase
+  extends cdk.Resource
+  implements ISlackChannelConfiguration
+{
   abstract readonly slackChannelConfigurationArn: string;
 
   abstract readonly slackChannelConfigurationName: string;
@@ -194,7 +198,9 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
     });
   }
 
-  public bindAsNotificationRuleTarget(_scope: Construct): notifications.NotificationRuleTargetConfig {
+  public bindAsNotificationRuleTarget(
+    _scope: Construct
+  ): notifications.NotificationRuleTargetConfig {
     return {
       targetType: 'AWSChatbotSlack',
       targetAddress: this.slackChannelConfigurationArn,
@@ -206,7 +212,6 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
  * A new Slack channel configuration
  */
 export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
-
   /**
    * Import an existing Slack channel configuration provided an ARN
    * @param scope The parent creating construct
@@ -215,16 +220,24 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    *
    * @returns a reference to the existing Slack channel configuration
    */
-  public static fromSlackChannelConfigurationArn(scope: Construct, id: string, slackChannelConfigurationArn: string): ISlackChannelConfiguration {
+  public static fromSlackChannelConfigurationArn(
+    scope: Construct,
+    id: string,
+    slackChannelConfigurationArn: string
+  ): ISlackChannelConfiguration {
     const re = /^slack-channel\//;
-    const resourceName = cdk.Arn.extractResourceName(slackChannelConfigurationArn, 'chat-configuration');
+    const resourceName = cdk.Arn.extractResourceName(
+      slackChannelConfigurationArn,
+      'chat-configuration'
+    );
 
     if (!cdk.Token.isUnresolved(slackChannelConfigurationArn) && !re.test(resourceName)) {
-      throw new Error('The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>');
+      throw new Error(
+        'The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>'
+      );
     }
 
     class Import extends SlackChannelConfigurationBase {
-
       /**
        * @attribute
        */
@@ -248,7 +261,10 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
         // handle slackChannelConfigurationName as specified above
         if (cdk.Token.isUnresolved(slackChannelConfigurationArn)) {
-          this.slackChannelConfigurationName = cdk.Fn.select(1, cdk.Fn.split('slack-channel/', resourceName));
+          this.slackChannelConfigurationName = cdk.Fn.select(
+            1,
+            cdk.Fn.split('slack-channel/', resourceName)
+          );
         } else {
           this.slackChannelConfigurationName = resourceName.substring('slack-channel/'.length);
         }
@@ -291,9 +307,11 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       physicalName: props.slackChannelConfigurationName,
     });
 
-    this.role = props.role || new iam.Role(this, 'ConfigurationRole', {
-      assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),
-    });
+    this.role =
+      props.role ||
+      new iam.Role(this, 'ConfigurationRole', {
+        assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),
+      });
 
     this.grantPrincipal = this.role;
 
@@ -304,9 +322,15 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       iamRoleArn: this.role.roleArn,
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
-      snsTopicArns: cdk.Lazy.list({ produce: () => this.notificationTopics.map(topic => topic.topicArn) }, { omitEmpty: true } ),
+      snsTopicArns: cdk.Lazy.list(
+        { produce: () => this.notificationTopics.map((topic) => topic.topicArn) },
+        { omitEmpty: true }
+      ),
       loggingLevel: props.loggingLevel?.toString(),
-      guardrailPolicies: cdk.Lazy.list({ produce: () => props.guardrailPolicies?.map(policy => policy.managedPolicyArn) }, { omitEmpty: true } ),
+      guardrailPolicies: cdk.Lazy.list(
+        { produce: () => props.guardrailPolicies?.map((policy) => policy.managedPolicyArn) },
+        { omitEmpty: true }
+      ),
       userRoleRequired: props.userRoleRequired,
     });
 
@@ -334,4 +358,3 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     this.notificationTopics.push(notificationTopic);
   }
 }
-

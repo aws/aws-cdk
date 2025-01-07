@@ -23,7 +23,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // throw an error to fail the deployment if any export value is changing
         const changedExports = changed(oldExports, exports);
         if (changedExports.length > 0) {
-          throw new Error('Some exports have changed!\n'+ changedExports.join('\n'));
+          throw new Error('Some exports have changed!\n' + changedExports.join('\n'));
         }
         // if we are removing any exports that are in use, then throw an
         // error to fail the deployment
@@ -53,19 +53,21 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     console.error('Error processing event: ', e);
     throw e;
   }
-};
+}
 
 /**
  * Create parameters for existing exports
  */
 async function putParameters(ssm: SSM, parameters: CrossRegionExports): Promise<void> {
-  await Promise.all(Array.from(Object.entries(parameters), ([name, value]) => {
-    return ssm.putParameter({
-      Name: name,
-      Value: value,
-      Type: 'String',
-    });
-  }));
+  await Promise.all(
+    Array.from(Object.entries(parameters), ([name, value]) => {
+      return ssm.putParameter({
+        Name: name,
+        Value: value,
+        Type: 'String',
+      });
+    })
+  );
 }
 
 /**
@@ -94,12 +96,14 @@ async function deleteParameters(ssm: SSM, names: string[]) {
  */
 async function throwIfAnyInUse(ssm: SSM, parameters: CrossRegionExports): Promise<void> {
   const tagResults: Map<string, Set<string>> = new Map();
-  await Promise.all(Object.keys(parameters).map(async (name: string) => {
-    const result = await isInUse(ssm, name);
-    if (result.size > 0) {
-      tagResults.set(name, result);
-    }
-  }));
+  await Promise.all(
+    Object.keys(parameters).map(async (name: string) => {
+      const result = await isInUse(ssm, name);
+      if (result.size > 0) {
+        tagResults.set(name, result);
+      }
+    })
+  );
 
   if (tagResults.size > 0) {
     const message: string = Array.from(tagResults.entries())
@@ -119,7 +123,7 @@ async function isInUse(ssm: SSM, parameterName: string): Promise<Set<string>> {
       ResourceId: parameterName,
       ResourceType: 'Parameter',
     });
-    result.TagList?.forEach(tag => {
+    result.TagList?.forEach((tag) => {
       const tagParts = tag.Key?.split(':') ?? [];
       if (tagParts[0] === 'aws-cdk' && tagParts[1] === 'strong-ref') {
         tagResults.add(tagParts[2]);
@@ -145,7 +149,7 @@ async function isInUse(ssm: SSM, parameterName: string): Promise<Set<string>> {
  */
 function except(source: CrossRegionExports, filter: CrossRegionExports): CrossRegionExports {
   return Object.keys(source)
-    .filter(key => (!filter.hasOwnProperty(key)))
+    .filter((key) => !filter.hasOwnProperty(key))
     .reduce((acc: CrossRegionExports, curr: string) => {
       acc[curr] = source[curr];
       return acc;
@@ -162,7 +166,7 @@ function except(source: CrossRegionExports, filter: CrossRegionExports): CrossRe
  */
 function changed(oldParams: CrossRegionExports, newParams: CrossRegionExports): string[] {
   return Object.keys(oldParams)
-    .filter(key => (newParams.hasOwnProperty(key) && oldParams[key] !== newParams[key]))
+    .filter((key) => newParams.hasOwnProperty(key) && oldParams[key] !== newParams[key])
     .reduce((acc: string[], curr: string) => {
       acc.push(curr);
       return acc;

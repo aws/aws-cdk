@@ -1,13 +1,15 @@
 import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
-import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
+import {
+  HttpRouteIntegrationBindOptions,
+  HttpRouteIntegrationConfig,
+} from '../../../aws-apigatewayv2';
 import * as servicediscovery from '../../../aws-servicediscovery';
 
 /**
  * Properties to initialize `HttpServiceDiscoveryIntegration`.
  */
-export interface HttpServiceDiscoveryIntegrationProps extends HttpPrivateIntegrationOptions {
-}
+export interface HttpServiceDiscoveryIntegrationProps extends HttpPrivateIntegrationOptions {}
 
 /**
  * The Service Discovery integration resource for HTTP API
@@ -21,8 +23,8 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
   constructor(
     id: string,
     private readonly service: servicediscovery.IService,
-    private readonly props: HttpServiceDiscoveryIntegrationProps = {}) {
-
+    private readonly props: HttpServiceDiscoveryIntegrationProps = {}
+  ) {
     super(id);
   }
 

@@ -15,7 +15,17 @@ import { Stack } from '../stack';
 import { Token } from '../token';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
-const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'core', 'nodejs-entrypoint-handler', 'index.js');
+const ENTRYPOINT_NODEJS_SOURCE = path.join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'custom-resource-handlers',
+  'dist',
+  'core',
+  'nodejs-entrypoint-handler',
+  'index.js'
+);
 
 /**
  * Initialization properties for `CustomResourceProviderBase`
@@ -82,8 +92,11 @@ export abstract class CustomResourceProviderBase extends Construct {
     const { code, codeHandler, metadata } = this.createCodePropAndMetadata(props, stack);
 
     const config = getPrecreatedRoleConfig(this, `${this.node.path}/Role`);
-    const assumeRolePolicyDoc = [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }];
-    const managedPolicyArn = 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
+    const assumeRolePolicyDoc = [
+      { Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } },
+    ];
+    const managedPolicyArn =
+      'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
 
     // need to initialize this attribute, but there should never be an instance
     // where config.enabled=true && config.preventSynthesis=true
@@ -94,7 +107,7 @@ export abstract class CustomResourceProviderBase extends Construct {
         validate: () => {
           PolicySynthesizer.getOrCreate(this).addRole(`${this.node.path}/Role`, {
             missing: !config.precreatedRoleName,
-            roleName: config.precreatedRoleName ?? id+'Role',
+            roleName: config.precreatedRoleName ?? id + 'Role',
             managedPolicies: [{ managedPolicyArn: managedPolicyArn }],
             policyStatements: this.policyStatements ?? [],
             assumeRolePolicy: assumeRolePolicyDoc as any,
@@ -117,9 +130,7 @@ export abstract class CustomResourceProviderBase extends Construct {
             Version: '2012-10-17',
             Statement: assumeRolePolicyDoc,
           },
-          ManagedPolicyArns: [
-            { 'Fn::Sub': managedPolicyArn },
-          ],
+          ManagedPolicyArns: [{ 'Fn::Sub': managedPolicyArn }],
           Policies: Lazy.any({ produce: () => this.renderPolicies() }),
         },
       });
@@ -183,13 +194,15 @@ export abstract class CustomResourceProviderBase extends Construct {
       return undefined;
     }
 
-    const policies = [{
-      PolicyName: 'Inline',
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: this.policyStatements,
+    const policies = [
+      {
+        PolicyName: 'Inline',
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: this.policyStatements,
+        },
       },
-    }];
+    ];
 
     return policies;
   }
@@ -221,19 +234,27 @@ export abstract class CustomResourceProviderBase extends Construct {
    * Returns the code property for the custom resource as well as any metadata.
    * If the code is to be uploaded as an asset, the asset gets created in this function.
    */
-  private createCodePropAndMetadata(props: CustomResourceProviderBaseProps, stack: Stack): {
+  private createCodePropAndMetadata(
+    props: CustomResourceProviderBaseProps,
+    stack: Stack
+  ): {
     code: Code;
     codeHandler: string;
-    metadata?: {[key: string]: string};
+    metadata?: { [key: string]: string };
   } {
     let codeHandler = 'index.handler';
     const inlineCode = this.node.tryGetContext(INLINE_CUSTOM_RESOURCE_CONTEXT);
     if (!inlineCode) {
       const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
-      fs.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
+      fs.copySync(props.codeDirectory, stagingDirectory, {
+        filter: (src, _dest) => !src.endsWith('.ts'),
+      });
 
       if (props.useCfnResponseWrapper ?? true) {
-        fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
+        fs.copyFileSync(
+          ENTRYPOINT_NODEJS_SOURCE,
+          path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`)
+        );
         codeHandler = `${ENTRYPOINT_FILENAME}.handler`;
       }
 
@@ -259,10 +280,12 @@ export abstract class CustomResourceProviderBase extends Construct {
           S3Key: asset.objectKey,
         },
         codeHandler,
-        metadata: this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT) ? {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: assetFileName,
-          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
-        } : undefined,
+        metadata: this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)
+          ? {
+              [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: assetFileName,
+              [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
+            }
+          : undefined,
       };
     }
 
@@ -275,9 +298,11 @@ export abstract class CustomResourceProviderBase extends Construct {
   }
 }
 
-export type Code = {
-  ZipFile: string;
-} | {
-  S3Bucket: string;
-  S3Key: string;
-};
+export type Code =
+  | {
+      ZipFile: string;
+    }
+  | {
+      S3Bucket: string;
+      S3Key: string;
+    };

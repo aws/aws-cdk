@@ -171,7 +171,11 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
   constructor(scope: Construct, id: string, props: WebSocketIntegrationProps) {
     super(scope, id);
 
-    if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
+    if (
+      props.timeout &&
+      !props.timeout.isUnresolved() &&
+      (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)
+    ) {
       throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
     }
 
@@ -226,8 +230,13 @@ export abstract class WebSocketRouteIntegration {
    * Internal method called when binding this integration to the route.
    * @internal
    */
-  public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): { readonly integrationId: string } {
-    if (this.integration && this.integration.webSocketApi.node.addr !== options.route.webSocketApi.node.addr) {
+  public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): {
+    readonly integrationId: string;
+  } {
+    if (
+      this.integration &&
+      this.integration.webSocketApi.node.addr !== options.route.webSocketApi.node.addr
+    ) {
       throw new Error('A single integration cannot be associated with multiple APIs.');
     }
 
@@ -255,7 +264,9 @@ export abstract class WebSocketRouteIntegration {
   /**
    * Bind this integration to the route.
    */
-  public abstract bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig;
+  public abstract bind(
+    options: WebSocketRouteIntegrationBindOptions
+  ): WebSocketRouteIntegrationConfig;
 }
 
 /**

@@ -23,7 +23,10 @@ async function main() {
   // as if it was an installed module.
   await withTemporaryDirectory(async (tmpDir) => {
     await fs.mkdirp(path.join(tmpDir, 'node_modules'));
-    await fs.symlink(path.resolve(__dirname, '..'), path.join(tmpDir, 'node_modules', 'aws-cdk-lib'));
+    await fs.symlink(
+      path.resolve(__dirname, '..'),
+      path.join(tmpDir, 'node_modules', 'aws-cdk-lib')
+    );
 
     const import1 = 'import { aws_ec2 } from "aws-cdk-lib";';
     const import2 = 'import * as aws_ec2 from "aws-cdk-lib/aws-ec2";';
@@ -58,11 +61,13 @@ async function compileAndResolve(fileName: string, contents: string, symbolName:
     ...program.getSemanticDiagnostics(sourceFile),
   ];
   if (diags.length > 0) {
-    console.error(ts.formatDiagnostics(diags, {
-      getNewLine: () => '\n',
-      getCurrentDirectory: () => path.dirname(fileName),
-      getCanonicalFileName: (f) => path.resolve(f),
-    }));
+    console.error(
+      ts.formatDiagnostics(diags, {
+        getNewLine: () => '\n',
+        getCurrentDirectory: () => path.dirname(fileName),
+        getCanonicalFileName: (f) => path.resolve(f),
+      })
+    );
     throw new Error('Compilation failed');
   }
 
@@ -75,7 +80,7 @@ async function compileAndResolve(fileName: string, contents: string, symbolName:
 
   // Resolve alias if applicable
   // eslint-disable-next-line no-bitwise
-  while (sym && ((sym.flags & ts.SymbolFlags.Alias) !== 0)) {
+  while (sym && (sym.flags & ts.SymbolFlags.Alias) !== 0) {
     sym = program.getTypeChecker().getAliasedSymbol(sym);
   }
 
@@ -103,7 +108,9 @@ export async function withTemporaryDirectory<T>(callback: (dir: string) => Promi
 
 function assertNode<A extends ts.Node>(x: ts.Node, assert: (x: ts.Node) => x is A): A {
   if (!assert(x)) {
-    throw new Error(`Not the right type of node, expecting ${assert.name}, got ${ts.SyntaxKind[x.kind]}`);
+    throw new Error(
+      `Not the right type of node, expecting ${assert.name}, got ${ts.SyntaxKind[x.kind]}`
+    );
   }
   return x;
 }

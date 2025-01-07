@@ -90,21 +90,39 @@ export abstract class VirtualGatewayListener {
    * Returns an HTTP Listener for a VirtualGateway
    */
   public static http(options: HttpGatewayListenerOptions = {}): VirtualGatewayListener {
-    return new VirtualGatewayListenerImpl(Protocol.HTTP, options.healthCheck, options.port, options.tls, options.connectionPool);
+    return new VirtualGatewayListenerImpl(
+      Protocol.HTTP,
+      options.healthCheck,
+      options.port,
+      options.tls,
+      options.connectionPool
+    );
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualGateway
    */
   public static http2(options: Http2GatewayListenerOptions = {}): VirtualGatewayListener {
-    return new VirtualGatewayListenerImpl(Protocol.HTTP2, options.healthCheck, options.port, options.tls, options.connectionPool);
+    return new VirtualGatewayListenerImpl(
+      Protocol.HTTP2,
+      options.healthCheck,
+      options.port,
+      options.tls,
+      options.connectionPool
+    );
   }
 
   /**
    * Returns a GRPC Listener for a VirtualGateway
    */
   public static grpc(options: GrpcGatewayListenerOptions = {}): VirtualGatewayListener {
-    return new VirtualGatewayListenerImpl(Protocol.GRPC, options.healthCheck, options.port, options.tls, options.connectionPool);
+    return new VirtualGatewayListenerImpl(
+      Protocol.GRPC,
+      options.healthCheck,
+      options.port,
+      options.tls,
+      options.connectionPool
+    );
   }
 
   /**
@@ -118,12 +136,13 @@ export abstract class VirtualGatewayListener {
  * Represents the properties needed to define an HTTP Listener for a VirtualGateway
  */
 class VirtualGatewayListenerImpl extends VirtualGatewayListener {
-
-  constructor(private readonly protocol: Protocol,
+  constructor(
+    private readonly protocol: Protocol,
     private readonly healthCheck: HealthCheck | undefined,
     private readonly port: number = 8080,
     private readonly listenerTls: ListenerTlsOptions | undefined,
-    private readonly connectionPool: ConnectionPoolConfig | undefined) {
+    private readonly connectionPool: ConnectionPoolConfig | undefined
+  ) {
     super();
   }
 
@@ -138,21 +157,31 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualGatewayHealthCheck,
+        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port })
+          .virtualGatewayHealthCheck,
         tls: renderListenerTlsOptions(scope, this.listenerTls),
-        connectionPool: this.connectionPool ? renderConnectionPool(this.connectionPool, this.protocol) : undefined,
+        connectionPool: this.connectionPool
+          ? renderConnectionPool(this.connectionPool, this.protocol)
+          : undefined,
       },
     };
   }
 }
 
-function renderConnectionPool(connectionPool: ConnectionPoolConfig, listenerProtocol: Protocol):
-CfnVirtualGateway.VirtualGatewayConnectionPoolProperty {
-  return ({
+function renderConnectionPool(
+  connectionPool: ConnectionPoolConfig,
+  listenerProtocol: Protocol
+): CfnVirtualGateway.VirtualGatewayConnectionPoolProperty {
+  return {
     [listenerProtocol]: {
-      maxRequests: connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
-      maxConnections: connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
-      maxPendingRequests: connectionPool?.maxPendingRequests !== undefined ? connectionPool.maxPendingRequests : undefined,
+      maxRequests:
+        connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
+      maxConnections:
+        connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
+      maxPendingRequests:
+        connectionPool?.maxPendingRequests !== undefined
+          ? connectionPool.maxPendingRequests
+          : undefined,
     },
-  });
+  };
 }

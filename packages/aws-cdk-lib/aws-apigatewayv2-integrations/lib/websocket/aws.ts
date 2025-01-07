@@ -93,7 +93,10 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
   /**
    * @param id id of the underlying integration construct
    */
-  constructor(id: string, private readonly props: WebSocketAwsIntegrationProps) {
+  constructor(
+    id: string,
+    private readonly props: WebSocketAwsIntegrationProps
+  ) {
     super(id);
   }
 

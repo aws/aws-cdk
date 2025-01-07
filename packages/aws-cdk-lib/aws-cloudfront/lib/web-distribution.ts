@@ -1,6 +1,15 @@
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
-import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import {
+  HttpVersion,
+  IDistribution,
+  LambdaEdgeEventType,
+  OriginProtocolPolicy,
+  PriceClass,
+  ViewerProtocolPolicy,
+  SSLMethod,
+  SecurityPolicyProtocol,
+} from './distribution';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -354,7 +363,6 @@ export enum CloudFrontAllowedCachedMethods {
  * A CloudFront behavior wrapper.
  */
 export interface Behavior {
-
   /**
    * If CloudFront should automatically compress some content types.
    *
@@ -464,7 +472,6 @@ export interface Behavior {
 }
 
 export interface LambdaFunctionAssociation {
-
   /**
    * The lambda event type defines at which event the lambda
    * is called during the request lifecycle
@@ -524,16 +531,24 @@ export class ViewerCertificate {
    *                    Your certificate must be located in the us-east-1 (US East (N. Virginia)) region to be accessed by CloudFront
    * @param options certificate configuration options
    */
-  public static fromAcmCertificate(certificate: certificatemanager.ICertificate, options: ViewerCertificateOptions = {}) {
+  public static fromAcmCertificate(
+    certificate: certificatemanager.ICertificate,
+    options: ViewerCertificateOptions = {}
+  ) {
     const {
       sslMethod: sslSupportMethod = SSLMethod.SNI,
       securityPolicy: minimumProtocolVersion,
       aliases,
     } = options;
 
-    return new ViewerCertificate({
-      acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion,
-    }, aliases);
+    return new ViewerCertificate(
+      {
+        acmCertificateArn: certificate.certificateArn,
+        sslSupportMethod,
+        minimumProtocolVersion,
+      },
+      aliases
+    );
   }
 
   /**
@@ -542,16 +557,24 @@ export class ViewerCertificate {
    * @param iamCertificateId Identifier of the IAM certificate
    * @param options certificate configuration options
    */
-  public static fromIamCertificate(iamCertificateId: string, options: ViewerCertificateOptions = {}) {
+  public static fromIamCertificate(
+    iamCertificateId: string,
+    options: ViewerCertificateOptions = {}
+  ) {
     const {
       sslMethod: sslSupportMethod = SSLMethod.SNI,
       securityPolicy: minimumProtocolVersion,
       aliases,
     } = options;
 
-    return new ViewerCertificate({
-      iamCertificateId, sslSupportMethod, minimumProtocolVersion,
-    }, aliases);
+    return new ViewerCertificate(
+      {
+        iamCertificateId,
+        sslSupportMethod,
+        minimumProtocolVersion,
+      },
+      aliases
+    );
   }
 
   /**
@@ -568,11 +591,11 @@ export class ViewerCertificate {
 
   private constructor(
     public readonly props: CfnDistribution.ViewerCertificateProperty,
-    public readonly aliases: string[] = []) { }
+    public readonly aliases: string[] = []
+  ) {}
 }
 
 export interface CloudFrontWebDistributionProps {
-
   /**
    * AliasConfiguration is used to configured CloudFront to respond to requests on custom domain names.
    *
@@ -744,12 +767,15 @@ export interface CloudFrontWebDistributionAttributes {
  * @deprecated Use `Distribution` instead
  */
 export class CloudFrontWebDistribution extends cdk.Resource implements IDistribution {
-
   /**
    * Creates a construct that represents an external (imported) distribution.
    */
-  public static fromDistributionAttributes(scope: Construct, id: string, attrs: CloudFrontWebDistributionAttributes): IDistribution {
-    return new class extends cdk.Resource implements IDistribution {
+  public static fromDistributionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: CloudFrontWebDistributionAttributes
+  ): IDistribution {
+    return new (class extends cdk.Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
@@ -765,12 +791,16 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         return formatDistributionArn(this);
       }
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-        return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
+        return iam.Grant.addToPrincipal({
+          grantee,
+          actions,
+          resourceArns: [formatDistributionArn(this)],
+        });
       }
       public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
         return this.grant(identity, 'cloudfront:CreateInvalidation');
       }
-    }();
+    })();
   }
 
   /**
@@ -814,9 +844,12 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    */
   private readonly VALID_SSL_PROTOCOLS: { [method in SSLMethod]: string[] } = {
     [SSLMethod.SNI]: [
-      SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
-      SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018,
-      SecurityPolicyProtocol.TLS_V1_2_2019, SecurityPolicyProtocol.TLS_V1_2_2021,
+      SecurityPolicyProtocol.TLS_V1,
+      SecurityPolicyProtocol.TLS_V1_1_2016,
+      SecurityPolicyProtocol.TLS_V1_2016,
+      SecurityPolicyProtocol.TLS_V1_2_2018,
+      SecurityPolicyProtocol.TLS_V1_2_2019,
+      SecurityPolicyProtocol.TLS_V1_2_2021,
     ],
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
@@ -851,7 +884,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
             originHeaders: originConfig.originHeaders,
             originShieldRegion: originConfig.originShieldRegion,
           },
-          originSecondaryId,
+          originSecondaryId
         );
         const originGroupsId = `OriginGroup${originIndex}`;
         const failoverCodes = originConfig.failoverCriteriaStatusCodes ?? [500, 502, 503, 504];
@@ -880,30 +913,39 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       originIndex++;
     }
 
-    origins.forEach(origin => {
+    origins.forEach((origin) => {
       if (!origin.s3OriginConfig && !origin.customOriginConfig) {
-        throw new Error(`Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`);
+        throw new Error(
+          `Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`
+        );
       }
     });
     const originGroupsDistConfig =
       originGroups.length > 0
         ? {
-          items: originGroups,
-          quantity: originGroups.length,
-        }
+            items: originGroups,
+            quantity: originGroups.length,
+          }
         : undefined;
 
-    const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
+    const defaultBehaviors = behaviors.filter((behavior) => behavior.isDefaultBehavior);
     if (defaultBehaviors.length !== 1) {
-      throw new Error('There can only be one default behavior across all sources. [ One default behavior per distribution ].');
+      throw new Error(
+        'There can only be one default behavior across all sources. [ One default behavior per distribution ].'
+      );
     }
 
     const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
-    for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
+    for (const behavior of behaviors.filter((b) => !b.isDefaultBehavior)) {
       if (!behavior.pathPattern) {
         throw new Error('pathPattern is required for all non-default behaviors');
       }
-      otherBehaviors.push(this.toBehavior(behavior, props.viewerProtocolPolicy) as CfnDistribution.CacheBehaviorProperty);
+      otherBehaviors.push(
+        this.toBehavior(
+          behavior,
+          props.viewerProtocolPolicy
+        ) as CfnDistribution.CacheBehaviorProperty
+      );
     }
 
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
@@ -925,10 +967,12 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     };
 
     if (props.aliasConfiguration && props.viewerCertificate) {
-      throw new Error([
-        'You cannot set both aliasConfiguration and viewerCertificate properties.',
-        'Please only use viewerCertificate, as aliasConfiguration is deprecated.',
-      ].join(' '));
+      throw new Error(
+        [
+          'You cannot set both aliasConfiguration and viewerCertificate properties.',
+          'Please only use viewerCertificate, as aliasConfiguration is deprecated.',
+        ].join(' ')
+      );
     }
 
     let _viewerCertificate = props.viewerCertificate;
@@ -936,8 +980,12 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       const { acmCertRef, securityPolicy, sslMethod, names: aliases } = props.aliasConfiguration;
 
       _viewerCertificate = ViewerCertificate.fromAcmCertificate(
-        certificatemanager.Certificate.fromCertificateArn(this, 'AliasConfigurationCert', acmCertRef),
-        { securityPolicy, sslMethod, aliases },
+        certificatemanager.Certificate.fromCertificateArn(
+          this,
+          'AliasConfigurationCert',
+          acmCertRef
+        ),
+        { securityPolicy, sslMethod, aliases }
       );
     }
 
@@ -952,7 +1000,9 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
         if (validProtocols.indexOf(minimumProtocolVersion.toString()) === -1) {
           // eslint-disable-next-line max-len
-          throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(', ')}`);
+          throw new Error(
+            `${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(', ')}`
+          );
         }
       }
     } else {
@@ -963,9 +1013,11 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (props.loggingConfig) {
-      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket', {
-        encryption: s3.BucketEncryption.S3_MANAGED,
-      });
+      this.loggingBucket =
+        props.loggingConfig.bucket ||
+        new s3.Bucket(this, 'LoggingBucket', {
+          encryption: s3.BucketEncryption.S3_MANAGED,
+        });
       distributionConfig = {
         ...distributionConfig,
         logging: {
@@ -1007,7 +1059,11 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
    */
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({ grantee: identity, actions, resourceArns: [formatDistributionArn(this)] });
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [formatDistributionArn(this)],
+    });
   }
 
   /**
@@ -1021,97 +1077,128 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
     let toReturn = {
-      allowedMethods: this.METHOD_LOOKUP_MAP[input.allowedMethods || CloudFrontAllowedMethods.GET_HEAD],
-      cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
+      allowedMethods:
+        this.METHOD_LOOKUP_MAP[input.allowedMethods || CloudFrontAllowedMethods.GET_HEAD],
+      cachedMethods:
+        this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
       compress: input.compress !== false,
       defaultTtl: input.defaultTtl && input.defaultTtl.toSeconds(),
-      forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: 'none' } },
+      forwardedValues: input.forwardedValues || {
+        queryString: false,
+        cookies: { forward: 'none' },
+      },
       maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
       minTtl: input.minTtl && input.minTtl.toSeconds(),
-      trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupId),
+      trustedKeyGroups: input.trustedKeyGroups?.map((key) => key.keyGroupId),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
-      viewerProtocolPolicy: input.viewerProtocolPolicy || protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      viewerProtocolPolicy:
+        input.viewerProtocolPolicy || protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     };
     if (!input.isDefaultBehavior) {
       toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });
     }
     if (input.functionAssociations) {
       toReturn = Object.assign(toReturn, {
-        functionAssociations: input.functionAssociations.map(association => ({
+        functionAssociations: input.functionAssociations.map((association) => ({
           functionArn: association.function.functionArn,
           eventType: association.eventType.toString(),
         })),
       });
     }
     if (input.lambdaFunctionAssociations) {
-      const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
-      if (input.lambdaFunctionAssociations.some(fna => fna.includeBody && !includeBodyEventTypes.includes(fna.eventType))) {
-        throw new Error('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
+      const includeBodyEventTypes = [
+        LambdaEdgeEventType.ORIGIN_REQUEST,
+        LambdaEdgeEventType.VIEWER_REQUEST,
+      ];
+      if (
+        input.lambdaFunctionAssociations.some(
+          (fna) => fna.includeBody && !includeBodyEventTypes.includes(fna.eventType)
+        )
+      ) {
+        throw new Error(
+          "'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types."
+        );
       }
 
       toReturn = Object.assign(toReturn, {
-        lambdaFunctionAssociations: input.lambdaFunctionAssociations
-          .map(fna => ({
-            eventType: fna.eventType,
-            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.edgeArn,
-            includeBody: fna.includeBody,
-          })),
+        lambdaFunctionAssociations: input.lambdaFunctionAssociations.map((fna) => ({
+          eventType: fna.eventType,
+          lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.edgeArn,
+          includeBody: fna.includeBody,
+        })),
       });
 
       // allow edgelambda.amazonaws.com to assume the functions' execution role.
       for (const a of input.lambdaFunctionAssociations) {
-        if (a.lambdaFunction.role && iam.Role.isRole(a.lambdaFunction.role) && a.lambdaFunction.role.assumeRolePolicy) {
-          a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-            actions: ['sts:AssumeRole'],
-            principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
-          }));
+        if (
+          a.lambdaFunction.role &&
+          iam.Role.isRole(a.lambdaFunction.role) &&
+          a.lambdaFunction.role.assumeRolePolicy
+        ) {
+          a.lambdaFunction.role.assumeRolePolicy.addStatements(
+            new iam.PolicyStatement({
+              actions: ['sts:AssumeRole'],
+              principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
+            })
+          );
         }
       }
     }
     return toReturn;
   }
 
-  private toOriginProperty(originConfig: SourceConfigurationRender, originId: string): CfnDistribution.OriginProperty {
-    if (
-      !originConfig.s3OriginSource &&
-      !originConfig.customOriginSource
-    ) {
+  private toOriginProperty(
+    originConfig: SourceConfigurationRender,
+    originId: string
+  ): CfnDistribution.OriginProperty {
+    if (!originConfig.s3OriginSource && !originConfig.customOriginSource) {
       throw new Error(
-        'There must be at least one origin source - either an s3OriginSource, a customOriginSource',
+        'There must be at least one origin source - either an s3OriginSource, a customOriginSource'
       );
     }
     if (originConfig.customOriginSource && originConfig.s3OriginSource) {
       throw new Error(
-        'There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.',
+        'There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.'
       );
     }
 
-    if ([
-      originConfig.originHeaders,
-      originConfig.s3OriginSource?.originHeaders,
-      originConfig.customOriginSource?.originHeaders,
-    ].filter(x => x).length > 1) {
+    if (
+      [
+        originConfig.originHeaders,
+        originConfig.s3OriginSource?.originHeaders,
+        originConfig.customOriginSource?.originHeaders,
+      ].filter((x) => x).length > 1
+    ) {
       throw new Error('Only one originHeaders field allowed across origin and failover origins');
     }
 
-    if ([
-      originConfig.originPath,
-      originConfig.s3OriginSource?.originPath,
-      originConfig.customOriginSource?.originPath,
-    ].filter(x => x).length > 1) {
+    if (
+      [
+        originConfig.originPath,
+        originConfig.s3OriginSource?.originPath,
+        originConfig.customOriginSource?.originPath,
+      ].filter((x) => x).length > 1
+    ) {
       throw new Error('Only one originPath field allowed across origin and failover origins');
     }
 
-    if ([
-      originConfig.originShieldRegion,
-      originConfig.s3OriginSource?.originShieldRegion,
-      originConfig.customOriginSource?.originShieldRegion,
-    ].filter(x => x).length > 1) {
-      throw new Error('Only one originShieldRegion field allowed across origin and failover origins');
+    if (
+      [
+        originConfig.originShieldRegion,
+        originConfig.s3OriginSource?.originShieldRegion,
+        originConfig.customOriginSource?.originShieldRegion,
+      ].filter((x) => x).length > 1
+    ) {
+      throw new Error(
+        'Only one originShieldRegion field allowed across origin and failover origins'
+      );
     }
 
-    const headers = originConfig.originHeaders ?? originConfig.s3OriginSource?.originHeaders ?? originConfig.customOriginSource?.originHeaders;
+    const headers =
+      originConfig.originHeaders ??
+      originConfig.s3OriginSource?.originHeaders ??
+      originConfig.customOriginSource?.originHeaders;
 
     const originHeaders: CfnDistribution.OriginCustomHeaderProperty[] = [];
     if (headers) {
@@ -1133,11 +1220,13 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         // Only GetObject is needed to retrieve objects for the distribution.
         // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
         // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
-        originConfig.s3OriginSource.s3BucketSource.addToResourcePolicy(new iam.PolicyStatement({
-          resources: [originConfig.s3OriginSource.s3BucketSource.arnForObjects('*')],
-          actions: ['s3:GetObject'],
-          principals: [originConfig.s3OriginSource.originAccessIdentity.grantPrincipal],
-        }));
+        originConfig.s3OriginSource.s3BucketSource.addToResourcePolicy(
+          new iam.PolicyStatement({
+            resources: [originConfig.s3OriginSource.s3BucketSource.arnForObjects('*')],
+            actions: ['s3:GetObject'],
+            principals: [originConfig.s3OriginSource.originAccessIdentity.grantPrincipal],
+          })
+        );
 
         s3OriginConfig = {
           originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityId}`,
@@ -1152,9 +1241,13 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       throw new Error('connectionAttempts: You can specify 1, 2, or 3 as the number of attempts.');
     }
 
-    const connectionTimeout = (originConfig.connectionTimeout || cdk.Duration.seconds(10)).toSeconds();
+    const connectionTimeout = (
+      originConfig.connectionTimeout || cdk.Duration.seconds(10)
+    ).toSeconds();
     if (connectionTimeout < 1 || 10 < connectionTimeout || !Number.isInteger(connectionTimeout)) {
-      throw new Error('connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
+      throw new Error(
+        'connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).'
+      );
     }
 
     const originProperty: CfnDistribution.OriginProperty = {
@@ -1162,29 +1255,32 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       domainName: originConfig.s3OriginSource
         ? originConfig.s3OriginSource.s3BucketSource.bucketRegionalDomainName
         : originConfig.customOriginSource!.domainName,
-      originPath: originConfig.originPath ?? originConfig.customOriginSource?.originPath ?? originConfig.s3OriginSource?.originPath,
-      originCustomHeaders:
-        originHeaders.length > 0 ? originHeaders : undefined,
+      originPath:
+        originConfig.originPath ??
+        originConfig.customOriginSource?.originPath ??
+        originConfig.s3OriginSource?.originPath,
+      originCustomHeaders: originHeaders.length > 0 ? originHeaders : undefined,
       s3OriginConfig,
       originShield: this.toOriginShieldProperty(originConfig),
       customOriginConfig: originConfig.customOriginSource
         ? {
-          httpPort: originConfig.customOriginSource.httpPort || 80,
-          httpsPort: originConfig.customOriginSource.httpsPort || 443,
-          originKeepaliveTimeout:
-            (originConfig.customOriginSource.originKeepaliveTimeout &&
-              originConfig.customOriginSource.originKeepaliveTimeout.toSeconds()) ||
-            5,
-          originReadTimeout:
-            (originConfig.customOriginSource.originReadTimeout &&
-              originConfig.customOriginSource.originReadTimeout.toSeconds()) ||
-            30,
-          originProtocolPolicy:
-            originConfig.customOriginSource.originProtocolPolicy ||
-            OriginProtocolPolicy.HTTPS_ONLY,
-          originSslProtocols: originConfig.customOriginSource
-            .allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2],
-        }
+            httpPort: originConfig.customOriginSource.httpPort || 80,
+            httpsPort: originConfig.customOriginSource.httpsPort || 443,
+            originKeepaliveTimeout:
+              (originConfig.customOriginSource.originKeepaliveTimeout &&
+                originConfig.customOriginSource.originKeepaliveTimeout.toSeconds()) ||
+              5,
+            originReadTimeout:
+              (originConfig.customOriginSource.originReadTimeout &&
+                originConfig.customOriginSource.originReadTimeout.toSeconds()) ||
+              30,
+            originProtocolPolicy:
+              originConfig.customOriginSource.originProtocolPolicy ||
+              OriginProtocolPolicy.HTTPS_ONLY,
+            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [
+              OriginSslPolicy.TLS_V1_2,
+            ],
+          }
         : undefined,
       connectionAttempts,
       connectionTimeout,
@@ -1196,12 +1292,13 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
   /**
    * Takes origin shield region from props and converts to CfnDistribution.OriginShieldProperty
    */
-  private toOriginShieldProperty(originConfig:SourceConfigurationRender): CfnDistribution.OriginShieldProperty | undefined {
-    const originShieldRegion = originConfig.originShieldRegion ??
-    originConfig.customOriginSource?.originShieldRegion ??
-    originConfig.s3OriginSource?.originShieldRegion;
-    return originShieldRegion
-      ? { enabled: true, originShieldRegion }
-      : undefined;
+  private toOriginShieldProperty(
+    originConfig: SourceConfigurationRender
+  ): CfnDistribution.OriginShieldProperty | undefined {
+    const originShieldRegion =
+      originConfig.originShieldRegion ??
+      originConfig.customOriginSource?.originShieldRegion ??
+      originConfig.s3OriginSource?.originShieldRegion;
+    return originShieldRegion ? { enabled: true, originShieldRegion } : undefined;
   }
 }

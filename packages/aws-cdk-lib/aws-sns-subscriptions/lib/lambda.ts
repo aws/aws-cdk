@@ -8,15 +8,15 @@ import { ArnFormat, Names, Stack, Token } from '../../core';
 /**
  * Properties for a Lambda subscription
  */
-export interface LambdaSubscriptionProps extends SubscriptionProps {
-
-}
+export interface LambdaSubscriptionProps extends SubscriptionProps {}
 /**
  * Use a Lambda function as a subscription target
  */
 export class LambdaSubscription implements sns.ITopicSubscription {
-  constructor(private readonly fn: lambda.IFunction, private readonly props: LambdaSubscriptionProps = {}) {
-  }
+  constructor(
+    private readonly fn: lambda.IFunction,
+    private readonly props: LambdaSubscriptionProps = {}
+  ) {}
 
   /**
    * Returns a configuration for a Lambda function to subscribe to an SNS topic
@@ -57,8 +57,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       if (topic.stack !== this.fn.stack) {
         // only if we know the region, will not work for
         // env agnostic stacks
-        if (!Token.isUnresolved(topic.env.region) &&
-          (topic.env.region !== this.fn.env.region)) {
+        if (!Token.isUnresolved(topic.env.region) && topic.env.region !== this.fn.env.region) {
           return topic.env.region;
         }
       }

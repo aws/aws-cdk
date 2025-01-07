@@ -1,7 +1,12 @@
 import * as iam from '../../../aws-iam';
 import { CachePolicy } from '../cache-policy';
 import { CfnDistribution } from '../cloudfront.generated';
-import { AddBehaviorOptions, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
+import {
+  AddBehaviorOptions,
+  EdgeLambda,
+  LambdaEdgeEventType,
+  ViewerProtocolPolicy,
+} from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
@@ -24,7 +29,10 @@ export interface CacheBehaviorProps extends AddBehaviorOptions {
 export class CacheBehavior {
   private readonly originId: string;
 
-  constructor(originId: string, private readonly props: CacheBehaviorProps) {
+  constructor(
+    originId: string,
+    private readonly props: CacheBehaviorProps
+  ) {
     this.originId = originId;
 
     this.validateEdgeLambdas(props.edgeLambdas);
@@ -52,35 +60,49 @@ export class CacheBehavior {
       responseHeadersPolicyId: this.props.responseHeadersPolicy?.responseHeadersPolicyId,
       smoothStreaming: this.props.smoothStreaming,
       viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
-      functionAssociations: this.props.functionAssociations?.map(association => ({
+      functionAssociations: this.props.functionAssociations?.map((association) => ({
         functionArn: association.function.functionArn,
         eventType: association.eventType.toString(),
       })),
-      lambdaFunctionAssociations: this.props.edgeLambdas?.map(edgeLambda => ({
+      lambdaFunctionAssociations: this.props.edgeLambdas?.map((edgeLambda) => ({
         lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
         eventType: edgeLambda.eventType.toString(),
         includeBody: edgeLambda.includeBody,
       })),
-      trustedKeyGroups: this.props.trustedKeyGroups?.map(keyGroup => keyGroup.keyGroupId),
+      trustedKeyGroups: this.props.trustedKeyGroups?.map((keyGroup) => keyGroup.keyGroupId),
     };
   }
 
   private validateEdgeLambdas(edgeLambdas?: EdgeLambda[]) {
-    const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
-    if (edgeLambdas && edgeLambdas.some(lambda => lambda.includeBody && !includeBodyEventTypes.includes(lambda.eventType))) {
-      throw new Error('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
+    const includeBodyEventTypes = [
+      LambdaEdgeEventType.ORIGIN_REQUEST,
+      LambdaEdgeEventType.VIEWER_REQUEST,
+    ];
+    if (
+      edgeLambdas &&
+      edgeLambdas.some(
+        (lambda) => lambda.includeBody && !includeBodyEventTypes.includes(lambda.eventType)
+      )
+    ) {
+      throw new Error(
+        "'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types."
+      );
     }
   }
 
   private grantEdgeLambdaFunctionExecutionRole(edgeLambdas?: EdgeLambda[]) {
-    if (!edgeLambdas || edgeLambdas.length === 0) { return; }
+    if (!edgeLambdas || edgeLambdas.length === 0) {
+      return;
+    }
     edgeLambdas.forEach((edgeLambda) => {
       const role = edgeLambda.functionVersion.role;
       if (role && iam.Role.isRole(role) && role.assumeRolePolicy) {
-        role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-          actions: ['sts:AssumeRole'],
-          principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
-        }));
+        role.assumeRolePolicy.addStatements(
+          new iam.PolicyStatement({
+            actions: ['sts:AssumeRole'],
+            principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
+          })
+        );
       }
     });
   }

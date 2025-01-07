@@ -67,11 +67,13 @@ export class FileSystem {
         }),
         new iam.PolicyStatement({
           actions: ['elasticfilesystem:ClientWrite'],
-          resources: [Stack.of(ap).formatArn({
-            service: 'elasticfilesystem',
-            resource: 'file-system',
-            resourceName: ap.fileSystem.fileSystemId,
-          })],
+          resources: [
+            Stack.of(ap).formatArn({
+              service: 'elasticfilesystem',
+              resource: 'file-system',
+              resourceName: ap.fileSystem.fileSystemId,
+            }),
+          ],
         }),
       ],
     });
@@ -80,5 +82,5 @@ export class FileSystem {
   /**
    * @param config the FileSystem configurations for the Lambda function
    */
-  protected constructor(public readonly config: FileSystemConfig) { }
+  protected constructor(public readonly config: FileSystemConfig) {}
 }

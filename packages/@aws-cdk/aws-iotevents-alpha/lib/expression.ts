@@ -148,8 +148,7 @@ export abstract class Expression {
     return new BinaryOperationExpression(left, '||', right, 4);
   }
 
-  constructor() {
-  }
+  constructor() {}
 
   /**
    * This is called to evaluate the expression.
@@ -183,7 +182,7 @@ class BinaryOperationExpression extends Expression {
      * This is intended to be set according to MDN rules.
      * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#table
      */
-    private readonly priority: number,
+    private readonly priority: number
   ) {
     super();
   }

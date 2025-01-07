@@ -1,10 +1,14 @@
 import { AssertionError } from 'assert';
-import { PropertyScrutinyType, ResourceScrutinyType, Resource as ResourceModel } from '@aws-cdk/service-spec-types';
+import {
+  PropertyScrutinyType,
+  ResourceScrutinyType,
+  Resource as ResourceModel,
+} from '@aws-cdk/service-spec-types';
 import { deepEqual, loadResourceModel } from './util';
 import { IamChanges } from '../iam/iam-changes';
 import { SecurityGroupChanges } from '../network/security-group-changes';
 
-export type PropertyMap = {[key: string]: any };
+export type PropertyMap = { [key: string]: any };
 
 export type ChangeSetResources = { [logicalId: string]: ChangeSetResource };
 
@@ -27,7 +31,7 @@ export type PropertyReplacementModeMap = {
   [propertyName: string]: {
     replacementMode: ReplacementModes | undefined;
   };
-}
+};
 
 /**
  * 'Always' means that changing the corresponding property will always cause a resource replacement. Never means never. Conditionally means maybe.
@@ -83,10 +87,18 @@ export class TemplateDiff implements ITemplateDiff {
     });
 
     this.securityGroupChanges = new SecurityGroupChanges({
-      egressRulePropertyChanges: this.scrutinizablePropertyChanges([PropertyScrutinyType.EgressRules]),
-      ingressRulePropertyChanges: this.scrutinizablePropertyChanges([PropertyScrutinyType.IngressRules]),
-      egressRuleResourceChanges: this.scrutinizableResourceChanges([ResourceScrutinyType.EgressRuleResource]),
-      ingressRuleResourceChanges: this.scrutinizableResourceChanges([ResourceScrutinyType.IngressRuleResource]),
+      egressRulePropertyChanges: this.scrutinizablePropertyChanges([
+        PropertyScrutinyType.EgressRules,
+      ]),
+      ingressRulePropertyChanges: this.scrutinizablePropertyChanges([
+        PropertyScrutinyType.IngressRules,
+      ]),
+      egressRuleResourceChanges: this.scrutinizableResourceChanges([
+        ResourceScrutinyType.EgressRuleResource,
+      ]),
+      ingressRuleResourceChanges: this.scrutinizableResourceChanges([
+        ResourceScrutinyType.IngressRuleResource,
+      ]),
     });
   }
 
@@ -182,7 +194,9 @@ export class TemplateDiff implements ITemplateDiff {
     const ret = new Array<ResourceChange>();
 
     for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
-      if (!resourceChange) { continue; }
+      if (!resourceChange) {
+        continue;
+      }
 
       const commonProps = {
         oldProperties: resourceChange.oldProperties,
@@ -235,7 +249,10 @@ export class TemplateDiff implements ITemplateDiff {
     return ret;
   }
 
-  private resourceIsScrutinizable(res: ResourceModel, scrutinyTypes: Array<ResourceScrutinyType>): boolean {
+  private resourceIsScrutinizable(
+    res: ResourceModel,
+    scrutinyTypes: Array<ResourceScrutinyType>
+  ): boolean {
     return scrutinyTypes.includes(res.scrutinizable || ResourceScrutinyType.None);
   }
 }
@@ -336,7 +353,10 @@ export class Difference<ValueType> implements IDifference<ValueType> {
    * @param oldValue the old value, cannot be equal (to the sense of +deepEqual+) to +newValue+.
    * @param newValue the new value, cannot be equal (to the sense of +deepEqual+) to +oldValue+.
    */
-  constructor(public readonly oldValue: ValueType | undefined, public readonly newValue: ValueType | undefined) {
+  constructor(
+    public readonly oldValue: ValueType | undefined,
+    public readonly newValue: ValueType | undefined
+  ) {
     if (oldValue === undefined && newValue === undefined) {
       throw new AssertionError({ message: 'oldValue and newValue are both undefined!' });
     }
@@ -355,15 +375,18 @@ export class Difference<ValueType> implements IDifference<ValueType> {
 
   /** @returns +true+ if the element was already in the template and is updated. */
   public get isUpdate(): boolean {
-    return this.oldValue !== undefined
-      && this.newValue !== undefined;
+    return this.oldValue !== undefined && this.newValue !== undefined;
   }
 }
 
 export class PropertyDifference<ValueType> extends Difference<ValueType> {
   public changeImpact?: ResourceImpact;
 
-  constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
+  constructor(
+    oldValue: ValueType | undefined,
+    newValue: ValueType | undefined,
+    args: { changeImpact?: ResourceImpact }
+  ) {
     super(oldValue, newValue);
     this.changeImpact = args.changeImpact;
   }
@@ -382,7 +405,9 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
 
   public get(logicalId: string): T {
     const ret = this.diffs[logicalId];
-    if (!ret) { throw new Error(`No object with logical ID '${logicalId}'`); }
+    if (!ret) {
+      throw new Error(`No object with logical ID '${logicalId}'`);
+    }
     return ret;
   }
 
@@ -399,7 +424,7 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
    * returns `true`.
    */
   public filter(predicate: (diff: T | undefined) => boolean): DifferenceCollection<V, T> {
-    const newChanges: { [logicalId: string]: T } = { };
+    const newChanges: { [logicalId: string]: T } = {};
     for (const id of Object.keys(this.changes)) {
       const diff = this.changes[id];
 
@@ -441,10 +466,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
       }
     }
 
-    removed.forEach(v => cb(v.logicalId, v.change));
-    added.forEach(v => cb(v.logicalId, v.change));
-    updated.forEach(v => cb(v.logicalId, v.change));
-    others.forEach(v => cb(v.logicalId, v.change));
+    removed.forEach((v) => cb(v.logicalId, v.change));
+    added.forEach((v) => cb(v.logicalId, v.change));
+    updated.forEach((v) => cb(v.logicalId, v.change));
+    others.forEach((v) => cb(v.logicalId, v.change));
   }
 }
 
@@ -519,7 +544,9 @@ export enum ResourceImpact {
  *      able to determine some peroperty's impact).
  */
 function worstImpact(one: ResourceImpact, two?: ResourceImpact): ResourceImpact {
-  if (!two) { return one; }
+  if (!two) {
+    return one;
+  }
   const badness = {
     [ResourceImpact.NO_CHANGE]: 0,
     [ResourceImpact.WILL_IMPORT]: 0,
@@ -577,7 +604,7 @@ export class ResourceDifference implements IDifference<Resource> {
       resourceType: { oldType?: string; newType?: string };
       propertyDiffs: { [key: string]: PropertyDifference<any> };
       otherDiffs: { [key: string]: Difference<any> };
-    },
+    }
   ) {
     this.resourceTypes = args.resourceType;
     this.propertyDiffs = args.propertyDiffs;
@@ -639,9 +666,11 @@ export class ResourceDifference implements IDifference<Resource> {
    * to be aware of it anyway.
    */
   public get resourceTypeChanged(): boolean {
-    return (this.resourceTypes.oldType !== undefined
-        && this.resourceTypes.newType !== undefined
-        && this.resourceTypes.oldType !== this.resourceTypes.newType);
+    return (
+      this.resourceTypes.oldType !== undefined &&
+      this.resourceTypes.newType !== undefined &&
+      this.resourceTypes.oldType !== this.resourceTypes.newType
+    );
   }
 
   /**
@@ -686,7 +715,9 @@ export class ResourceDifference implements IDifference<Resource> {
     }
     // Check the Type first
     if (this.resourceTypes.oldType !== this.resourceTypes.newType) {
-      if (this.resourceTypes.oldType === undefined) { return ResourceImpact.WILL_CREATE; }
+      if (this.resourceTypes.oldType === undefined) {
+        return ResourceImpact.WILL_CREATE;
+      }
       if (this.resourceTypes.newType === undefined) {
         return this.oldValue!.DeletionPolicy === 'Retain'
           ? ResourceImpact.WILL_ORPHAN
@@ -697,10 +728,13 @@ export class ResourceDifference implements IDifference<Resource> {
 
     // Base impact (before we mix in the worst of the property impacts);
     // WILL_UPDATE if we have "other" changes, NO_CHANGE if there are no "other" changes.
-    const baseImpact = Object.keys(this.otherChanges).length > 0 ? ResourceImpact.WILL_UPDATE : ResourceImpact.NO_CHANGE;
+    const baseImpact =
+      Object.keys(this.otherChanges).length > 0
+        ? ResourceImpact.WILL_UPDATE
+        : ResourceImpact.NO_CHANGE;
 
     return Object.values(this.propertyDiffs)
-      .map(elt => elt.changeImpact)
+      .map((elt) => elt.changeImpact)
       .reduce(worstImpact, baseImpact);
   }
 
@@ -708,14 +742,19 @@ export class ResourceDifference implements IDifference<Resource> {
    * Count of actual differences (not of elements)
    */
   public get differenceCount(): number {
-    return Object.values(this.propertyUpdates).length
-      + Object.values(this.otherChanges).length;
+    return Object.values(this.propertyUpdates).length + Object.values(this.otherChanges).length;
   }
 
   /**
    * Invoke a callback for each actual difference
    */
-  public forEachDifference(cb: (type: 'Property' | 'Other', name: string, value: Difference<any> | PropertyDifference<any>) => any) {
+  public forEachDifference(
+    cb: (
+      type: 'Property' | 'Other',
+      name: string,
+      value: Difference<any> | PropertyDifference<any>
+    ) => any
+  ) {
     for (const key of Object.keys(this.propertyUpdates).sort()) {
       cb('Property', key, this.propertyUpdates[key]);
     }
@@ -732,7 +771,7 @@ export function isPropertyDifference<T>(diff: Difference<T>): diff is PropertyDi
 /**
  * Filter a map of IDifferences down to only retain the actual changes
  */
-function onlyChanges<V, T extends IDifference<V>>(xs: {[key: string]: T}): {[key: string]: T} {
+function onlyChanges<V, T extends IDifference<V>>(xs: { [key: string]: T }): { [key: string]: T } {
   const ret: { [key: string]: T } = {};
   for (const [key, diff] of Object.entries(xs)) {
     if (diff.isDifferent) {

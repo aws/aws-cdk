@@ -7,7 +7,14 @@ import { Annotations } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
-import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
+import {
+  CatchProps,
+  IChainable,
+  INextable,
+  ProcessorConfig,
+  ProcessorMode,
+  RetryProps,
+} from '../types';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
@@ -113,7 +120,7 @@ export class DistributedMap extends MapBase implements INextable {
    * Return whether the given object is a DistributedMap.
    */
   public static isDistributedMap(x: any): x is DistributedMap {
-    return x !== null && typeof (x) === 'object' && DISTRIBUTED_MAP_SYMBOL in x;
+    return x !== null && typeof x === 'object' && DISTRIBUTED_MAP_SYMBOL in x;
   }
 
   private readonly mapExecutionType?: StateMachineType;
@@ -155,15 +162,22 @@ export class DistributedMap extends MapBase implements INextable {
     }
 
     if (this.toleratedFailurePercentage && this.toleratedFailurePercentagePath) {
-      errors.push('Provide either `toleratedFailurePercentage` or `toleratedFailurePercentagePath`, but not both');
+      errors.push(
+        'Provide either `toleratedFailurePercentage` or `toleratedFailurePercentagePath`, but not both'
+      );
     }
 
-    if (this.toleratedFailurePercentage && !(this.toleratedFailurePercentage >= 0 && this.toleratedFailurePercentage <= 100)) {
+    if (
+      this.toleratedFailurePercentage &&
+      !(this.toleratedFailurePercentage >= 0 && this.toleratedFailurePercentage <= 100)
+    ) {
       errors.push('toleratedFailurePercentage must be between 0 and 100');
     }
 
     if (this.toleratedFailureCount && this.toleratedFailureCountPath) {
-      errors.push('Provide either `toleratedFailureCount` or `toleratedFailureCountPath`, but not both');
+      errors.push(
+        'Provide either `toleratedFailureCount` or `toleratedFailureCountPath`, but not both'
+      );
     }
 
     if (this.itemBatcher) {
@@ -179,7 +193,8 @@ export class DistributedMap extends MapBase implements INextable {
         errors.push('label must be 40 characters or less');
       }
 
-      let labelRegex = /[\s\?\*\<\>\{\}\\[\]\:\;\,\|\^\~\$\#\%\&\`\"]|[\u0000-\u001f]|[\u007f-\u009f]/gi;
+      let labelRegex =
+        /[\s\?\*\<\>\{\}\\[\]\:\;\,\|\^\~\$\#\%\&\`\"]|[\u0000-\u001f]|[\u007f-\u009f]/gi;
       if (labelRegex.test(this.label)) {
         errors.push('label cannot contain any whitespace or special characters');
       }
@@ -191,12 +206,12 @@ export class DistributedMap extends MapBase implements INextable {
   protected whenBoundToGraph(graph: StateGraph) {
     super.whenBoundToGraph(graph);
     if (this.resultWriter) {
-      this.resultWriter.providePolicyStatements().forEach(policyStatement => {
+      this.resultWriter.providePolicyStatements().forEach((policyStatement) => {
         graph.registerPolicyStatement(policyStatement);
       });
     }
     if (this.itemReader) {
-      this.itemReader.providePolicyStatements().forEach(policyStatement => {
+      this.itemReader.providePolicyStatements().forEach((policyStatement) => {
         graph.registerPolicyStatement(policyStatement);
       });
     }
@@ -242,7 +257,10 @@ export class DistributedMap extends MapBase implements INextable {
   public toStateJson(): object {
     let rendered: any = super.toStateJson();
     if (rendered.ItemProcessor.ProcessorConfig.ExecutionType) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:propertyIgnored', 'Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-stepfunctions:propertyIgnored',
+        "Property 'ProcessorConfig.executionType' is ignored, use the 'mapExecutionType' in the 'DistributedMap' class instead."
+      );
     }
     rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
 
@@ -250,10 +268,16 @@ export class DistributedMap extends MapBase implements INextable {
       ...rendered,
       ...this.renderItemReader(),
       ...this.renderItemBatcher(),
-      ...(this.toleratedFailurePercentage && { ToleratedFailurePercentage: this.toleratedFailurePercentage }),
-      ...(this.toleratedFailurePercentagePath && { ToleratedFailurePercentagePath: this.toleratedFailurePercentagePath }),
+      ...(this.toleratedFailurePercentage && {
+        ToleratedFailurePercentage: this.toleratedFailurePercentage,
+      }),
+      ...(this.toleratedFailurePercentagePath && {
+        ToleratedFailurePercentagePath: this.toleratedFailurePercentagePath,
+      }),
       ...(this.toleratedFailureCount && { ToleratedFailureCount: this.toleratedFailureCount }),
-      ...(this.toleratedFailureCountPath && { ToleratedFailureCountPath: this.toleratedFailureCountPath }),
+      ...(this.toleratedFailureCountPath && {
+        ToleratedFailureCountPath: this.toleratedFailureCountPath,
+      }),
       ...(this.label && { Label: this.label }),
       ...this.renderResultWriter(),
     };
@@ -263,7 +287,9 @@ export class DistributedMap extends MapBase implements INextable {
    * Render the ItemReader as JSON object
    */
   private renderItemReader(): any {
-    if (!this.itemReader) { return undefined; }
+    if (!this.itemReader) {
+      return undefined;
+    }
 
     return FieldUtils.renderObject({
       ItemReader: this.itemReader.render(),
@@ -274,7 +300,9 @@ export class DistributedMap extends MapBase implements INextable {
    * Render ResultWriter in ASL JSON format
    */
   private renderResultWriter(): any {
-    if (!this.resultWriter) { return undefined; }
+    if (!this.resultWriter) {
+      return undefined;
+    }
 
     return FieldUtils.renderObject({
       ResultWriter: this.resultWriter.render(),
@@ -285,7 +313,9 @@ export class DistributedMap extends MapBase implements INextable {
    * Render ItemBatcher in ASL JSON format
    */
   private renderItemBatcher(): any {
-    if (!this.itemBatcher) { return undefined; }
+    if (!this.itemBatcher) {
+      return undefined;
+    }
 
     return {
       ItemBatcher: this.itemBatcher.render(),

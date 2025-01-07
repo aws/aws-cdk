@@ -136,20 +136,32 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Import an existing VirtualNode given an ARN
    */
-  public static fromVirtualNodeArn(scope: Construct, id: string, virtualNodeArn: string): IVirtualNode {
-    return new class extends VirtualNodeBase {
+  public static fromVirtualNodeArn(
+    scope: Construct,
+    id: string,
+    virtualNodeArn: string
+  ): IVirtualNode {
+    return new (class extends VirtualNodeBase {
       readonly virtualNodeArn = virtualNodeArn;
-      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualNodeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
+      private readonly parsedArn = cdk.Fn.split(
+        '/',
+        cdk.Stack.of(scope).splitArn(virtualNodeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME)
+          .resourceName!
+      );
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
       readonly virtualNodeName = cdk.Fn.select(2, this.parsedArn);
-    }(scope, id);
+    })(scope, id);
   }
 
   /**
    * Import an existing VirtualNode given its name
    */
-  public static fromVirtualNodeAttributes(scope: Construct, id: string, attrs: VirtualNodeAttributes): IVirtualNode {
-    return new class extends VirtualNodeBase {
+  public static fromVirtualNodeAttributes(
+    scope: Construct,
+    id: string,
+    attrs: VirtualNodeAttributes
+  ): IVirtualNode {
+    return new (class extends VirtualNodeBase {
       readonly mesh = attrs.mesh;
       readonly virtualNodeName = attrs.virtualNodeName;
       readonly virtualNodeArn = cdk.Stack.of(this).formatArn({
@@ -157,7 +169,7 @@ export class VirtualNode extends VirtualNodeBase {
         resource: `mesh/${attrs.mesh.meshName}/virtualNode`,
         resourceName: this.virtualNodeName,
       });
-    }(scope, id);
+    })(scope, id);
   }
 
   /**
@@ -182,14 +194,15 @@ export class VirtualNode extends VirtualNodeBase {
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
-      physicalName: props.virtualNodeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName:
+        props.virtualNodeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;
     this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);
 
-    props.backends?.forEach(backend => this.addBackend(backend));
-    props.listeners?.forEach(listener => this.addListener(listener));
+    props.backends?.forEach((backend) => this.addBackend(backend));
+    props.listeners?.forEach((listener) => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
@@ -198,18 +211,25 @@ export class VirtualNode extends VirtualNodeBase {
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
         backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: props.backendDefaults !== undefined
-          ? {
-            clientPolicy: {
-              tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy),
-            },
-          }
-          : undefined,
+        listeners: cdk.Lazy.any(
+          { produce: () => this.listeners.map((listener) => listener.listener) },
+          { omitEmptyArray: true }
+        ),
+        backendDefaults:
+          props.backendDefaults !== undefined
+            ? {
+                clientPolicy: {
+                  tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy),
+                },
+              }
+            : undefined,
         serviceDiscovery: renderServiceDiscovery(this.serviceDiscoveryConfig),
-        logging: accessLogging !== undefined ? {
-          accessLog: accessLogging.virtualNodeAccessLog,
-        } : undefined,
+        logging:
+          accessLogging !== undefined
+            ? {
+                accessLog: accessLogging.virtualNodeAccessLog,
+              }
+            : undefined,
       },
     });
 
@@ -233,7 +253,9 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public addListener(listener: VirtualNodeListener) {
     if (!this.serviceDiscoveryConfig) {
-      throw new Error('Service discovery information is required for a VirtualNode with a listener.');
+      throw new Error(
+        'Service discovery information is required for a VirtualNode with a listener.'
+      );
     }
     this.listeners.push(listener.bind(this));
   }
@@ -261,11 +283,13 @@ export interface VirtualNodeAttributes {
   readonly mesh: IMesh;
 }
 
-function renderServiceDiscovery(config?: ServiceDiscoveryConfig): CfnVirtualNode.ServiceDiscoveryProperty | undefined {
+function renderServiceDiscovery(
+  config?: ServiceDiscoveryConfig
+): CfnVirtualNode.ServiceDiscoveryProperty | undefined {
   return config
     ? {
-      dns: config?.dns,
-      awsCloudMap: config?.cloudmap,
-    }
+        dns: config?.dns,
+        awsCloudMap: config?.cloudmap,
+      }
     : undefined;
 }

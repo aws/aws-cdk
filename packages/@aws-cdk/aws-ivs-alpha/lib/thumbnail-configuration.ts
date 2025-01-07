@@ -49,7 +49,11 @@ export class ThumbnailConfiguration {
    * @param storage The format in which thumbnails are recorded for a stream. If you do not specify this property, `ThumbnailStorage.SEQUENTIAL` is set.
    * @param targetInterval The targeted thumbnail-generation interval. If you do not specify this property, `Duration.seconds(60)` is set.
    */
-  public static interval(resolution?: Resolution, storage?: Storage[], targetInterval?: Duration): ThumbnailConfiguration {
+  public static interval(
+    resolution?: Resolution,
+    storage?: Storage[],
+    targetInterval?: Duration
+  ): ThumbnailConfiguration {
     return new ThumbnailConfiguration(RecordingMode.INTERVAL, resolution, storage, targetInterval);
   }
 
@@ -63,20 +67,22 @@ export class ThumbnailConfiguration {
     public readonly recordingMode?: RecordingMode,
     public readonly resolution?: Resolution,
     public readonly storage?: Storage[],
-    public readonly targetInterval?: Duration,
+    public readonly targetInterval?: Duration
   ) {
-
     if (targetInterval === undefined || Token.isUnresolved(targetInterval)) {
       return;
     }
 
     if (targetInterval.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new Error(`\`targetInterval\` must be between 1 and 60 seconds, got ${targetInterval.toMilliseconds()} milliseconds.`);
+      throw new Error(
+        `\`targetInterval\` must be between 1 and 60 seconds, got ${targetInterval.toMilliseconds()} milliseconds.`
+      );
     }
 
     if (targetInterval.toSeconds() > 60) {
-      throw new Error(`\`targetInterval\` must be between 1 and 60 seconds, got ${targetInterval.toSeconds()} seconds.`);
+      throw new Error(
+        `\`targetInterval\` must be between 1 and 60 seconds, got ${targetInterval.toSeconds()} seconds.`
+      );
     }
   }
 }
-

@@ -44,7 +44,6 @@ export interface BuildFleetProps extends FleetProps {
  * @resource AWS::GameLift::Fleet
  */
 export class BuildFleet extends FleetBase implements IBuildFleet {
-
   /**
    * Import an existing fleet from its identifier.
    */
@@ -93,22 +92,30 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
 
     if (!cdk.Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length > 1024) {
-        throw new Error(`Fleet name can not be longer than 1024 characters but has ${props.fleetName.length} characters.`);
+        throw new Error(
+          `Fleet name can not be longer than 1024 characters but has ${props.fleetName.length} characters.`
+        );
       }
     }
 
     if (props.description && !cdk.Token.isUnresolved(props.description)) {
       if (props.description.length > 1024) {
-        throw new Error(`Fleet description can not be longer than 1024 characters but has ${props.description.length} characters.`);
+        throw new Error(
+          `Fleet description can not be longer than 1024 characters but has ${props.description.length} characters.`
+        );
       }
     }
 
     if (props.minSize && props.minSize < 0) {
-      throw new Error(`The minimum number of instances allowed in the Fleet cannot be lower than 0, given ${props.minSize}`);
+      throw new Error(
+        `The minimum number of instances allowed in the Fleet cannot be lower than 0, given ${props.minSize}`
+      );
     }
 
     if (props.maxSize && props.maxSize < 0) {
-      throw new Error(`The maximum number of instances allowed in the Fleet cannot be lower than 0, given ${props.maxSize}`);
+      throw new Error(
+        `The maximum number of instances allowed in the Fleet cannot be lower than 0, given ${props.maxSize}`
+      );
     }
 
     if (props.peerVpc) {
@@ -117,28 +124,35 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
 
     // Add all locations
     if (props.locations && props.locations?.length > 100) {
-      throw new Error(`No more than 100 locations are allowed per fleet, given ${props.locations.length}`);
+      throw new Error(
+        `No more than 100 locations are allowed per fleet, given ${props.locations.length}`
+      );
     }
     (props.locations || []).forEach(this.addInternalLocation.bind(this));
 
     // Add all Ingress rules
     if (props.ingressRules && props.ingressRules?.length > 50) {
-      throw new Error(`No more than 50 ingress rules are allowed per fleet, given ${props.ingressRules.length}`);
+      throw new Error(
+        `No more than 50 ingress rules are allowed per fleet, given ${props.ingressRules.length}`
+      );
     }
     (props.ingressRules || []).forEach(this.addInternalIngressRule.bind(this));
 
     this.content = props.content;
-    this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.CompositePrincipal(
-        new iam.ServicePrincipal('gamelift.amazonaws.com'),
-        new iam.ServicePrincipal('ec2.amazonaws.com')),
-    });
+    this.role =
+      props.role ??
+      new iam.Role(this, 'ServiceRole', {
+        assumedBy: new iam.CompositePrincipal(
+          new iam.ServicePrincipal('gamelift.amazonaws.com'),
+          new iam.ServicePrincipal('ec2.amazonaws.com')
+        ),
+      });
     this.grantPrincipal = this.role;
 
     const resource = new CfnFleet(this, 'Resource', {
       buildId: this.content.buildId,
       certificateConfiguration: {
-        certificateType: props.useCertificate ? 'GENERATED': 'DISABLED',
+        certificateType: props.useCertificate ? 'GENERATED' : 'DISABLED',
       },
       description: props.description,
       desiredEc2Instances: props.desiredCapacity,
@@ -150,7 +164,9 @@ export class BuildFleet extends FleetBase implements IBuildFleet {
       maxSize: props.maxSize ? props.maxSize : 1,
       minSize: props.minSize ? props.minSize : 0,
       name: this.physicalName,
-      newGameSessionProtectionPolicy: props.protectNewGameSession ? 'FullProtection' : 'NoProtection',
+      newGameSessionProtectionPolicy: props.protectNewGameSession
+        ? 'FullProtection'
+        : 'NoProtection',
       peerVpcAwsAccountId: props.peerVpc && props.peerVpc.env.account,
       peerVpcId: props.peerVpc && props.peerVpc.vpcId,
       resourceCreationLimitPolicy: this.parseResourceCreationLimitPolicy(props),

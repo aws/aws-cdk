@@ -21,7 +21,10 @@ export class NetworkListenerAction implements IListenerAction {
   /**
    * Forward to one or more Target Groups
    */
-  public static forward(targetGroups: INetworkTargetGroup[], options: NetworkForwardOptions = {}): NetworkListenerAction {
+  public static forward(
+    targetGroups: INetworkTargetGroup[],
+    options: NetworkForwardOptions = {}
+  ): NetworkListenerAction {
     if (targetGroups.length === 0) {
       throw new Error('Need at least one targetGroup in a NetworkListenerAction.forward()');
     }
@@ -36,11 +39,13 @@ export class NetworkListenerAction implements IListenerAction {
     return new TargetGroupListenerAction(targetGroups, {
       type: 'forward',
       forwardConfig: {
-        targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroupArn })),
-        targetGroupStickinessConfig: options.stickinessDuration ? {
-          durationSeconds: options.stickinessDuration.toSeconds(),
-          enabled: true,
-        } : undefined,
+        targetGroups: targetGroups.map((g) => ({ targetGroupArn: g.targetGroupArn })),
+        targetGroupStickinessConfig: options.stickinessDuration
+          ? {
+              durationSeconds: options.stickinessDuration.toSeconds(),
+              enabled: true,
+            }
+          : undefined,
       },
     });
   }
@@ -48,21 +53,32 @@ export class NetworkListenerAction implements IListenerAction {
   /**
    * Forward to one or more Target Groups which are weighted differently
    */
-  public static weightedForward(targetGroups: NetworkWeightedTargetGroup[], options: NetworkForwardOptions = {}): NetworkListenerAction {
+  public static weightedForward(
+    targetGroups: NetworkWeightedTargetGroup[],
+    options: NetworkForwardOptions = {}
+  ): NetworkListenerAction {
     if (targetGroups.length === 0) {
       throw new Error('Need at least one targetGroup in a NetworkListenerAction.weightedForward()');
     }
 
-    return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
-      type: 'forward',
-      forwardConfig: {
-        targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroup.targetGroupArn, weight: g.weight })),
-        targetGroupStickinessConfig: options.stickinessDuration ? {
-          durationSeconds: options.stickinessDuration.toSeconds(),
-          enabled: true,
-        } : undefined,
-      },
-    });
+    return new TargetGroupListenerAction(
+      targetGroups.map((g) => g.targetGroup),
+      {
+        type: 'forward',
+        forwardConfig: {
+          targetGroups: targetGroups.map((g) => ({
+            targetGroupArn: g.targetGroup.targetGroupArn,
+            weight: g.weight,
+          })),
+          targetGroupStickinessConfig: options.stickinessDuration
+            ? {
+                durationSeconds: options.stickinessDuration.toSeconds(),
+                enabled: true,
+              }
+            : undefined,
+        },
+      }
+    );
   }
 
   private _actionJson?: CfnListenerRule.ActionProperty;
@@ -74,22 +90,25 @@ export class NetworkListenerAction implements IListenerAction {
    * should be created by using one of the static factory functions,
    * but allow overriding to make sure we allow flexibility for the future.
    */
-  protected constructor(private readonly defaultActionJson: CfnListener.ActionProperty, protected readonly next?: NetworkListenerAction) {
-  }
+  protected constructor(
+    private readonly defaultActionJson: CfnListener.ActionProperty,
+    protected readonly next?: NetworkListenerAction
+  ) {}
 
   /**
    * Render the listener rule actions in this chain
    */
   public renderRuleActions(): CfnListenerRule.ActionProperty[] {
-    const actionJson = this._actionJson ?? this.defaultActionJson as CfnListenerRule.ActionProperty;
-    return this._renumber([actionJson, ...this.next?.renderRuleActions() ?? []]);
+    const actionJson =
+      this._actionJson ?? (this.defaultActionJson as CfnListenerRule.ActionProperty);
+    return this._renumber([actionJson, ...(this.next?.renderRuleActions() ?? [])]);
   }
 
   /**
    * Render the listener default actions in this chain
    */
   public renderActions(): CfnListener.ActionProperty[] {
-    return this._renumber([this.defaultActionJson, ...this.next?.renderActions() ?? []]);
+    return this._renumber([this.defaultActionJson, ...(this.next?.renderActions() ?? [])]);
   }
 
   /**
@@ -101,9 +120,14 @@ export class NetworkListenerAction implements IListenerAction {
     Array.isArray(listener);
   }
 
-  private _renumber<ActionProperty extends CfnListener.ActionProperty | CfnListenerRule.ActionProperty = CfnListener.ActionProperty>
-  (actions: ActionProperty[]): ActionProperty[] {
-    if (actions.length < 2) { return actions; }
+  private _renumber<
+    ActionProperty extends
+      | CfnListener.ActionProperty
+      | CfnListenerRule.ActionProperty = CfnListener.ActionProperty,
+  >(actions: ActionProperty[]): ActionProperty[] {
+    if (actions.length < 2) {
+      return actions;
+    }
 
     return actions.map((action, i) => ({ ...action, order: i + 1 }));
   }
@@ -159,7 +183,10 @@ export interface NetworkWeightedTargetGroup {
  * Listener Action that calls "registerListener" on TargetGroups
  */
 class TargetGroupListenerAction extends NetworkListenerAction {
-  constructor(private readonly targetGroups: INetworkTargetGroup[], defaultActionJson: CfnListener.ActionProperty) {
+  constructor(
+    private readonly targetGroups: INetworkTargetGroup[],
+    defaultActionJson: CfnListener.ActionProperty
+  ) {
     super(defaultActionJson);
   }
 

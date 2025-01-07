@@ -30,10 +30,9 @@ class TestSource implements ISource {
 
 new Pipe(stack, 'Pipe', {
   source: new TestSource(sourceQueue),
-  target: new SqsTarget(targetQueue,
-    {
-      inputTransformation: InputTransformation.fromEventPath('$.body'),
-    }),
+  target: new SqsTarget(targetQueue, {
+    inputTransformation: InputTransformation.fromEventPath('$.body'),
+  }),
 });
 
 const test = new IntegTest(app, 'integtest-pipe-target-sqs', {
@@ -46,17 +45,23 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: uniqueIdentifier,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
-  {
-    QueueUrl: targetQueue.queueUrl,
-  })).expect(ExpectedResult.objectLike({
-  Messages: [
-    {
-      Body: uniqueIdentifier,
-    },
-  ],
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(30),
-});
+putMessageOnQueue
+  .next(
+    test.assertions.awsApiCall('SQS', 'receiveMessage', {
+      QueueUrl: targetQueue.queueUrl,
+    })
+  )
+  .expect(
+    ExpectedResult.objectLike({
+      Messages: [
+        {
+          Body: uniqueIdentifier,
+        },
+      ],
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.seconds(30),
+  });
 
 app.synth();

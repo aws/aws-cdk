@@ -4,7 +4,6 @@ import { BaseKeyCondition, BeginsWith, Between, BinaryCondition } from './privat
  * Factory class for DynamoDB key conditions.
  */
 export class KeyCondition {
-
   /**
    * Condition k = arg, true if the key attribute k is equal to the Query argument
    */
@@ -54,7 +53,7 @@ export class KeyCondition {
     return new KeyCondition(new Between(keyName, arg1, arg2));
   }
 
-  private constructor(private readonly cond: BaseKeyCondition) { }
+  private constructor(private readonly cond: BaseKeyCondition) {}
 
   /**
    * Conjunction between two conditions.
@@ -83,7 +82,10 @@ export class KeyCondition {
  * Utility class representing the assigment of a value to an attribute.
  */
 export class Assign {
-  constructor(private readonly attr: string, private readonly arg: string) { }
+  constructor(
+    private readonly attr: string,
+    private readonly arg: string
+  ) {}
 
   /**
    * Renders the assignment as a VTL string.
@@ -105,7 +107,7 @@ export class Assign {
  * to a partition key.
  */
 export class PartitionKeyStep {
-  constructor(private readonly key: string) { }
+  constructor(private readonly key: string) {}
 
   /**
    * Assign an auto-generated value to the partition key.
@@ -127,7 +129,10 @@ export class PartitionKeyStep {
  * to a sort key.
  */
 export class SortKeyStep {
-  constructor(private readonly pkey: Assign, private readonly skey: string) { }
+  constructor(
+    private readonly pkey: Assign,
+    private readonly skey: string
+  ) {}
 
   /**
    * Assign an auto-generated value to the sort key.
@@ -156,7 +161,10 @@ export class PrimaryKey {
     return new PartitionKeyStep(key);
   }
 
-  constructor(protected readonly pkey: Assign, private readonly skey?: Assign) { }
+  constructor(
+    protected readonly pkey: Assign,
+    private readonly skey?: Assign
+  ) {}
 
   /**
    * Renders the key assignment to a VTL string.
@@ -193,7 +201,10 @@ export class PartitionKey extends PrimaryKey {
  * Specifies the attribute value assignments.
  */
 export class AttributeValues {
-  constructor(private readonly container: string, private readonly assignments: Assign[] = []) { }
+  constructor(
+    private readonly container: string,
+    private readonly assignments: Assign[] = []
+  ) {}
 
   /**
    * Allows assigning a value to the specified attribute.
@@ -207,7 +218,7 @@ export class AttributeValues {
    */
   public renderVariables(): string {
     return `#set($input = ${this.container})
-      ${this.assignments.map(a => a.putInMap('input')).join('\n')}`;
+      ${this.assignments.map((a) => a.putInMap('input')).join('\n')}`;
   }
 
   /**
@@ -222,7 +233,11 @@ export class AttributeValues {
  * Utility class to allow assigning a value to an attribute.
  */
 export class AttributeValuesStep {
-  constructor(private readonly attr: string, private readonly container: string, private readonly assignments: Assign[]) { }
+  constructor(
+    private readonly attr: string,
+    private readonly container: string,
+    private readonly assignments: Assign[]
+  ) {}
 
   /**
    * Assign the value to the current attribute.

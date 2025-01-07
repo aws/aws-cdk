@@ -5,17 +5,14 @@ import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
-const storageModeArray: msk.StorageMode[] = [
-  msk.StorageMode.TIERED,
-  msk.StorageMode.LOCAL,
-];
+const storageModeArray: msk.StorageMode[] = [msk.StorageMode.TIERED, msk.StorageMode.LOCAL];
 
 class KafkaStorageModeTest extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
     const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
-    storageModeArray.forEach(sMode => {
+    storageModeArray.forEach((sMode) => {
       const clusterMode = sMode.toLowerCase();
       new msk.Cluster(this, `storageMode${clusterMode}`, {
         clusterName: `${clusterMode}-cluster`,

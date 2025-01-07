@@ -21,7 +21,12 @@ import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import { BootstrapRole } from './bootstrap-roles';
-import { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
+import {
+  FileStagingLocation,
+  IStagingResources,
+  IStagingResourcesFactory,
+  ImageStagingLocation,
+} from './staging-stack';
 
 export const DEPLOY_TIME_PREFIX = 'deploy-time/';
 
@@ -172,7 +177,10 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
    * Return a factory that will create DefaultStagingStacks
    */
   public static factory(options: DefaultStagingStackOptions): IStagingResourcesFactory {
-    const appId = options.appId.toLocaleLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 20);
+    const appId = options.appId
+      .toLocaleLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .slice(0, 20);
     return {
       obtainStagingResources(stack, context) {
         const app = App.of(stack);
@@ -256,7 +264,11 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
   private readonly deployRoleArn?: string;
 
-  constructor(scope: App, id: string, private readonly props: DefaultStagingStackProps) {
+  constructor(
+    scope: App,
+    id: string,
+    private readonly props: DefaultStagingStackProps
+  ) {
     super(scope, id, {
       ...props,
       synthesizer: new BootstraplessSynthesizer(),
@@ -298,14 +310,11 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
       errors.push('appId only accepts lowercase characters.');
     }
     if (!/^[a-z0-9-]*$/.test(id)) {
-      errors.push('appId expects only letters, numbers, and dashes (\'-\')');
+      errors.push("appId expects only letters, numbers, and dashes ('-')");
     }
 
     if (errors.length > 0) {
-      throw new Error([
-        `appId ${id} has errors:`,
-        ...errors,
-      ].join('\n'));
+      throw new Error([`appId ${id} has errors:`, ...errors].join('\n'));
     }
     return id;
   }
@@ -373,7 +382,8 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
   }
 
   private getCreateBucket() {
-    const stagingBucketName = this.stagingBucketName ?? `cdk-${this.appId}-staging-${this.account}-${this.region}`;
+    const stagingBucketName =
+      this.stagingBucketName ?? `cdk-${this.appId}-staging-${this.account}-${this.region}`;
     const bucketId = 'CdkStagingBucket';
     const createdBucket = this.node.tryFindChild(bucketId) as s3.Bucket;
     if (createdBucket) {
@@ -390,12 +400,14 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     // Create the bucket once the dependencies have been created
     const bucket = new s3.Bucket(this, bucketId, {
       bucketName: stagingBucketName,
-      ...(this.autoDeleteStagingAssets ? {
-        removalPolicy: RemovalPolicy.DESTROY,
-        autoDeleteObjects: true,
-      } : {
-        removalPolicy: RemovalPolicy.RETAIN,
-      }),
+      ...(this.autoDeleteStagingAssets
+        ? {
+            removalPolicy: RemovalPolicy.DESTROY,
+            autoDeleteObjects: true,
+          }
+        : {
+            removalPolicy: RemovalPolicy.RETAIN,
+          }),
       encryption: this.stagingBucketEncryption,
       encryptionKey: key,
 
@@ -410,15 +422,13 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     }
 
     if (this.deployRoleArn) {
-      bucket.addToResourcePolicy(new iam.PolicyStatement({
-        actions: [
-          's3:GetObject*',
-          's3:GetBucket*',
-          's3:List*',
-        ],
-        resources: [bucket.bucketArn, bucket.arnForObjects('*')],
-        principals: [new iam.ArnPrincipal(this.deployRoleArn)],
-      }));
+      bucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          actions: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+          resources: [bucket.bucketArn, bucket.arnForObjects('*')],
+          principals: [new iam.ArnPrincipal(this.deployRoleArn)],
+        })
+      );
     }
 
     // Objects should never be overwritten, but let's make sure we have a lifecycle policy
@@ -440,7 +450,9 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
    */
   private getCreateRepo(asset: DockerImageAssetSource): string {
     if (!asset.assetName) {
-      throw new Error('Assets synthesized with AppScopedStagingSynthesizer must include an \'assetName\' in the asset source definition.');
+      throw new Error(
+        "Assets synthesized with AppScopedStagingSynthesizer must include an 'assetName' in the asset source definition."
+      );
     }
 
     // Create image publishing role if it doesn't exist
@@ -451,16 +463,20 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
       this.stagingRepos[asset.assetName] = new ecr.Repository(this, repoName, {
         repositoryName: repoName,
         imageTagMutability: ecr.TagMutability.IMMUTABLE,
-        lifecycleRules: [{
-          description: 'Garbage collect old image versions',
-          maxImageCount: this.props.imageAssetVersionCount ?? 3,
-        }],
-        ...(this.autoDeleteStagingAssets ? {
-          removalPolicy: RemovalPolicy.DESTROY,
-          emptyOnDelete: true,
-        } : {
-          removalPolicy: RemovalPolicy.RETAIN,
-        }),
+        lifecycleRules: [
+          {
+            description: 'Garbage collect old image versions',
+            maxImageCount: this.props.imageAssetVersionCount ?? 3,
+          },
+        ],
+        ...(this.autoDeleteStagingAssets
+          ? {
+              removalPolicy: RemovalPolicy.DESTROY,
+              emptyOnDelete: true,
+            }
+          : {
+              removalPolicy: RemovalPolicy.RETAIN,
+            }),
       });
 
       if (this.imageRole) {
@@ -509,7 +525,9 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     const outPath = path.join(builder.outdir, this.templateFile);
     const size = fs.statSync(outPath).size;
     if (size > 51200) {
-      throw new Error(`Staging resource template cannot be greater than 51200 bytes, but got ${size} bytes`);
+      throw new Error(
+        `Staging resource template cannot be greater than 51200 bytes, but got ${size} bytes`
+      );
     }
   }
 }

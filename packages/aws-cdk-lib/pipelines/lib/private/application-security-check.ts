@@ -61,15 +61,17 @@ export class ApplicationSecurityCheck extends Construct {
       timeout: Duration.minutes(5),
     });
 
-    this.preApproveLambda.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['codepipeline:GetPipelineState', 'codepipeline:PutApprovalResult'],
-      conditions: {
-        StringEquals: {
-          'aws:ResourceTag/SECURITY_CHECK': 'ALLOW_APPROVE',
+    this.preApproveLambda.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['codepipeline:GetPipelineState', 'codepipeline:PutApprovalResult'],
+        conditions: {
+          StringEquals: {
+            'aws:ResourceTag/SECURITY_CHECK': 'ALLOW_APPROVE',
+          },
         },
-      },
-      resources: ['*'],
-    }));
+        resources: ['*'],
+      })
+    );
 
     const invokeLambda =
       'aws lambda invoke' +
@@ -137,24 +139,23 @@ export class ApplicationSecurityCheck extends Construct {
           },
         },
         env: {
-          'exported-variables': [
-            'LINK',
-            'MESSAGE',
-          ],
+          'exported-variables': ['LINK', 'MESSAGE'],
         },
       }),
     });
 
     // this is needed to check the status the stacks when doing `cdk diff`
-    this.cdkDiffProject.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: ['*'],
-      conditions: {
-        'ForAnyValue:StringEquals': {
-          'iam:ResourceTag/aws-cdk:bootstrap-role': ['deploy'],
+    this.cdkDiffProject.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        resources: ['*'],
+        conditions: {
+          'ForAnyValue:StringEquals': {
+            'iam:ResourceTag/aws-cdk:bootstrap-role': ['deploy'],
+          },
         },
-      },
-    }));
+      })
+    );
 
     this.preApproveLambda.grantInvoke(this.cdkDiffProject);
   }

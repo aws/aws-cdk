@@ -19,31 +19,41 @@ const database = new glue.Database(stack, 'MyDatabase', {
   description: 'my_database_description',
 });
 
-const columns = [{
-  name: 'col1',
-  type: glue.Schema.STRING,
-}, {
-  name: 'col2',
-  type: glue.Schema.STRING,
-  comment: 'col2 comment',
-}, {
-  name: 'col3',
-  type: glue.Schema.array(glue.Schema.STRING),
-}, {
-  name: 'col4',
-  type: glue.Schema.map(glue.Schema.STRING, glue.Schema.STRING),
-}, {
-  name: 'col5',
-  type: glue.Schema.struct([{
+const columns = [
+  {
     name: 'col1',
     type: glue.Schema.STRING,
-  }]),
-}];
+  },
+  {
+    name: 'col2',
+    type: glue.Schema.STRING,
+    comment: 'col2 comment',
+  },
+  {
+    name: 'col3',
+    type: glue.Schema.array(glue.Schema.STRING),
+  },
+  {
+    name: 'col4',
+    type: glue.Schema.map(glue.Schema.STRING, glue.Schema.STRING),
+  },
+  {
+    name: 'col5',
+    type: glue.Schema.struct([
+      {
+        name: 'col1',
+        type: glue.Schema.STRING,
+      },
+    ]),
+  },
+];
 
-const partitionKeys = [{
-  name: 'year',
-  type: glue.Schema.SMALL_INT,
-}];
+const partitionKeys = [
+  {
+    name: 'year',
+    type: glue.Schema.SMALL_INT,
+  },
+];
 
 const avroTable = new glue.S3Table(stack, 'AVROTable', {
   database,

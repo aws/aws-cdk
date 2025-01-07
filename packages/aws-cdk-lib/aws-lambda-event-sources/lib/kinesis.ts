@@ -20,24 +20,31 @@ export class KinesisEventSource extends StreamEventSource {
   private _eventSourceMappingArn?: string = undefined;
   private startingPositionTimestamp?: number;
 
-  constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
+  constructor(
+    readonly stream: kinesis.IStream,
+    props: KinesisEventSourceProps
+  ) {
     super(props);
     this.startingPositionTimestamp = props.startingPositionTimestamp;
 
-    this.props.batchSize !== undefined && cdk.withResolved(this.props.batchSize, batchSize => {
-      if (batchSize < 1 || batchSize > 10000) {
-        throw new Error(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
-      }
-    });
+    this.props.batchSize !== undefined &&
+      cdk.withResolved(this.props.batchSize, (batchSize) => {
+        if (batchSize < 1 || batchSize > 10000) {
+          throw new Error(
+            `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`
+          );
+        }
+      });
   }
 
   public bind(target: lambda.IFunction) {
-    const eventSourceMapping = target.addEventSourceMapping(`KinesisEventSource:${cdk.Names.nodeUniqueId(this.stream.node)}`,
+    const eventSourceMapping = target.addEventSourceMapping(
+      `KinesisEventSource:${cdk.Names.nodeUniqueId(this.stream.node)}`,
       this.enrichMappingOptions({
         eventSourceArn: this.stream.streamArn,
         startingPositionTimestamp: this.startingPositionTimestamp,
         metricsConfig: this.props.metricsConfig,
-      }),
+      })
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
     this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;

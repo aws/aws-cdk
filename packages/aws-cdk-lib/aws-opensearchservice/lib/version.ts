@@ -112,16 +112,20 @@ export class EngineVersion {
    * Custom ElasticSearch version
    * @param version custom version number
    */
-  public static elasticsearch(version: string) { return new EngineVersion(`Elasticsearch_${version}`); }
+  public static elasticsearch(version: string) {
+    return new EngineVersion(`Elasticsearch_${version}`);
+  }
 
   /**
    * Custom OpenSearch version
    * @param version custom version number
    */
-  public static openSearch(version: string) { return new EngineVersion(`OpenSearch_${version}`); }
+  public static openSearch(version: string) {
+    return new EngineVersion(`OpenSearch_${version}`);
+  }
 
   /**
    * @param version engine version identifier
    */
-  private constructor(public readonly version: string) { }
+  private constructor(public readonly version: string) {}
 }

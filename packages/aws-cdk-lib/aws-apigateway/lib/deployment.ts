@@ -177,7 +177,8 @@ class LatestDeploymentResource extends CfnDeployment {
   private calculateLogicalId() {
     const hash = [...this.hashComponents];
 
-    if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
+    if (this.api instanceof RestApi || this.api instanceof SpecRestApi) {
+      // Ignore IRestApi that are imported
 
       // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
       const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
@@ -189,7 +190,12 @@ class LatestDeploymentResource extends CfnDeployment {
     // if hash components were added to the deployment, we use them to calculate
     // a logical ID for the deployment resource.
     if (hash.length > 0) {
-      lid += md5hash(hash.map(x => this.stack.resolve(x)).map(c => JSON.stringify(c)).join(''));
+      lid += md5hash(
+        hash
+          .map((x) => this.stack.resolve(x))
+          .map((c) => JSON.stringify(c))
+          .join('')
+      );
     }
 
     return lid;

@@ -3,7 +3,6 @@ import { BucketAttributes } from './bucket';
 import * as cdk from '../../core';
 
 export function parseBucketArn(construct: IConstruct, props: BucketAttributes): string {
-
   // if we have an explicit bucket ARN, use it.
   if (props.bucketArn) {
     return props.bucketArn;
@@ -23,8 +22,10 @@ export function parseBucketArn(construct: IConstruct, props: BucketAttributes): 
   throw new Error('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed');
 }
 
-export function parseBucketName(construct: IConstruct, props: BucketAttributes): string | undefined {
-
+export function parseBucketName(
+  construct: IConstruct,
+  props: BucketAttributes
+): string | undefined {
   // if we have an explicit bucket name, use it.
   if (props.bucketName) {
     return props.bucketName;
@@ -32,7 +33,8 @@ export function parseBucketName(construct: IConstruct, props: BucketAttributes):
 
   // extract bucket name from bucket arn
   if (props.bucketArn) {
-    return cdk.Stack.of(construct).splitArn(props.bucketArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resource;
+    return cdk.Stack.of(construct).splitArn(props.bucketArn, cdk.ArnFormat.SLASH_RESOURCE_NAME)
+      .resource;
   }
 
   // no bucket name is okay since it's optional.

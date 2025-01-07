@@ -9,20 +9,23 @@ class AcmCertificateAliasStack extends Stack {
     /// !show
     const s3BucketSource = new s3.Bucket(this, 'Bucket');
 
-    const distribution = new cloudfront.CloudFrontWebDistribution(this, 'AnAmazingWebsiteProbably', {
-      originConfigs: [{
-        s3OriginSource: { s3BucketSource },
-        behaviors: [{ isDefaultBehavior: true }],
-      }],
-      viewerCertificate: cloudfront.ViewerCertificate.fromIamCertificate(
-        'certificateId',
-        {
+    const distribution = new cloudfront.CloudFrontWebDistribution(
+      this,
+      'AnAmazingWebsiteProbably',
+      {
+        originConfigs: [
+          {
+            s3OriginSource: { s3BucketSource },
+            behaviors: [{ isDefaultBehavior: true }],
+          },
+        ],
+        viewerCertificate: cloudfront.ViewerCertificate.fromIamCertificate('certificateId', {
           aliases: ['example.com'],
           securityPolicy: cloudfront.SecurityPolicyProtocol.SSL_V3, // default
           sslMethod: cloudfront.SSLMethod.SNI, // default
-        },
-      ),
-    });
+        }),
+      }
+    );
     /// !hide
 
     Array.isArray(s3BucketSource);

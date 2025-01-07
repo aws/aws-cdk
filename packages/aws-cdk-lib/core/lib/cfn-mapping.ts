@@ -53,14 +53,14 @@ export class CfnMapping extends CfnRefElement {
    * Sets a value in the map based on the two keys.
    */
   public setValue(key1: string, key2: string, value: any) {
-    if ([key1, key2].some(k => ['__proto__', 'constructor'].includes(k))) {
-      throw new Error('Cannot use \'__proto__\' or \'constructor\' as keys');
+    if ([key1, key2].some((k) => ['__proto__', 'constructor'].includes(k))) {
+      throw new Error("Cannot use '__proto__' or 'constructor' as keys");
     }
 
     this.validateAlphanumeric(key2);
 
     if (!(key1 in this.mapping)) {
-      this.mapping[key1] = { };
+      this.mapping[key1] = {};
     }
 
     this.mapping[key1][key2] = value;
@@ -125,7 +125,9 @@ export class CfnMapping extends CfnRefElement {
 
   private informLazyUse() {
     if (!this.lazyInformed) {
-      Annotations.of(this).addInfo('Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap');
+      Annotations.of(this).addInfo(
+        'Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap'
+      );
     }
     this.lazyInformed = true;
   }
@@ -146,11 +148,13 @@ export class CfnMapping extends CfnRefElement {
 class CfnMappingEmbedder implements IResolvable {
   readonly creationStack: string[] = [];
 
-  constructor(private readonly cfnMapping: CfnMapping,
+  constructor(
+    private readonly cfnMapping: CfnMapping,
     readonly mapping: Mapping,
     private readonly key1: string,
     private readonly key2: string,
-    private readonly defaultValue?: string) { }
+    private readonly defaultValue?: string
+  ) {}
 
   public resolve(context: IResolveContext): string {
     const consumingStack = Stack.of(context.scope);

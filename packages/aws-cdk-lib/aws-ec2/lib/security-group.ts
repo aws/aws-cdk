@@ -5,12 +5,23 @@ import { IPeer, Peer } from './peer';
 import { Port } from './port';
 import { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
+import {
+  Annotations,
+  ContextProvider,
+  IResource,
+  Lazy,
+  Names,
+  Resource,
+  ResourceProps,
+  Stack,
+  Token,
+} from '../../core';
 import * as cxapi from '../../cx-api';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
-const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY = '@aws-cdk/aws-ec2.securityGroupDisableInlineRules';
+const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY =
+  '@aws-cdk/aws-ec2.securityGroupDisableInlineRules';
 
 /**
  * Interface for security group-like objects
@@ -178,15 +189,18 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     peer: IPeer,
     connection: Port,
     fromTo: 'from' | 'to',
-    remoteRule?: boolean): RuleScope {
-
+    remoteRule?: boolean
+  ): RuleScope {
     if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(this, peer)) {
       // Reversed
       const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
       return { scope: peer, id: `${this.uniqueId}:${connection} ${reversedFromTo}` };
     } else {
       // Regular (do old ID escaping to in order to not disturb existing deployments)
-      return { scope: this, id: `${fromTo} ${this.renderPeer(peer)}:${connection}`.replace('/', '_') };
+      return {
+        scope: this,
+        id: `${fromTo} ${this.renderPeer(peer)}:${connection}`.replace('/', '_'),
+      };
     }
   }
 
@@ -195,7 +209,9 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       // Need to return a unique value each time a peer
       // is an unresolved token, else the duplicate skipper
       // in `sg.addXxxRule` can detect unique rules as duplicates
-      return this.peerAsTokenCount++ ? `'{IndirectPeer${this.peerAsTokenCount}}'` : '{IndirectPeer}';
+      return this.peerAsTokenCount++
+        ? `'{IndirectPeer${this.peerAsTokenCount}}'`
+        : '{IndirectPeer}';
     } else {
       return peer.uniqueId;
     }
@@ -383,7 +399,12 @@ export class SecurityGroup extends SecurityGroupBase {
   /**
    * Look up a security group by name.
    */
-  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc) {
+  public static fromLookupByName(
+    scope: Construct,
+    id: string,
+    securityGroupName: string,
+    vpc: IVpc
+  ) {
     return this.fromLookupAttributes(scope, id, { securityGroupName, vpc });
   }
 
@@ -397,13 +418,23 @@ export class SecurityGroup extends SecurityGroupBase {
    * If your existing Security Group needs to have egress rules added, pass the
    * `allowAllOutbound: false` option on import.
    */
-  public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string, options: SecurityGroupImportOptions = {}): ISecurityGroup {
+  public static fromSecurityGroupId(
+    scope: Construct,
+    id: string,
+    securityGroupId: string,
+    options: SecurityGroupImportOptions = {}
+  ): ISecurityGroup {
     class MutableImport extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
       public allowAllOutbound = options.allowAllOutbound ?? true;
       public allowAllIpv6Outbound = options.allowAllIpv6Outbound ?? false;
 
-      public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
+      public addEgressRule(
+        peer: IPeer,
+        connection: Port,
+        description?: string,
+        remoteRule?: boolean
+      ) {
         // Only if allowAllOutbound has been disabled
         if (options.allowAllOutbound === false) {
           super.addEgressRule(peer, connection, description, remoteRule);
@@ -416,11 +447,21 @@ export class SecurityGroup extends SecurityGroupBase {
       public allowAllOutbound = options.allowAllOutbound ?? true;
       public allowAllIpv6Outbound = options.allowAllIpv6Outbound ?? false;
 
-      public addEgressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
+      public addEgressRule(
+        _peer: IPeer,
+        _connection: Port,
+        _description?: string,
+        _remoteRule?: boolean
+      ) {
         // do nothing
       }
 
-      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
+      public addIngressRule(
+        _peer: IPeer,
+        _connection: Port,
+        _description?: string,
+        _remoteRule?: boolean
+      ) {
         // do nothing
       }
     }
@@ -433,8 +474,16 @@ export class SecurityGroup extends SecurityGroupBase {
   /**
    * Look up a security group.
    */
-  private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
-    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
+  private static fromLookupAttributes(
+    scope: Construct,
+    id: string,
+    options: SecurityGroupLookupOptions
+  ) {
+    if (
+      Token.isUnresolved(options.securityGroupId) ||
+      Token.isUnresolved(options.securityGroupName) ||
+      Token.isUnresolved(options.vpc?.vpcId)
+    ) {
       throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
     }
 
@@ -508,15 +557,22 @@ export class SecurityGroup extends SecurityGroupBase {
     this.allowAllOutbound = props.allowAllOutbound !== false;
     this.allowAllIpv6Outbound = props.allowAllIpv6Outbound ?? false;
 
-    this.disableInlineRules = props.disableInlineRules !== undefined ?
-      !!props.disableInlineRules :
-      !!this.node.tryGetContext(SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY);
+    this.disableInlineRules =
+      props.disableInlineRules !== undefined
+        ? !!props.disableInlineRules
+        : !!this.node.tryGetContext(SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY);
 
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.any({ produce: () => this.directIngressRules }, { omitEmptyArray: true } ),
-      securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true } ),
+      securityGroupIngress: Lazy.any(
+        { produce: () => this.directIngressRules },
+        { omitEmptyArray: true }
+      ),
+      securityGroupEgress: Lazy.any(
+        { produce: () => this.directEgressRules },
+        { omitEmptyArray: true }
+      ),
       vpcId: props.vpc.vpcId,
     });
 
@@ -552,8 +608,12 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:ipv4IgnoreEgressRule', 'Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup');
+      if (!remoteRule) {
+        // Warn only if addEgressRule() was explicitely called
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:ipv4IgnoreEgressRule',
+          "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+        );
       }
       return;
     } else if (!isIpv6 && !this.allowAllOutbound) {
@@ -567,8 +627,12 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllIpv6Outbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:ipv6IgnoreEgressRule', 'Ignoring Egress rule since \'allowAllIpv6Outbound\' is set to true; To add customized rules, set allowAllIpv6Outbound=false on the SecurityGroup');
+      if (!remoteRule) {
+        // Warn only if addEgressRule() was explicitely called
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:ipv6IgnoreEgressRule',
+          "Ignoring Egress rule since 'allowAllIpv6Outbound' is set to true; To add customized rules, set allowAllIpv6Outbound=false on the SecurityGroup"
+        );
       }
       return;
     }
@@ -594,7 +658,9 @@ export class SecurityGroup extends SecurityGroupBase {
       // to "allOutbound=true" mode, because we might have already emitted
       // EgressRule objects (which count as rules added later) and there's no way
       // to recall those. Better to prevent this for now.
-      throw new Error('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.');
+      throw new Error(
+        'Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.'
+      );
     }
 
     this.addDirectEgressRule(rule);
@@ -613,7 +679,7 @@ export class SecurityGroup extends SecurityGroupBase {
    * Return whether the given ingress rule exists on the group
    */
   private hasIngressRule(rule: CfnSecurityGroup.IngressProperty): boolean {
-    return this.directIngressRules.findIndex(r => ingressRulesEqual(r, rule)) > -1;
+    return this.directIngressRules.findIndex((r) => ingressRulesEqual(r, rule)) > -1;
   }
 
   /**
@@ -629,7 +695,7 @@ export class SecurityGroup extends SecurityGroupBase {
    * Return whether the given egress rule exists on the group
    */
   private hasEgressRule(rule: CfnSecurityGroup.EgressProperty): boolean {
-    return this.directEgressRules.findIndex(r => egressRulesEqual(r, rule)) > -1;
+    return this.directEgressRules.findIndex((r) => egressRulesEqual(r, rule)) > -1;
   }
 
   /**
@@ -650,10 +716,12 @@ export class SecurityGroup extends SecurityGroupBase {
     if (this.disableInlineRules) {
       const peer = this.allowAllOutbound ? ALL_TRAFFIC_PEER : NO_TRAFFIC_PEER;
       const port = this.allowAllOutbound ? ALL_TRAFFIC_PORT : NO_TRAFFIC_PORT;
-      const description = this.allowAllOutbound ? ALLOW_ALL_RULE.description : MATCH_NO_TRAFFIC.description;
+      const description = this.allowAllOutbound
+        ? ALLOW_ALL_RULE.description
+        : MATCH_NO_TRAFFIC.description;
       super.addEgressRule(peer, port, description, false);
     } else {
-      const rule = this.allowAllOutbound? ALLOW_ALL_RULE : MATCH_NO_TRAFFIC;
+      const rule = this.allowAllOutbound ? ALLOW_ALL_RULE : MATCH_NO_TRAFFIC;
       this.directEgressRules.push(rule);
     }
   }
@@ -688,15 +756,10 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   private removeNoTrafficRule() {
     if (this.disableInlineRules) {
-      const { scope, id } = this.determineRuleScope(
-        NO_TRAFFIC_PEER,
-        NO_TRAFFIC_PORT,
-        'to',
-        false,
-      );
+      const { scope, id } = this.determineRuleScope(NO_TRAFFIC_PEER, NO_TRAFFIC_PORT, 'to', false);
       scope.node.tryRemoveChild(id);
     } else {
-      const i = this.directEgressRules.findIndex(r => egressRulesEqual(r, MATCH_NO_TRAFFIC));
+      const i = this.directEgressRules.findIndex((r) => egressRulesEqual(r, MATCH_NO_TRAFFIC));
       if (i > -1) {
         this.directEgressRules.splice(i, 1);
       }
@@ -780,28 +843,35 @@ export interface ConnectionRule {
 /**
  * Compare two ingress rules for equality the same way CloudFormation would (discarding description)
  */
-function ingressRulesEqual(a: CfnSecurityGroup.IngressProperty, b: CfnSecurityGroup.IngressProperty) {
-  return a.cidrIp === b.cidrIp
-    && a.cidrIpv6 === b.cidrIpv6
-    && a.fromPort === b.fromPort
-    && a.toPort === b.toPort
-    && a.ipProtocol === b.ipProtocol
-    && a.sourceSecurityGroupId === b.sourceSecurityGroupId
-    && a.sourceSecurityGroupName === b.sourceSecurityGroupName
-    && a.sourceSecurityGroupOwnerId === b.sourceSecurityGroupOwnerId;
+function ingressRulesEqual(
+  a: CfnSecurityGroup.IngressProperty,
+  b: CfnSecurityGroup.IngressProperty
+) {
+  return (
+    a.cidrIp === b.cidrIp &&
+    a.cidrIpv6 === b.cidrIpv6 &&
+    a.fromPort === b.fromPort &&
+    a.toPort === b.toPort &&
+    a.ipProtocol === b.ipProtocol &&
+    a.sourceSecurityGroupId === b.sourceSecurityGroupId &&
+    a.sourceSecurityGroupName === b.sourceSecurityGroupName &&
+    a.sourceSecurityGroupOwnerId === b.sourceSecurityGroupOwnerId
+  );
 }
 
 /**
  * Compare two egress rules for equality the same way CloudFormation would (discarding description)
  */
 function egressRulesEqual(a: CfnSecurityGroup.EgressProperty, b: CfnSecurityGroup.EgressProperty) {
-  return a.cidrIp === b.cidrIp
-    && a.cidrIpv6 === b.cidrIpv6
-    && a.fromPort === b.fromPort
-    && a.toPort === b.toPort
-    && a.ipProtocol === b.ipProtocol
-    && a.destinationPrefixListId === b.destinationPrefixListId
-    && a.destinationSecurityGroupId === b.destinationSecurityGroupId;
+  return (
+    a.cidrIp === b.cidrIp &&
+    a.cidrIpv6 === b.cidrIpv6 &&
+    a.fromPort === b.fromPort &&
+    a.toPort === b.toPort &&
+    a.ipProtocol === b.ipProtocol &&
+    a.destinationPrefixListId === b.destinationPrefixListId &&
+    a.destinationSecurityGroupId === b.destinationSecurityGroupId
+  );
 }
 
 /**

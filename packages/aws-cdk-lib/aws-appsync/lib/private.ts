@@ -4,7 +4,10 @@
 export abstract class BaseKeyCondition {
   public and(cond: BaseKeyCondition): BaseKeyCondition {
     return new (class extends BaseKeyCondition {
-      constructor(private readonly left: BaseKeyCondition, private readonly right: BaseKeyCondition) {
+      constructor(
+        private readonly left: BaseKeyCondition,
+        private readonly right: BaseKeyCondition
+      ) {
         super();
       }
 
@@ -47,7 +50,10 @@ export abstract class BaseKeyCondition {
  * Utility class to represent DynamoDB "begins_with" key conditions.
  */
 export class BeginsWith extends BaseKeyCondition {
-  constructor(private readonly keyName: string, private readonly arg: string) {
+  constructor(
+    private readonly keyName: string,
+    private readonly arg: string
+  ) {
     super();
   }
 
@@ -68,7 +74,11 @@ export class BeginsWith extends BaseKeyCondition {
  * Utility class to represent DynamoDB binary key conditions.
  */
 export class BinaryCondition extends BaseKeyCondition {
-  constructor(private readonly keyName: string, private readonly op: string, private readonly arg: string) {
+  constructor(
+    private readonly keyName: string,
+    private readonly op: string,
+    private readonly arg: string
+  ) {
     super();
   }
 
@@ -89,7 +99,11 @@ export class BinaryCondition extends BaseKeyCondition {
  * Utility class to represent DynamoDB "between" key conditions.
  */
 export class Between extends BaseKeyCondition {
-  constructor(private readonly keyName: string, private readonly arg1: string, private readonly arg2: string) {
+  constructor(
+    private readonly keyName: string,
+    private readonly arg1: string,
+    private readonly arg2: string
+  ) {
     super();
   }
 

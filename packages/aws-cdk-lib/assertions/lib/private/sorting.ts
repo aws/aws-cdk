@@ -22,6 +22,6 @@ export function sortKeyComparator<A>(keyFn: (x: A) => Array<string | number>) {
       }
     }
 
-    return (bk.length - ak.length);
+    return bk.length - ak.length;
   };
 }

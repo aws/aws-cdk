@@ -138,7 +138,11 @@ export class JenkinsProvider extends BaseJenkinsProvider {
    * @param attrs the properties used to identify the existing provider
    * @returns a new Construct representing a reference to an existing Jenkins provider
    */
-  public static fromJenkinsProviderAttributes(scope: Construct, id: string, attrs: JenkinsProviderAttributes): IJenkinsProvider {
+  public static fromJenkinsProviderAttributes(
+    scope: Construct,
+    id: string,
+    attrs: JenkinsProviderAttributes
+  ): IJenkinsProvider {
     return new ImportedJenkinsProvider(scope, id, attrs);
   }
 
@@ -169,7 +173,10 @@ export class JenkinsProvider extends BaseJenkinsProvider {
       return;
     }
     this.buildIncluded = true;
-    this.registerJenkinsCustomAction('JenkinsBuildProviderResource', codepipeline.ActionCategory.BUILD);
+    this.registerJenkinsCustomAction(
+      'JenkinsBuildProviderResource',
+      codepipeline.ActionCategory.BUILD
+    );
   }
 
   /**
@@ -180,7 +187,10 @@ export class JenkinsProvider extends BaseJenkinsProvider {
       return;
     }
     this.testIncluded = true;
-    this.registerJenkinsCustomAction('JenkinsTestProviderResource', codepipeline.ActionCategory.TEST);
+    this.registerJenkinsCustomAction(
+      'JenkinsTestProviderResource',
+      codepipeline.ActionCategory.TEST
+    );
   }
 
   private registerJenkinsCustomAction(id: string, category: codepipeline.ActionCategory) {

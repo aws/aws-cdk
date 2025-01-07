@@ -36,7 +36,9 @@ const invoke = integ.assertions.invokeFunction({
   functionName: testCase.functionName,
 });
 
-invoke.expect(ExpectedResult.objectLike({
-  Payload: '200',
-}));
+invoke.expect(
+  ExpectedResult.objectLike({
+    Payload: '200',
+  })
+);
 app.synth();

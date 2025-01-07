@@ -92,7 +92,6 @@ export interface BaseTargetGroupProps {
  * Properties for configuring a health check
  */
 export interface HealthCheck {
-
   /**
    * Indicates whether health checks are enabled. If the target type is lambda,
    * health checks are disabled by default but can be enabled. If the target type
@@ -266,11 +265,17 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     super(scope, id);
 
     if (baseProps.deregistrationDelay !== undefined) {
-      this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toSeconds().toString());
+      this.setAttribute(
+        'deregistration_delay.timeout_seconds',
+        baseProps.deregistrationDelay.toSeconds().toString()
+      );
     }
 
     if (baseProps.crossZoneEnabled !== undefined) {
-      this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
+      this.setAttribute(
+        'load_balancing.cross_zone.enabled',
+        baseProps.crossZoneEnabled === true ? 'true' : 'false'
+      );
     }
 
     this.healthCheck = baseProps.healthCheck || {};
@@ -279,10 +284,16 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: cdk.Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
+      targetGroupAttributes: cdk.Lazy.any(
+        { produce: () => renderAttributes(this.attributes) },
+        { omitEmptyArray: true }
+      ),
       targetType: cdk.Lazy.string({ produce: () => this.targetType }),
       targets: cdk.Lazy.any({ produce: () => this.targetsJson }, { omitEmptyArray: true }),
-      vpcId: cdk.Lazy.string({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
+      vpcId: cdk.Lazy.string({
+        produce: () =>
+          this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined,
+      }),
 
       // HEALTH CHECK
       healthCheckEnabled: cdk.Lazy.any({ produce: () => this.healthCheck?.enabled }),
@@ -295,13 +306,21 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       healthCheckTimeoutSeconds: cdk.Lazy.number({
         produce: () => this.healthCheck?.timeout?.toSeconds(),
       }),
-      healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
-      unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
+      healthyThresholdCount: cdk.Lazy.number({
+        produce: () => this.healthCheck?.healthyThresholdCount,
+      }),
+      unhealthyThresholdCount: cdk.Lazy.number({
+        produce: () => this.healthCheck?.unhealthyThresholdCount,
+      }),
       matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
-          grpcCode: this.healthCheck.healthyGrpcCodes,
-          httpCode: this.healthCheck.healthyHttpCodes,
-        } : undefined,
+        produce: () =>
+          this.healthCheck?.healthyHttpCodes !== undefined ||
+          this.healthCheck?.healthyGrpcCodes !== undefined
+            ? {
+                grpcCode: this.healthCheck.healthyGrpcCodes,
+                httpCode: this.healthCheck.healthyHttpCodes,
+              }
+            : undefined,
       }),
       ipAddressType: baseProps.ipAddressType,
 
@@ -347,7 +366,9 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
     if (this.targetType !== undefined && this.targetType !== props.targetType) {
-      throw new Error(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`);
+      throw new Error(
+        `Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`
+      );
     }
     this.targetType = props.targetType;
 
@@ -364,7 +385,10 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     const ret = new Array<string>();
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {
-      cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup', "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
+      cdk.Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup',
+        "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future)."
+      );
     }
 
     if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
@@ -381,7 +405,9 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
         ret.push(`Target group name: "${targetGroupName}" must not begin or end with a hyphen.`);
       }
       if (!/^[0-9a-z-]+$/i.test(targetGroupName)) {
-        ret.push(`Target group name: "${targetGroupName}" must contain only alphanumeric characters or hyphens.`);
+        ret.push(
+          `Target group name: "${targetGroupName}" must contain only alphanumeric characters or hyphens.`
+        );
       }
     }
 
@@ -397,8 +423,10 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     if (intervalSeconds && timeoutSeconds) {
       if (intervalSeconds < timeoutSeconds) {
         // < instead of <= for backwards compatibility, see discussion in https://github.com/aws/aws-cdk/pull/26031
-        ret.push('Health check interval must be greater than or equal to the timeout; received interval ' +
-        `${intervalSeconds}, timeout ${timeoutSeconds}.`);
+        ret.push(
+          'Health check interval must be greater than or equal to the timeout; received interval ' +
+            `${intervalSeconds}, timeout ${timeoutSeconds}.`
+        );
       }
     }
     return ret;
@@ -432,8 +460,7 @@ export interface TargetGroupAttributes {
  *
  * @deprecated Use TargetGroupAttributes instead
  */
-export interface TargetGroupImportProps extends TargetGroupAttributes {
-}
+export interface TargetGroupImportProps extends TargetGroupAttributes {}
 
 /**
  * A target group

@@ -40,12 +40,12 @@ export class ApplicationListenerCertificate extends Construct {
     super(scope, id);
 
     if (!props.certificateArns && !props.certificates) {
-      throw new Error('At least one of \'certificateArns\' or \'certificates\' is required');
+      throw new Error("At least one of 'certificateArns' or 'certificates' is required");
     }
 
     const certificates = [
-      ...(props.certificates || []).map(c => ({ certificateArn: c.certificateArn })),
-      ...(props.certificateArns || []).map(certificateArn => ({ certificateArn })),
+      ...(props.certificates || []).map((c) => ({ certificateArn: c.certificateArn })),
+      ...(props.certificateArns || []).map((certificateArn) => ({ certificateArn })),
     ];
 
     new CfnListenerCertificate(this, 'Resource', {

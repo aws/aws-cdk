@@ -7,11 +7,11 @@ import { isRegionUnresolved, isAccountUnresolved } from '../private/utils';
 
 export interface StackAssociatorBaseProps {
   /**
-  * Indicates if the target Application should be shared with the cross-account stack owners and then
-  * associated with the cross-account stacks.
-  *
-  * @default - false
-  */
+   * Indicates if the target Application should be shared with the cross-account stack owners and then
+   * associated with the cross-account stacks.
+   *
+   * @default - false
+   */
   readonly associateCrossAccountStacks?: boolean;
 }
 
@@ -38,8 +38,14 @@ abstract class StackAssociatorBase implements IAspect {
       if (Stage.isStage(childNode)) {
         var stageAssociated = this.applicationAssociator?.isStageAssociated(childNode);
         if (stageAssociated === false) {
-          this.warning('StackNotAssociated', childNode, 'Associate Stage: ' + childNode.stageName + ' to ensure all stacks in your cdk app are associated with AppRegistry. '
-                        + 'You can use ApplicationAssociator.associateStage to associate any stage.');
+          this.warning(
+            'StackNotAssociated',
+            childNode,
+            'Associate Stage: ' +
+              childNode.stageName +
+              ' to ensure all stacks in your cdk app are associated with AppRegistry. ' +
+              'You can use ApplicationAssociator.associateStage to associate any stage.'
+          );
         }
       }
     });
@@ -57,9 +63,11 @@ abstract class StackAssociatorBase implements IAspect {
    * @param node A Stage stack.
    */
   private associate(node: Stack): void {
-    if (!isRegionUnresolved(this.application.env.region, node.region)
-      && node.account != this.application.env.account
-      && !this.associateCrossAccountStacks) {
+    if (
+      !isRegionUnresolved(this.application.env.region, node.region) &&
+      node.account != this.application.env.account &&
+      !this.associateCrossAccountStacks
+    ) {
       // Skip association when cross-account sharing/association is not enabled.
       // A warning will have been displayed as part of `handleCrossAccountStack()`.
       return;
@@ -87,13 +95,23 @@ abstract class StackAssociatorBase implements IAspect {
    */
   private handleCrossRegionStack(node: Stack): void {
     if (isRegionUnresolved(this.application.env.region, node.region)) {
-      this.warning('EnvironmentAgnosticStack', node, 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
+      this.warning(
+        'EnvironmentAgnosticStack',
+        node,
+        'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.'
+      );
       return;
     }
 
     if (node.region != this.application.env.region) {
-      this.warning('CrossRegionAssociation', node, 'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app. Application region '
-      + this.application.env.region + ', stack region ' + node.region);
+      this.warning(
+        'CrossRegionAssociation',
+        node,
+        'AppRegistry does not support cross region associations, deployment might fail if there is cross region stacks in the app. Application region ' +
+          this.application.env.region +
+          ', stack region ' +
+          node.region
+      );
     }
   }
 
@@ -106,7 +124,11 @@ abstract class StackAssociatorBase implements IAspect {
    */
   private handleCrossAccountStack(node: Stack): void {
     if (isAccountUnresolved(this.application.env.account!, node.account)) {
-      this.warning('EnvironmentAgnosticStack', node, 'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.');
+      this.warning(
+        'EnvironmentAgnosticStack',
+        node,
+        'Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack.'
+      );
       return;
     }
 
@@ -121,7 +143,11 @@ abstract class StackAssociatorBase implements IAspect {
 
         this.sharedAccounts.add(node.account);
       } else {
-        this.warning('AssociationSkipped', node, 'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.');
+        this.warning(
+          'AssociationSkipped',
+          node,
+          'Cross-account stack detected but application sharing and association will be skipped because cross-account option is not enabled.'
+        );
         return;
       }
     }

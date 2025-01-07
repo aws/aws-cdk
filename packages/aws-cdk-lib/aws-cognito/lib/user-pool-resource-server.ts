@@ -88,7 +88,11 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
   /**
    * Import a user pool resource client given its id.
    */
-  public static fromUserPoolResourceServerId(scope: Construct, id: string, userPoolResourceServerId: string): IUserPoolResourceServer {
+  public static fromUserPoolResourceServerId(
+    scope: Construct,
+    id: string,
+    userPoolResourceServerId: string
+  ): IUserPoolResourceServer {
     class Import extends Resource implements IUserPoolResourceServer {
       public readonly userPoolResourceServerId = userPoolResourceServerId;
     }

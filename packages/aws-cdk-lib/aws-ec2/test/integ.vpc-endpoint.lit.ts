@@ -25,11 +25,13 @@ class VpcEndpointStack extends cdk.Stack {
 
     // This allows to customize the endpoint policy
     dynamoDbEndpoint.addToPolicy(
-      new iam.PolicyStatement({ // Restrict to listing and describing tables
+      new iam.PolicyStatement({
+        // Restrict to listing and describing tables
         principals: [new iam.AnyPrincipal()],
         actions: ['dynamodb:DescribeTable', 'dynamodb:ListTables'],
         resources: ['*'],
-      }));
+      })
+    );
 
     // Add an interface endpoint
     vpc.addInterfaceEndpoint('EcrDockerEndpoint', {

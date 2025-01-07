@@ -55,7 +55,11 @@ export class StateMachineInput {
    */
   public readonly input: any;
 
-  private constructor(input: any, inputArtifact: codepipeline.Artifact | undefined, inputType: string) {
+  private constructor(
+    input: any,
+    inputArtifact: codepipeline.Artifact | undefined,
+    inputType: string
+  ) {
     this.input = input;
     this.inputArtifact = inputArtifact;
     this.inputType = inputType;
@@ -116,37 +120,50 @@ export class StepFunctionInvokeAction extends Action {
         minOutputs: 0,
         maxOutputs: 1,
       },
-      inputs: (props.stateMachineInput && props.stateMachineInput.inputArtifact) ? [props.stateMachineInput.inputArtifact] : [],
-      outputs: (props.output) ? [props.output] : [],
+      inputs:
+        props.stateMachineInput && props.stateMachineInput.inputArtifact
+          ? [props.stateMachineInput.inputArtifact]
+          : [],
+      outputs: props.output ? [props.output] : [],
     });
     this.props = props;
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     // allow pipeline to invoke this step function
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['states:StartExecution', 'states:DescribeStateMachine'],
-      resources: [this.props.stateMachine.stateMachineArn],
-    }));
+    options.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['states:StartExecution', 'states:DescribeStateMachine'],
+        resources: [this.props.stateMachine.stateMachineArn],
+      })
+    );
 
     // allow state machine executions to be inspected
-    const { account, region, partition, resourceName } = cdk.Stack.of(this.props.stateMachine)
-      .splitArn(this.props.stateMachine.stateMachineArn, cdk.ArnFormat.COLON_RESOURCE_NAME);
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['states:DescribeExecution'],
-      resources: [cdk.Stack.of(this.props.stateMachine).formatArn({
-        // Make sure we use the same account, region & partition as the state machine's ARN
-        account,
-        region,
-        partition,
-        // And now the real deal...
-        service: 'states',
-        resource: 'execution',
-        resourceName: `${resourceName}:${this.props.executionNamePrefix ?? ''}*`,
-        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-      })],
-    }));
+    const { account, region, partition, resourceName } = cdk.Stack.of(
+      this.props.stateMachine
+    ).splitArn(this.props.stateMachine.stateMachineArn, cdk.ArnFormat.COLON_RESOURCE_NAME);
+    options.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['states:DescribeExecution'],
+        resources: [
+          cdk.Stack.of(this.props.stateMachine).formatArn({
+            // Make sure we use the same account, region & partition as the state machine's ARN
+            account,
+            region,
+            partition,
+            // And now the real deal...
+            service: 'states',
+            resource: 'execution',
+            resourceName: `${resourceName}:${this.props.executionNamePrefix ?? ''}*`,
+            arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+          }),
+        ],
+      })
+    );
 
     // allow the Role access to the Bucket, if there are any inputs/outputs
     if ((this.actionProperties.inputs ?? []).length > 0) {

@@ -44,7 +44,6 @@ export interface KubernetesObjectValueProps {
    * @default Duration.minutes(5)
    */
   readonly timeout?: Duration;
-
 }
 
 /**
@@ -77,7 +76,6 @@ export class KubernetesObjectValue extends Construct {
         TimeoutSeconds: (props?.timeout ?? Duration.minutes(5)).toSeconds(),
       },
     });
-
   }
 
   /**

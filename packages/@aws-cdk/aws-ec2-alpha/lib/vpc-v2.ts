@@ -1,4 +1,10 @@
-import { CfnVPC, CfnVPCCidrBlock, DefaultInstanceTenancy, ISubnet, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import {
+  CfnVPC,
+  CfnVPCCidrBlock,
+  DefaultInstanceTenancy,
+  ISubnet,
+  SubnetType,
+} from 'aws-cdk-lib/aws-ec2';
 import { Arn, CfnResource, Lazy, Names, Resource, Tags } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamOptions, IIpamPool } from './ipam';
@@ -21,7 +27,6 @@ export interface SecondaryAddressProps {
  * IpAddress options to define VPC V2
  */
 export class IpAddresses {
-
   /**
    * An IPv4 CIDR Range
    */
@@ -46,7 +51,7 @@ export class IpAddresses {
   /**
    * Amazon Provided Ipv6 range
    */
-  public static amazonProvidedIpv6(props: SecondaryAddressProps) : IIpAddresses {
+  public static amazonProvidedIpv6(props: SecondaryAddressProps): IIpAddresses {
     return new AmazonProvided(props);
   }
 }
@@ -55,7 +60,6 @@ export class IpAddresses {
  * Consolidated return parameters to pass to VPC construct
  */
 export interface VpcCidrOptions {
-
   /**
    * IPv4 CIDR Block
    *
@@ -127,13 +131,11 @@ export interface VpcCidrOptions {
  * Implements ip address allocation according to the IPAdress type
  */
 export interface IIpAddresses {
-
   /**
    * Method to define the implementation logic of
    * IP address allocation
    */
-  allocateVpcCidr() : VpcCidrOptions;
-
+  allocateVpcCidr(): VpcCidrOptions;
 }
 
 /**
@@ -146,7 +148,6 @@ const NAME_TAG: string = 'Name';
  * [disable-awslint:from-method]
  */
 export interface VpcV2Props {
-
   /** A must IPv4 CIDR block for the VPC
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html
    *
@@ -201,7 +202,6 @@ export interface VpcV2Props {
  * Options to import a VPC created outside of CDK stack
  */
 export interface VpcV2Attributes {
-
   /**
    * The VPC ID
    * Refers to physical Id of the resource
@@ -264,17 +264,15 @@ export interface VpcV2Attributes {
  * @resource AWS::EC2::VPC
  */
 export class VpcV2 extends VpcV2Base {
-
   /**
    * Create a VPC from existing attributes
    */
   public static fromVpcV2Attributes(scope: Construct, id: string, attrs: VpcV2Attributes): IVpcV2 {
     /**
-    * Internal class to allow users to import VPC
-    * @internal
-    */
+     * Internal class to allow users to import VPC
+     * @internal
+     */
     class ImportedVpcV2 extends VpcV2Base {
-
       public readonly vpcId: string;
       public readonly vpcArn: string;
       public readonly publicSubnets: ISubnetV2[] = [];
@@ -288,14 +286,14 @@ export class VpcV2 extends VpcV2Base {
       private readonly _partition?: string;
 
       /*
-      * Reference to all secondary blocks attached
-      */
+       * Reference to all secondary blocks attached
+       */
       public readonly secondaryCidrBlock?: IVPCCidrBlock[];
 
       /**
-      * Refers to actual VPC Resource attribute in non-imported VPC
-      * Required to implement here due to extension from Base class
-      */
+       * Refers to actual VPC Resource attribute in non-imported VPC
+       * Required to implement here due to extension from Base class
+       */
       public readonly vpcCidrBlock: string;
 
       // Required to do CIDR range test on imported VPCs to create new subnets
@@ -303,18 +301,21 @@ export class VpcV2 extends VpcV2Base {
 
       constructor(construct: Construct, constructId: string, props: VpcV2Attributes) {
         super(construct, constructId);
-        this.vpcId = props.vpcId,
-        this.region = props.region ?? this.stack.region,
-        this.ownerAccountId = props.ownerAccountId ?? this.stack.account,
-        this._partition = region_info.RegionInfo.get(this.region).partition,
-        this.vpcArn = Arn.format({
-          service: 'ec2',
-          resource: 'vpc',
-          resourceName: this.vpcId,
-          region: this.region,
-          account: this.ownerAccountId,
-          partition: this._partition,
-        }, this.stack);
+        (this.vpcId = props.vpcId),
+          (this.region = props.region ?? this.stack.region),
+          (this.ownerAccountId = props.ownerAccountId ?? this.stack.account),
+          (this._partition = region_info.RegionInfo.get(this.region).partition),
+          (this.vpcArn = Arn.format(
+            {
+              service: 'ec2',
+              resource: 'vpc',
+              resourceName: this.vpcId,
+              region: this.region,
+              account: this.ownerAccountId,
+              partition: this._partition,
+            },
+            this.stack
+          ));
 
         // Populate region and account fields that can be used to set up peering connection
         // sample vpc Arn - arn:aws:ec2:us-west-2:123456789012:vpc/vpc-0123456789abcdef0
@@ -328,17 +329,47 @@ export class VpcV2 extends VpcV2Base {
 
         if (props.subnets) {
           for (const subnet of props.subnets) {
-            if (subnet.subnetType === SubnetType.PRIVATE_WITH_EGRESS || subnet.subnetType === SubnetType.PRIVATE_WITH_NAT ||
-              subnet.subnetType === SubnetType.PRIVATE) {
-              this.privateSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedPrivateSubnet', subnet));
+            if (
+              subnet.subnetType === SubnetType.PRIVATE_WITH_EGRESS ||
+              subnet.subnetType === SubnetType.PRIVATE_WITH_NAT ||
+              subnet.subnetType === SubnetType.PRIVATE
+            ) {
+              this.privateSubnets.push(
+                SubnetV2.fromSubnetV2Attributes(
+                  scope,
+                  subnet.subnetName ?? 'ImportedPrivateSubnet',
+                  subnet
+                )
+              );
             } else if (subnet.subnetType === SubnetType.PUBLIC) {
-              this.publicSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedPublicSubnet', subnet));
-            } else if (subnet.subnetType === SubnetType.ISOLATED || subnet.subnetType === SubnetType.PRIVATE_ISOLATED) {
-              this.isolatedSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedIsolatedSubnet', subnet));
+              this.publicSubnets.push(
+                SubnetV2.fromSubnetV2Attributes(
+                  scope,
+                  subnet.subnetName ?? 'ImportedPublicSubnet',
+                  subnet
+                )
+              );
+            } else if (
+              subnet.subnetType === SubnetType.ISOLATED ||
+              subnet.subnetType === SubnetType.PRIVATE_ISOLATED
+            ) {
+              this.isolatedSubnets.push(
+                SubnetV2.fromSubnetV2Attributes(
+                  scope,
+                  subnet.subnetName ?? 'ImportedIsolatedSubnet',
+                  subnet
+                )
+              );
             }
           }
         }
-        this.secondaryCidrBlock = props.secondaryCidrBlocks?.map(cidrBlock => VPCCidrBlock.fromVPCCidrBlockattributes(scope, cidrBlock.cidrBlockName ?? 'ImportedSecondaryCidrBlock', { ...cidrBlock }));
+        this.secondaryCidrBlock = props.secondaryCidrBlocks?.map((cidrBlock) =>
+          VPCCidrBlock.fromVPCCidrBlockattributes(
+            scope,
+            cidrBlock.cidrBlockName ?? 'ImportedSecondaryCidrBlock',
+            { ...cidrBlock }
+          )
+        );
         if (props.secondaryCidrBlocks) {
           for (const cidrBlock of props.secondaryCidrBlocks) {
             if (cidrBlock.ipv4IpamProvisionedCidrs) {
@@ -415,7 +446,7 @@ export class VpcV2 extends VpcV2Base {
   /**
    * reference to all secondary blocks attached
    */
-  public readonly secondaryCidrBlock?: IVPCCidrBlock[] = new Array<IVPCCidrBlock>;
+  public readonly secondaryCidrBlock?: IVPCCidrBlock[] = new Array<IVPCCidrBlock>();
 
   /**
    * IPv4 CIDR provisioned using IPAM pool
@@ -453,9 +484,12 @@ export class VpcV2 extends VpcV2Base {
 
   constructor(scope: Construct, id: string, props: VpcV2Props = {}) {
     super(scope, id, {
-      physicalName: props.vpcName ?? Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
-      }),
+      physicalName:
+        props.vpcName ??
+        Lazy.string({
+          produce: () =>
+            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+        }),
     });
     this.vpcName = props.vpcName;
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
@@ -480,11 +514,14 @@ export class VpcV2 extends VpcV2Base {
     }
     this.ipv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
     this.vpcId = this.resource.attrVpcId;
-    this.vpcArn = Arn.format({
-      service: 'ec2',
-      resource: 'vpc',
-      resourceName: this.vpcId,
-    }, this.stack);
+    this.vpcArn = Arn.format(
+      {
+        service: 'ec2',
+        resource: 'vpc',
+        resourceName: this.vpcId,
+      },
+      this.stack
+    );
     this.region = this.stack.region;
     this.ownerAccountId = this.stack.account;
     //Add tag to the VPC with the name provided in properties
@@ -493,7 +530,6 @@ export class VpcV2 extends VpcV2Base {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
 
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
-
         const secondaryVpcOptions: VpcCidrOptions = secondaryAddressBlock.allocateVpcCidr();
         if (!secondaryVpcOptions.cidrBlockName) {
           throw new Error('Cidr Block Name is required to create secondary IP address');
@@ -504,7 +540,10 @@ export class VpcV2 extends VpcV2Base {
         }
         //validate CIDR ranges per RFC 1918
         if (secondaryVpcOptions.ipv4CidrBlock!) {
-          const ret = validateIpv4address(secondaryVpcOptions.ipv4CidrBlock, this.resource.cidrBlock);
+          const ret = validateIpv4address(
+            secondaryVpcOptions.ipv4CidrBlock,
+            this.resource.cidrBlock
+          );
           if (ret === false) {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
           }
@@ -534,17 +573,17 @@ export class VpcV2 extends VpcV2Base {
     /**
      * Empty array for isolated subnets
      */
-    this.isolatedSubnets = new Array<ISubnet>;
+    this.isolatedSubnets = new Array<ISubnet>();
 
     /**
      * Empty array for public subnets
      */
-    this.publicSubnets = new Array<ISubnet>;
+    this.publicSubnets = new Array<ISubnet>();
 
     /**
      * Empty array for private subnets
      */
-    this.privateSubnets = new Array<ISubnet>;
+    this.privateSubnets = new Array<ISubnet>();
 
     /**
      * Dependable that can be depended upon to force internet connectivity established on the VPC
@@ -557,9 +596,10 @@ export class VpcV2 extends VpcV2Base {
  * Supports assigning IPv4 address to VPC
  */
 class ipv4CidrAllocation implements IIpAddresses {
-
-  constructor(private readonly cidrBlock: string, private readonly props?: { cidrBlockName: string}) {
-  }
+  constructor(
+    private readonly cidrBlock: string,
+    private readonly props?: { cidrBlockName: string }
+  ) {}
 
   /**
    * @returns CIDR block provided by the user to set IPv4
@@ -584,7 +624,7 @@ class AmazonProvided implements IIpAddresses {
    * Amazon will automatically assign an IPv6 CIDR range from its pool of available addresses.
    */
 
-  constructor(private readonly props: { cidrBlockName: string}) {};
+  constructor(private readonly props: { cidrBlockName: string }) {}
 
   allocateVpcCidr(): VpcCidrOptions {
     return {
@@ -592,7 +632,6 @@ class AmazonProvided implements IIpAddresses {
       cidrBlockName: this.props.cidrBlockName,
     };
   }
-
 }
 
 /**
@@ -600,15 +639,13 @@ class AmazonProvided implements IIpAddresses {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html
  */
 class IpamIpv6 implements IIpAddresses {
-
-  constructor(private readonly props: IpamOptions) {
-  }
+  constructor(private readonly props: IpamOptions) {}
 
   allocateVpcCidr(): VpcCidrOptions {
     return {
       ipv6NetmaskLength: this.props.netmaskLength,
       ipv6IpamPool: this.props.ipamPool,
-      dependencies: this.props.ipamPool?.ipamCidrs.map(c => c as CfnResource),
+      dependencies: this.props.ipamPool?.ipamCidrs.map((c) => c as CfnResource),
       cidrBlockName: this.props.cidrBlockName,
     };
   }
@@ -619,11 +656,8 @@ class IpamIpv6 implements IIpAddresses {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html
  */
 class IpamIpv4 implements IIpAddresses {
-
-  constructor(private readonly props: IpamOptions) {
-  }
+  constructor(private readonly props: IpamOptions) {}
   allocateVpcCidr(): VpcCidrOptions {
-
     return {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,
@@ -640,7 +674,7 @@ export interface IVPCCidrBlock {
   /**
    * Amazon Provided Ipv6
    */
-  readonly amazonProvidedIpv6CidrBlock? : boolean;
+  readonly amazonProvidedIpv6CidrBlock?: boolean;
 
   /**
    * The secondary IPv4 CIDR Block
@@ -652,12 +686,12 @@ export interface IVPCCidrBlock {
   /**
    * IPAM pool for IPv6 address type
    */
-  readonly ipv6IpamPoolId ?: string;
+  readonly ipv6IpamPoolId?: string;
 
   /**
    * IPAM pool for IPv4 address type
    */
-  readonly ipv4IpamPoolId ?: string;
+  readonly ipv4IpamPoolId?: string;
 }
 
 /**
@@ -670,7 +704,7 @@ export interface VPCCidrBlockattributes {
    *
    * @default false
    */
-  readonly amazonProvidedIpv6CidrBlock? : boolean;
+  readonly amazonProvidedIpv6CidrBlock?: boolean;
 
   /**
    * The secondary IPv4 CIDR Block
@@ -680,10 +714,10 @@ export interface VPCCidrBlockattributes {
   readonly cidrBlock?: string;
 
   /**
-  * The secondary IPv4 CIDR Block
-  *
-  * @default - no CIDR block provided
-  */
+   * The secondary IPv4 CIDR Block
+   *
+   * @default - no CIDR block provided
+   */
   readonly cidrBlockName?: string;
 
   /**
@@ -705,14 +739,14 @@ export interface VPCCidrBlockattributes {
    *
    * @default - no IPAM pool Id provided for IPv6
    */
-  readonly ipv6IpamPoolId ?: string;
+  readonly ipv6IpamPoolId?: string;
 
   /**
    * IPAM pool for IPv4 address type
    *
    * @default - no IPAM pool Id provided for IPv4
    */
-  readonly ipv4IpamPoolId ?: string;
+  readonly ipv4IpamPoolId?: string;
 
   /**
    * IPv4 CIDR provisioned under pool
@@ -738,16 +772,19 @@ interface VPCCidrBlockProps extends VPCCidrBlockattributes {
  * @internal
  */
 class VPCCidrBlock extends Resource implements IVPCCidrBlock {
-
   /**
    * Import an existing VPC CIDR Block
    */
-  public static fromVPCCidrBlockattributes(scope: Construct, id: string, props: VPCCidrBlockattributes) : IVPCCidrBlock {
+  public static fromVPCCidrBlockattributes(
+    scope: Construct,
+    id: string,
+    props: VPCCidrBlockattributes
+  ): IVPCCidrBlock {
     class Import extends Resource implements IVPCCidrBlock {
       public readonly cidrBlock = props.cidrBlock;
-      public readonly amazonProvidedIpv6CidrBlock ?: boolean = props.amazonProvidedIpv6CidrBlock;
-      public readonly ipv6IpamPoolId ?: string = props.ipv6IpamPoolId;
-      public readonly ipv4IpamPoolId ?: string = props.ipv4IpamPoolId;
+      public readonly amazonProvidedIpv6CidrBlock?: boolean = props.amazonProvidedIpv6CidrBlock;
+      public readonly ipv6IpamPoolId?: string = props.ipv6IpamPoolId;
+      public readonly ipv4IpamPoolId?: string = props.ipv4IpamPoolId;
     }
     return new Import(scope, id);
   }
@@ -793,8 +830,8 @@ function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
     return false; // Handle cases where CIDR ranges are not provided
   }
 
-  const octetsCidr1: number[] = cidr1.split('.').map(octet => parseInt(octet, 10));
-  const octetsCidr2: number[] = cidr2.split('.').map(octet => parseInt(octet, 10));
+  const octetsCidr1: number[] = cidr1.split('.').map((octet) => parseInt(octet, 10));
+  const octetsCidr2: number[] = cidr2.split('.').map((octet) => parseInt(octet, 10));
 
   if (octetsCidr1.length !== 4 || octetsCidr2.length !== 4) {
     return false; // Handle invalid CIDR ranges
@@ -810,7 +847,9 @@ function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
     octet2: octetsCidr2[1],
   };
 
-  return (ip1.octet1 === 10 && ip2.octet1 === 10) ||
+  return (
+    (ip1.octet1 === 10 && ip2.octet1 === 10) ||
     (ip1.octet1 === 192 && ip1.octet2 === 168 && ip2.octet1 === 192 && ip2.octet2 === 168) ||
-    (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16); // CIDR ranges belong to same private IP address ranges
+    (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16)
+  ); // CIDR ranges belong to same private IP address ranges
 }

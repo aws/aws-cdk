@@ -21,12 +21,15 @@ export class ScalableTableAttribute extends appscaling.BaseScalableAttribute {
   public scaleOnUtilization(props: UtilizationScalingProps) {
     if (props.targetUtilizationPercent < 10 || props.targetUtilizationPercent > 90) {
       // eslint-disable-next-line max-len
-      throw new RangeError(`targetUtilizationPercent for DynamoDB scaling must be between 10 and 90 percent, got: ${props.targetUtilizationPercent}`);
+      throw new RangeError(
+        `targetUtilizationPercent for DynamoDB scaling must be between 10 and 90 percent, got: ${props.targetUtilizationPercent}`
+      );
     }
     this.scalingPolicyCreated = true;
-    const predefinedMetric = this.props.dimension.indexOf('ReadCapacity') === -1
-      ? appscaling.PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION
-      : appscaling.PredefinedMetric.DYNAMODB_READ_CAPACITY_UTILIZATION;
+    const predefinedMetric =
+      this.props.dimension.indexOf('ReadCapacity') === -1
+        ? appscaling.PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION
+        : appscaling.PredefinedMetric.DYNAMODB_READ_CAPACITY_UTILIZATION;
 
     super.doScaleToTrackMetric('Tracking', {
       policyName: props.policyName,

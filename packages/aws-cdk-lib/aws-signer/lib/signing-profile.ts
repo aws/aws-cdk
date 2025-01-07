@@ -10,7 +10,9 @@ export class Platform {
   /**
    * Specification of signature format and signing algorithms for AWS IoT Device.
    */
-  public static readonly AWS_IOT_DEVICE_MANAGEMENT_SHA256_ECDSA = Platform.of('AWSIoTDeviceManagement-SHA256-ECDSA');
+  public static readonly AWS_IOT_DEVICE_MANAGEMENT_SHA256_ECDSA = Platform.of(
+    'AWSIoTDeviceManagement-SHA256-ECDSA'
+  );
 
   /**
    * Specification of signature format and signing algorithms for AWS Lambda.
@@ -138,7 +140,11 @@ export class SigningProfile extends Resource implements ISigningProfile {
    * @param id The construct's name.
    * @param attrs A `SigningProfileAttributes` object.
    */
-  public static fromSigningProfileAttributes( scope: Construct, id: string, attrs: SigningProfileAttributes): ISigningProfile {
+  public static fromSigningProfileAttributes(
+    scope: Construct,
+    id: string,
+    attrs: SigningProfileAttributes
+  ): ISigningProfile {
     class Import extends Resource implements ISigningProfile {
       public readonly signingProfileArn: string;
       public readonly signingProfileName = attrs.signingProfileName;
@@ -174,16 +180,18 @@ export class SigningProfile extends Resource implements ISigningProfile {
       physicalName: props.signingProfileName,
     });
 
-    const resource = new CfnSigningProfile( this, 'Resource', {
+    const resource = new CfnSigningProfile(this, 'Resource', {
       platformId: props.platform.platformId,
-      signatureValidityPeriod: props.signatureValidity ? {
-        type: 'DAYS',
-        value: props.signatureValidity?.toDays(),
-      } : {
-        type: 'MONTHS',
-        value: 135,
-      },
-    } );
+      signatureValidityPeriod: props.signatureValidity
+        ? {
+            type: 'DAYS',
+            value: props.signatureValidity?.toDays(),
+          }
+        : {
+            type: 'MONTHS',
+            value: 135,
+          },
+    });
 
     this.signingProfileArn = resource.attrArn;
     this.signingProfileName = resource.attrProfileName;

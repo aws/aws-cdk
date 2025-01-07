@@ -23,7 +23,6 @@ export enum ComputePlatform {
  * IResource represents a Profiling Group.
  */
 export interface IProfilingGroup extends IResource {
-
   /**
    * The name of the profiling group.
    *
@@ -61,11 +60,9 @@ export interface IProfilingGroup extends IResource {
    * @param grantee Principal to grant read rights to
    */
   grantRead(grantee: IGrantable): Grant;
-
 }
 
 abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
-
   public abstract readonly profilingGroupName: string;
 
   public abstract readonly profilingGroupArn: string;
@@ -107,14 +104,12 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
       resourceArns: [this.profilingGroupArn],
     });
   }
-
 }
 
 /**
  * Properties for creating a new Profiling Group.
  */
 export interface ProfilingGroupProps {
-
   /**
    * A name for the profiling group.
    * @default - automatically generated name.
@@ -127,14 +122,12 @@ export interface ProfilingGroupProps {
    * @default ComputePlatform.DEFAULT
    */
   readonly computePlatform?: ComputePlatform;
-
 }
 
 /**
  * A new Profiling Group.
  */
 export class ProfilingGroup extends ProfilingGroupBase {
-
   /**
    * Import an existing Profiling Group provided a Profiling Group Name.
    *
@@ -142,14 +135,22 @@ export class ProfilingGroup extends ProfilingGroupBase {
    * @param id The construct's name
    * @param profilingGroupName Profiling Group Name
    */
-  public static fromProfilingGroupName(scope: Construct, id: string, profilingGroupName: string): IProfilingGroup {
+  public static fromProfilingGroupName(
+    scope: Construct,
+    id: string,
+    profilingGroupName: string
+  ): IProfilingGroup {
     const stack = Stack.of(scope);
 
-    return this.fromProfilingGroupArn(scope, id, stack.formatArn({
-      service: 'codeguru-profiler',
-      resource: 'profilingGroup',
-      resourceName: profilingGroupName,
-    }));
+    return this.fromProfilingGroupArn(
+      scope,
+      id,
+      stack.formatArn({
+        service: 'codeguru-profiler',
+        resource: 'profilingGroup',
+        resourceName: profilingGroupName,
+      })
+    );
   }
 
   /**
@@ -159,9 +160,16 @@ export class ProfilingGroup extends ProfilingGroupBase {
    * @param id The construct's name
    * @param profilingGroupArn Profiling Group ARN
    */
-  public static fromProfilingGroupArn(scope: Construct, id: string, profilingGroupArn: string): IProfilingGroup {
+  public static fromProfilingGroupArn(
+    scope: Construct,
+    id: string,
+    profilingGroupArn: string
+  ): IProfilingGroup {
     class Import extends ProfilingGroupBase {
-      public readonly profilingGroupName = Stack.of(scope).splitArn(profilingGroupArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+      public readonly profilingGroupName = Stack.of(scope).splitArn(
+        profilingGroupArn,
+        ArnFormat.SLASH_RESOURCE_NAME
+      ).resourceName!;
       public readonly profilingGroupArn = profilingGroupArn;
     }
 
@@ -186,7 +194,8 @@ export class ProfilingGroup extends ProfilingGroupBase {
 
   constructor(scope: Construct, id: string, props: ProfilingGroupProps = {}) {
     super(scope, id, {
-      physicalName: props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
+      physicalName:
+        props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
 
     const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {
@@ -210,5 +219,4 @@ export class ProfilingGroup extends ProfilingGroupBase {
     }
     return name;
   }
-
 }

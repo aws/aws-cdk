@@ -4,8 +4,15 @@ import { HealthCheck } from './health-checks';
 import { ListenerTlsOptions } from './listener-tls-options';
 import { ConnectionPoolConfig, renderListenerTlsOptions } from './private/utils';
 import {
-  GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
-  HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
+  GrpcConnectionPool,
+  GrpcTimeout,
+  Http2ConnectionPool,
+  HttpConnectionPool,
+  HttpTimeout,
+  OutlierDetection,
+  Protocol,
+  TcpConnectionPool,
+  TcpTimeout,
 } from './shared-interfaces';
 
 /**
@@ -64,7 +71,6 @@ interface CommonHttpVirtualNodeListenerOptions extends VirtualNodeListenerCommon
  * Represent the HTTP Node Listener property
  */
 export interface HttpVirtualNodeListenerOptions extends CommonHttpVirtualNodeListenerOptions {
-
   /**
    * Connection pool for http listeners
    *
@@ -131,32 +137,60 @@ export abstract class VirtualNodeListener {
    * Returns an HTTP Listener for a VirtualNode
    */
   public static http(props: HttpVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.HTTP, props.healthCheck, props.timeout, props.port, props.tls, props.outlierDetection,
-      props.connectionPool);
+    return new VirtualNodeListenerImpl(
+      Protocol.HTTP,
+      props.healthCheck,
+      props.timeout,
+      props.port,
+      props.tls,
+      props.outlierDetection,
+      props.connectionPool
+    );
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualNode
    */
   public static http2(props: Http2VirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.HTTP2, props.healthCheck, props.timeout, props.port, props.tls, props.outlierDetection,
-      props.connectionPool);
+    return new VirtualNodeListenerImpl(
+      Protocol.HTTP2,
+      props.healthCheck,
+      props.timeout,
+      props.port,
+      props.tls,
+      props.outlierDetection,
+      props.connectionPool
+    );
   }
 
   /**
    * Returns an GRPC Listener for a VirtualNode
    */
   public static grpc(props: GrpcVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.GRPC, props.healthCheck, props.timeout, props.port, props.tls, props.outlierDetection,
-      props.connectionPool);
+    return new VirtualNodeListenerImpl(
+      Protocol.GRPC,
+      props.healthCheck,
+      props.timeout,
+      props.port,
+      props.tls,
+      props.outlierDetection,
+      props.connectionPool
+    );
   }
 
   /**
    * Returns an TCP Listener for a VirtualNode
    */
   public static tcp(props: TcpVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.TCP, props.healthCheck, props.timeout, props.port, props.tls, props.outlierDetection,
-      props.connectionPool);
+    return new VirtualNodeListenerImpl(
+      Protocol.TCP,
+      props.healthCheck,
+      props.timeout,
+      props.port,
+      props.tls,
+      props.outlierDetection,
+      props.connectionPool
+    );
   }
 
   /**
@@ -166,13 +200,17 @@ export abstract class VirtualNodeListener {
 }
 
 class VirtualNodeListenerImpl extends VirtualNodeListener {
-  constructor(private readonly protocol: Protocol,
+  constructor(
+    private readonly protocol: Protocol,
     private readonly healthCheck: HealthCheck | undefined,
     private readonly timeout: HttpTimeout | undefined,
     private readonly port: number = 8080,
     private readonly tls: ListenerTlsOptions | undefined,
     private readonly outlierDetection: OutlierDetection | undefined,
-    private readonly connectionPool: ConnectionPoolConfig | undefined) { super(); }
+    private readonly connectionPool: ConnectionPoolConfig | undefined
+  ) {
+    super();
+  }
 
   public bind(scope: Construct): VirtualNodeListenerConfig {
     return {
@@ -181,31 +219,44 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualNodeHealthCheck,
+        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port })
+          .virtualNodeHealthCheck,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
         tls: renderListenerTlsOptions(scope, this.tls),
-        outlierDetection: this.outlierDetection ? this.renderOutlierDetection(this.outlierDetection) : undefined,
-        connectionPool: this.connectionPool ? this.renderConnectionPool(this.connectionPool) : undefined,
+        outlierDetection: this.outlierDetection
+          ? this.renderOutlierDetection(this.outlierDetection)
+          : undefined,
+        connectionPool: this.connectionPool
+          ? this.renderConnectionPool(this.connectionPool)
+          : undefined,
       },
     };
   }
 
   private renderTimeout(timeout: HttpTimeout): CfnVirtualNode.ListenerTimeoutProperty {
-    return ({
+    return {
       [this.protocol]: {
-        idle: timeout?.idle !== undefined ? {
-          unit: 'ms',
-          value: timeout?.idle.toMilliseconds(),
-        } : undefined,
-        perRequest: timeout?.perRequest !== undefined ? {
-          unit: 'ms',
-          value: timeout?.perRequest.toMilliseconds(),
-        } : undefined,
+        idle:
+          timeout?.idle !== undefined
+            ? {
+                unit: 'ms',
+                value: timeout?.idle.toMilliseconds(),
+              }
+            : undefined,
+        perRequest:
+          timeout?.perRequest !== undefined
+            ? {
+                unit: 'ms',
+                value: timeout?.perRequest.toMilliseconds(),
+              }
+            : undefined,
       },
-    });
+    };
   }
 
-  private renderOutlierDetection(outlierDetection: OutlierDetection): CfnVirtualNode.OutlierDetectionProperty {
+  private renderOutlierDetection(
+    outlierDetection: OutlierDetection
+  ): CfnVirtualNode.OutlierDetectionProperty {
     return {
       baseEjectionDuration: {
         unit: 'ms',
@@ -220,13 +271,20 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     };
   }
 
-  private renderConnectionPool(connectionPool: ConnectionPoolConfig): CfnVirtualNode.VirtualNodeConnectionPoolProperty {
-    return ({
+  private renderConnectionPool(
+    connectionPool: ConnectionPoolConfig
+  ): CfnVirtualNode.VirtualNodeConnectionPoolProperty {
+    return {
       [this.protocol]: {
-        maxRequests: connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
-        maxConnections: connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
-        maxPendingRequests: connectionPool?.maxPendingRequests !== undefined ? connectionPool.maxPendingRequests : undefined,
+        maxRequests:
+          connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
+        maxConnections:
+          connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
+        maxPendingRequests:
+          connectionPool?.maxPendingRequests !== undefined
+            ? connectionPool.maxPendingRequests
+            : undefined,
       },
-    });
+    };
   }
 }

@@ -141,13 +141,25 @@ export class Arn {
 
     // Catch both 'null' and 'undefined'
     if (partition == null || region == null || account == null) {
-      throw new Error(`Arn.format: partition (${partition}), region (${region}), and account (${account}) must all be passed if stack is not passed.`);
+      throw new Error(
+        `Arn.format: partition (${partition}), region (${region}), and account (${account}) must all be passed if stack is not passed.`
+      );
     }
 
-    const sep = components.sep ?? (components.arnFormat === ArnFormat.COLON_RESOURCE_NAME ? ':' : '/');
+    const sep =
+      components.sep ?? (components.arnFormat === ArnFormat.COLON_RESOURCE_NAME ? ':' : '/');
 
     const values = [
-      'arn', ':', partition, ':', components.service, ':', region, ':', account, ':',
+      'arn',
+      ':',
+      partition,
+      ':',
+      components.service,
+      ':',
+      region,
+      ':',
+      account,
+      ':',
       ...(components.arnFormat === ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME ? ['/'] : []),
       components.resource,
     ];
@@ -204,12 +216,17 @@ export class Arn {
    *
    * @deprecated use split instead
    */
-  public static parse(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
+  public static parse(
+    arn: string,
+    sepIfToken: string = '/',
+    hasName: boolean = true
+  ): ArnComponents {
     let arnFormat: ArnFormat;
     if (!hasName) {
       arnFormat = ArnFormat.NO_RESOURCE_NAME;
     } else {
-      arnFormat = sepIfToken === '/' ? ArnFormat.SLASH_RESOURCE_NAME : ArnFormat.COLON_RESOURCE_NAME;
+      arnFormat =
+        sepIfToken === '/' ? ArnFormat.SLASH_RESOURCE_NAME : ArnFormat.COLON_RESOURCE_NAME;
     }
     return this.split(arn, arnFormat);
   }
@@ -253,10 +270,11 @@ export class Arn {
         detectedArnFormat = ArnFormat.NO_RESOURCE_NAME;
       } else {
         sep = '/';
-        detectedArnFormat = resourcePartStartIndex === 0
-          ? ArnFormat.SLASH_RESOURCE_NAME
-          // need to repeat this here, as otherwise the compiler thinks 'detectedArnFormat' is not initialized in all paths
-          : ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME;
+        detectedArnFormat =
+          resourcePartStartIndex === 0
+            ? ArnFormat.SLASH_RESOURCE_NAME
+            : // need to repeat this here, as otherwise the compiler thinks 'detectedArnFormat' is not initialized in all paths
+              ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME;
       }
     } else if (rest.length > 0) {
       sep = ':';
@@ -324,7 +342,9 @@ export class Arn {
     // resource type (to notify authors of incorrect assumptions right away).
     const parsed = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!Token.isUnresolved(parsed.resource) && parsed.resource !== resourceType) {
-      throw new Error(`Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
+      throw new Error(
+        `Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`
+      );
     }
     if (!parsed.resourceName) {
       throw new Error(`Expected resource name in ARN, didn't find one: '${arn}'`);
@@ -332,7 +352,7 @@ export class Arn {
     return parsed.resourceName;
   }
 
-  private constructor() { }
+  private constructor() {}
 }
 
 /**

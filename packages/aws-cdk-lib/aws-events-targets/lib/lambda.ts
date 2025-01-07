@@ -1,4 +1,9 @@
-import { addLambdaPermission, addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
+import {
+  addLambdaPermission,
+  addToDeadLetterQueueResourcePolicy,
+  TargetBaseProps,
+  bindBaseTargetConfig,
+} from './util';
 import * as events from '../../aws-events';
 import * as lambda from '../../aws-lambda';
 
@@ -20,9 +25,10 @@ export interface LambdaFunctionProps extends TargetBaseProps {
  * Use an AWS Lambda function as an event rule target.
  */
 export class LambdaFunction implements events.IRuleTarget {
-  constructor(private readonly handler: lambda.IFunction, private readonly props: LambdaFunctionProps = {}) {
-
-  }
+  constructor(
+    private readonly handler: lambda.IFunction,
+    private readonly props: LambdaFunctionProps = {}
+  ) {}
 
   /**
    * Returns a RuleTarget that can be used to trigger this Lambda as a

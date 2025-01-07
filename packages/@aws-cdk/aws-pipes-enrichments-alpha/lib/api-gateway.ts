@@ -1,4 +1,9 @@
-import { EnrichmentParametersConfig, IEnrichment, IPipe, InputTransformation } from '@aws-cdk/aws-pipes-alpha';
+import {
+  EnrichmentParametersConfig,
+  IEnrichment,
+  IPipe,
+  InputTransformation,
+} from '@aws-cdk/aws-pipes-alpha';
 import { IRestApi } from 'aws-cdk-lib/aws-apigateway';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
@@ -68,11 +73,14 @@ export class ApiGatewayEnrichment implements IEnrichment {
   private readonly pathParameterValues?: string[];
   private readonly queryStringParameters?: Record<string, string>;
 
-  constructor(private readonly restApi: IRestApi, props?: ApiGatewayEnrichmentProps) {
+  constructor(
+    private readonly restApi: IRestApi,
+    props?: ApiGatewayEnrichmentProps
+  ) {
     this.enrichmentArn = restApi.arnForExecuteApi(
       props?.method,
       props?.path || '/',
-      props?.stage || this.restApi.deploymentStage.stageName,
+      props?.stage || this.restApi.deploymentStage.stageName
     );
     this.inputTransformation = props?.inputTransformation;
     this.headerParameters = props?.headerParameters;
@@ -81,16 +89,13 @@ export class ApiGatewayEnrichment implements IEnrichment {
   }
 
   bind(pipe: IPipe): EnrichmentParametersConfig {
-
     const httpParameters: CfnPipe.PipeEnrichmentHttpParametersProperty | undefined =
-      this.headerParameters ??
-        this.pathParameterValues ??
-        this.queryStringParameters
+      (this.headerParameters ?? this.pathParameterValues ?? this.queryStringParameters)
         ? {
-          headerParameters: this.headerParameters,
-          pathParameterValues: this.pathParameterValues,
-          queryStringParameters: this.queryStringParameters,
-        }
+            headerParameters: this.headerParameters,
+            pathParameterValues: this.pathParameterValues,
+            queryStringParameters: this.queryStringParameters,
+          }
         : undefined;
 
     return {
@@ -102,10 +107,11 @@ export class ApiGatewayEnrichment implements IEnrichment {
   }
 
   grantInvoke(pipeRole: IRole): void {
-    pipeRole.addToPrincipalPolicy(new PolicyStatement({
-      resources: [this.enrichmentArn],
-      actions: ['execute-api:Invoke'],
-    }));
+    pipeRole.addToPrincipalPolicy(
+      new PolicyStatement({
+        resources: [this.enrichmentArn],
+        actions: ['execute-api:Invoke'],
+      })
+    );
   }
 }
-

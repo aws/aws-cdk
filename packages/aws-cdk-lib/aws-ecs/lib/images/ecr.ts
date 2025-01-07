@@ -19,7 +19,10 @@ export class EcrImage extends ContainerImage {
   /**
    * Constructs a new instance of the EcrImage class.
    */
-  constructor(private readonly repository: ecr.IRepository, private readonly tagOrDigest: string) {
+  constructor(
+    private readonly repository: ecr.IRepository,
+    private readonly tagOrDigest: string
+  ) {
     super();
 
     this.imageName = this.repository.repositoryUriForTagOrDigest(this.tagOrDigest);

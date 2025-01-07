@@ -44,7 +44,11 @@ export class HttpUrlIntegration extends HttpRouteIntegration {
    * @param url the URL to proxy to
    * @param props properties to configure the integration
    */
-  constructor(id: string, private readonly url: string, private readonly props: HttpUrlIntegrationProps = {}) {
+  constructor(
+    id: string,
+    private readonly url: string,
+    private readonly props: HttpUrlIntegrationProps = {}
+  ) {
     super(id);
   }
 

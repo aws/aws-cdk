@@ -44,7 +44,10 @@ export class IotEventsPutMessageAction implements iot.IAction {
    * @param input The IoT Events input to put messages.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly input: iotevents.IInput, props: IotEventsPutMessageActionProps = {}) {
+  constructor(
+    private readonly input: iotevents.IInput,
+    props: IotEventsPutMessageActionProps = {}
+  ) {
     this.batchMode = props.batchMode;
     this.messageId = props.messageId;
     this.role = props.role;

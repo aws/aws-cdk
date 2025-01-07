@@ -74,7 +74,6 @@ export interface LogRetentionRetryOptions {
  * specifying `logGroupRegion`
  */
 export class LogRetention extends Construct {
-
   /**
    * The ARN of the LogGroup.
    */
@@ -100,9 +99,11 @@ export class LogRetention extends Construct {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
         LogGroupRegion: props.logGroupRegion,
-        SdkRetry: retryOptions ? {
-          maxRetries: retryOptions.maxRetries,
-        } : undefined,
+        SdkRetry: retryOptions
+          ? {
+              maxRetries: retryOptions.maxRetries,
+            }
+          : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
       },
@@ -140,7 +141,10 @@ export class LogRetention extends Construct {
 class LogRetentionFunction extends Construct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
 
-  public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
+  public readonly tags: cdk.TagManager = new cdk.TagManager(
+    cdk.TagType.KEY_VALUE,
+    'AWS::Lambda::Function'
+  );
 
   private readonly role: iam.IRole;
 
@@ -148,21 +152,35 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
     super(scope, id);
 
     const asset = new s3_assets.Asset(this, 'Code', {
-      path: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-logs', 'log-retention-handler'),
+      path: path.join(
+        __dirname,
+        '..',
+        '..',
+        'custom-resource-handlers',
+        'dist',
+        'aws-logs',
+        'log-retention-handler'
+      ),
     });
 
-    const role = props.role || new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
-    });
+    const role =
+      props.role ||
+      new iam.Role(this, 'ServiceRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+        ],
+      });
     // Duplicate statements will be deduplicated by `PolicyDocument`
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
-      // We need '*' here because we will also put a retention policy on
-      // the log group of the provider function. Referencing its name
-      // creates a CF circular dependency.
-      resources: ['*'],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+        // We need '*' here because we will also put a retention policy on
+        // the log group of the provider function. Referencing its name
+        // creates a CF circular dependency.
+        resources: ['*'],
+      })
+    );
     this.role = role;
 
     // Lambda function
@@ -189,7 +207,11 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       if (cdk.CfnResource.isCfnResource(child)) {
         resource.addDependency(child);
       }
-      if (Construct.isConstruct(child) && child.node.defaultChild && cdk.CfnResource.isCfnResource(child.node.defaultChild)) {
+      if (
+        Construct.isConstruct(child) &&
+        child.node.defaultChild &&
+        cdk.CfnResource.isCfnResource(child.node.defaultChild)
+      ) {
         resource.addDependency(child.node.defaultChild);
       }
     });
@@ -199,15 +221,19 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
    * @internal
    */
   public grantDeleteLogGroup(logGroupName: string) {
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:DeleteLogGroup'],
-      //Only allow deleting the specific log group.
-      resources: [cdk.Stack.of(this).formatArn({
-        service: 'logs',
-        resource: 'log-group',
-        resourceName: `${logGroupName}:*`,
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      })],
-    }));
+    this.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:DeleteLogGroup'],
+        //Only allow deleting the specific log group.
+        resources: [
+          cdk.Stack.of(this).formatArn({
+            service: 'logs',
+            resource: 'log-group',
+            resourceName: `${logGroupName}:*`,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          }),
+        ],
+      })
+    );
   }
 }

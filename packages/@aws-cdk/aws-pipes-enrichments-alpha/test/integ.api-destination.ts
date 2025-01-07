@@ -1,5 +1,13 @@
 import { randomUUID } from 'crypto';
-import { IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import {
+  IPipe,
+  ISource,
+  ITarget,
+  InputTransformation,
+  Pipe,
+  SourceConfig,
+  TargetConfig,
+} from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
@@ -94,8 +102,7 @@ const destination = new events.ApiDestination(stack, 'MyDestination', {
   httpMethod: cdk.aws_events.HttpMethod.POST,
 });
 
-const enrichmentUnderTest = new ApiDestinationEnrichment(destination, {
-});
+const enrichmentUnderTest = new ApiDestinationEnrichment(destination, {});
 
 new Pipe(stack, 'Pipe', {
   source: new TestSource(sourceQueue),
@@ -113,15 +120,21 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: uniqueIdentifier,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
-  {
-    QueueUrl: targetQueue.queueUrl,
-  })).expect(ExpectedResult.objectLike({
-  Messages: [
-    {
-      Body: uniqueIdentifier + '-enrichment-test',
-    },
-  ],
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(30),
-});
+putMessageOnQueue
+  .next(
+    test.assertions.awsApiCall('SQS', 'receiveMessage', {
+      QueueUrl: targetQueue.queueUrl,
+    })
+  )
+  .expect(
+    ExpectedResult.objectLike({
+      Messages: [
+        {
+          Body: uniqueIdentifier + '-enrichment-test',
+        },
+      ],
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.seconds(30),
+  });

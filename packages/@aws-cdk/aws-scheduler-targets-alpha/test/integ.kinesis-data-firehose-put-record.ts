@@ -50,15 +50,20 @@ const integrationTest = new IntegTest(app, 'integrationtest-firehose-put-record'
 });
 
 // Verifies that an object was delivered to the S3 bucket by the firehose
-const objects = integrationTest.assertions.awsApiCall('S3', 'listObjectsV2', {
-  Bucket: destinationBucket.bucketName,
-  MaxKeys: 1,
-}).expect(ExpectedResult.objectLike({
-  KeyCount: 1,
-})).waitForAssertions({
-  interval: cdk.Duration.seconds(30),
-  totalTimeout: cdk.Duration.minutes(10),
-});
+const objects = integrationTest.assertions
+  .awsApiCall('S3', 'listObjectsV2', {
+    Bucket: destinationBucket.bucketName,
+    MaxKeys: 1,
+  })
+  .expect(
+    ExpectedResult.objectLike({
+      KeyCount: 1,
+    })
+  )
+  .waitForAssertions({
+    interval: cdk.Duration.seconds(30),
+    totalTimeout: cdk.Duration.minutes(10),
+  });
 
 if (objects instanceof AwsApiCall && objects.waiterProvider) {
   objects.waiterProvider.addToRolePolicy({

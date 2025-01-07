@@ -1,10 +1,23 @@
 import { Construct } from 'constructs';
 import { IVpc } from '../../../aws-ec2';
 import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver,
-  PropagatedTagSource, Protocol, Secret,
+  AwsLogDriver,
+  BaseService,
+  CloudMapOptions,
+  Cluster,
+  ContainerDefinition,
+  ContainerImage,
+  ICluster,
+  LogDriver,
+  PropagatedTagSource,
+  Protocol,
+  Secret,
 } from '../../../aws-ecs';
-import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import {
+  NetworkListener,
+  NetworkLoadBalancer,
+  NetworkTargetGroup,
+} from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
@@ -320,7 +333,11 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsServiceBase class.
    */
-  constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsServiceBaseProps = {}) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: NetworkMultipleTargetGroupsServiceBaseProps = {}
+  ) {
     super(scope, id);
 
     this.validateInput(props);
@@ -331,7 +348,10 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     this.internalDesiredCount = props.desiredCount;
 
     if (props.taskImageOptions) {
-      this.logDriver = this.createLogDriver(props.taskImageOptions.enableLogging, props.taskImageOptions.logDriver);
+      this.logDriver = this.createLogDriver(
+        props.taskImageOptions.enableLogging,
+        props.taskImageOptions.logDriver
+      );
     }
 
     if (props.loadBalancers) {
@@ -364,7 +384,10 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     // magic string to avoid collision with user-defined constructs.
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return (
+      (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) ||
+      new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc })
+    );
   }
 
   protected createAWSLogDriver(prefix: string): AwsLogDriver {
@@ -383,17 +406,24 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     throw new Error(`Listener ${name} is not defined. Did you define listener with name ${name}?`);
   }
 
-  protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: NetworkTargetProps[]): NetworkTargetGroup {
+  protected registerECSTargets(
+    service: BaseService,
+    container: ContainerDefinition,
+    targets: NetworkTargetProps[]
+  ): NetworkTargetGroup {
     for (const targetProps of targets) {
-      const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
-        port: targetProps.containerPort ?? 80,
-        targets: [
-          service.loadBalancerTarget({
-            containerName: container.containerName,
-            containerPort: targetProps.containerPort,
-          }),
-        ],
-      });
+      const targetGroup = this.findListener(targetProps.listener).addTargets(
+        `ECSTargetGroup${container.containerName}${targetProps.containerPort}`,
+        {
+          port: targetProps.containerPort ?? 80,
+          targets: [
+            service.loadBalancerTarget({
+              containerName: container.containerName,
+              containerPort: targetProps.containerPort,
+            }),
+          ],
+        }
+      );
       this.targetGroups.push(targetGroup);
     }
     if (this.targetGroups.length === 0) {
@@ -402,7 +432,10 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     return this.targetGroups[0];
   }
 
-  protected addPortMappingForTargets(container: ContainerDefinition, targets: NetworkTargetProps[]) {
+  protected addPortMappingForTargets(
+    container: ContainerDefinition,
+    targets: NetworkTargetProps[]
+  ) {
     for (const target of targets) {
       if (!container.findPortMapping(target.containerPort, Protocol.TCP)) {
         container.addPortMappings({
@@ -415,15 +448,21 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   /**
    * Create log driver if logging is enabled.
    */
-  private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
+  private createLogDriver(
+    enableLoggingProp?: boolean,
+    logDriverProp?: LogDriver
+  ): LogDriver | undefined {
     const enableLogging = enableLoggingProp ?? true;
-    const logDriver = logDriverProp ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
+    const logDriver =
+      logDriverProp ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
     return logDriver;
   }
 
   private validateInput(props: NetworkMultipleTargetGroupsServiceBaseProps) {
     if (props.cluster && props.vpc) {
-      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
+      throw new Error(
+        'You can only specify either vpc or cluster. Alternatively, you can leave both blank'
+      );
     }
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
@@ -461,7 +500,9 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   private createDomainName(loadBalancer: NetworkLoadBalancer, name?: string, zone?: IHostedZone) {
     if (typeof name !== 'undefined') {
       if (typeof zone === 'undefined') {
-        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
+        throw new Error(
+          'A Route53 hosted domain zone name is required to configure the specified domain name'
+        );
       }
 
       new ARecord(this, `DNS${loadBalancer.node.id}`, {

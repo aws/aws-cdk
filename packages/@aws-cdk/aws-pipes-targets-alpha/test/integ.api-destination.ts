@@ -40,7 +40,9 @@ class TestSource implements ISource {
 const fn = new lambda.Function(stack, 'ConnectHandler', {
   runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
-  code: new lambda.InlineCode('exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: "connected" }; };'),
+  code: new lambda.InlineCode(
+    'exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: "connected" }; };'
+  ),
 });
 
 const integration = new HttpLambdaIntegration('LambdaIntegration', fn);
@@ -100,9 +102,11 @@ const message = putMessageOnQueue.next(logEvents);
 
 // Check that the Lambda was invoked successfully from API GW
 // Payload from SQS is in the third log line
-message.assertAtPath('events.2.message', ExpectedResult.stringLikeRegexp(payload)).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(1),
-  interval: cdk.Duration.seconds(15),
-});
+message
+  .assertAtPath('events.2.message', ExpectedResult.stringLikeRegexp(payload))
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(1),
+    interval: cdk.Duration.seconds(15),
+  });
 
 app.synth();

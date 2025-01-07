@@ -1,6 +1,10 @@
 import { Construct } from 'constructs';
 import { TaskDefinition } from './base/task-definition';
-import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from './container-definition';
+import {
+  ContainerDefinition,
+  ContainerDefinitionOptions,
+  ContainerDefinitionProps,
+} from './container-definition';
 import { ContainerImage } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LogDriverConfig } from './log-drivers/log-driver';
@@ -76,7 +80,6 @@ export interface FirelensOptions {
  * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html#firelens-taskdef
  */
 export interface FirelensConfig {
-
   /**
    * The log router to use
    * @default - fluentbit
@@ -113,7 +116,9 @@ export interface FirelensLogRouterDefinitionOptions extends ContainerDefinitionO
 /**
  * Render to CfnTaskDefinition.FirelensConfigurationProperty from FirelensConfig
  */
-function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition.FirelensConfigurationProperty {
+function renderFirelensConfig(
+  firelensConfig: FirelensConfig
+): CfnTaskDefinition.FirelensConfigurationProperty {
   if (!firelensConfig.options) {
     return { type: firelensConfig.type };
   } else if (firelensConfig.options.configFileValue === undefined) {
@@ -137,7 +142,6 @@ function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition
       },
     };
   }
-
 }
 
 /**
@@ -152,21 +156,30 @@ const fluentBitImageSSMPath = '/aws/service/aws-for-fluent-bit';
  * Cloudwatch logs, Kinesis data stream or firehose permissions will be grant by check options in logDriverConfig.
  * https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html#firelens-using-fluentbit
  */
-export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverConfig?: LogDriverConfig, imageTag?: string): ContainerImage {
+export function obtainDefaultFluentBitECRImage(
+  task: TaskDefinition,
+  logDriverConfig?: LogDriverConfig,
+  imageTag?: string
+): ContainerImage {
   // grant ECR image pull permissions to executor role
-  task.addToExecutionRolePolicy(new iam.PolicyStatement({
-    actions: [
-      'ecr:GetAuthorizationToken',
-      'ecr:BatchCheckLayerAvailability',
-      'ecr:GetDownloadUrlForLayer',
-      'ecr:BatchGetImage',
-    ],
-    resources: ['*'],
-  }));
+  task.addToExecutionRolePolicy(
+    new iam.PolicyStatement({
+      actions: [
+        'ecr:GetAuthorizationToken',
+        'ecr:BatchCheckLayerAvailability',
+        'ecr:GetDownloadUrlForLayer',
+        'ecr:BatchGetImage',
+      ],
+      resources: ['*'],
+    })
+  );
 
   // grant cloudwatch or firehose permissions to task role
-  const logName = logDriverConfig && logDriverConfig.logDriver === 'awsfirelens'
-    && logDriverConfig.options && logDriverConfig.options.Name;
+  const logName =
+    logDriverConfig &&
+    logDriverConfig.logDriver === 'awsfirelens' &&
+    logDriverConfig.options &&
+    logDriverConfig.options.Name;
   if (logName === 'cloudwatch') {
     const actions = [
       'logs:CreateLogGroup',
@@ -175,28 +188,34 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
       'logs:PutLogEvents',
     ];
 
-    if (logDriverConfig && logDriverConfig.options && 'log_retention_days' in logDriverConfig.options) {
+    if (
+      logDriverConfig &&
+      logDriverConfig.options &&
+      'log_retention_days' in logDriverConfig.options
+    ) {
       actions.push('logs:PutRetentionPolicy');
     }
 
-    task.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions,
-      resources: ['*'],
-    }));
+    task.addToTaskRolePolicy(
+      new iam.PolicyStatement({
+        actions,
+        resources: ['*'],
+      })
+    );
   } else if (logName === 'firehose') {
-    task.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'firehose:PutRecordBatch',
-      ],
-      resources: ['*'],
-    }));
+    task.addToTaskRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['firehose:PutRecordBatch'],
+        resources: ['*'],
+      })
+    );
   } else if (logName === 'kinesis') {
-    task.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'kinesis:PutRecords',
-      ],
-      resources: ['*'],
-    }));
+    task.addToTaskRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['kinesis:PutRecords'],
+        resources: ['*'],
+      })
+    );
   }
 
   const fluentBitImageTag = imageTag || 'latest';
@@ -204,14 +223,15 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
 
   // Not use ContainerImage.fromEcrRepository since it's not support parsing ECR repo URI,
   // use repo ARN might result in complex Fn:: functions in cloudformation template.
-  return ContainerImage.fromRegistry(ssm.StringParameter.valueForStringParameter(task, fluentBitImage));
+  return ContainerImage.fromRegistry(
+    ssm.StringParameter.valueForStringParameter(task, fluentBitImage)
+  );
 }
 
 /**
  * Firelens log router
  */
 export class FirelensLogRouter extends ContainerDefinition {
-
   /**
    * Firelens configuration
    */
@@ -224,42 +244,54 @@ export class FirelensLogRouter extends ContainerDefinition {
     super(scope, id, props);
     const options = props.firelensConfig.options;
     if (options) {
-      if ((options.configFileValue && options.configFileType === undefined) || (options.configFileValue === undefined && options.configFileType)) {
-        throw new Error('configFileValue and configFileType must be set together to define a custom config source');
+      if (
+        (options.configFileValue && options.configFileType === undefined) ||
+        (options.configFileValue === undefined && options.configFileType)
+      ) {
+        throw new Error(
+          'configFileValue and configFileType must be set together to define a custom config source'
+        );
       }
 
-      const hasConfig = (options.configFileValue !== undefined);
-      const enableECSLogMetadata = options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
-      const configFileType = (options.configFileType === undefined || options.configFileType === FirelensConfigFileType.S3) &&
-        (cdk.Token.isUnresolved(options.configFileValue) || /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue || ''))
-        ? FirelensConfigFileType.S3 : FirelensConfigFileType.FILE;
+      const hasConfig = options.configFileValue !== undefined;
+      const enableECSLogMetadata =
+        options.enableECSLogMetadata || options.enableECSLogMetadata === undefined;
+      const configFileType =
+        (options.configFileType === undefined ||
+          options.configFileType === FirelensConfigFileType.S3) &&
+        (cdk.Token.isUnresolved(options.configFileValue) ||
+          /arn:aws[a-zA-Z-]*:s3:::.+/.test(options.configFileValue || ''))
+          ? FirelensConfigFileType.S3
+          : FirelensConfigFileType.FILE;
 
       this.firelensConfig = {
         type: props.firelensConfig.type,
         options: {
           enableECSLogMetadata,
-          ...(hasConfig ? {
-            configFileType,
-            configFileValue: options.configFileValue,
-          } : {}),
+          ...(hasConfig
+            ? {
+                configFileType,
+                configFileValue: options.configFileValue,
+              }
+            : {}),
         },
       };
 
       if (hasConfig) {
         // grant s3 access permissions
         if (configFileType === FirelensConfigFileType.S3) {
-          props.taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
-            actions: [
-              's3:GetObject',
-            ],
-            resources: [(options.configFileValue ?? '')],
-          }));
-          props.taskDefinition.addToExecutionRolePolicy(new iam.PolicyStatement({
-            actions: [
-              's3:GetBucketLocation',
-            ],
-            resources: [(options.configFileValue ?? '').split('/')[0]],
-          }));
+          props.taskDefinition.addToExecutionRolePolicy(
+            new iam.PolicyStatement({
+              actions: ['s3:GetObject'],
+              resources: [options.configFileValue ?? ''],
+            })
+          );
+          props.taskDefinition.addToExecutionRolePolicy(
+            new iam.PolicyStatement({
+              actions: ['s3:GetBucketLocation'],
+              resources: [(options.configFileValue ?? '').split('/')[0]],
+            })
+          );
         }
       }
     } else {
@@ -270,9 +302,11 @@ export class FirelensLogRouter extends ContainerDefinition {
   /**
    * Render this container definition to a CloudFormation object
    */
-  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(
+    _taskDefinition?: TaskDefinition
+  ): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
-      ...(super.renderContainerDefinition()),
+      ...super.renderContainerDefinition(),
       firelensConfiguration: this.firelensConfig && renderFirelensConfig(this.firelensConfig),
     };
   }

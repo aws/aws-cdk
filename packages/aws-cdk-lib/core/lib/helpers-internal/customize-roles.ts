@@ -4,7 +4,12 @@ import { Construct } from 'constructs';
 import { Annotations } from '../annotations';
 import { attachCustomSynthesis } from '../app';
 import { Reference } from '../reference';
-import { IResolvable, StringConcat, DefaultTokenResolver, IFragmentConcatenator } from '../resolvable';
+import {
+  IResolvable,
+  StringConcat,
+  DefaultTokenResolver,
+  IFragmentConcatenator,
+} from '../resolvable';
 import { ISynthesisSession } from '../stack-synthesizers';
 import { Token, Tokenization } from '../token';
 
@@ -197,8 +202,8 @@ export class PolicySynthesizer extends Construct {
         const report = this.createJsonReport();
         if (report.roles?.length > 0) {
           const filePath = path.join(session.outdir, 'iam-policy-report');
-          fs.writeFileSync(filePath+'.txt', this.createHumanReport(report));
-          fs.writeFileSync(filePath+'.json', JSON.stringify(report, undefined, 2));
+          fs.writeFileSync(filePath + '.txt', this.createHumanReport(report));
+          fs.writeFileSync(filePath + '.json', JSON.stringify(report, undefined, 2));
         }
       },
     });
@@ -206,10 +211,13 @@ export class PolicySynthesizer extends Construct {
 
   private createJsonReport(): PolicyReport {
     return Object.entries(this.roleReport).reduce((acc, [key, value]) => {
-      const { policyArns, policyStatements } = this.renderManagedPoliciesForRole(key, value.managedPolicies);
+      const { policyArns, policyStatements } = this.renderManagedPoliciesForRole(
+        key,
+        value.managedPolicies
+      );
       acc = {
         roles: [
-          ...acc.roles ?? [],
+          ...(acc.roles ?? []),
           {
             roleConstructPath: key,
             roleName: value.missing ? 'missing role' : value.roleName!,
@@ -226,21 +234,25 @@ export class PolicySynthesizer extends Construct {
   }
 
   private createHumanReport(report: PolicyReport): string {
-    return report.roles.map(role => [
-      `<${role.missing ? 'missing role' : role.roleName}> (${role.roleConstructPath})`,
-      '',
-      'AssumeRole Policy:',
-      ...this.toJsonString(role.assumeRolePolicy),
-      '',
-      'Managed Policy ARNs:',
-      ...this.toJsonString(role.managedPolicyArns),
-      '',
-      'Managed Policies Statements:',
-      this.toJsonString(role.managedPolicyStatements),
-      '',
-      'Identity Policy Statements:',
-      this.toJsonString(role.identityPolicyStatements),
-    ].join('\n')).join('\n\n');
+    return report.roles
+      .map((role) =>
+        [
+          `<${role.missing ? 'missing role' : role.roleName}> (${role.roleConstructPath})`,
+          '',
+          'AssumeRole Policy:',
+          ...this.toJsonString(role.assumeRolePolicy),
+          '',
+          'Managed Policy ARNs:',
+          ...this.toJsonString(role.managedPolicyArns),
+          '',
+          'Managed Policies Statements:',
+          this.toJsonString(role.managedPolicyStatements),
+          '',
+          'Identity Policy Statements:',
+          this.toJsonString(role.identityPolicyStatements),
+        ].join('\n')
+      )
+      .join('\n\n');
   }
 
   /**
@@ -277,17 +289,17 @@ export class PolicySynthesizer extends Construct {
    */
   private renderManagedPoliciesForRole(
     rolePath: string,
-    managedPolicies: any[],
+    managedPolicies: any[]
   ): { policyArns: string[]; policyStatements: string[] } {
     const policyStatements: string[] = [];
     // managed policies that have roles attached to the policy
-    Object.values(this.managedPolicyReport).forEach(value => {
+    Object.values(this.managedPolicyReport).forEach((value) => {
       if (value.roles?.includes(rolePath)) {
         policyStatements.push(...value.policyStatements);
       }
     });
     const policyArns: string[] = [];
-    managedPolicies.forEach(policy => {
+    managedPolicies.forEach((policy) => {
       if (Construct.isConstruct(policy)) {
         if (this.managedPolicyReport.hasOwnProperty(policy.node.path)) {
           policyStatements.push(...this.managedPolicyReport[policy.node.path].policyStatements);
@@ -348,7 +360,7 @@ export class PolicySynthesizer extends Construct {
       return [];
     }
     if (Array.isArray(ref)) {
-      return ref.map(r => this.resolveReferences(r));
+      return ref.map((r) => this.resolveReferences(r));
     } else if (typeof ref === 'object') {
       return this.resolveJsonObject(ref);
     }
@@ -448,7 +460,7 @@ export function getPrecreatedRoleConfig(scope: Construct, rolePath?: string): Cu
       if (Token.isUnresolved(customizeRoles.usePrecreatedRoles[precreatedRolePath])) {
         // we do not want to fail synthesis
         Annotations.of(scope).addError(
-          `Cannot resolve precreated role name at path "${precreatedRolePath}". The value may be a token.`,
+          `Cannot resolve precreated role name at path "${precreatedRolePath}". The value may be a token.`
         );
       } else {
         return {
@@ -461,7 +473,7 @@ export function getPrecreatedRoleConfig(scope: Construct, rolePath?: string): Cu
       // we do not want to fail synthesis
       Annotations.of(scope).addError(
         `IAM Role is being created at path "${precreatedRolePath}" and customizeRoles.preventSynthesis is enabled. ` +
-          'You must provide a precreated role name in customizeRoles.precreatedRoles',
+          'You must provide a precreated role name in customizeRoles.precreatedRoles'
       );
     }
     return {
@@ -499,7 +511,8 @@ export const CUSTOMIZE_ROLES_CONTEXT_KEY = '@aws-cdk/iam:customizeRoles';
 export function getCustomizeRolesConfig(scope: Construct): CustomizeRoleConfig {
   const customizeRolesContext = scope.node.tryGetContext(CUSTOMIZE_ROLES_CONTEXT_KEY);
   return {
-    preventSynthesis: customizeRolesContext !== undefined && customizeRolesContext.preventSynthesis !== false,
+    preventSynthesis:
+      customizeRolesContext !== undefined && customizeRolesContext.preventSynthesis !== false,
     enabled: customizeRolesContext !== undefined,
   };
 }

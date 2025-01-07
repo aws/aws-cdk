@@ -6,7 +6,8 @@ const MAX_NAME_LEN = 63;
 
 export class FargateProfileResourceHandler extends ResourceHandler {
   protected async onCreate() {
-    const fargateProfileName = this.event.ResourceProperties.Config.fargateProfileName ?? this.generateProfileName();
+    const fargateProfileName =
+      this.event.ResourceProperties.Config.fargateProfileName ?? this.generateProfileName();
 
     const createFargateProfile: EKS.CreateFargateProfileCommandInput = {
       fargateProfileName,
@@ -85,7 +86,9 @@ export class FargateProfileResourceHandler extends ResourceHandler {
    * Queries the Fargate profile's current status and returns the status or
    * NOT_FOUND if the profile doesn't exist (i.e. it has been deleted).
    */
-  private async queryStatus(): Promise<EKS.FargateProfileStatus | 'NOT_FOUND' | string | undefined> {
+  private async queryStatus(): Promise<
+    EKS.FargateProfileStatus | 'NOT_FOUND' | string | undefined
+  > {
     if (!this.physicalResourceId) {
       throw new Error('Unable to determine status for fargate profile without a resource name');
     }
@@ -96,9 +99,9 @@ export class FargateProfileResourceHandler extends ResourceHandler {
     };
 
     try {
-
       this.log({ describeFargateProfile });
-      const describeFargateProfileResponse = await this.eks.describeFargateProfile(describeFargateProfile);
+      const describeFargateProfileResponse =
+        await this.eks.describeFargateProfile(describeFargateProfile);
       this.log({ describeFargateProfileResponse });
       const status = describeFargateProfileResponse.fargateProfile?.status;
 
@@ -109,7 +112,9 @@ export class FargateProfileResourceHandler extends ResourceHandler {
       return status;
     } catch (describeFargateProfileError: any) {
       if (describeFargateProfileError.name === 'ResourceNotFoundException') {
-        this.log('received ResourceNotFoundException, this means the profile has been deleted (or never existed)');
+        this.log(
+          'received ResourceNotFoundException, this means the profile has been deleted (or never existed)'
+        );
         return 'NOT_FOUND';
       }
 

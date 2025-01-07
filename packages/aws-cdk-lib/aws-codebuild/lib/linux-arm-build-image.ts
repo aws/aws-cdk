@@ -2,7 +2,13 @@ import { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, DockerImageOptions, isLambdaComputeType } from './project';
+import {
+  BuildEnvironment,
+  IBuildImage,
+  ImagePullPrincipalType,
+  DockerImageOptions,
+  isLambdaComputeType,
+} from './project';
 import * as ecr from '../../aws-ecr';
 import * as secretsmanager from '../../aws-secretsmanager';
 
@@ -35,11 +41,17 @@ export class LinuxArmBuildImage implements IBuildImage {
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
    * @deprecated Use {@link LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0} instead.
    * */
-  public static readonly AMAZON_LINUX_2_STANDARD_1_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+  public static readonly AMAZON_LINUX_2_STANDARD_1_0 = LinuxArmBuildImage.fromCodeBuildImageId(
+    'aws/codebuild/amazonlinux2-aarch64-standard:1.0'
+  );
   /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0" based on Amazon Linux 2. */
-  public static readonly AMAZON_LINUX_2_STANDARD_2_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
+  public static readonly AMAZON_LINUX_2_STANDARD_2_0 = LinuxArmBuildImage.fromCodeBuildImageId(
+    'aws/codebuild/amazonlinux2-aarch64-standard:2.0'
+  );
   /** Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0" based on Amazon Linux 2023. */
-  public static readonly AMAZON_LINUX_2_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:3.0');
+  public static readonly AMAZON_LINUX_2_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId(
+    'aws/codebuild/amazonlinux2-aarch64-standard:3.0'
+  );
 
   /**
    * @returns a aarch-64 Linux build image from a Docker Hub image.
@@ -64,7 +76,10 @@ export class LinuxArmBuildImage implements IBuildImage {
    * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    * @returns An aarch64 Linux build image from an ECR repository.
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
+  public static fromEcrRepository(
+    repository: ecr.IRepository,
+    tagOrDigest: string = 'latest'
+  ): IBuildImage {
     return new LinuxArmBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -109,7 +124,9 @@ export class LinuxArmBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
-      ret.push(`ARM images do not support Lambda ComputeTypes, got ${buildEnvironment.computeType}`);
+      ret.push(
+        `ARM images do not support Lambda ComputeTypes, got ${buildEnvironment.computeType}`
+      );
     }
     return ret;
   }

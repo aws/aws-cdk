@@ -61,18 +61,21 @@ export class WarmPool extends Resource {
     });
 
     if (props.maxGroupPreparedCapacity && props.maxGroupPreparedCapacity < -1) {
-      throw new Error('\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1');
+      throw new Error("'maxGroupPreparedCapacity' parameter should be greater than or equal to -1");
     }
 
     if (props.minSize && props.minSize < 0) {
-      throw new Error('\'minSize\' parameter should be greater than or equal to 0');
+      throw new Error("'minSize' parameter should be greater than or equal to 0");
     }
 
     new CfnWarmPool(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
-      instanceReusePolicy: props.reuseOnScaleIn !== undefined ? {
-        reuseOnScaleIn: props.reuseOnScaleIn,
-      } : undefined,
+      instanceReusePolicy:
+        props.reuseOnScaleIn !== undefined
+          ? {
+              reuseOnScaleIn: props.reuseOnScaleIn,
+            }
+          : undefined,
       maxGroupPreparedCapacity: props.maxGroupPreparedCapacity,
       minSize: props.minSize,
       poolState: props.poolState,

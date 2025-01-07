@@ -64,9 +64,11 @@ const message = test.assertions.awsApiCall('SQS', 'receiveMessage', {
 });
 
 // data is base64 encoded
-message.assertAtPath('Messages.0.Body.data', ExpectedResult.stringLikeRegexp(base64UniqueIdentifier)).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(2),
-  interval: cdk.Duration.seconds(15),
-});
+message
+  .assertAtPath('Messages.0.Body.data', ExpectedResult.stringLikeRegexp(base64UniqueIdentifier))
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(2),
+    interval: cdk.Duration.seconds(15),
+  });
 
 app.synth();

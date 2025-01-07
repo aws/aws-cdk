@@ -39,7 +39,11 @@ export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
   protected readonly arnForExecuteApi: string;
   protected readonly stageName?: string;
 
-  constructor(scope: Construct, id: string, private readonly props: CallApiGatewayHttpApiEndpointProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: CallApiGatewayHttpApiEndpointProps
+  ) {
     super(scope, id, props);
 
     this.apiEndpoint = this.getApiEndpoint();

@@ -100,7 +100,11 @@ export class ScheduledAction extends Resource {
   constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
 
-    if (props.minCapacity === undefined && props.maxCapacity === undefined && props.desiredCapacity === undefined) {
+    if (
+      props.minCapacity === undefined &&
+      props.maxCapacity === undefined &&
+      props.desiredCapacity === undefined
+    ) {
       throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');
     }
 
@@ -123,15 +127,24 @@ export class ScheduledAction extends Resource {
 }
 
 function formatISO(date?: Date) {
-  if (!date) { return undefined; }
+  if (!date) {
+    return undefined;
+  }
 
-  return date.getUTCFullYear() +
-    '-' + pad(date.getUTCMonth() + 1) +
-    '-' + pad(date.getUTCDate()) +
-    'T' + pad(date.getUTCHours()) +
-    ':' + pad(date.getUTCMinutes()) +
-    ':' + pad(date.getUTCSeconds()) +
-    'Z';
+  return (
+    date.getUTCFullYear() +
+    '-' +
+    pad(date.getUTCMonth() + 1) +
+    '-' +
+    pad(date.getUTCDate()) +
+    'T' +
+    pad(date.getUTCHours()) +
+    ':' +
+    pad(date.getUTCMinutes()) +
+    ':' +
+    pad(date.getUTCSeconds()) +
+    'Z'
+  );
 
   function pad(num: number) {
     if (num < 10) {

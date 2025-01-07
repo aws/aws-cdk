@@ -6,33 +6,44 @@ const ec2 = new sdk.EC2({});
 /**
  * The default security group ingress rule. This can be used to both revoke and authorize the rules
  */
-function ingressRuleParams(groupId: string, account: string):
-sdk.RevokeSecurityGroupIngressCommandInput
-| sdk.AuthorizeSecurityGroupIngressCommandInput {
+function ingressRuleParams(
+  groupId: string,
+  account: string
+): sdk.RevokeSecurityGroupIngressCommandInput | sdk.AuthorizeSecurityGroupIngressCommandInput {
   return {
     GroupId: groupId,
-    IpPermissions: [{
-      UserIdGroupPairs: [{
-        GroupId: groupId,
-        UserId: account,
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        UserIdGroupPairs: [
+          {
+            GroupId: groupId,
+            UserId: account,
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   };
 }
 
 /**
  * The default security group egress rule. This can be used to both revoke and authorize the rules
  */
-function egressRuleParams(groupId: string): sdk.RevokeSecurityGroupEgressCommandInput | sdk.AuthorizeSecurityGroupEgressCommandInput {
+function egressRuleParams(
+  groupId: string
+): sdk.RevokeSecurityGroupEgressCommandInput | sdk.AuthorizeSecurityGroupEgressCommandInput {
   return {
     GroupId: groupId,
-    IpPermissions: [{
-      IpRanges: [{
-        CidrIp: '0.0.0.0/0',
-      }],
-      IpProtocol: '-1',
-    }],
+    IpPermissions: [
+      {
+        IpRanges: [
+          {
+            CidrIp: '0.0.0.0/0',
+          },
+        ],
+        IpProtocol: '-1',
+      },
+    ],
   };
 }
 
@@ -73,14 +84,14 @@ async function revokeRules(groupId: string, account: string): Promise<void> {
     await ec2.revokeSecurityGroupEgress(egressRuleParams(groupId));
   } catch (e: any) {
     if (e.name !== 'InvalidPermission.NotFound') {
-      throw (e);
+      throw e;
     }
   }
   try {
     await ec2.revokeSecurityGroupIngress(ingressRuleParams(groupId, account));
   } catch (e: any) {
     if (e.name !== 'InvalidPermission.NotFound') {
-      throw (e);
+      throw e;
     }
   }
   return;

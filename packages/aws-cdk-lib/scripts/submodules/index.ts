@@ -19,7 +19,6 @@ export default async function submodulesGen(modules: ModuleMap, outPath: string)
 }
 
 async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
-
   // README.md
   const readmePath = path.join(modulePath, 'README.md');
   if (!fs.existsSync(readmePath)) {
@@ -28,7 +27,7 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
 
   // index.ts
   if (!fs.existsSync(path.join(modulePath, 'index.ts'))) {
-    const lines = ['export * from \'./lib\';'];
+    const lines = ["export * from './lib';"];
     await fs.writeFile(path.join(modulePath, 'index.ts'), lines.join('\n') + '\n');
   }
 
@@ -36,16 +35,18 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   const sourcePath = path.join(modulePath, 'lib');
   if (!fs.existsSync(path.join(sourcePath, 'index.ts'))) {
     const lines = submodule.scopes.map((s: string) => `// ${s} Cloudformation Resources`);
-    lines.push(...submodule.files
-      .map((f) => {
-        // New codegen uses absolute paths
-        if (path.isAbsolute(f)) {
-          return path.relative(sourcePath, f);
-        }
-        // Old codegen uses a filename that's already relative to sourcePath
-        return f;
-      })
-      .map((f) => `export * from './${f.replace('.ts', '')}';`));
+    lines.push(
+      ...submodule.files
+        .map((f) => {
+          // New codegen uses absolute paths
+          if (path.isAbsolute(f)) {
+            return path.relative(sourcePath, f);
+          }
+          // Old codegen uses a filename that's already relative to sourcePath
+          return f;
+        })
+        .map((f) => `export * from './${f.replace('.ts', '')}';`)
+    );
     await fs.writeFile(path.join(sourcePath, 'index.ts'), lines.join('\n') + '\n');
   }
 
@@ -53,7 +54,7 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   if (!fs.existsSync(path.join(modulePath, '.jsiirc.json'))) {
     if (!submodule.definition) {
       throw new Error(
-        `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json file.`,
+        `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json file.`
       );
     }
 

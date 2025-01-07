@@ -21,7 +21,6 @@ export interface KinesisStreamProps extends TargetBaseProps {
    * @default - the entire CloudWatch event
    */
   readonly message?: events.RuleTargetInput;
-
 }
 
 /**
@@ -35,9 +34,10 @@ export interface KinesisStreamProps extends TargetBaseProps {
  *
  */
 export class KinesisStream implements events.IRuleTarget {
-
-  constructor(private readonly stream: kinesis.IStream, private readonly props: KinesisStreamProps = {}) {
-  }
+  constructor(
+    private readonly stream: kinesis.IStream,
+    private readonly props: KinesisStreamProps = {}
+  ) {}
 
   /**
    * Returns a RuleTarget that can be used to trigger this Kinesis Stream as a
@@ -53,8 +53,9 @@ export class KinesisStream implements events.IRuleTarget {
       role,
       input: this.props.message,
       targetResource: this.stream,
-      kinesisParameters: this.props.partitionKeyPath ? { partitionKeyPath: this.props.partitionKeyPath } : undefined,
+      kinesisParameters: this.props.partitionKeyPath
+        ? { partitionKeyPath: this.props.partitionKeyPath }
+        : undefined,
     };
   }
-
 }

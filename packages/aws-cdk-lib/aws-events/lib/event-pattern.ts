@@ -90,8 +90,9 @@ export class Match implements IResolvable {
    * Matches IPv4 and IPv6 network addresses using the Classless Inter-Domain Routing (CIDR) format
    */
   public static cidr(range: string): string[] {
-    const ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/igm;
-    const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/igm;
+    const ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/gim;
+    const ipv6Regex =
+      /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/gim;
 
     if (!ipv4Regex.test(range) && !ipv6Regex.test(range)) {
       throw new Error(`Invalid IP address range: ${range}`);
@@ -117,11 +118,13 @@ export class Match implements IResolvable {
       throw new Error('anythingBut matchers must be non-empty lists');
     }
 
-    const allNumbers = values.every(v => typeof (v) === 'number');
-    const allStrings = values.every(v => typeof (v) === 'string');
+    const allNumbers = values.every((v) => typeof v === 'number');
+    const allStrings = values.every((v) => typeof v === 'string');
 
     if (!(allNumbers || allStrings)) {
-      throw new Error('anythingBut matchers must be lists that contain only strings or only numbers.');
+      throw new Error(
+        'anythingBut matchers must be lists that contain only strings or only numbers.'
+      );
     }
 
     return this.fromObjects([{ 'anything-but': values }]);
@@ -252,24 +255,26 @@ export class Match implements IResolvable {
 
   public readonly creationStack: string[];
 
-  private constructor(private readonly matchers: any[],
-    private readonly options: MatchOptions) {
+  private constructor(
+    private readonly matchers: any[],
+    private readonly options: MatchOptions
+  ) {
     this.creationStack = captureStackTrace();
   }
 
   resolve(context: IResolveContext): any {
-    const matchers = this.matchers.flatMap(matcher => context.resolve(matcher));
+    const matchers = this.matchers.flatMap((matcher) => context.resolve(matcher));
     return this.options.mergeMatchers ? this.merge(matchers) : matchers;
   }
 
   private merge(matchers: any[]): any {
     // This is the only supported case for merging at the moment.
     // We can generalize this logic if EventBridge starts supporting more cases in the future.
-    if (!matchers.every(matcher => matcher?.numeric)) {
+    if (!matchers.every((matcher) => matcher?.numeric)) {
       throw new Error('Only numeric matchers can be merged into a single matcher.');
     }
 
-    return [{ numeric: matchers.flatMap(matcher => matcher.numeric) }];
+    return [{ numeric: matchers.flatMap((matcher) => matcher.numeric) }];
   }
 
   toString(): string {

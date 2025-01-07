@@ -7,10 +7,14 @@ export function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefi
   }
 
   switch (follow) {
-    case FollowMode.NEVER: return SymlinkFollowMode.NEVER;
-    case FollowMode.ALWAYS: return SymlinkFollowMode.ALWAYS;
-    case FollowMode.BLOCK_EXTERNAL: return SymlinkFollowMode.BLOCK_EXTERNAL;
-    case FollowMode.EXTERNAL: return SymlinkFollowMode.EXTERNAL;
+    case FollowMode.NEVER:
+      return SymlinkFollowMode.NEVER;
+    case FollowMode.ALWAYS:
+      return SymlinkFollowMode.ALWAYS;
+    case FollowMode.BLOCK_EXTERNAL:
+      return SymlinkFollowMode.BLOCK_EXTERNAL;
+    case FollowMode.EXTERNAL:
+      return SymlinkFollowMode.EXTERNAL;
     default:
       throw new Error(`unknown follow mode: ${follow}`);
   }

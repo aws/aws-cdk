@@ -2,7 +2,11 @@ import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
+import {
+  CfnCluster,
+  CfnCapacityProvider,
+  CfnClusterCapacityProviderAssociations,
+} from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -13,7 +17,19 @@ import { IKey } from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Aws, Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names, AspectPriority } from '../../core';
+import {
+  Aws,
+  Duration,
+  IResource,
+  Resource,
+  Stack,
+  Aspects,
+  ArnFormat,
+  IAspect,
+  Token,
+  Names,
+  AspectPriority,
+} from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -105,18 +121,21 @@ export enum MachineImageType {
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
-
   /**
    * Return whether the given object is a Cluster
    */
-  public static isCluster(x: any) : x is Cluster {
-    return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;
+  public static isCluster(x: any): x is Cluster {
+    return x !== null && typeof x === 'object' && CLUSTER_SYMBOL in x;
   }
 
   /**
    * Import an existing cluster to the stack from its attributes.
    */
-  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+  public static fromClusterAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ClusterAttributes
+  ): ICluster {
     return new ImportedCluster(scope, id, attrs);
   }
 
@@ -134,7 +153,8 @@ export class Cluster extends Resource implements ICluster {
       throw new Error(`Missing required Cluster Name from Cluster ARN: ${clusterArn}`);
     }
 
-    const errorSuffix = 'is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.';
+    const errorSuffix =
+      'is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.';
 
     class Import extends Resource implements ICluster {
       public readonly clusterArn = clusterArn;
@@ -231,10 +251,12 @@ export class Cluster extends Resource implements ICluster {
      */
     let clusterSettings = undefined;
     if (props.containerInsights !== undefined) {
-      clusterSettings = [{
-        name: 'containerInsights',
-        value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED,
-      }];
+      clusterSettings = [
+        {
+          name: 'containerInsights',
+          value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED,
+        },
+      ];
     }
 
     this._capacityProviderNames = props.capacityProviders ?? [];
@@ -243,9 +265,13 @@ export class Cluster extends Resource implements ICluster {
     }
 
     if (props.executeCommandConfiguration) {
-      if ((props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE) !==
-        (props.executeCommandConfiguration.logConfiguration !== undefined)) {
-        throw new Error('Execute command log configuration must only be specified when logging is OVERRIDE.');
+      if (
+        (props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE) !==
+        (props.executeCommandConfiguration.logConfiguration !== undefined)
+      ) {
+        throw new Error(
+          'Execute command log configuration must only be specified when logging is OVERRIDE.'
+        );
       }
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
@@ -267,13 +293,15 @@ export class Cluster extends Resource implements ICluster {
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
-    this._defaultCloudMapNamespace = props.defaultCloudMapNamespace !== undefined
-      ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
-      : undefined;
+    this._defaultCloudMapNamespace =
+      props.defaultCloudMapNamespace !== undefined
+        ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
+        : undefined;
 
-    this._autoscalingGroup = props.capacity !== undefined
-      ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
-      : undefined;
+    this._autoscalingGroup =
+      props.capacity !== undefined
+        ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
+        : undefined;
 
     this.updateKeyPolicyForEphemeralStorageConfiguration(props.clusterName);
 
@@ -282,7 +310,9 @@ export class Cluster extends Resource implements ICluster {
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
-    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id), { priority: AspectPriority.MUTATING });
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id), {
+      priority: AspectPriority.MUTATING,
+    });
   }
 
   /**
@@ -300,25 +330,29 @@ export class Cluster extends Resource implements ICluster {
       },
     };
 
-    key.addToResourcePolicy(new PolicyStatement({
-      sid: 'Allow generate data key access for Fargate tasks.',
-      principals: [new ServicePrincipal('fargate.amazonaws.com')],
-      resources: ['*'],
-      actions: ['kms:GenerateDataKeyWithoutPlaintext'],
-      conditions: clusterConditions,
-    }));
-    key.addToResourcePolicy(new PolicyStatement({
-      sid: 'Allow grant creation permission for Fargate tasks.',
-      principals: [new ServicePrincipal('fargate.amazonaws.com')],
-      resources: ['*'],
-      actions: ['kms:CreateGrant'],
-      conditions: {
-        ...clusterConditions,
-        'ForAllValues:StringEquals': {
-          'kms:GrantOperations': ['Decrypt'],
+    key.addToResourcePolicy(
+      new PolicyStatement({
+        sid: 'Allow generate data key access for Fargate tasks.',
+        principals: [new ServicePrincipal('fargate.amazonaws.com')],
+        resources: ['*'],
+        actions: ['kms:GenerateDataKeyWithoutPlaintext'],
+        conditions: clusterConditions,
+      })
+    );
+    key.addToResourcePolicy(
+      new PolicyStatement({
+        sid: 'Allow grant creation permission for Fargate tasks.',
+        principals: [new ServicePrincipal('fargate.amazonaws.com')],
+        resources: ['*'],
+        actions: ['kms:CreateGrant'],
+        conditions: {
+          ...clusterConditions,
+          'ForAllValues:StringEquals': {
+            'kms:GrantOperations': ['Decrypt'],
+          },
         },
-      },
-    }));
+      })
+    );
   }
 
   /**
@@ -346,24 +380,37 @@ export class Cluster extends Resource implements ICluster {
    *   }
    * ]
    */
-  public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
+  public addDefaultCapacityProviderStrategy(
+    defaultCapacityProviderStrategy: CapacityProviderStrategy[]
+  ) {
     if (this._defaultCapacityProviderStrategy.length > 0) {
       throw new Error('Cluster default capacity provider strategy is already set.');
     }
 
-    if (defaultCapacityProviderStrategy.some(dcp => dcp.capacityProvider.includes('FARGATE')) && defaultCapacityProviderStrategy.some(dcp => !dcp.capacityProvider.includes('FARGATE'))) {
-      throw new Error('A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again.');
+    if (
+      defaultCapacityProviderStrategy.some((dcp) => dcp.capacityProvider.includes('FARGATE')) &&
+      defaultCapacityProviderStrategy.some((dcp) => !dcp.capacityProvider.includes('FARGATE'))
+    ) {
+      throw new Error(
+        'A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again.'
+      );
     }
 
-    defaultCapacityProviderStrategy.forEach(dcp => {
+    defaultCapacityProviderStrategy.forEach((dcp) => {
       if (!this._capacityProviderNames.includes(dcp.capacityProvider)) {
-        throw new Error(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.`);
+        throw new Error(
+          `Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() before it can be used in a default capacity provider strategy.`
+        );
       }
     });
 
-    const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
+    const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(
+      (dcp) => !!dcp.base
+    );
     if (defaultCapacityProvidersWithBase.length > 1) {
-      throw new Error('Only 1 capacity provider in a capacity provider strategy can have a nonzero base.');
+      throw new Error(
+        'Only 1 capacity provider in a capacity provider strategy can have a nonzero base.'
+      );
     }
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
@@ -373,11 +420,14 @@ export class Cluster extends Resource implements ICluster {
     return {
       executeCommandConfiguration: this._executeCommandConfiguration && {
         kmsKeyId: this._executeCommandConfiguration.kmsKey?.keyArn,
-        logConfiguration: this._executeCommandConfiguration.logConfiguration && this.renderExecuteCommandLogConfiguration(),
+        logConfiguration:
+          this._executeCommandConfiguration.logConfiguration &&
+          this.renderExecuteCommandLogConfiguration(),
         logging: this._executeCommandConfiguration.logging,
       },
       managedStorageConfiguration: this._managedStorageConfiguration && {
-        fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
+        fargateEphemeralStorageKmsKeyId:
+          this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
       },
     };
   }
@@ -385,10 +435,14 @@ export class Cluster extends Resource implements ICluster {
   private renderExecuteCommandLogConfiguration(): CfnCluster.ExecuteCommandLogConfigurationProperty {
     const logConfiguration = this._executeCommandConfiguration?.logConfiguration;
     if (logConfiguration?.s3EncryptionEnabled && !logConfiguration?.s3Bucket) {
-      throw new Error('You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption.');
+      throw new Error(
+        'You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption.'
+      );
     }
     if (logConfiguration?.cloudWatchEncryptionEnabled && !logConfiguration?.cloudWatchLogGroup) {
-      throw new Error('You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption.');
+      throw new Error(
+        'You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption.'
+      );
     }
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
@@ -409,9 +463,8 @@ export class Cluster extends Resource implements ICluster {
       throw new Error('Can only add default namespace once.');
     }
 
-    const namespaceType = options.type !== undefined
-      ? options.type
-      : cloudmap.NamespaceType.DNS_PRIVATE;
+    const namespaceType =
+      options.type !== undefined ? options.type : cloudmap.NamespaceType.DNS_PRIVATE;
 
     let sdNamespace;
     switch (namespaceType) {
@@ -476,18 +529,26 @@ export class Cluster extends Resource implements ICluster {
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
     // Do 2-way defaulting here: if the machineImageType is BOTTLEROCKET, pick the right AMI.
     // Otherwise, determine the machineImageType from the given AMI.
-    const machineImage = options.machineImage ??
-      (options.machineImageType === MachineImageType.BOTTLEROCKET ? new BottleRocketImage({
-        architecture: options.instanceType.architecture,
-      }) : new EcsOptimizedAmi());
+    const machineImage =
+      options.machineImage ??
+      (options.machineImageType === MachineImageType.BOTTLEROCKET
+        ? new BottleRocketImage({
+            architecture: options.instanceType.architecture,
+          })
+        : new EcsOptimizedAmi());
 
-    const machineImageType = options.machineImageType ??
-      (BottleRocketImage.isBottleRocketImage(machineImage) ? MachineImageType.BOTTLEROCKET : MachineImageType.AMAZON_LINUX_2);
+    const machineImageType =
+      options.machineImageType ??
+      (BottleRocketImage.isBottleRocketImage(machineImage)
+        ? MachineImageType.BOTTLEROCKET
+        : MachineImageType.AMAZON_LINUX_2);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       vpc: this.vpc,
       machineImage,
-      updateType: !!options.updatePolicy ? undefined : options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
+      updateType: !!options.updatePolicy
+        ? undefined
+        : options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
       ...options,
     });
 
@@ -504,7 +565,10 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
-  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
+  public addAsgCapacityProvider(
+    provider: AsgCapacityProvider,
+    options: AddAutoScalingGroupCapacityOptions = {}
+  ) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
       return;
@@ -514,8 +578,12 @@ export class Cluster extends Resource implements ICluster {
       ...options,
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection or managed draining is enabled
-      taskDrainTime: (provider.enableManagedTerminationProtection || provider.enableManagedDraining) ? Duration.seconds(0) : options.taskDrainTime,
-      canContainersAccessInstanceRole: options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
+      taskDrainTime:
+        provider.enableManagedTerminationProtection || provider.enableManagedDraining
+          ? Duration.seconds(0)
+          : options.taskDrainTime,
+      canContainersAccessInstanceRole:
+        options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
     });
 
     this._capacityProviderNames.push(provider.capacityProviderName);
@@ -529,13 +597,19 @@ export class Cluster extends Resource implements ICluster {
    * [disable-awslint:ref-via-interface] is needed in order to install the ECS
    * agent by updating the ASGs user data.
    */
-  public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+  public addAutoScalingGroup(
+    autoScalingGroup: autoscaling.AutoScalingGroup,
+    options: AddAutoScalingGroupCapacityOptions = {}
+  ) {
     this._hasEc2Capacity = true;
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
     this.configureAutoScalingGroup(autoScalingGroup, options);
   }
 
-  private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+  private configureAutoScalingGroup(
+    autoScalingGroup: autoscaling.AutoScalingGroup,
+    options: AddAutoScalingGroupCapacityOptions = {}
+  ) {
     if (!(autoScalingGroup instanceof autoscaling.AutoScalingGroup)) {
       throw new Error('Cannot configure the AutoScalingGroup because it is an imported resource.');
     }
@@ -550,29 +624,41 @@ export class Cluster extends Resource implements ICluster {
             // Connect to the cluster
             // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#connecting-to-your-cluster
             '[settings.ecs]',
-            `cluster = "${this.clusterName}"`,
+            `cluster = "${this.clusterName}"`
           );
           // Enabling SSM
           // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#enabling-ssm
-          autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
+          autoScalingGroup.role.addManagedPolicy(
+            iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')
+          );
           // required managed policy
-          autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'));
+          autoScalingGroup.role.addManagedPolicy(
+            iam.ManagedPolicy.fromAwsManagedPolicyName(
+              'service-role/AmazonEC2ContainerServiceforEC2Role'
+            )
+          );
           break;
         }
         default:
           // Amazon ECS-optimized AMI for Amazon Linux 2
-          autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+          autoScalingGroup.addUserData(
+            `echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`
+          );
           if (!options.canContainersAccessInstanceRole) {
             // Deny containers access to instance metadata service
             // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-            autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+            autoScalingGroup.addUserData(
+              'sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP'
+            );
             autoScalingGroup.addUserData('sudo service iptables save');
             // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
             autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
           }
 
           if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-            autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+            autoScalingGroup.addUserData(
+              'echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config'
+            );
           }
       }
     }
@@ -582,43 +668,47 @@ export class Cluster extends Resource implements ICluster {
     // But, scoped down to minimal permissions required.
     //  Notes:
     //   - 'ecs:CreateCluster' removed. The cluster already exists.
-    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'ecs:DeregisterContainerInstance',
-        'ecs:RegisterContainerInstance',
-        'ecs:Submit*',
-      ],
-      resources: [
-        this.clusterArn,
-      ],
-    }));
-    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
-      actions: [
-        // These act on a cluster instance, and the instance doesn't exist until the service starts.
-        // Thus, scope to the cluster using a condition.
-        // See: https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonelasticcontainerservice.html
-        'ecs:Poll',
-        'ecs:StartTelemetrySession',
-      ],
-      resources: ['*'],
-      conditions: {
-        ArnEquals: { 'ecs:cluster': this.clusterArn },
-      },
-    }));
-    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
-      actions: [
-        // These do not support resource constraints, and must be resource '*'
-        'ecs:DiscoverPollEndpoint',
-        'ecr:GetAuthorizationToken',
-        // Preserved for backwards compatibility.
-        // Users are able to enable cloudwatch agent using CDK. Existing
-        // customers might be installing CW agent as part of user-data so if we
-        // remove these permissions we will break that customer use cases.
-        'logs:CreateLogStream',
-        'logs:PutLogEvents',
-      ],
-      resources: ['*'],
-    }));
+    autoScalingGroup.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'ecs:DeregisterContainerInstance',
+          'ecs:RegisterContainerInstance',
+          'ecs:Submit*',
+        ],
+        resources: [this.clusterArn],
+      })
+    );
+    autoScalingGroup.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: [
+          // These act on a cluster instance, and the instance doesn't exist until the service starts.
+          // Thus, scope to the cluster using a condition.
+          // See: https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazonelasticcontainerservice.html
+          'ecs:Poll',
+          'ecs:StartTelemetrySession',
+        ],
+        resources: ['*'],
+        conditions: {
+          ArnEquals: { 'ecs:cluster': this.clusterArn },
+        },
+      })
+    );
+    autoScalingGroup.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: [
+          // These do not support resource constraints, and must be resource '*'
+          'ecs:DiscoverPollEndpoint',
+          'ecr:GetAuthorizationToken',
+          // Preserved for backwards compatibility.
+          // Users are able to enable cloudwatch agent using CDK. Existing
+          // customers might be installing CW agent as part of user-data so if we
+          // remove these permissions we will break that customer use cases.
+          'logs:CreateLogStream',
+          'logs:PutLogEvents',
+        ],
+        resources: ['*'],
+      })
+    );
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
     if (!options.taskDrainTime || options.taskDrainTime.toSeconds() !== 0) {
@@ -678,7 +768,10 @@ export class Cluster extends Resource implements ICluster {
     });
   }
 
-  private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+  private configureWindowsAutoScalingGroup(
+    autoScalingGroup: autoscaling.AutoScalingGroup,
+    options: AddAutoScalingGroupCapacityOptions = {}
+  ) {
     // clear the cache of the agent
     autoScalingGroup.addUserData('Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache');
 
@@ -686,20 +779,32 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.addUserData('Import-Module ECSTools');
 
     // set the cluster name environment variable
-    autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "${this.clusterName}", "Machine")`);
-    autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", "true", "Machine")');
+    autoScalingGroup.addUserData(
+      `[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "${this.clusterName}", "Machine")`
+    );
+    autoScalingGroup.addUserData(
+      '[Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", "true", "Machine")'
+    );
     // tslint:disable-next-line: max-line-length
-    autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", \'["json-file","awslogs"]\', "Machine")');
+    autoScalingGroup.addUserData(
+      '[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", \'["json-file","awslogs"]\', "Machine")'
+    );
 
     // enable instance draining
     if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_SPOT_INSTANCE_DRAINING", "true", "Machine")');
+      autoScalingGroup.addUserData(
+        '[Environment]::SetEnvironmentVariable("ECS_ENABLE_SPOT_INSTANCE_DRAINING", "true", "Machine")'
+      );
     }
 
     // enable task iam role
     if (!options.canContainersAccessInstanceRole) {
-      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")');
-      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole`);
+      autoScalingGroup.addUserData(
+        '[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")'
+      );
+      autoScalingGroup.addUserData(
+        `Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole`
+      );
     } else {
       autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
     }
@@ -776,7 +881,8 @@ export class Cluster extends Resource implements ICluster {
 
   private cannedMetric(
     fn: (dims: { ClusterName: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ ClusterName: this.clusterName }),
       ...props,
@@ -950,11 +1056,13 @@ class ImportedCluster extends Resource implements ICluster {
     this._executeCommandConfiguration = props.executeCommandConfiguration;
     this.autoscalingGroup = props.autoscalingGroup;
 
-    this.clusterArn = props.clusterArn ?? Stack.of(this).formatArn({
-      service: 'ecs',
-      resource: 'cluster',
-      resourceName: props.clusterName,
-    });
+    this.clusterArn =
+      props.clusterArn ??
+      Stack.of(this).formatArn({
+        service: 'ecs',
+        resource: 'cluster',
+        resourceName: props.clusterName,
+      });
 
     this.connections = new ec2.Connections({
       securityGroups: props.securityGroups,
@@ -1032,7 +1140,9 @@ export interface AddAutoScalingGroupCapacityOptions {
 /**
  * The properties for adding instance capacity to an AutoScalingGroup.
  */
-export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, autoscaling.CommonAutoScalingGroupProps {
+export interface AddCapacityOptions
+  extends AddAutoScalingGroupCapacityOptions,
+    autoscaling.CommonAutoScalingGroupProps {
   /**
    * The EC2 instance type to use when launching instances into the AutoScalingGroup.
    */
@@ -1093,7 +1203,6 @@ export interface CloudMapNamespaceOptions {
    * @default false
    */
   readonly useForServiceConnect?: boolean;
-
 }
 
 enum ContainerInsights {
@@ -1320,7 +1429,6 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
  * Kms Keys for encryption ECS managed storage
  */
 export interface ManagedStorageConfiguration {
-
   /**
    * KMS Key used to encrypt ECS Fargate ephemeral Storage.
    * The configured KMS Key's policy will be modified to allow ECS to use the Key to encrypt the ephemeral Storage for this cluster.
@@ -1388,33 +1496,43 @@ export class AsgCapacityProvider extends Construct {
     }
 
     if (this.enableManagedTerminationProtection && props.enableManagedScaling === false) {
-      throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
+      throw new Error(
+        'Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.'
+      );
     }
     if (this.enableManagedTerminationProtection) {
       if (this.autoScalingGroup instanceof autoscaling.AutoScalingGroup) {
         this.autoScalingGroup.protectNewInstancesFromScaleIn();
       } else {
-        throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.');
+        throw new Error(
+          'Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.'
+        );
       }
     }
 
     const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
     if (capacityProviderName) {
-      if (!(capacityProviderNameRegex.test(capacityProviderName))) {
-        throw new Error(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+      if (!capacityProviderNameRegex.test(capacityProviderName)) {
+        throw new Error(
+          `Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`
+        );
       }
     } else {
-      if (!(capacityProviderNameRegex.test(Stack.of(this).stackName))) {
+      if (!capacityProviderNameRegex.test(Stack.of(this).stackName)) {
         // name cannot start with 'aws|ecs|fargate', so append 'cp-'
         // 255 is the max length, subtract 3 because of 'cp-'
         // if the regex condition isn't met, CFN will name the capacity provider
-        capacityProviderName = 'cp-' + Names.uniqueResourceName(this, { maxLength: 252, allowedSpecialCharacters: '-_' });
+        capacityProviderName =
+          'cp-' +
+          Names.uniqueResourceName(this, { maxLength: 252, allowedSpecialCharacters: '-_' });
       }
     }
 
     if (props.instanceWarmupPeriod && !Token.isUnresolved(props.instanceWarmupPeriod)) {
       if (props.instanceWarmupPeriod < 0 || props.instanceWarmupPeriod > 10000) {
-        throw new Error(`InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`);
+        throw new Error(
+          `InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`
+        );
       }
     }
 
@@ -1422,14 +1540,19 @@ export class AsgCapacityProvider extends Construct {
       name: capacityProviderName,
       autoScalingGroupProvider: {
         autoScalingGroupArn: this.autoScalingGroup.autoScalingGroupName,
-        managedScaling: props.enableManagedScaling === false ? undefined : {
-          status: 'ENABLED',
-          targetCapacity: props.targetCapacityPercent || 100,
-          maximumScalingStepSize: props.maximumScalingStepSize,
-          minimumScalingStepSize: props.minimumScalingStepSize,
-          instanceWarmupPeriod: props.instanceWarmupPeriod,
-        },
-        managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
+        managedScaling:
+          props.enableManagedScaling === false
+            ? undefined
+            : {
+                status: 'ENABLED',
+                targetCapacity: props.targetCapacityPercent || 100,
+                maximumScalingStepSize: props.maximumScalingStepSize,
+                minimumScalingStepSize: props.minimumScalingStepSize,
+                instanceWarmupPeriod: props.instanceWarmupPeriod,
+              },
+        managedTerminationProtection: this.enableManagedTerminationProtection
+          ? 'ENABLED'
+          : 'DISABLED',
         managedDraining: managedDraining,
       },
     });
@@ -1454,7 +1577,10 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
 
   public visit(node: IConstruct): void {
     if (Cluster.isCluster(node)) {
-      if ((this.scope.defaultCapacityProviderStrategy.length > 0 || this.scope.capacityProviderNames.length > 0 && !this.resource)) {
+      if (
+        this.scope.defaultCapacityProviderStrategy.length > 0 ||
+        (this.scope.capacityProviderNames.length > 0 && !this.resource)
+      ) {
         this.resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
           defaultCapacityProviderStrategy: this.scope.defaultCapacityProviderStrategy,

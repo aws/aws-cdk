@@ -35,9 +35,15 @@ class ConstructsModule extends ImportableModule {
 class CoreModule extends ImportableModule {
   public readonly Stack = Type.fromName(this, 'Stack');
   public readonly CustomResourceProviderBase = Type.fromName(this, 'CustomResourceProviderBase');
-  public readonly CustomResourceProviderOptions = Type.fromName(this, 'CustomResourceProviderOptions');
+  public readonly CustomResourceProviderOptions = Type.fromName(
+    this,
+    'CustomResourceProviderOptions'
+  );
 
-  public readonly determineLatestNodeRuntimeName = CallableExpr.fromName(this, 'determineLatestNodeRuntimeName');
+  public readonly determineLatestNodeRuntimeName = CallableExpr.fromName(
+    this,
+    'determineLatestNodeRuntimeName'
+  );
 
   public readonly importAs = 'cdk';
 
@@ -54,7 +60,10 @@ class LambdaModule extends ImportableModule {
   public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
   public readonly Code = Type.fromName(this, 'Code');
 
-  public readonly determineLatestNodeRuntime = CallableExpr.fromName(this, 'determineLatestNodeRuntime');
+  public readonly determineLatestNodeRuntime = CallableExpr.fromName(
+    this,
+    'determineLatestNodeRuntime'
+  );
 
   public readonly importAs = 'lambda';
 

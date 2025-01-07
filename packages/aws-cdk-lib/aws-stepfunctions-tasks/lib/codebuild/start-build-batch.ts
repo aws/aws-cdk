@@ -38,11 +38,18 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: CodeBuildStartBuildBatchProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: CodeBuildStartBuildBatchProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(this.integrationPattern, CodeBuildStartBuildBatch.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      CodeBuildStartBuildBatch.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     this.taskMetrics = {
       metricPrefixSingular: 'CodeBuildProject',
@@ -117,8 +124,10 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
     };
   }
 
-  private serializeEnvVariables(environmentVariables: { [name: string]: codebuild.BuildEnvironmentVariable }) {
-    return Object.keys(environmentVariables).map(name => ({
+  private serializeEnvVariables(environmentVariables: {
+    [name: string]: codebuild.BuildEnvironmentVariable;
+  }) {
+    return Object.keys(environmentVariables).map((name) => ({
       Name: name,
       Type: environmentVariables[name].type || codebuild.BuildEnvironmentVariableType.PLAINTEXT,
       Value: environmentVariables[name].value,

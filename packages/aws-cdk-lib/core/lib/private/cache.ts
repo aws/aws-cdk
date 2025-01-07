@@ -19,11 +19,12 @@ export class Cache<A> {
    */
   public obtain(cacheKey: string, calcFn: () => A): A {
     let value = this.cache.get(cacheKey);
-    if (value) { return value; }
+    if (value) {
+      return value;
+    }
 
     value = calcFn();
     this.cache.set(cacheKey, value);
     return value;
   }
 }
-

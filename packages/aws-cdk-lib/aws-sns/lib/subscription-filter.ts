@@ -148,11 +148,11 @@ export class SubscriptionFilter {
     }
 
     if (stringConditions.matchPrefixes) {
-      conditions.push(...stringConditions.matchPrefixes.map(p => ({ prefix: p })));
+      conditions.push(...stringConditions.matchPrefixes.map((p) => ({ prefix: p })));
     }
 
     if (stringConditions.matchSuffixes) {
-      conditions.push(...stringConditions.matchSuffixes.map(s => ({ suffix: s })));
+      conditions.push(...stringConditions.matchSuffixes.map((s) => ({ suffix: s })));
     }
 
     return new SubscriptionFilter(conditions);
@@ -170,7 +170,7 @@ export class SubscriptionFilter {
     const allowlist = numericConditions.allowlist ?? numericConditions.whitelist;
 
     if (allowlist) {
-      conditions.push(...allowlist.map(v => ({ numeric: ['=', v] })));
+      conditions.push(...allowlist.map((v) => ({ numeric: ['=', v] })));
     }
 
     if (numericConditions.greaterThan !== undefined) {
@@ -190,11 +190,20 @@ export class SubscriptionFilter {
     }
 
     if (numericConditions.between) {
-      conditions.push({ numeric: ['>=', numericConditions.between.start, '<=', numericConditions.between.stop] });
+      conditions.push({
+        numeric: ['>=', numericConditions.between.start, '<=', numericConditions.between.stop],
+      });
     }
 
     if (numericConditions.betweenStrict) {
-      conditions.push({ numeric: ['>', numericConditions.betweenStrict.start, '<', numericConditions.betweenStrict.stop] });
+      conditions.push({
+        numeric: [
+          '>',
+          numericConditions.betweenStrict.start,
+          '<',
+          numericConditions.betweenStrict.stop,
+        ],
+      });
     }
 
     return new SubscriptionFilter(conditions);

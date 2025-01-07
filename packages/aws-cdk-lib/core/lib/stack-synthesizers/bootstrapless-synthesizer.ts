@@ -1,6 +1,11 @@
 import { DefaultStackSynthesizer } from './default-synthesizer';
 import { ISynthesisSession } from './types';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import {
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+} from '../assets';
 
 /**
  * Construction properties of `BootstraplessSynthesizer`.

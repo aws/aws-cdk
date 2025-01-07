@@ -13,10 +13,10 @@ export abstract class Authorizer extends Resource implements IAuthorizer {
    * Return whether the given object is an Authorizer.
    */
   public static isAuthorizer(x: any): x is Authorizer {
-    return x !== null && typeof(x) === 'object' && AUTHORIZER_SYMBOL in x;
+    return x !== null && typeof x === 'object' && AUTHORIZER_SYMBOL in x;
   }
 
-  public readonly abstract authorizerId: string;
+  public abstract readonly authorizerId: string;
   public readonly authorizationType?: AuthorizationType = AuthorizationType.CUSTOM;
 
   public constructor(scope: Construct, id: string, props?: ResourceProps) {

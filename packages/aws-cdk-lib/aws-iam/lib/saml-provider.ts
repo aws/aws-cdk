@@ -74,7 +74,11 @@ export class SamlProvider extends Resource implements ISamlProvider {
   /**
    * Import an existing provider
    */
-  public static fromSamlProviderArn(scope: Construct, id: string, samlProviderArn: string): ISamlProvider {
+  public static fromSamlProviderArn(
+    scope: Construct,
+    id: string,
+    samlProviderArn: string
+  ): ISamlProvider {
     class Import extends Resource implements ISamlProvider {
       public readonly samlProviderArn = samlProviderArn;
     }
@@ -87,7 +91,9 @@ export class SamlProvider extends Resource implements ISamlProvider {
     super(scope, id);
 
     if (props.name && !Token.isUnresolved(props.name) && !/^[\w+=,.@-]{1,128}$/.test(props.name)) {
-      throw new Error('Invalid SAML provider name. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 128 characters.');
+      throw new Error(
+        'Invalid SAML provider name. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 128 characters.'
+      );
     }
 
     const samlProvider = new CfnSAMLProvider(this, 'Resource', {

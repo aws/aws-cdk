@@ -60,7 +60,12 @@ interface AdotLambdaLayerBindConfig {
  * @param version The version of the ADOT Lambda layer
  * @param architecture the architecture of the Lambda layer ('amd64' or 'arm64')
  */
-function getLayerArn(scope: IConstruct, type: string, version: string, architecture: string): string {
+function getLayerArn(
+  scope: IConstruct,
+  type: string,
+  version: string,
+  architecture: string
+): string {
   const scopeStack = Stack.of(scope);
   const region = scopeStack.region;
 
@@ -69,7 +74,7 @@ function getLayerArn(scope: IConstruct, type: string, version: string, architect
     const arn = RegionInfo.get(region).adotLambdaLayerArn(type, version, architecture);
     if (arn === undefined) {
       throw new Error(
-        `Could not find the ARN information for the ADOT Lambda Layer of type ${type} and version ${version} in ${region}`,
+        `Could not find the ARN information for the ADOT Lambda Layer of type ${type} and version ${version} in ${region}`
       );
     }
     return arn;
@@ -113,7 +118,7 @@ export abstract class AdotLayerVersion {
    * @param version The version of the Lambda layer to use
    */
   public static fromJavaAutoInstrumentationLayerVersion(
-    version: AdotLambdaLayerJavaAutoInstrumentationVersion,
+    version: AdotLambdaLayerJavaAutoInstrumentationVersion
   ): AdotLayerVersion {
     return AdotLayerVersion.fromAdotVersion(version);
   }
@@ -123,7 +128,9 @@ export abstract class AdotLayerVersion {
    *
    * @param version The version of the Lambda layer to use
    */
-  public static fromJavaScriptSdkLayerVersion(version: AdotLambdaLayerJavaScriptSdkVersion): AdotLayerVersion {
+  public static fromJavaScriptSdkLayerVersion(
+    version: AdotLambdaLayerJavaScriptSdkVersion
+  ): AdotLayerVersion {
     return AdotLayerVersion.fromAdotVersion(version);
   }
 
@@ -132,7 +139,9 @@ export abstract class AdotLayerVersion {
    *
    * @param version The version of the Lambda layer to use
    */
-  public static fromPythonSdkLayerVersion(version: AdotLambdaLayerPythonSdkVersion): AdotLayerVersion {
+  public static fromPythonSdkLayerVersion(
+    version: AdotLambdaLayerPythonSdkVersion
+  ): AdotLayerVersion {
     return AdotLayerVersion.fromAdotVersion(version);
   }
 
@@ -197,7 +206,10 @@ export enum AdotLambdaExecWrapper {
 }
 
 abstract class AdotLambdaLayerVersion {
-  protected constructor(protected readonly type: AdotLambdaLayerType, protected readonly version: string) {}
+  protected constructor(
+    protected readonly type: AdotLambdaLayerType,
+    protected readonly version: string
+  ) {}
 
   /**
    * The ARN of the Lambda layer

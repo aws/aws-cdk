@@ -51,7 +51,7 @@ export class Intrinsic implements IResolvable {
       throw new Error(`Argument to Intrinsic must be a plain value object, got ${value}`);
     }
 
-    this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];
+    this.creationStack = (options.stackTrace ?? true) ? captureStackTrace() : [];
     this.value = value;
     this.typeHint = options.typeHint ?? ResolutionTypeHint.STRING;
   }
@@ -106,7 +106,9 @@ export class Intrinsic implements IResolvable {
    * @param message Error message
    */
   protected newError(message: string): any {
-    return new Error(`${message}\nToken created:\n    at ${this.creationStack.join('\n    at ')}\nError thrown:`);
+    return new Error(
+      `${message}\nToken created:\n    at ${this.creationStack.join('\n    at ')}\nError thrown:`
+    );
   }
 }
 

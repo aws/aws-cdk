@@ -22,7 +22,7 @@ export function deepParseJson(x: unknown): unknown {
 }
 
 function tryJsonParse(v: string): unknown {
-  if (typeof(v) !== 'string') {
+  if (typeof v !== 'string') {
     return v;
   }
 
@@ -34,15 +34,17 @@ function tryJsonParse(v: string): unknown {
 }
 
 export function decodeParameters(obj: Record<string, any>): any {
-  return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
-    try {
-      return [key, decodeValue(value)];
-    } catch {
-      // if the value cannot be parsed, leave it unchanged
-      // this will end up as a string
-      return [key, value];
-    }
-  }));
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => {
+      try {
+        return [key, decodeValue(value)];
+      } catch {
+        // if the value cannot be parsed, leave it unchanged
+        // this will end up as a string
+        return [key, value];
+      }
+    })
+  );
 }
 
 function decodeValue(value: any): any {
@@ -54,4 +56,3 @@ function decodeValue(value: any): any {
 
   return JSON.parse(value);
 }
-

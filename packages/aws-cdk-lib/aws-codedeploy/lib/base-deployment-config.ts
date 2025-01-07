@@ -141,7 +141,11 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
    * @param deploymentConfigName the name of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  protected static fromDeploymentConfigName(scope: Construct, id: string, deploymentConfigName: string): IBaseDeploymentConfig {
+  protected static fromDeploymentConfigName(
+    scope: Construct,
+    id: string,
+    deploymentConfigName: string
+  ): IBaseDeploymentConfig {
     ignore(id);
     const arn = Stack.of(scope).formatArn({
       service: 'codedeploy',
@@ -173,13 +177,24 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
     });
 
     // Traffic routing is not applicable to Server-based deployment configs
-    if (props?.trafficRouting && (props?.computePlatform === undefined || props?.computePlatform === ComputePlatform.SERVER)) {
-      throw new Error('Traffic routing config must not be specified for a Server-base deployment configuration');
+    if (
+      props?.trafficRouting &&
+      (props?.computePlatform === undefined || props?.computePlatform === ComputePlatform.SERVER)
+    ) {
+      throw new Error(
+        'Traffic routing config must not be specified for a Server-base deployment configuration'
+      );
     }
 
     // Minimum healthy hosts is only applicable to Server-based deployment configs
-    if (props?.minimumHealthyHosts && props?.computePlatform && props?.computePlatform !== ComputePlatform.SERVER) {
-      throw new Error('Minimum healthy hosts config must only be specified for a Server-base deployment configuration');
+    if (
+      props?.minimumHealthyHosts &&
+      props?.computePlatform &&
+      props?.computePlatform !== ComputePlatform.SERVER
+    ) {
+      throw new Error(
+        'Minimum healthy hosts config must only be specified for a Server-base deployment configuration'
+      );
     }
 
     if (props?.zonalConfig) {
@@ -187,7 +202,10 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
         this.validateMinimumDuration(props.zonalConfig.monitorDuration, 'monitorDuration');
       }
       if (props.zonalConfig.firstZoneMonitorDuration) {
-        this.validateMinimumDuration(props.zonalConfig.firstZoneMonitorDuration, 'firstZoneMonitorDuration');
+        this.validateMinimumDuration(
+          props.zonalConfig.firstZoneMonitorDuration,
+          'firstZoneMonitorDuration'
+        );
       }
     }
 
@@ -196,11 +214,14 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
       computePlatform: props?.computePlatform,
       trafficRoutingConfig: props?.trafficRouting?.bind(this),
       minimumHealthyHosts: props?.minimumHealthyHosts?._json,
-      zonalConfig: props?.zonalConfig ? {
-        monitorDurationInSeconds: props.zonalConfig.monitorDuration?.toSeconds(),
-        firstZoneMonitorDurationInSeconds: props.zonalConfig.firstZoneMonitorDuration?.toSeconds(),
-        minimumHealthyHostsPerZone: props.zonalConfig.minimumHealthyHostsPerZone?._json,
-      } : undefined,
+      zonalConfig: props?.zonalConfig
+        ? {
+            monitorDurationInSeconds: props.zonalConfig.monitorDuration?.toSeconds(),
+            firstZoneMonitorDurationInSeconds:
+              props.zonalConfig.firstZoneMonitorDuration?.toSeconds(),
+            minimumHealthyHostsPerZone: props.zonalConfig.minimumHealthyHostsPerZone?._json,
+          }
+        : undefined,
     });
 
     this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);
@@ -211,15 +232,21 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
-    this.node.addValidation({ validate: () => validateName('Deployment config', this.physicalName) });
+    this.node.addValidation({
+      validate: () => validateName('Deployment config', this.physicalName),
+    });
   }
 
   private validateMinimumDuration(duration: Duration, name: string) {
     const milliseconds = duration.toMilliseconds();
     if (milliseconds > 0 && milliseconds < 1000) {
-      throw new Error(`${name} must be greater than or equal to 1 second or be equal to 0, got ${milliseconds}ms`);
+      throw new Error(
+        `${name} must be greater than or equal to 1 second or be equal to 0, got ${milliseconds}ms`
+      );
     }
   }
 }
 
-function ignore(_x: any) { return; }
+function ignore(_x: any) {
+  return;
+}

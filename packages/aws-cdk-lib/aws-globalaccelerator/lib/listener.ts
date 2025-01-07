@@ -141,7 +141,7 @@ export class Listener extends cdk.Resource implements IListener {
 
     const resource = new ga.CfnListener(this, 'Resource', {
       acceleratorArn: props.accelerator.acceleratorArn,
-      portRanges: props.portRanges.map(m => ({
+      portRanges: props.portRanges.map((m) => ({
         fromPort: m.fromPort,
         toPort: m.toPort ?? m.fromPort,
       })),

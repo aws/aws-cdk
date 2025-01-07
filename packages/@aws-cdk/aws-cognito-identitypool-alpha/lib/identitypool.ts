@@ -1,8 +1,17 @@
 import { CfnIdentityPool, IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole } from 'aws-cdk-lib/aws-iam';
+import {
+  IOpenIdConnectProvider,
+  ISamlProvider,
+  Role,
+  FederatedPrincipal,
+  IRole,
+} from 'aws-cdk-lib/aws-iam';
 import { Resource, IResource, Stack, ArnFormat, Lazy, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { IdentityPoolRoleAttachment, IdentityPoolRoleMapping } from './identitypool-role-attachment';
+import {
+  IdentityPoolRoleAttachment,
+  IdentityPoolRoleMapping,
+} from './identitypool-role-attachment';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
 
 /**
@@ -104,19 +113,34 @@ export enum IdentityPoolProviderType {
  */
 export class IdentityPoolProviderUrl {
   /** Facebook Provider url */
-  public static readonly FACEBOOK = new IdentityPoolProviderUrl(IdentityPoolProviderType.FACEBOOK, 'graph.facebook.com');
+  public static readonly FACEBOOK = new IdentityPoolProviderUrl(
+    IdentityPoolProviderType.FACEBOOK,
+    'graph.facebook.com'
+  );
 
   /** Google Provider url */
-  public static readonly GOOGLE = new IdentityPoolProviderUrl(IdentityPoolProviderType.GOOGLE, 'accounts.google.com');
+  public static readonly GOOGLE = new IdentityPoolProviderUrl(
+    IdentityPoolProviderType.GOOGLE,
+    'accounts.google.com'
+  );
 
   /** Amazon Provider url */
-  public static readonly AMAZON = new IdentityPoolProviderUrl(IdentityPoolProviderType.AMAZON, 'www.amazon.com');
+  public static readonly AMAZON = new IdentityPoolProviderUrl(
+    IdentityPoolProviderType.AMAZON,
+    'www.amazon.com'
+  );
 
   /** Apple Provider url */
-  public static readonly APPLE = new IdentityPoolProviderUrl(IdentityPoolProviderType.APPLE, 'appleid.apple.com');
+  public static readonly APPLE = new IdentityPoolProviderUrl(
+    IdentityPoolProviderType.APPLE,
+    'appleid.apple.com'
+  );
 
   /** Twitter Provider url */
-  public static readonly TWITTER = new IdentityPoolProviderUrl(IdentityPoolProviderType.TWITTER, 'api.twitter.com');
+  public static readonly TWITTER = new IdentityPoolProviderUrl(
+    IdentityPoolProviderType.TWITTER,
+    'api.twitter.com'
+  );
 
   /** OpenId Provider url */
   public static openId(url: string): IdentityPoolProviderUrl {
@@ -129,7 +153,10 @@ export class IdentityPoolProviderUrl {
   }
 
   /** User Pool Provider Url */
-  public static userPool(userPool: IUserPool, userPoolClient: IUserPoolClient): IdentityPoolProviderUrl {
+  public static userPool(
+    userPool: IUserPool,
+    userPoolClient: IUserPoolClient
+  ): IdentityPoolProviderUrl {
     const url = `${userPool.userPoolProviderName}:${userPoolClient.userPoolClientId}`;
     return new IdentityPoolProviderUrl(IdentityPoolProviderType.USER_POOL, url);
   }
@@ -148,7 +175,7 @@ export class IdentityPoolProviderUrl {
     /**
      * The value of the Identity Pool Provider
      */
-    public readonly value: string,
+    public readonly value: string
   ) {}
 }
 
@@ -174,7 +201,7 @@ export interface IdentityPoolFacebookLoginProvider {
 
 /**
  * Login Provider for identity federation using Apple credentials
-*/
+ */
 export interface IdentityPoolAppleLoginProvider {
   /**
    * Services ID for Apple identity federation
@@ -276,7 +303,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Import an existing Identity Pool from its ID
    */
-  public static fromIdentityPoolId(scope: Construct, id: string, identityPoolId: string): IIdentityPool {
+  public static fromIdentityPoolId(
+    scope: Construct,
+    id: string,
+    identityPoolId: string
+  ): IIdentityPool {
     const identityPoolArn = Stack.of(scope).formatArn({
       service: 'cognito-identity',
       resource: 'identitypool',
@@ -290,7 +321,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Import an existing Identity Pool from its ARN
    */
-  public static fromIdentityPoolArn(scope: Construct, id: string, identityPoolArn: string): IIdentityPool {
+  public static fromIdentityPoolArn(
+    scope: Construct,
+    id: string,
+    identityPoolArn: string
+  ): IIdentityPool {
     const pool = Stack.of(scope).splitArn(identityPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
     const res = pool.resourceName || '';
     if (!res) {
@@ -299,10 +334,14 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (!Token.isUnresolved(res)) {
       const idParts = res.split(':');
       if (!(idParts.length === 2)) {
-        throw new Error('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>');
+        throw new Error(
+          'Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>'
+        );
       }
       if (!Token.isUnresolved(pool.region) && idParts[0] !== pool.region) {
-        throw new Error('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region');
+        throw new Error(
+          'Invalid Identity Pool Id: Region in Identity Pool Id must match stack region'
+        );
       }
     }
     class ImportedIdentityPool extends Resource implements IIdentityPool {
@@ -358,28 +397,37 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   private roleAttachmentCount: number = 0;
 
-  constructor(scope: Construct, id: string, props:IdentityPoolProps = {}) {
+  constructor(scope: Construct, id: string, props: IdentityPoolProps = {}) {
     super(scope, id, {
       physicalName: props.identityPoolName,
     });
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
-    const providers = authProviders.userPools ? authProviders.userPools.map(userPool => userPool.bind(this, this)) : undefined;
+    const providers = authProviders.userPools
+      ? authProviders.userPools.map((userPool) => userPool.bind(this, this))
+      : undefined;
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
-    const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
-      authProviders.openIdConnectProviders.map(openIdProvider =>
-        openIdProvider.openIdConnectProviderArn,
-      ) : undefined;
-    const samlProviderArns = authProviders.samlProviders ?
-      authProviders.samlProviders.map(samlProvider =>
-        samlProvider.samlProviderArn,
-      ) : undefined;
+    const openIdConnectProviderArns = authProviders.openIdConnectProviders
+      ? authProviders.openIdConnectProviders.map(
+          (openIdProvider) => openIdProvider.openIdConnectProviderArn
+        )
+      : undefined;
+    const samlProviderArns = authProviders.samlProviders
+      ? authProviders.samlProviders.map((samlProvider) => samlProvider.samlProviderArn)
+      : undefined;
 
-    let supportedLoginProviders:any = {};
-    if (authProviders.amazon) supportedLoginProviders[IdentityPoolProviderUrl.AMAZON.value] = authProviders.amazon.appId;
-    if (authProviders.facebook) supportedLoginProviders[IdentityPoolProviderUrl.FACEBOOK.value] = authProviders.facebook.appId;
-    if (authProviders.google) supportedLoginProviders[IdentityPoolProviderUrl.GOOGLE.value] = authProviders.google.clientId;
-    if (authProviders.apple) supportedLoginProviders[IdentityPoolProviderUrl.APPLE.value] = authProviders.apple.servicesId;
-    if (authProviders.twitter) supportedLoginProviders[IdentityPoolProviderUrl.TWITTER.value] = `${authProviders.twitter.consumerKey};${authProviders.twitter.consumerSecret}`;
+    let supportedLoginProviders: any = {};
+    if (authProviders.amazon)
+      supportedLoginProviders[IdentityPoolProviderUrl.AMAZON.value] = authProviders.amazon.appId;
+    if (authProviders.facebook)
+      supportedLoginProviders[IdentityPoolProviderUrl.FACEBOOK.value] =
+        authProviders.facebook.appId;
+    if (authProviders.google)
+      supportedLoginProviders[IdentityPoolProviderUrl.GOOGLE.value] = authProviders.google.clientId;
+    if (authProviders.apple)
+      supportedLoginProviders[IdentityPoolProviderUrl.APPLE.value] = authProviders.apple.servicesId;
+    if (authProviders.twitter)
+      supportedLoginProviders[IdentityPoolProviderUrl.TWITTER.value] =
+        `${authProviders.twitter.consumerKey};${authProviders.twitter.consumerSecret}`;
     if (!Object.keys(supportedLoginProviders).length) supportedLoginProviders = undefined;
 
     const cfnIdentityPool = new CfnIdentityPool(this, 'Resource', {
@@ -400,8 +448,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
       resourceName: this.identityPoolId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-    this.authenticatedRole = props.authenticatedRole ? props.authenticatedRole : this.configureDefaultRole('Authenticated');
-    this.unauthenticatedRole = props.unauthenticatedRole ? props.unauthenticatedRole : this.configureDefaultRole('Unauthenticated');
+    this.authenticatedRole = props.authenticatedRole
+      ? props.authenticatedRole
+      : this.configureDefaultRole('Authenticated');
+    this.unauthenticatedRole = props.unauthenticatedRole
+      ? props.unauthenticatedRole
+      : this.configureDefaultRole('Unauthenticated');
     const attachment = new IdentityPoolRoleAttachment(this, 'DefaultRoleAttachment', {
       identityPool: this,
       authenticatedRole: this.authenticatedRole,
@@ -451,13 +503,17 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   private configureDefaultGrantPrincipal(type: string) {
-    return new FederatedPrincipal('cognito-identity.amazonaws.com', {
-      'StringEquals': {
-        'cognito-identity.amazonaws.com:aud': this.identityPoolId,
+    return new FederatedPrincipal(
+      'cognito-identity.amazonaws.com',
+      {
+        StringEquals: {
+          'cognito-identity.amazonaws.com:aud': this.identityPoolId,
+        },
+        'ForAnyValue:StringLike': {
+          'cognito-identity.amazonaws.com:amr': type,
+        },
       },
-      'ForAnyValue:StringLike': {
-        'cognito-identity.amazonaws.com:amr': type,
-      },
-    }, 'sts:AssumeRoleWithWebIdentity');
+      'sts:AssumeRoleWithWebIdentity'
+    );
   }
 }

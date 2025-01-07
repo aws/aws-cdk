@@ -4,7 +4,6 @@ import { Duration } from '../../core';
  * Schedule for EventBridge Scheduler
  */
 export class Schedule {
-
   /**
    * Construct a one-time schedule from a Date.
    */
@@ -32,11 +31,16 @@ export class Schedule {
     }
 
     // maybeRate method returns the rate if the rate is whole number
-    const maybeRate = (value: number, unit: string) => (value > 0 && Number.isInteger(value)) ? `${value} ${unit}` : undefined;
+    const maybeRate = (value: number, unit: string) =>
+      value > 0 && Number.isInteger(value) ? `${value} ${unit}` : undefined;
 
     let rate = maybeRate(duration.toDays({ integral: false }), 'days');
-    if (rate === undefined) { rate = maybeRate(duration.toHours({ integral: false }), 'hours'); }
-    if (rate === undefined) { rate = maybeRate(duration.toMinutes({ integral: true }), 'minutes'); }
+    if (rate === undefined) {
+      rate = maybeRate(duration.toHours({ integral: false }), 'hours');
+    }
+    if (rate === undefined) {
+      rate = maybeRate(duration.toMinutes({ integral: true }), 'minutes');
+    }
 
     return new Schedule(`rate(${rate})`);
   }
@@ -46,7 +50,7 @@ export class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new Error("Cannot supply both 'day' and 'weekDay', use at most one");
     }
 
     const minute = options.minute ?? '*';
@@ -66,7 +70,8 @@ export class Schedule {
     /**
      * The Schedule expression
      */
-    public readonly expressionString: string) {}
+    public readonly expressionString: string
+  ) {}
 }
 
 /**

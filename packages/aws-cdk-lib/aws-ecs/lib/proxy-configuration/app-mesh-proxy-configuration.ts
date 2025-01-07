@@ -87,7 +87,10 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
   /**
    * Called when the proxy configuration is configured on a task definition.
    */
-  public bind(_scope: Construct, _taskDefinition: TaskDefinition): CfnTaskDefinition.ProxyConfigurationProperty {
+  public bind(
+    _scope: Construct,
+    _taskDefinition: TaskDefinition
+  ): CfnTaskDefinition.ProxyConfigurationProperty {
     const configProps = this.props.properties;
     const configType = 'APPMESH';
     return {
@@ -98,7 +101,9 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
   }
 }
 
-function renderProperties(props: AppMeshProxyConfigurationProps): CfnTaskDefinition.KeyValuePairProperty[] {
+function renderProperties(
+  props: AppMeshProxyConfigurationProps
+): CfnTaskDefinition.KeyValuePairProperty[] {
   const ret = new Array<CfnTaskDefinition.KeyValuePairProperty>();
   for (const [k, v] of Object.entries(props)) {
     const key = String(k);

@@ -19,7 +19,6 @@ export interface AthenaStopQueryExecutionProps extends sfn.TaskStateBaseProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
  */
 export class AthenaStopQueryExecution extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -29,11 +28,18 @@ export class AthenaStopQueryExecution extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: AthenaStopQueryExecutionProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: AthenaStopQueryExecutionProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(this.integrationPattern, AthenaStopQueryExecution.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      AthenaStopQueryExecution.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -58,4 +64,3 @@ export class AthenaStopQueryExecution extends sfn.TaskStateBase {
     };
   }
 }
-

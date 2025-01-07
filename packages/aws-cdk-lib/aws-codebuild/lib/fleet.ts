@@ -87,7 +87,10 @@ export class Fleet extends Resource implements IFleet {
    */
   public static fromFleetArn(scope: Construct, id: string, fleetArn: string): IFleet {
     class Import extends Resource implements IFleet {
-      public readonly fleetName = Arn.split(fleetArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split(':')[0];
+      public readonly fleetName = Arn.split(
+        fleetArn,
+        ArnFormat.SLASH_RESOURCE_NAME
+      ).resourceName!.split(':')[0];
       public readonly fleetArn = fleetArn;
 
       public get computeType(): FleetComputeType {
@@ -127,10 +130,14 @@ export class Fleet extends Resource implements IFleet {
   constructor(scope: Construct, id: string, props: FleetProps) {
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
-        throw new Error(`Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`);
+        throw new Error(
+          `Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`
+        );
       }
       if (props.fleetName.length > 128) {
-        throw new Error(`Fleet name can not be longer than 128 characters but has ${props.fleetName.length} characters.`);
+        throw new Error(
+          `Fleet name can not be longer than 128 characters but has ${props.fleetName.length} characters.`
+        );
       }
     }
 

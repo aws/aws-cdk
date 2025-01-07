@@ -7,7 +7,6 @@ import { PhysicalName } from '../../core';
  * Represents the endpoints available for targetting within a realtime log config resource
  */
 export abstract class Endpoint {
-
   /**
    * Configure a Kinesis Stream Endpoint for Realtime Log Config
    *
@@ -18,11 +17,12 @@ export abstract class Endpoint {
       public _renderEndpoint(scope: Construct) {
         const cloudfrontRole = role ?? this.singletonKinesisRole(scope);
 
-        stream.grant(cloudfrontRole,
+        stream.grant(
+          cloudfrontRole,
           'kinesis:DescribeStreamSummary',
           'kinesis:DescribeStream',
           'kinesis:PutRecord',
-          'kinesis:PutRecords',
+          'kinesis:PutRecords'
         );
 
         if (stream.encryptionKey) {
@@ -37,7 +37,7 @@ export abstract class Endpoint {
           streamType: 'Kinesis',
         };
       }
-    });
+    })();
   }
 
   private constructor() {}
@@ -48,7 +48,9 @@ export abstract class Endpoint {
   private singletonKinesisRole(scope: Construct): iam.IRole {
     const id = 'RealtimeLogKinesisRole';
     const existing = scope.node.tryFindChild(id) as iam.IRole;
-    if (existing) { return existing; }
+    if (existing) {
+      return existing;
+    }
 
     const role = new iam.Role(scope, id, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,

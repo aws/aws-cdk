@@ -240,7 +240,10 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  protected constructor(public readonly image: string, private readonly _imageHash?: string) { }
+  protected constructor(
+    public readonly image: string,
+    private readonly _imageHash?: string
+  ) {}
 
   /**
    * Provides a stable representation of this image for JSON serialization.
@@ -259,39 +262,29 @@ export class BundlingDockerImage {
     const environment = options.environment || {};
     const entrypoint = options.entrypoint?.[0] || null;
     const command = [
-      ...options.entrypoint?.[1]
-        ? [...options.entrypoint.slice(1)]
-        : [],
-      ...options.command
-        ? [...options.command]
-        : [],
+      ...(options.entrypoint?.[1] ? [...options.entrypoint.slice(1)] : []),
+      ...(options.command ? [...options.command] : []),
     ];
 
     const dockerArgs: string[] = [
-      'run', '--rm',
-      ...options.securityOpt
-        ? ['--security-opt', options.securityOpt]
-        : [],
-      ...options.network
-        ? ['--network', options.network]
-        : [],
-      ...options.platform
-        ? ['--platform', options.platform]
-        : [],
-      ...options.user
-        ? ['-u', options.user]
-        : [],
-      ...options.volumesFrom
-        ? flatten(options.volumesFrom.map(v => ['--volumes-from', v]))
-        : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
+      'run',
+      '--rm',
+      ...(options.securityOpt ? ['--security-opt', options.securityOpt] : []),
+      ...(options.network ? ['--network', options.network] : []),
+      ...(options.platform ? ['--platform', options.platform] : []),
+      ...(options.user ? ['-u', options.user] : []),
+      ...(options.volumesFrom
+        ? flatten(options.volumesFrom.map((v) => ['--volumes-from', v]))
+        : []),
+      ...flatten(
+        volumes.map((v) => [
+          '-v',
+          `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`,
+        ])
+      ),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
-      ...options.workingDirectory
-        ? ['-w', options.workingDirectory]
-        : [],
-      ...entrypoint
-        ? ['--entrypoint', entrypoint]
-        : [],
+      ...(options.workingDirectory ? ['-w', options.workingDirectory] : []),
+      ...(entrypoint ? ['--entrypoint', entrypoint] : []),
       this.image,
       ...command,
     ];
@@ -352,11 +345,19 @@ export class DockerImage extends BundlingDockerImage {
     const tag = `cdk-${tagHash}`;
 
     const dockerArgs: string[] = [
-      'build', '-t', tag,
+      'build',
+      '-t',
+      tag,
       ...(options.file ? ['-f', join(path, options.file)] : []),
       ...(options.platform ? ['--platform', options.platform] : []),
       ...(options.targetStage ? ['--target', options.targetStage] : []),
-      ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
+      ...(options.cacheFrom
+        ? [
+            ...options.cacheFrom
+              .map((cacheFrom) => ['--cache-from', this.cacheOptionToFlag(cacheFrom)])
+              .flat(),
+          ]
+        : []),
       ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
       ...(options.cacheDisabled ? ['--no-cache'] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
@@ -386,7 +387,11 @@ export class DockerImage extends BundlingDockerImage {
   private static cacheOptionToFlag(option: DockerCacheOption): string {
     let flag = `type=${option.type}`;
     if (option.params) {
-      flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
+      flag +=
+        ',' +
+        Object.entries(option.params)
+          .map(([k, v]) => `${k}=${v}`)
+          .join(',');
     }
     return flag;
   }
@@ -647,7 +652,8 @@ function isSeLinux(): boolean {
   }
   const prog = 'selinuxenabled';
   const proc = spawnSync(prog, [], {
-    stdio: [ // show selinux status output
+    stdio: [
+      // show selinux status output
       'pipe', // get value of stdio
       process.stderr, // redirect stdout to stderr
       'inherit', // inherit stderr

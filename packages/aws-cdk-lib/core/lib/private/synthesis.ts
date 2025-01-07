@@ -15,7 +15,10 @@ import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
+import {
+  PolicyValidationReportFormatter,
+  NamedValidationPluginReport,
+} from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
@@ -31,7 +34,7 @@ export interface SynthesisOptions extends StageSynthesisOptions {
   readonly outdir?: string;
 }
 
-export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+export function synthesize(root: IConstruct, options: SynthesisOptions = {}): cxapi.CloudAssembly {
   // add the TreeMetadata resource to the App first
   injectTreeMetadata(root);
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
@@ -77,12 +80,12 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
 function getAssemblies(root: App, rootAssembly: CloudAssembly): Map<string, CloudAssembly> {
   const assemblies = new Map<string, CloudAssembly>();
   assemblies.set(root.artifactId, rootAssembly);
-  visitAssemblies(root, 'pre', construct => {
+  visitAssemblies(root, 'pre', (construct) => {
     const stage = construct as Stage;
     if (stage.parentStage && assemblies.has(stage.parentStage.artifactId)) {
       assemblies.set(
         stage.artifactId,
-        assemblies.get(stage.parentStage.artifactId)!.getNestedAssembly(stage.artifactId),
+        assemblies.get(stage.parentStage.artifactId)!.getNestedAssembly(stage.artifactId)
       );
     }
   });
@@ -97,15 +100,20 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
   const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
-  visitAssemblies(root, 'post', construct => {
+  visitAssemblies(root, 'post', (construct) => {
     if (Stage.isStage(construct)) {
       for (const plugin of construct.policyValidationBeta1) {
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }
         let assemblyToUse = assemblies.get(construct.artifactId);
-        if (!assemblyToUse) throw new Error(`Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
-        templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
+        if (!assemblyToUse)
+          throw new Error(
+            `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`
+          );
+        templatePathsByPlugin
+          .get(plugin)!
+          .push(...assemblyToUse.stacksRecursively.map((stack) => stack.templateFullPath));
       }
     }
   });
@@ -136,7 +144,9 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
       });
     }
     if (FileSystem.fingerprint(outdir) !== hash) {
-      throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+      throw new Error(
+        `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`
+      );
     }
   }
 
@@ -155,7 +165,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
       // eslint-disable-next-line no-console
       console.error(output);
     }
-    const failed = reports.some(r => !r.success);
+    const failed = reports.some((r) => !r.success);
     if (failed) {
       const message = formatJson
         ? `Validation failed. See the validation report in '${reportFile}' for details`
@@ -219,7 +229,7 @@ function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions)
  * twice for the same construct.
  */
 function invokeAspects(root: IConstruct) {
-  const invokedByPath: { [nodePath: string]: AspectApplication[] } = { };
+  const invokedByPath: { [nodePath: string]: AspectApplication[] } = {};
 
   let nestedAspectWarning = false;
   recurse(root, []);
@@ -238,7 +248,7 @@ function invokeAspects(root: IConstruct) {
         invoked = invokedByPath[node.path] = [];
       }
 
-      if (invoked.some(invokedApp => invokedApp.aspect === aspectApplication.aspect)) {
+      if (invoked.some((invokedApp) => invokedApp.aspect === aspectApplication.aspect)) {
         continue;
       }
 
@@ -247,7 +257,10 @@ function invokeAspects(root: IConstruct) {
       // if an aspect was added to the node while invoking another aspect it will not be invoked, emit a warning
       // the `nestedAspectWarning` flag is used to prevent the warning from being emitted for every child
       if (!nestedAspectWarning && nodeAspectsCount !== aspects.all.length) {
-        Annotations.of(construct).addWarningV2('@aws-cdk/core:ignoredAspect', 'We detected an Aspect was added via another Aspect, and will not be applied');
+        Annotations.of(construct).addWarningV2(
+          '@aws-cdk/core:ignoredAspect',
+          'We detected an Aspect was added via another Aspect, and will not be applied'
+        );
         nestedAspectWarning = true;
       }
 
@@ -274,7 +287,7 @@ function invokeAspects(root: IConstruct) {
  * than the most recently invoked Aspect on that node.
  */
 function invokeAspectsV2(root: IConstruct) {
-  const invokedByPath: { [nodePath: string]: AspectApplication[] } = { };
+  const invokedByPath: { [nodePath: string]: AspectApplication[] } = {};
 
   recurse(root, []);
 
@@ -286,7 +299,9 @@ function invokeAspectsV2(root: IConstruct) {
     }
   }
 
-  throw new Error('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
+  throw new Error(
+    'We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.'
+  );
 
   function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): boolean {
     const node = construct.node;
@@ -297,13 +312,12 @@ function invokeAspectsV2(root: IConstruct) {
     const allAspectsHere = sortAspectsByPriority(inheritedAspects, localAspects);
 
     for (const aspectApplication of allAspectsHere) {
-
       let invoked = invokedByPath[node.path];
       if (!invoked) {
         invoked = invokedByPath[node.path] = [];
       }
 
-      if (invoked.some(invokedApp => invokedApp.aspect === aspectApplication.aspect)) {
+      if (invoked.some((invokedApp) => invokedApp.aspect === aspectApplication.aspect)) {
         continue;
       }
 
@@ -311,9 +325,9 @@ function invokeAspectsV2(root: IConstruct) {
       const lastInvokedAspect = invoked[invoked.length - 1];
       if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
         throw new Error(
-          `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (${lastInvokedAspect.priority}) was already invoked on this node.`,
+          `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (${lastInvokedAspect.priority}) was already invoked on this node.`
         );
-      };
+      }
 
       aspectApplication.aspect.visit(construct);
 
@@ -337,7 +351,10 @@ function invokeAspectsV2(root: IConstruct) {
  * Given two lists of AspectApplications (inherited and locally defined), this function returns a list of
  * AspectApplications ordered by priority. For Aspects of the same priority, inherited Aspects take precedence.
  */
-function sortAspectsByPriority(inheritedAspects: AspectApplication[], localAspects: AspectApplication[]): AspectApplication[] {
+function sortAspectsByPriority(
+  inheritedAspects: AspectApplication[],
+  localAspects: AspectApplication[]
+): AspectApplication[] {
   const allAspects = [...inheritedAspects, ...localAspects].sort((a, b) => {
     // Compare by priority first
     if (a.priority !== b.priority) {
@@ -365,7 +382,9 @@ function getAspectApplications(node: IConstruct): AspectApplication[] {
 
   // Fallback: Create AspectApplications from `aspects.all`
   const typedAspects = aspects as Aspects;
-  return typedAspects.all.map(aspect => new AspectApplication(node, aspect, AspectPriority.DEFAULT));
+  return typedAspects.all.map(
+    (aspect) => new AspectApplication(node, aspect, AspectPriority.DEFAULT)
+  );
 }
 
 /**
@@ -385,14 +404,18 @@ function getAspectApplications(node: IConstruct): AspectApplication[] {
  * Stop at Assembly boundaries.
  */
 function injectMetadataResources(root: IConstruct) {
-  visit(root, 'post', construct => {
-    if (!Stack.isStack(construct) || !construct._versionReportingEnabled) { return; }
+  visit(root, 'post', (construct) => {
+    if (!Stack.isStack(construct) || !construct._versionReportingEnabled) {
+      return;
+    }
 
     // Because of https://github.com/aws/aws-cdk/blob/main/packages/assert-internal/lib/synth-utils.ts#L74
     // synthesize() may be called more than once on a stack in unit tests, and the below would break
     // if we execute it a second time. Guard against the constructs already existing.
     const CDKMetadata = 'CDKMetadata';
-    if (construct.node.tryFindChild(CDKMetadata)) { return; }
+    if (construct.node.tryFindChild(CDKMetadata)) {
+      return;
+    }
 
     new MetadataResource(construct, CDKMetadata);
   });
@@ -406,7 +429,7 @@ function injectMetadataResources(root: IConstruct) {
  * node), and the generic prepare phase is deprecated.
  */
 function injectTreeMetadata(root: IConstruct) {
-  visit(root, 'post', construct => {
+  visit(root, 'post', (construct) => {
     if (!App.isApp(construct) || !construct._treeMetadata) return;
     const CDKTreeMetadata = 'Tree';
     if (construct.node.tryFindChild(CDKTreeMetadata)) return;
@@ -419,8 +442,12 @@ function injectTreeMetadata(root: IConstruct) {
  *
  * Stop at Assembly boundaries.
  */
-function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
-  visit(root, 'post', construct => {
+function synthesizeTree(
+  root: IConstruct,
+  builder: cxapi.CloudAssemblyBuilder,
+  validateOnSynth: boolean = false
+) {
+  visit(root, 'post', (construct) => {
     const session = {
       outdir: builder.outdir,
       assembly: builder,
@@ -449,14 +476,14 @@ interface ValidationError {
 function validateTree(root: IConstruct) {
   const errors = new Array<ValidationError>();
 
-  visit(root, 'pre', construct => {
+  visit(root, 'pre', (construct) => {
     for (const message of construct.node.validate()) {
       errors.push({ message, source: construct });
     }
   });
 
   if (errors.length > 0) {
-    const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+    const errorList = errors.map((e) => `[${e.source.node.path}] ${e.message}`).join('\n  ');
     throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
   }
 }
@@ -470,7 +497,9 @@ function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConst
   }
 
   for (const child of root.node.children) {
-    if (!Stage.isStage(child)) { continue; }
+    if (!Stage.isStage(child)) {
+      continue;
+    }
     visitAssemblies(child, order, cb);
   }
 
@@ -488,7 +517,9 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   }
 
   for (const child of root.node.children) {
-    if (Stage.isStage(child)) { continue; }
+    if (Stage.isStage(child)) {
+      continue;
+    }
     visit(child, order, cb);
   }
 

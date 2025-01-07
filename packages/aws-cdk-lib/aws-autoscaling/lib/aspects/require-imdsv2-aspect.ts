@@ -9,8 +9,7 @@ import { CfnLaunchConfiguration } from '../autoscaling.generated';
  * Aspect that makes IMDSv2 required on instances deployed by AutoScalingGroups.
  */
 export class AutoScalingGroupRequireImdsv2Aspect implements cdk.IAspect {
-  constructor() {
-  }
+  constructor() {}
 
   public visit(node: IConstruct): void {
     if (!(node instanceof AutoScalingGroup)) {
@@ -37,9 +36,13 @@ export class AutoScalingGroupRequireImdsv2Aspect implements cdk.IAspect {
         return;
       }
 
-      const metadataOptions = (data as CfnLaunchTemplate.LaunchTemplateDataProperty).metadataOptions;
+      const metadataOptions = (data as CfnLaunchTemplate.LaunchTemplateDataProperty)
+        .metadataOptions;
       if (cdk.isResolvableObject(metadataOptions)) {
-        this.warn(node, 'CfnLaunchTemplate.LaunchTemplateData.MetadataOptions field is a CDK token.');
+        this.warn(
+          node,
+          'CfnLaunchTemplate.LaunchTemplateData.MetadataOptions field is a CDK token.'
+        );
         return;
       }
 
@@ -61,6 +64,9 @@ export class AutoScalingGroupRequireImdsv2Aspect implements cdk.IAspect {
    * @param message The warning message.
    */
   protected warn(node: IConstruct, message: string) {
-    cdk.Annotations.of(node).addWarningV2(`@aws-cdk/aws-autoscaling:imdsv2${AutoScalingGroupRequireImdsv2Aspect.name}`, `${AutoScalingGroupRequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`);
+    cdk.Annotations.of(node).addWarningV2(
+      `@aws-cdk/aws-autoscaling:imdsv2${AutoScalingGroupRequireImdsv2Aspect.name}`,
+      `${AutoScalingGroupRequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`
+    );
   }
 }

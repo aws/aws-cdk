@@ -1,7 +1,12 @@
 import { Construct } from 'constructs';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
-import { ensureInRange, renderCommonLogDriverOptions, renderLogDriverSecretOptions, stringifyOptions } from './utils';
+import {
+  ensureInRange,
+  renderCommonLogDriverOptions,
+  renderLogDriverSecretOptions,
+  stringifyOptions,
+} from './utils';
 import { SecretValue } from '../../../core';
 import { ContainerDefinition, Secret } from '../container-definition';
 
@@ -164,7 +169,12 @@ export class SplunkLogDriver extends LogDriver {
     return {
       logDriver: 'splunk',
       options,
-      secretOptions: this.props.secretToken && renderLogDriverSecretOptions({ 'splunk-token': this.props.secretToken }, _containerDefinition.taskDefinition),
+      secretOptions:
+        this.props.secretToken &&
+        renderLogDriverSecretOptions(
+          { 'splunk-token': this.props.secretToken },
+          _containerDefinition.taskDefinition
+        ),
     };
   }
 }

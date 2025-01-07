@@ -28,8 +28,10 @@ export interface OpenSearchActionProps extends CommonActionProps {
  * The action to write data to an Amazon OpenSearch Service domain.
  */
 export class OpenSearchAction implements iot.IAction {
-  constructor(private readonly domain: opensearch.Domain, private readonly props: OpenSearchActionProps) {
-  }
+  constructor(
+    private readonly domain: opensearch.Domain,
+    private readonly props: OpenSearchActionProps
+  ) {}
 
   /**
    * @internal
@@ -39,10 +41,12 @@ export class OpenSearchAction implements iot.IAction {
 
     // According to CloudFormation documentation, we only need 'es:ESHttpPut' permission
     // https://docs.aws.amazon.com/iot/latest/developerguide/opensearch-rule-action.html#opensearch-rule-action-requirements
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['es:ESHttpPut'],
-      resources: [this.domain.domainArn, `${this.domain.domainArn}/*`],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['es:ESHttpPut'],
+        resources: [this.domain.domainArn, `${this.domain.domainArn}/*`],
+      })
+    );
 
     return {
       configuration: {

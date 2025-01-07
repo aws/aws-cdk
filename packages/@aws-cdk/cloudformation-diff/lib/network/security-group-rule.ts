@@ -34,33 +34,45 @@ export class SecurityGroupRule {
     this.groupId = ruleObject.GroupId || groupRef || '*unknown*'; // In case of an inline rule
 
     this.peer =
-        findFirst(ruleObject,
-          ['CidrIp', 'CidrIpv6'],
-          (ip) => ({ kind: 'cidr-ip', ip } as CidrIpPeer))
-        ||
-        findFirst(ruleObject,
-          ['DestinationSecurityGroupId', 'SourceSecurityGroupId'],
-          (securityGroupId) => ({ kind: 'security-group', securityGroupId } as SecurityGroupPeer))
-        ||
-        findFirst(ruleObject,
-          ['DestinationPrefixListId', 'SourcePrefixListId'],
-          (prefixListId) => ({ kind: 'prefix-list', prefixListId } as PrefixListPeer));
+      findFirst(
+        ruleObject,
+        ['CidrIp', 'CidrIpv6'],
+        (ip) => ({ kind: 'cidr-ip', ip }) as CidrIpPeer
+      ) ||
+      findFirst(
+        ruleObject,
+        ['DestinationSecurityGroupId', 'SourceSecurityGroupId'],
+        (securityGroupId) => ({ kind: 'security-group', securityGroupId }) as SecurityGroupPeer
+      ) ||
+      findFirst(
+        ruleObject,
+        ['DestinationPrefixListId', 'SourcePrefixListId'],
+        (prefixListId) => ({ kind: 'prefix-list', prefixListId }) as PrefixListPeer
+      );
   }
 
   public equal(other: SecurityGroupRule) {
-    return this.ipProtocol === other.ipProtocol
-        && this.fromPort === other.fromPort
-        && this.toPort === other.toPort
-        && peerEqual(this.peer, other.peer);
+    return (
+      this.ipProtocol === other.ipProtocol &&
+      this.fromPort === other.fromPort &&
+      this.toPort === other.toPort &&
+      peerEqual(this.peer, other.peer)
+    );
   }
 
   public describeProtocol() {
-    if (this.ipProtocol === '-1') { return 'Everything'; }
+    if (this.ipProtocol === '-1') {
+      return 'Everything';
+    }
 
     const ipProtocol = this.ipProtocol.toUpperCase();
 
-    if (this.fromPort === -1) { return `All ${ipProtocol}`; }
-    if (this.fromPort === this.toPort) { return `${ipProtocol} ${this.fromPort}`; }
+    if (this.fromPort === -1) {
+      return `All ${ipProtocol}`;
+    }
+    if (this.fromPort === this.toPort) {
+      return `${ipProtocol} ${this.fromPort}`;
+    }
     return `${ipProtocol} ${this.fromPort}-${this.toPort}`;
   }
 
@@ -68,11 +80,17 @@ export class SecurityGroupRule {
     if (this.peer) {
       switch (this.peer.kind) {
         case 'cidr-ip':
-          if (this.peer.ip === '0.0.0.0/0') { return 'Everyone (IPv4)'; }
-          if (this.peer.ip === '::/0') { return 'Everyone (IPv6)'; }
+          if (this.peer.ip === '0.0.0.0/0') {
+            return 'Everyone (IPv4)';
+          }
+          if (this.peer.ip === '::/0') {
+            return 'Everyone (IPv6)';
+          }
           return `${this.peer.ip}`;
-        case 'prefix-list': return `${this.peer.prefixListId}`;
-        case 'security-group': return `${this.peer.securityGroupId}`;
+        case 'prefix-list':
+          return `${this.peer.prefixListId}`;
+        case 'security-group':
+          return `${this.peer.securityGroupId}`;
       }
     }
 
@@ -108,14 +126,23 @@ export interface PrefixListPeer {
 export type RulePeer = CidrIpPeer | SecurityGroupPeer | PrefixListPeer;
 
 function peerEqual(a?: RulePeer, b?: RulePeer) {
-  if ((a === undefined) !== (b === undefined)) { return false; }
-  if (a === undefined) { return true; }
+  if ((a === undefined) !== (b === undefined)) {
+    return false;
+  }
+  if (a === undefined) {
+    return true;
+  }
 
-  if (a.kind !== b!.kind) { return false; }
+  if (a.kind !== b!.kind) {
+    return false;
+  }
   switch (a.kind) {
-    case 'cidr-ip': return a.ip === (b as typeof a).ip;
-    case 'security-group': return a.securityGroupId === (b as typeof a).securityGroupId;
-    case 'prefix-list': return a.prefixListId === (b as typeof a).prefixListId;
+    case 'cidr-ip':
+      return a.ip === (b as typeof a).ip;
+    case 'security-group':
+      return a.securityGroupId === (b as typeof a).securityGroupId;
+    case 'prefix-list':
+      return a.prefixListId === (b as typeof a).prefixListId;
   }
 }
 

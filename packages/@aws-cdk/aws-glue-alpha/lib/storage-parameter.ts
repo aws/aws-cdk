@@ -360,7 +360,9 @@ export class StorageParameter {
   /**
    * Identifies if the file contains less or more values for a row than the number of columns specified in the external table definition. This property is only available for an uncompressed text file format.
    */
-  public static columnCountMismatchHandling(value: ColumnCountMismatchHandlingAction): StorageParameter {
+  public static columnCountMismatchHandling(
+    value: ColumnCountMismatchHandlingAction
+  ): StorageParameter {
     return new StorageParameter('column_count_mismatch_handling', value);
   }
 
@@ -419,5 +421,8 @@ export class StorageParameter {
     return new StorageParameter(key, value.toString());
   }
 
-  protected constructor(public readonly key: string, public readonly value: string) {}
+  protected constructor(
+    public readonly key: string,
+    public readonly value: string
+  ) {}
 }

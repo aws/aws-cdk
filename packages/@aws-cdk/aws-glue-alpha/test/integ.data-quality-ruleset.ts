@@ -12,24 +12,31 @@ const database = new glue.Database(stack, 'MyDatabase', {
   databaseName: 'my_database',
 });
 
-const columns = [{
-  name: 'col1',
-  type: glue.Schema.STRING,
-}, {
-  name: 'col2',
-  type: glue.Schema.STRING,
-}, {
-  name: 'col3',
-  type: glue.Schema.STRING,
-}];
+const columns = [
+  {
+    name: 'col1',
+    type: glue.Schema.STRING,
+  },
+  {
+    name: 'col2',
+    type: glue.Schema.STRING,
+  },
+  {
+    name: 'col3',
+    type: glue.Schema.STRING,
+  },
+];
 
-const partitionKeys = [{
-  name: 'year',
-  type: glue.Schema.SMALL_INT,
-}, {
-  name: 'month',
-  type: glue.Schema.BIG_INT,
-}];
+const partitionKeys = [
+  {
+    name: 'year',
+    type: glue.Schema.SMALL_INT,
+  },
+  {
+    name: 'month',
+    type: glue.Schema.BIG_INT,
+  },
+];
 
 const csvTable = new glue.Table(stack, 'CSVTable', {
   database,

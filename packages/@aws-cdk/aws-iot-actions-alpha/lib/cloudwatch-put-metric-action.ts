@@ -54,8 +54,7 @@ export interface CloudWatchPutMetricActionProps extends CommonActionProps {
  * The action to capture an Amazon CloudWatch metric.
  */
 export class CloudWatchPutMetricAction implements iot.IAction {
-  constructor(private readonly props: CloudWatchPutMetricActionProps) {
-  }
+  constructor(private readonly props: CloudWatchPutMetricActionProps) {}
 
   /**
    * @internal

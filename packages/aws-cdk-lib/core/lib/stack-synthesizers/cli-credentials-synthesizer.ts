@@ -4,7 +4,12 @@ import { BOOTSTRAP_QUALIFIER_CONTEXT, DefaultStackSynthesizer } from './default-
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 import * as cxapi from '../../../cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import {
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+} from '../assets';
 import { StringSpecializer } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -87,7 +92,10 @@ export interface CliCredentialsStackSynthesizerProps {
  * of the Bootstrap Stack V2 (also known as "modern bootstrap stack"). You can override
  * the default names using the synthesizer's construction properties.
  */
-export class CliCredentialsStackSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer, IBoundStackSynthesizer {
+export class CliCredentialsStackSynthesizer
+  extends StackSynthesizer
+  implements IReusableStackSynthesizer, IBoundStackSynthesizer
+{
   private qualifier?: string;
   private bucketName?: string;
   private repositoryName?: string;
@@ -108,12 +116,15 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer implements 
     function validateNoToken<A extends keyof CliCredentialsStackSynthesizerProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
-        throw new Error(`CliCredentialsStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
-          '${Qualifier}',
-          cxapi.EnvironmentPlaceholders.CURRENT_REGION,
-          cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
-          cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
-        ].join(', '));
+        throw new Error(
+          `CliCredentialsStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` +
+            [
+              '${Qualifier}',
+              cxapi.EnvironmentPlaceholders.CURRENT_REGION,
+              cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
+              cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
+            ].join(', ')
+        );
       }
     }
   }
@@ -128,16 +139,28 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer implements 
   public bind(stack: Stack): void {
     super.bind(stack);
 
-    const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    const qualifier =
+      this.props.qualifier ??
+      stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ??
+      DefaultStackSynthesizer.DEFAULT_QUALIFIER;
     this.qualifier = qualifier;
 
     const spec = new StringSpecializer(stack, qualifier);
 
     /* eslint-disable max-len */
-    this.bucketName = spec.specialize(this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME);
-    this.repositoryName = spec.specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
-    this.bucketPrefix = spec.specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
-    this.dockerTagPrefix = spec.specialize(this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX);
+    this.bucketName = spec.specialize(
+      this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME
+    );
+    this.repositoryName = spec.specialize(
+      this.props.imageAssetsRepositoryName ??
+        DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
+    );
+    this.bucketPrefix = spec.specialize(
+      this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
+    );
+    this.dockerTagPrefix = spec.specialize(
+      this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX
+    );
     /* eslint-enable max-len */
   }
 

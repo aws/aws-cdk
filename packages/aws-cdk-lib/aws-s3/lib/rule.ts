@@ -118,7 +118,7 @@ export interface LifecycleRule {
    *
    * @default - Rule applies to all objects
    */
-  readonly tagFilters?: {[tag: string]: any};
+  readonly tagFilters?: { [tag: string]: any };
 
   /**
    * Indicates whether Amazon S3 will remove a delete marker with no noncurrent versions.
@@ -259,7 +259,9 @@ export class StorageClass {
    */
   public static readonly INTELLIGENT_TIERING = new StorageClass('INTELLIGENT_TIERING');
 
-  constructor(public readonly value: string) { }
+  constructor(public readonly value: string) {}
 
-  public toString() { return this.value; }
+  public toString() {
+    return this.value;
+  }
 }

@@ -32,7 +32,7 @@ class KafkaVersionTest extends Stack {
     super(scope, id, props);
     const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
-    versions.forEach(version => {
+    versions.forEach((version) => {
       const versionName = version.version.replace(/\./g, '-');
       new msk.Cluster(this, `ClusterVersion${versionName}`, {
         clusterName: `cluster-v${versionName}`,
@@ -47,8 +47,6 @@ class KafkaVersionTest extends Stack {
 const app = new App();
 new IntegTest(app, 'KafkaVersionIntegTest', {
   enableLookups: true,
-  testCases: [
-    new KafkaVersionTest(app, 'KafkaVersionTestStack'),
-  ],
+  testCases: [new KafkaVersionTest(app, 'KafkaVersionTestStack')],
 });
 app.synth();

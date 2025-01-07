@@ -17,5 +17,5 @@ export class PhysicalName {
    */
   public static readonly GENERATE_IF_NEEDED = Token.asString(new GeneratedWhenNeededMarker());
 
-  private constructor() { }
+  private constructor() {}
 }

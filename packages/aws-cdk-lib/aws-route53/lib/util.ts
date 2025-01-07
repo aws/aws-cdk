@@ -15,11 +15,13 @@ export function validateZoneName(zoneName: string) {
   if (zoneName.length > 255) {
     throw new ValidationError('zone name cannot be more than 255 bytes long');
   }
-  if (zoneName.split('.').find(label => label.length > 63)) {
+  if (zoneName.split('.').find((label) => label.length > 63)) {
     throw new ValidationError('zone name labels cannot be more than 63 bytes long');
   }
   if (!zoneName.match(/^[a-z0-9!"#$%&'()*+,/:;<=>?@[\\\]^_`{|}~.-]+$/i)) {
-    throw new ValidationError('zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \ ] ^ _ ` { | } ~ .');
+    throw new ValidationError(
+      'zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \ ] ^ _ ` { | } ~ .'
+    );
   }
 }
 
@@ -44,7 +46,10 @@ class ValidationError extends Error {
  *        <li>Otherwise, append +.+, +zoneName+ and a trailing +.+</li>
  *      </ul>
  */
-export function determineFullyQualifiedDomainName(providedName: string, hostedZone: IHostedZone): string {
+export function determineFullyQualifiedDomainName(
+  providedName: string,
+  hostedZone: IHostedZone
+): string {
   if (providedName.endsWith('.')) {
     return providedName;
   }

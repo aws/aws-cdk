@@ -61,7 +61,6 @@ export interface IKubectlProvider extends IConstruct {
  * Implementation of Kubectl Lambda
  */
 export class KubectlProvider extends NestedStack implements IKubectlProvider {
-
   /**
    * Take existing provider or create new based on cluster
    *
@@ -98,7 +97,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
    * @param id an id of resource
    * @param attrs attributes for the provider
    */
-  public static fromKubectlProviderAttributes(scope: Construct, id: string, attrs: KubectlProviderAttributes): IKubectlProvider {
+  public static fromKubectlProviderAttributes(
+    scope: Construct,
+    id: string,
+    attrs: KubectlProviderAttributes
+  ): IKubectlProvider {
     return new ImportedKubectlProvider(scope, id, attrs);
   }
 
@@ -123,7 +126,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     const cluster = props.cluster;
 
     if (!cluster.kubectlRole) {
-      throw new Error('"kubectlRole" is not defined, cannot issue kubectl commands against this cluster');
+      throw new Error(
+        '"kubectlRole" is not defined, cannot issue kubectl commands against this cluster'
+      );
     }
 
     if (cluster.kubectlPrivateSubnets && !cluster.kubectlSecurityGroup) {
@@ -145,8 +150,13 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
-      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
-      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
+      securityGroups:
+        cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup
+          ? [cluster.kubectlSecurityGroup]
+          : undefined,
+      vpcSubnets: cluster.kubectlPrivateSubnets
+        ? { subnets: cluster.kubectlPrivateSubnets }
+        : undefined,
     });
 
     // allow user to customize the layers with the tools we need
@@ -155,20 +165,24 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     this.handlerRole = handler.role!;
 
-    this.handlerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['eks:DescribeCluster'],
-      resources: [cluster.clusterArn],
-    }));
+    this.handlerRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['eks:DescribeCluster'],
+        resources: [cluster.clusterArn],
+      })
+    );
 
     // taken from the lambda default role logic.
     // makes it easier for roles to be passed in.
     if (handler.isBoundToVpc) {
-      handler.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+      handler.role?.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole')
+      );
     }
 
     // For OCI helm chart authorization.
     this.handlerRole.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly')
     );
 
     /**
@@ -179,13 +193,24 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       expression: Fn.conditionEquals(Aws.PARTITION, 'aws'),
     });
 
-    const conditionalPolicy = iam.ManagedPolicy.fromManagedPolicyArn(this, 'ConditionalPolicyArn',
-      Fn.conditionIf(hasEcrPublicCondition.logicalId,
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly').managedPolicyArn,
-        Aws.NO_VALUE).toString(),
+    const conditionalPolicy = iam.ManagedPolicy.fromManagedPolicyArn(
+      this,
+      'ConditionalPolicyArn',
+      Fn.conditionIf(
+        hasEcrPublicCondition.logicalId,
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonElasticContainerRegistryPublicReadOnly')
+          .managedPolicyArn,
+        Aws.NO_VALUE
+      ).toString()
     );
 
-    this.handlerRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'conditionalPolicy', conditionalPolicy.managedPolicyArn));
+    this.handlerRole.addManagedPolicy(
+      iam.ManagedPolicy.fromManagedPolicyArn(
+        this,
+        'conditionalPolicy',
+        conditionalPolicy.managedPolicyArn
+      )
+    );
 
     // allow this handler to assume the kubectl role
     cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
@@ -193,18 +218,21 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
-      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
-      securityGroups: cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
+      vpcSubnets: cluster.kubectlPrivateSubnets
+        ? { subnets: cluster.kubectlPrivateSubnets }
+        : undefined,
+      securityGroups:
+        cluster.kubectlPrivateSubnets && cluster.kubectlSecurityGroup
+          ? [cluster.kubectlSecurityGroup]
+          : undefined,
     });
 
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
-
 }
 
 class ImportedKubectlProvider extends Construct implements IKubectlProvider {
-
   /**
    * The custom resource provider's service token.
    */

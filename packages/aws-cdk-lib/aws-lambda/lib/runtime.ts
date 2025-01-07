@@ -58,76 +58,103 @@ export class Runtime {
    * The NodeJS runtime (nodejs)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS = new Runtime('nodejs', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS = new Runtime('nodejs', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The NodeJS 4.3 runtime (nodejs4.3)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_4_3 = new Runtime('nodejs4.3', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_4_3 = new Runtime('nodejs4.3', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The NodeJS 6.10 runtime (nodejs6.10)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_6_10 = new Runtime('nodejs6.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_6_10 = new Runtime('nodejs6.10', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The NodeJS 8.10 runtime (nodejs8.10)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_8_10 = new Runtime('nodejs8.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_8_10 = new Runtime('nodejs8.10', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The NodeJS 10.x runtime (nodejs10.x)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_10_X = new Runtime('nodejs10.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_10_X = new Runtime('nodejs10.x', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The NodeJS 12.x runtime (nodejs12.x)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_12_X = new Runtime('nodejs12.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_12_X = new Runtime('nodejs12.x', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The NodeJS 14.x runtime (nodejs14.x)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The NodeJS 16.x runtime (nodejs16.x)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_16_X = new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_16_X = new Runtime('nodejs16.x', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The NodeJS 18.x runtime (nodejs18.x)
    */
-  public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The NodeJS 20.x runtime (nodejs20.x)
    */
-  public static readonly NODEJS_20_X = new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_20_X = new Runtime('nodejs20.x', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    */
-  public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
+  public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+    isVariable: true,
+  });
 
   /**
    * The NodeJS 22.x runtime (nodejs22.x)
    */
-  public static readonly NODEJS_22_X = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_22_X = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The Python 2.7 runtime (python2.7)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
-  public static readonly PYTHON_2_7 = new Runtime('python2.7', RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly PYTHON_2_7 = new Runtime('python2.7', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+  });
 
   /**
    * The Python 3.6 runtime (python3.6) (not recommended)
@@ -300,8 +327,8 @@ export class Runtime {
   public static readonly RUBY_3_2 = new Runtime('ruby3.2', RuntimeFamily.RUBY);
 
   /**
-  * The Ruby 3.3 runtime (ruby3.3)
-  */
+   * The Ruby 3.3 runtime (ruby3.3)
+   */
   public static readonly RUBY_3_3 = new Runtime('ruby3.3', RuntimeFamily.RUBY);
 
   /**
@@ -387,9 +414,11 @@ export class Runtime {
   }
 
   public runtimeEquals(other: Runtime): boolean {
-    return other.name === this.name &&
+    return (
+      other.name === this.name &&
       other.family === this.family &&
-      other.supportsInlineCode === this.supportsInlineCode;
+      other.supportsInlineCode === this.supportsInlineCode
+    );
   }
 }
 
@@ -399,6 +428,12 @@ export class Runtime {
 export function determineLatestNodeRuntime(scope: Construct): Runtime {
   // Runtime regional fact should always return a known runtime string that Runtime can index off, but for type
   // safety we also default it here.
-  const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_18_X.name);
-  return new Runtime(runtimeName, RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
+  const runtimeName = Stack.of(scope).regionalFact(
+    FactName.LATEST_NODE_RUNTIME,
+    Runtime.NODEJS_18_X.name
+  );
+  return new Runtime(runtimeName, RuntimeFamily.NODEJS, {
+    supportsInlineCode: true,
+    isVariable: true,
+  });
 }

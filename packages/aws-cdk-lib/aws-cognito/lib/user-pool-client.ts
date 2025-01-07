@@ -4,7 +4,11 @@ import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
+import {
+  AwsCustomResource,
+  AwsCustomResourcePolicy,
+  PhysicalResourceId,
+} from '../../custom-resources';
 
 /**
  * Types of authentication flow
@@ -46,7 +50,6 @@ export interface AuthFlow {
  * OAuth settings to configure the interaction between the app and this client.
  */
 export interface OAuthSettings {
-
   /**
    * OAuth flows that are allowed with this client.
    * @see - the 'Allowed OAuth Flows' section at https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
@@ -376,11 +379,14 @@ export interface IUserPoolClient extends IResource {
  * Define a UserPool App Client
  */
 export class UserPoolClient extends Resource implements IUserPoolClient {
-
   /**
    * Import a user pool client given its id.
    */
-  public static fromUserPoolClientId(scope: Construct, id: string, userPoolClientId: string): IUserPoolClient {
+  public static fromUserPoolClientId(
+    scope: Construct,
+    id: string,
+    userPoolClientId: string
+  ): IUserPoolClient {
     class Import extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
       get userPoolClientSecret(): SecretValue {
@@ -428,7 +434,9 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       if (callbackUrls === undefined) {
         callbackUrls = ['https://example.com'];
       } else if (callbackUrls.length === 0) {
-        throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
+        throw new Error(
+          'callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.'
+        );
       }
     }
 
@@ -439,12 +447,16 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
       const defaultRedirectUriPattern = /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u;
       if (!defaultRedirectUriPattern.test(props.oAuth.defaultRedirectUri)) {
-        throw new Error(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${props.oAuth.defaultRedirectUri}`);
+        throw new Error(
+          `defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${props.oAuth.defaultRedirectUri}`
+        );
       }
     }
 
     if (!props.generateSecret && props.enablePropagateAdditionalUserContextData) {
-      throw new Error('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.');
+      throw new Error(
+        'Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.'
+      );
     }
 
     this._generateSecret = props.generateSecret;
@@ -458,10 +470,13 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
       defaultRedirectUri: props.oAuth?.defaultRedirectUri,
-      callbackUrLs: callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
+      callbackUrLs:
+        callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
       logoutUrLs: props.oAuth?.logoutUrls,
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
-      preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
+      preventUserExistenceErrors: this.configurePreventUserExistenceErrors(
+        props.preventUserExistenceErrors
+      ),
       supportedIdentityProviders: this.configureIdentityProviders(props),
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
@@ -481,25 +496,23 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
    */
   public get userPoolClientName(): string {
     if (this._userPoolClientName === undefined) {
-      throw new Error('userPoolClientName is available only if specified on the UserPoolClient during initialization');
+      throw new Error(
+        'userPoolClientName is available only if specified on the UserPoolClient during initialization'
+      );
     }
     return this._userPoolClientName;
   }
 
   public get userPoolClientSecret(): SecretValue {
     if (!this._generateSecret) {
-      throw new Error(
-        'userPoolClientSecret is available only if generateSecret is set to true.',
-      );
+      throw new Error('userPoolClientSecret is available only if generateSecret is set to true.');
     }
 
     // Create the Custom Resource that assists in resolving the User Pool Client secret
     // just once, no matter how many times this method is called
     if (!this._userPoolClientSecret) {
-      this._userPoolClientSecret = SecretValue.resourceAttribute(new AwsCustomResource(
-        this,
-        'DescribeCognitoUserPoolClient',
-        {
+      this._userPoolClientSecret = SecretValue.resourceAttribute(
+        new AwsCustomResource(this, 'DescribeCognitoUserPoolClient', {
           resourceType: 'Custom::DescribeCognitoUserPoolClient',
           onUpdate: {
             region: Stack.of(this).region,
@@ -516,8 +529,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
           }),
           // APIs are available in 2.1055.0
           installLatestAwsSdk: false,
-        },
-      ).getResponseField('UserPoolClient.ClientSecret'));
+        }).getResponseField('UserPoolClient.ClientSecret')
+      );
     }
 
     return this._userPoolClientSecret;
@@ -527,11 +540,21 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (!props.authFlows || Object.keys(props.authFlows).length === 0) return undefined;
 
     const authFlows: string[] = [];
-    if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
-    if (props.authFlows.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
-    if (props.authFlows.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
-    if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
-    if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
+    if (props.authFlows.userPassword) {
+      authFlows.push('ALLOW_USER_PASSWORD_AUTH');
+    }
+    if (props.authFlows.adminUserPassword) {
+      authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH');
+    }
+    if (props.authFlows.custom) {
+      authFlows.push('ALLOW_CUSTOM_AUTH');
+    }
+    if (props.authFlows.userSrp) {
+      authFlows.push('ALLOW_USER_SRP_AUTH');
+    }
+    if (props.authFlows.user) {
+      authFlows.push('ALLOW_USER_AUTH');
+    }
 
     // refreshToken should always be allowed if authFlows are present
     authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
@@ -540,13 +563,24 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureOAuthFlows(): string[] | undefined {
-    if ((this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) && this.oAuthFlows.clientCredentials) {
-      throw new Error('clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.');
+    if (
+      (this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) &&
+      this.oAuthFlows.clientCredentials
+    ) {
+      throw new Error(
+        'clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.'
+      );
     }
     const oAuthFlows: string[] = [];
-    if (this.oAuthFlows.clientCredentials) { oAuthFlows.push('client_credentials'); }
-    if (this.oAuthFlows.implicitCodeGrant) { oAuthFlows.push('implicit'); }
-    if (this.oAuthFlows.authorizationCodeGrant) { oAuthFlows.push('code'); }
+    if (this.oAuthFlows.clientCredentials) {
+      oAuthFlows.push('client_credentials');
+    }
+    if (this.oAuthFlows.implicitCodeGrant) {
+      oAuthFlows.push('implicit');
+    }
+    if (this.oAuthFlows.authorizationCodeGrant) {
+      oAuthFlows.push('code');
+    }
 
     if (oAuthFlows.length === 0) {
       return undefined;
@@ -555,8 +589,13 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureOAuthScopes(oAuth?: OAuthSettings): string[] {
-    const scopes = oAuth?.scopes ?? [OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
-      OAuthScope.COGNITO_ADMIN];
+    const scopes = oAuth?.scopes ?? [
+      OAuthScope.PROFILE,
+      OAuthScope.PHONE,
+      OAuthScope.EMAIL,
+      OAuthScope.OPENID,
+      OAuthScope.COGNITO_ADMIN,
+    ];
     const scopeNames = new Set(scopes.map((x) => x.scopeName));
     const autoOpenIdScopes = [OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE];
     if (autoOpenIdScopes.reduce((agg, s) => agg || scopeNames.has(s.scopeName), false)) {
@@ -581,22 +620,56 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     } else {
       providers = props.supportedIdentityProviders.map((p) => p.name);
     }
-    if (providers.length === 0) { return undefined; }
+    if (providers.length === 0) {
+      return undefined;
+    }
     return Array.from(providers);
   }
 
   private configureAuthSessionValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
-    this.validateDuration('authSessionValidity', Duration.minutes(3), Duration.minutes(15), props.authSessionValidity);
-    resource.authSessionValidity = props.authSessionValidity ? props.authSessionValidity.toMinutes() : undefined;
+    this.validateDuration(
+      'authSessionValidity',
+      Duration.minutes(3),
+      Duration.minutes(15),
+      props.authSessionValidity
+    );
+    resource.authSessionValidity = props.authSessionValidity
+      ? props.authSessionValidity.toMinutes()
+      : undefined;
   }
 
   private configureTokenValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
-    this.validateDuration('idTokenValidity', Duration.minutes(5), Duration.days(1), props.idTokenValidity);
-    this.validateDuration('accessTokenValidity', Duration.minutes(5), Duration.days(1), props.accessTokenValidity);
-    this.validateDuration('refreshTokenValidity', Duration.minutes(60), Duration.days(10 * 365), props.refreshTokenValidity);
+    this.validateDuration(
+      'idTokenValidity',
+      Duration.minutes(5),
+      Duration.days(1),
+      props.idTokenValidity
+    );
+    this.validateDuration(
+      'accessTokenValidity',
+      Duration.minutes(5),
+      Duration.days(1),
+      props.accessTokenValidity
+    );
+    this.validateDuration(
+      'refreshTokenValidity',
+      Duration.minutes(60),
+      Duration.days(10 * 365),
+      props.refreshTokenValidity
+    );
     if (props.refreshTokenValidity) {
-      this.validateDuration('idTokenValidity', Duration.minutes(5), props.refreshTokenValidity, props.idTokenValidity);
-      this.validateDuration('accessTokenValidity', Duration.minutes(5), props.refreshTokenValidity, props.accessTokenValidity);
+      this.validateDuration(
+        'idTokenValidity',
+        Duration.minutes(5),
+        props.refreshTokenValidity,
+        props.idTokenValidity
+      );
+      this.validateDuration(
+        'accessTokenValidity',
+        Duration.minutes(5),
+        props.refreshTokenValidity,
+        props.accessTokenValidity
+      );
     }
 
     if (props.accessTokenValidity || props.idTokenValidity || props.refreshTokenValidity) {
@@ -605,17 +678,30 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
         accessToken: props.accessTokenValidity ? 'minutes' : undefined,
         refreshToken: props.refreshTokenValidity ? 'minutes' : undefined,
       };
-    };
+    }
 
-    resource.idTokenValidity = props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined;
-    resource.refreshTokenValidity = props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined;
-    resource.accessTokenValidity = props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined;
+    resource.idTokenValidity = props.idTokenValidity
+      ? props.idTokenValidity.toMinutes()
+      : undefined;
+    resource.refreshTokenValidity = props.refreshTokenValidity
+      ? props.refreshTokenValidity.toMinutes()
+      : undefined;
+    resource.accessTokenValidity = props.accessTokenValidity
+      ? props.accessTokenValidity.toMinutes()
+      : undefined;
   }
 
   private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
-    if (value === undefined) { return; }
-    if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
-      throw new Error(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`);
+    if (value === undefined) {
+      return;
+    }
+    if (
+      value.toMilliseconds() < min.toMilliseconds() ||
+      value.toMilliseconds() > max.toMilliseconds()
+    ) {
+      throw new Error(
+        `${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`
+      );
     }
   }
 }

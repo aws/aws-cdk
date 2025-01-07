@@ -1,4 +1,9 @@
-import { EnrichmentParametersConfig, IEnrichment, IPipe, InputTransformation } from '@aws-cdk/aws-pipes-alpha';
+import {
+  EnrichmentParametersConfig,
+  IEnrichment,
+  IPipe,
+  InputTransformation,
+} from '@aws-cdk/aws-pipes-alpha';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
@@ -22,7 +27,10 @@ export class LambdaEnrichment implements IEnrichment {
 
   private readonly inputTransformation?: InputTransformation;
 
-  constructor(private readonly lambda: IFunction, props?: LambdaEnrichmentProps) {
+  constructor(
+    private readonly lambda: IFunction,
+    props?: LambdaEnrichmentProps
+  ) {
     this.enrichmentArn = lambda.functionArn;
     this.inputTransformation = props?.inputTransformation;
   }
@@ -39,4 +47,3 @@ export class LambdaEnrichment implements IEnrichment {
     this.lambda.grantInvoke(pipeRole);
   }
 }
-

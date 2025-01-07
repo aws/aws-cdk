@@ -92,14 +92,17 @@ export class ApiDestination extends Resource implements IApiDestination {
   public static fromApiDestinationAttributes(
     scope: Construct,
     id: string,
-    attrs: ApiDestinationAttributes,
+    attrs: ApiDestinationAttributes
   ): ApiDestination {
     const apiDestinationName = Stack.of(scope).splitArn(
-      attrs.apiDestinationArn, ArnFormat.SLASH_RESOURCE_NAME,
+      attrs.apiDestinationArn,
+      ArnFormat.SLASH_RESOURCE_NAME
     ).resourceName;
 
     if (!apiDestinationName) {
-      throw new Error(`Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
+      throw new Error(
+        `Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`
+      );
     }
 
     class Import extends Resource implements ApiDestination {

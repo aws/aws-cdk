@@ -65,7 +65,6 @@ export interface VpcSubnetGroup {
  * Properties of a discovered VPC
  */
 export interface VpcContextResponse {
-
   /**
    * VPC id
    */

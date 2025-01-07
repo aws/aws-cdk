@@ -33,7 +33,10 @@ export class KinesisPutRecordAction implements iot.IAction {
    * @param stream The Kinesis Data stream to which to put records.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly stream: kinesis.IStream, props: KinesisPutRecordActionProps) {
+  constructor(
+    private readonly stream: kinesis.IStream,
+    props: KinesisPutRecordActionProps
+  ) {
     this.partitionKey = props.partitionKey;
     this.role = props.role;
   }
@@ -43,10 +46,12 @@ export class KinesisPutRecordAction implements iot.IAction {
    */
   public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['kinesis:PutRecord'],
-      resources: [this.stream.streamArn],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['kinesis:PutRecord'],
+        resources: [this.stream.streamArn],
+      })
+    );
 
     return {
       configuration: {

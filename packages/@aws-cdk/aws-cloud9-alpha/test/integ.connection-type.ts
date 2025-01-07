@@ -26,9 +26,7 @@ export class Cloud9Env extends cdk.Stack {
       vpc,
       connectionType: ConnectionType.CONNECT_SSH,
       // clone repositories into the environment
-      clonedRepositories: [
-        cloud9.CloneRepository.fromCodeCommit(repo, '/foo'),
-      ],
+      clonedRepositories: [cloud9.CloneRepository.fromCodeCommit(repo, '/foo')],
       imageId: cloud9.ImageId.AMAZON_LINUX_2,
     });
     new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });

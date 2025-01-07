@@ -62,31 +62,33 @@ export class Statement {
    * Whether this statement is equal to the other statement
    */
   public equal(other: Statement): boolean {
-    return (this.sid === other.sid
-      && this.effect === other.effect
-      && this.serializedIntrinsic === other.serializedIntrinsic
-      && this.resources.equal(other.resources)
-      && this.actions.equal(other.actions)
-      && this.principals.equal(other.principals)
-      && deepEqual(this.condition, other.condition));
+    return (
+      this.sid === other.sid &&
+      this.effect === other.effect &&
+      this.serializedIntrinsic === other.serializedIntrinsic &&
+      this.resources.equal(other.resources) &&
+      this.actions.equal(other.actions) &&
+      this.principals.equal(other.principals) &&
+      deepEqual(this.condition, other.condition)
+    );
   }
 
   public render(): RenderedStatement {
     return this.serializedIntrinsic
       ? {
-        resource: this.serializedIntrinsic,
-        effect: '',
-        action: '',
-        principal: this.principals.render(), // these will be replaced by the call to replaceEmpty() from IamChanges
-        condition: '',
-      }
+          resource: this.serializedIntrinsic,
+          effect: '',
+          action: '',
+          principal: this.principals.render(), // these will be replaced by the call to replaceEmpty() from IamChanges
+          condition: '',
+        }
       : {
-        resource: this.resources.render(),
-        effect: this.effect,
-        action: this.actions.render(),
-        principal: this.principals.render(),
-        condition: renderCondition(this.condition),
-      };
+          resource: this.resources.render(),
+          effect: this.effect,
+          action: this.actions.render(),
+          principal: this.principals.render(),
+          condition: renderCondition(this.condition),
+        };
   }
 
   /**
@@ -98,14 +100,16 @@ export class Statement {
   public _toJson(): MaybeParsed<StatementJson> {
     return this.serializedIntrinsic
       ? mkUnparseable(this.serializedIntrinsic)
-      : mkParsed(deepRemoveUndefined({
-        sid: this.sid,
-        effect: this.effect,
-        resources: this.resources._toJson(),
-        principals: this.principals._toJson(),
-        actions: this.actions._toJson(),
-        condition: this.condition,
-      }));
+      : mkParsed(
+          deepRemoveUndefined({
+            sid: this.sid,
+            effect: this.effect,
+            resources: this.resources._toJson(),
+            principals: this.principals._toJson(),
+            actions: this.actions._toJson(),
+            condition: this.condition,
+          })
+        );
   }
 
   /**
@@ -146,8 +150,12 @@ export interface TargetsJson {
  * Parse a list of statements from undefined, a Statement, or a list of statements
  */
 export function parseStatements(x: any): Statement[] {
-  if (x === undefined) { x = []; }
-  if (!Array.isArray(x)) { x = [x]; }
+  if (x === undefined) {
+    x = [];
+  }
+  if (!Array.isArray(x)) {
+    x = [x];
+  }
   return x.map((s: any) => new Statement(s));
 }
 
@@ -180,15 +188,21 @@ export function parseLambdaPermission(x: any): Statement {
     }
   }
   if (x.SourceArn !== undefined) {
-    if (statement.Condition === undefined) { statement.Condition = {}; }
+    if (statement.Condition === undefined) {
+      statement.Condition = {};
+    }
     statement.Condition.ArnLike = { 'AWS:SourceArn': x.SourceArn };
   }
   if (x.SourceAccount !== undefined) {
-    if (statement.Condition === undefined) { statement.Condition = {}; }
+    if (statement.Condition === undefined) {
+      statement.Condition = {};
+    }
     statement.Condition.StringEquals = { 'AWS:SourceAccount': x.SourceAccount };
   }
   if (x.EventSourceToken !== undefined) {
-    if (statement.Condition === undefined) { statement.Condition = {}; }
+    if (statement.Condition === undefined) {
+      statement.Condition = {};
+    }
     statement.Condition.StringEquals = { 'lambda:EventSourceToken': x.EventSourceToken };
   }
 
@@ -256,9 +270,7 @@ export class Targets {
    * Render into a summary table cell
    */
   public render(): string {
-    return this.not
-      ? this.values.map(s => `NOT ${s}`).join('\n')
-      : this.values.join('\n');
+    return this.not ? this.values.map((s) => `NOT ${s}`).join('\n') : this.values.join('\n');
   }
 
   /**
@@ -272,7 +284,7 @@ export class Targets {
   }
 }
 
-type UnknownMap = {[key: string]: unknown};
+type UnknownMap = { [key: string]: unknown };
 
 export enum Effect {
   Unknown = 'Unknown',
@@ -285,22 +297,28 @@ function expectString(x: unknown): string | undefined {
 }
 
 function expectEffect(x: unknown): Effect {
-  if (x === Effect.Allow || x === Effect.Deny) { return x as Effect; }
+  if (x === Effect.Allow || x === Effect.Deny) {
+    return x as Effect;
+  }
   return Effect.Unknown;
 }
 
 function forceListOfStrings(x: unknown): string[] {
-  if (typeof x === 'string') { return [x]; }
-  if (typeof x === 'undefined' || x === null) { return []; }
+  if (typeof x === 'string') {
+    return [x];
+  }
+  if (typeof x === 'undefined' || x === null) {
+    return [];
+  }
 
   if (Array.isArray(x)) {
-    return x.map(e => forceListOfStrings(e).join(','));
+    return x.map((e) => forceListOfStrings(e).join(','));
   }
 
   if (typeof x === 'object' && x !== null) {
     const ret: string[] = [];
     for (const [key, value] of Object.entries(x)) {
-      ret.push(...forceListOfStrings(value).map(s => `${key}:${s}`));
+      ret.push(...forceListOfStrings(value).map((s) => `${key}:${s}`));
     }
     return ret;
   }
@@ -312,7 +330,9 @@ function forceListOfStrings(x: unknown): string[] {
  * Render the Condition column
  */
 export function renderCondition(condition: any): string {
-  if (!condition || Object.keys(condition).length === 0) { return ''; }
+  if (!condition || Object.keys(condition).length === 0) {
+    return '';
+  }
   const jsonRepresentation = JSON.stringify(condition, undefined, 2);
 
   // The JSON representation looks like this:
@@ -326,5 +346,8 @@ export function renderCondition(condition: any): string {
   // We can make it more compact without losing information by getting rid of the outermost braces
   // and the indentation.
   const lines = jsonRepresentation.split('\n');
-  return lines.slice(1, lines.length - 1).map(s => s.slice(2)).join('\n');
+  return lines
+    .slice(1, lines.length - 1)
+    .map((s) => s.slice(2))
+    .join('\n');
 }

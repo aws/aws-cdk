@@ -60,7 +60,10 @@ export class S3ImportSource extends ImportSource {
    * @param bucket the S3 bucket that contains the data
    * @param key the key within the S3 bucket that contains the data
    */
-  constructor(public readonly bucket: s3.IBucket, public readonly key: string) {
+  constructor(
+    public readonly bucket: s3.IBucket,
+    public readonly key: string
+  ) {
     super();
   }
 
@@ -85,7 +88,10 @@ export class AssetImportSource extends ImportSource {
    * @param path the path to the local file
    * @param options the configuration for the temporarily created S3 file
    */
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
+  constructor(
+    public readonly path: string,
+    private readonly options: s3_assets.AssetOptions = {}
+  ) {
     super();
   }
 
@@ -102,7 +108,7 @@ export class AssetImportSource extends ImportSource {
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
       throw new Error(
         `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
-          'Create a new ImportSource instance for every stack.',
+          'Create a new ImportSource instance for every stack.'
       );
     }
 
@@ -130,7 +136,6 @@ export class InlineImportSource extends ImportSource {
    * @internal
    */
   public _bind(scope: Construct): CfnKeyValueStore.ImportSourceProperty {
-
     if (!this.asset) {
       // CfnKeyValueStore does not support native in-line, so we need to use a
       // temporary file to be uploaded with the S3 assets
@@ -145,7 +150,7 @@ export class InlineImportSource extends ImportSource {
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
       throw new Error(
         `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
-        'Create a new ImportSource instance for every stack.',
+          'Create a new ImportSource instance for every stack.'
       );
     }
 
@@ -220,12 +225,16 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
   /**
    * Import a Key Value Store using its ARN.
    */
-  public static fromKeyValueStoreArn(scope: Construct, id: string, keyValueStoreArn: string): IKeyValueStore {
+  public static fromKeyValueStoreArn(
+    scope: Construct,
+    id: string,
+    keyValueStoreArn: string
+  ): IKeyValueStore {
     const storeId = Arn.split(keyValueStoreArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!storeId) {
       throw new Error(`Invalid Key Value Store Arn: '${keyValueStoreArn}'`);
     }
-    return new class Import extends Resource implements IKeyValueStore {
+    return new (class Import extends Resource implements IKeyValueStore {
       readonly keyValueStoreArn: string = keyValueStoreArn;
       readonly keyValueStoreId: string = storeId!;
       constructor() {
@@ -237,7 +246,7 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
       public get keyValueStoreStatus(): string {
         throw new Error('Status is not available for imported Key Value Store');
       }
-    };
+    })();
   }
 
   readonly keyValueStoreArn: string;
@@ -246,9 +255,11 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
 
   constructor(scope: Construct, id: string, props?: KeyValueStoreProps) {
     super(scope, id, {
-      physicalName: props?.keyValueStoreName ?? Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 64 }),
-      }),
+      physicalName:
+        props?.keyValueStoreName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 64 }),
+        }),
     });
 
     const resource = new CfnKeyValueStore(this, 'Resource', {

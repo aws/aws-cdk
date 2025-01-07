@@ -2,8 +2,17 @@ import { Construct } from 'constructs';
 import { ScalingInterval } from '../../../aws-applicationautoscaling';
 import { IVpc } from '../../../aws-ec2';
 import {
-  AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret,
+  AwsLogDriver,
+  BaseService,
+  CapacityProviderStrategy,
+  Cluster,
+  ContainerImage,
+  DeploymentController,
+  DeploymentCircuitBreaker,
+  ICluster,
+  LogDriver,
+  PropagatedTagSource,
+  Secret,
 } from '../../../aws-ecs';
 import { IQueue, Queue } from '../../../aws-sqs';
 import { CfnOutput, Duration, FeatureFlags, Stack } from '../../../core';
@@ -335,13 +344,22 @@ export abstract class QueueProcessingServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
+      throw new Error(
+        'You can only specify either vpc or cluster. Alternatively, you can leave both blank'
+      );
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (props.queue && (props.retentionPeriod || props.visibilityTimeout || props.maxReceiveCount)) {
-      const errorProps = ['retentionPeriod', 'visibilityTimeout', 'maxReceiveCount'].filter(prop => props.hasOwnProperty(prop));
-      throw new Error(`${errorProps.join(', ')} can be set only when queue is not set. Specify them in the QueueProps of the queue`);
+    if (
+      props.queue &&
+      (props.retentionPeriod || props.visibilityTimeout || props.maxReceiveCount)
+    ) {
+      const errorProps = ['retentionPeriod', 'visibilityTimeout', 'maxReceiveCount'].filter(
+        (prop) => props.hasOwnProperty(prop)
+      );
+      throw new Error(
+        `${errorProps.join(', ')} can be set only when queue is not set. Specify them in the QueueProps of the queue`
+      );
     }
     // Create the SQS queue and it's corresponding DLQ if one is not provided
     if (props.queue) {
@@ -363,17 +381,24 @@ export abstract class QueueProcessingServiceBase extends Construct {
     }
 
     // Setup autoscaling scaling intervals
-    const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
+    const defaultScalingSteps = [
+      { upper: 0, change: -1 },
+      { lower: 100, change: +1 },
+      { lower: 500, change: +5 },
+    ];
     this.scalingSteps = props.scalingSteps ?? defaultScalingSteps;
 
     if (props.cooldown && props.cooldown.toSeconds() > 999999999) {
-      throw new Error(`cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`);
+      throw new Error(
+        `cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`
+      );
     }
     this.cooldown = props.cooldown;
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging ?? true;
-    this.logDriver = props.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
+    this.logDriver =
+      props.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
@@ -386,11 +411,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
     // Determine the desired task count (minimum) and maximum scaling capacity
     if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
       this.minCapacity = props.minScalingCapacity ?? this.desiredCount;
-      this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+      this.maxCapacity = props.maxScalingCapacity || 2 * this.desiredCount;
     } else {
       if (props.desiredTaskCount != null) {
         this.minCapacity = props.minScalingCapacity ?? this.desiredCount;
-        this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+        this.maxCapacity = props.maxScalingCapacity || 2 * this.desiredCount;
       } else {
         this.minCapacity = props.minScalingCapacity ?? 1;
         this.maxCapacity = props.maxScalingCapacity || 2;
@@ -411,7 +436,10 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * @param service the ECS/Fargate service for which to apply the autoscaling rules to
    */
   protected configureAutoscalingForService(service: BaseService) {
-    const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.minCapacity });
+    const scalingTarget = service.autoScaleTaskCount({
+      maxCapacity: this.maxCapacity,
+      minCapacity: this.minCapacity,
+    });
 
     if (!this.disableCpuBasedScaling) {
       scalingTarget.scaleOnCpuUtilization('CpuScaling', {
@@ -440,7 +468,10 @@ export abstract class QueueProcessingServiceBase extends Construct {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return (
+      (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) ||
+      new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc })
+    );
   }
 
   /**

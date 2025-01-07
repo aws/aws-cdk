@@ -34,17 +34,13 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
     console.log('deploying to Amplify with options:', JSON.stringify(this.props, undefined, 2));
 
     // Verify no jobs are currently running.
-    const jobs = await this.amplify
-      .listJobs({
-        appId: this.props.AppId,
-        branchName: this.props.BranchName,
-        maxResults: 1,
-      });
+    const jobs = await this.amplify.listJobs({
+      appId: this.props.AppId,
+      branchName: this.props.BranchName,
+      maxResults: 1,
+    });
 
-    if (
-      jobs.jobSummaries &&
-      jobs.jobSummaries.find(summary => summary.status === 'PENDING')
-    ) {
+    if (jobs.jobSummaries && jobs.jobSummaries.find((summary) => summary.status === 'PENDING')) {
       return Promise.reject('Amplify job already running. Aborting deployment.');
     }
 
@@ -56,12 +52,11 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
     const assetUrl = await getSignedUrl(this.s3, command);
 
     // Deploy the asset to Amplify.
-    const deployment = await this.amplify
-      .startDeployment({
-        appId: this.props.AppId,
-        branchName: this.props.BranchName,
-        sourceUrl: assetUrl,
-      });
+    const deployment = await this.amplify.startDeployment({
+      appId: this.props.AppId,
+      branchName: this.props.BranchName,
+      sourceUrl: assetUrl,
+    });
 
     return {
       AmplifyJobId: deployment.jobSummary?.jobId,
@@ -105,12 +100,11 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
       throw new Error('Unable to determine Amplify job status without job id');
     }
 
-    const job = await this.amplify
-      .getJob({
-        appId: this.props.AppId,
-        branchName: this.props.BranchName,
-        jobId: jobId,
-      });
+    const job = await this.amplify.getJob({
+      appId: this.props.AppId,
+      branchName: this.props.BranchName,
+      jobId: jobId,
+    });
 
     if (job.job?.summary?.status === 'SUCCEED') {
       return {
@@ -120,7 +114,8 @@ export class AmplifyAssetDeploymentHandler extends ResourceHandler {
           Status: job.job.summary.status,
         },
       };
-    } if (job.job?.summary?.status === 'FAILED' || job.job?.summary?.status === 'CANCELLED') {
+    }
+    if (job.job?.summary?.status === 'FAILED' || job.job?.summary?.status === 'CANCELLED') {
       throw new Error(`Amplify job failed with status: ${job.job?.summary?.status}`);
     } else {
       return {

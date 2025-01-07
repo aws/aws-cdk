@@ -41,7 +41,9 @@ export class CloudAssemblySource implements ICloudAssemblySource {
   /**
    * Create the CLI from a Cloud Assembly builder function.
    */
-  public static fromAssemblyBuilder(_builder: (context: Record<string, any>) => Promise<CloudAssembly>) {}
+  public static fromAssemblyBuilder(
+    _builder: (context: Record<string, any>) => Promise<CloudAssembly>
+  ) {}
 
   public produce(): Promise<CloudAssembly> {
     throw new Error('Method not implemented.');

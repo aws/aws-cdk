@@ -36,8 +36,10 @@ const response = integTest.assertions.invokeFunction({
   functionName: stack.lambdaFunction.functionName,
 });
 
-response.expect(integ.ExpectedResult.objectLike({
-  StatusCode: 200,
-  ExecutedVersion: '$LATEST',
-  Payload: '256',
-}));
+response.expect(
+  integ.ExpectedResult.objectLike({
+    StatusCode: 200,
+    ExecutedVersion: '$LATEST',
+    Payload: '256',
+  })
+);

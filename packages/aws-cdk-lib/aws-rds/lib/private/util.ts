@@ -15,7 +15,7 @@ import { CommonRotationUserOptions, Credentials, SnapshotCredentials } from '../
  *
  * This constant is private to the RDS module.
  */
-export const DEFAULT_PASSWORD_EXCLUDE_CHARS = " %+~`#$&*()|[]{}:;<>?!'/@\"\\";
+export const DEFAULT_PASSWORD_EXCLUDE_CHARS = ' %+~`#$&*()|[]{}:;<>?!\'/@"\\';
 
 /** Common base of `DatabaseInstanceProps` and `DatabaseClusterBaseProps` that has only the S3 props */
 export interface DatabaseS3ImportExportProps {
@@ -36,8 +36,8 @@ export interface DatabaseS3ImportExportProps {
 export function setupS3ImportExport(
   scope: Construct,
   props: DatabaseS3ImportExportProps,
-  combineRoles: boolean): { s3ImportRole?: iam.IRole; s3ExportRole?: iam.IRole } {
-
+  combineRoles: boolean
+): { s3ImportRole?: iam.IRole; s3ExportRole?: iam.IRole } {
   let s3ImportRole = props.s3ImportRole;
   let s3ExportRole = props.s3ExportRole;
 
@@ -46,9 +46,12 @@ export function setupS3ImportExport(
       throw new Error('Only one of s3ImportRole or s3ImportBuckets must be specified, not both.');
     }
 
-    s3ImportRole = (combineRoles && s3ExportRole) ? s3ExportRole : new iam.Role(scope, 'S3ImportRole', {
-      assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
-    });
+    s3ImportRole =
+      combineRoles && s3ExportRole
+        ? s3ExportRole
+        : new iam.Role(scope, 'S3ImportRole', {
+            assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+          });
     for (const bucket of props.s3ImportBuckets) {
       bucket.grantRead(s3ImportRole);
     }
@@ -59,9 +62,12 @@ export function setupS3ImportExport(
       throw new Error('Only one of s3ExportRole or s3ExportBuckets must be specified, not both.');
     }
 
-    s3ExportRole = (combineRoles && s3ImportRole) ? s3ImportRole : new iam.Role(scope, 'S3ExportRole', {
-      assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
-    });
+    s3ExportRole =
+      combineRoles && s3ImportRole
+        ? s3ImportRole
+        : new iam.Role(scope, 'S3ExportRole', {
+            assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+          });
     for (const bucket of props.s3ExportBuckets) {
       bucket.grantReadWrite(s3ExportRole);
     }
@@ -71,22 +77,33 @@ export function setupS3ImportExport(
 }
 
 export function engineDescription(engine: IEngine) {
-  return engine.engineType + (engine.engineVersion?.fullVersion ? `-${engine.engineVersion.fullVersion}` : '');
+  return (
+    engine.engineType +
+    (engine.engineVersion?.fullVersion ? `-${engine.engineVersion.fullVersion}` : '')
+  );
 }
 
 /**
  * By default, deletion protection is disabled.
  * Enable if explicitly provided or if the RemovalPolicy has been set to RETAIN
  */
-export function defaultDeletionProtection(deletionProtection?: boolean, removalPolicy?: RemovalPolicy): boolean | undefined {
+export function defaultDeletionProtection(
+  deletionProtection?: boolean,
+  removalPolicy?: RemovalPolicy
+): boolean | undefined {
   return deletionProtection ?? (removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
 }
 
 /**
  * Renders the credentials for an instance or cluster
  */
-export function renderCredentials(scope: Construct, engine: IEngine, credentials?: Credentials): Credentials {
-  let renderedCredentials = credentials ?? Credentials.fromUsername(engine.defaultUsername ?? 'admin'); // For backwards compatibilty
+export function renderCredentials(
+  scope: Construct,
+  engine: IEngine,
+  credentials?: Credentials
+): Credentials {
+  let renderedCredentials =
+    credentials ?? Credentials.fromUsername(engine.defaultUsername ?? 'admin'); // For backwards compatibilty
 
   if (!renderedCredentials.secret && !renderedCredentials.password) {
     renderedCredentials = Credentials.fromSecret(
@@ -101,7 +118,7 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
         replicaRegions: renderedCredentials.replicaRegions,
       }),
       // pass username if it must be referenced as a string
-      credentials?.usernameAsString ? renderedCredentials.username : undefined,
+      credentials?.usernameAsString ? renderedCredentials.username : undefined
     );
   }
 
@@ -117,7 +134,9 @@ export function renderSnapshotCredentials(scope: Construct, credentials?: Snapsh
   let secret = renderedCredentials?.secret;
   if (!secret && renderedCredentials?.generatePassword) {
     if (!renderedCredentials.username) {
-      throw new Error('`snapshotCredentials` `username` must be specified when `generatePassword` is set to true');
+      throw new Error(
+        '`snapshotCredentials` `username` must be specified when `generatePassword` is set to true'
+      );
     }
 
     renderedCredentials = SnapshotCredentials.fromSecret(
@@ -127,7 +146,7 @@ export function renderSnapshotCredentials(scope: Construct, credentials?: Snapsh
         excludeCharacters: renderedCredentials.excludeCharacters,
         replaceOnPasswordCriteriaChanges: renderedCredentials.replaceOnPasswordCriteriaChanges,
         replicaRegions: renderedCredentials.replicaRegions,
-      }),
+      })
     );
   }
 
@@ -147,9 +166,7 @@ export function renderSnapshotCredentials(scope: Construct, credentials?: Snapsh
  *  (undefined)         -> DESTROY (base policy is assumed to be SNAPSHOT)
  */
 export function helperRemovalPolicy(basePolicy?: RemovalPolicy): RemovalPolicy {
-  return basePolicy === RemovalPolicy.RETAIN
-    ? RemovalPolicy.RETAIN
-    : RemovalPolicy.DESTROY;
+  return basePolicy === RemovalPolicy.RETAIN ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY;
 }
 
 /**
@@ -162,7 +179,10 @@ export function renderUnless<A>(value: A, suppressValue: A): A | undefined {
 /**
  * Applies defaults for rotation options
  */
-export function applyDefaultRotationOptions(options: CommonRotationUserOptions, defaultvpcSubnets?: ec2.SubnetSelection): CommonRotationUserOptions {
+export function applyDefaultRotationOptions(
+  options: CommonRotationUserOptions,
+  defaultvpcSubnets?: ec2.SubnetSelection
+): CommonRotationUserOptions {
   return {
     excludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
     vpcSubnets: defaultvpcSubnets,

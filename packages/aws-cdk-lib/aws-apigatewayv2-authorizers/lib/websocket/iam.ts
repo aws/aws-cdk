@@ -9,9 +9,7 @@ import {
  * Authorize WebSocket API Routes with IAM
  */
 export class WebSocketIamAuthorizer implements IWebSocketRouteAuthorizer {
-  public bind(
-    _options: WebSocketRouteAuthorizerBindOptions,
-  ): WebSocketRouteAuthorizerConfig {
+  public bind(_options: WebSocketRouteAuthorizerBindOptions): WebSocketRouteAuthorizerConfig {
     return {
       authorizationType: WebSocketAuthorizerType.IAM,
     };

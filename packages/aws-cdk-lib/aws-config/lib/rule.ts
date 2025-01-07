@@ -168,7 +168,12 @@ export class RuleScope {
   /** tag value applied to resources that will trigger evaluation of a rule */
   public readonly value?: string;
 
-  private constructor(resourceId?: string, resourceTypes?: ResourceType[], tagKey?: string, tagValue?: string) {
+  private constructor(
+    resourceId?: string,
+    resourceTypes?: ResourceType[],
+    tagKey?: string,
+    tagValue?: string
+  ) {
     this.resourceTypes = resourceTypes;
     this.resourceId = resourceId;
     this.key = tagKey;
@@ -180,7 +185,6 @@ export class RuleScope {
  * The maximum frequency at which the AWS Config rule runs evaluations.
  */
 export enum MaximumExecutionFrequency {
-
   /**
    * 1 hour.
    */
@@ -320,17 +324,14 @@ export class ManagedRule extends RuleNew {
  * that triggers AWS Config to evaluate your AWS resources.
  */
 enum EventSource {
-
   /* from aws.config */
   AWS_CONFIG = 'aws.config',
-
 }
 
 /**
  * The type of notification that triggers AWS Config to run an evaluation for a rule.
  */
 enum MessageType {
-
   /**
    * Triggers an evaluation when AWS Config delivers a configuration item as a result of a resource change.
    */
@@ -443,11 +444,14 @@ export class CustomRule extends RuleNew {
       });
     }
     const hash = createHash('sha256')
-      .update(JSON.stringify({
-        fnName: props.lambdaFunction.functionName.toString,
-        accountId: Stack.of(this).resolve(this.env.account),
-        region: Stack.of(this).resolve(this.env.region),
-      }), 'utf8')
+      .update(
+        JSON.stringify({
+          fnName: props.lambdaFunction.functionName.toString,
+          accountId: Stack.of(this).resolve(this.env.account),
+          region: Stack.of(this).resolve(this.env.region),
+        }),
+        'utf8'
+      )
       .digest('base64');
     const customRulePermissionId: string = `CustomRulePermission${hash}`;
     if (!props.lambdaFunction.permissionsNode.tryFindChild(customRulePermissionId)) {
@@ -455,11 +459,11 @@ export class CustomRule extends RuleNew {
         principal: new iam.ServicePrincipal('config.amazonaws.com'),
         sourceAccount: this.env.account,
       });
-    };
+    }
 
     if (props.lambdaFunction.role) {
       props.lambdaFunction.role.addManagedPolicy(
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSConfigRulesExecutionRole'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSConfigRulesExecutionRole')
       );
     }
 
@@ -588,13 +592,15 @@ export class ManagedRuleIdentifiers {
    * roles, and groups do not allow blocked actions on all AWS Key Management Service keys.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/iam-inline-policy-blocked-kms-actions.html
    */
-  public static readonly IAM_INLINE_POLICY_BLOCKED_KMS_ACTIONS = 'IAM_INLINE_POLICY_BLOCKED_KMS_ACTIONS';
+  public static readonly IAM_INLINE_POLICY_BLOCKED_KMS_ACTIONS =
+    'IAM_INLINE_POLICY_BLOCKED_KMS_ACTIONS';
   /**
    * Checks that the managed AWS Identity and Access Management policies that you create do not
    * allow blocked actions on all AWS AWS KMS keys.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/iam-customer-policy-blocked-kms-actions.html
    */
-  public static readonly IAM_CUSTOMER_POLICY_BLOCKED_KMS_ACTIONS = 'IAM_CUSTOMER_POLICY_BLOCKED_KMS_ACTIONS';
+  public static readonly IAM_CUSTOMER_POLICY_BLOCKED_KMS_ACTIONS =
+    'IAM_CUSTOMER_POLICY_BLOCKED_KMS_ACTIONS';
   /**
    * Checks whether the active access keys are rotated within the number of days specified in maxAccessKeyAge.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/access-keys-rotated.html
@@ -619,12 +625,14 @@ export class ManagedRuleIdentifiers {
    * Checks if rule evaluates Application Load Balancers (ALBs) to ensure they are configured to drop http headers.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/alb-http-drop-invalid-header-enabled.html
    */
-  public static readonly ALB_HTTP_DROP_INVALID_HEADER_ENABLED = 'ALB_HTTP_DROP_INVALID_HEADER_ENABLED';
+  public static readonly ALB_HTTP_DROP_INVALID_HEADER_ENABLED =
+    'ALB_HTTP_DROP_INVALID_HEADER_ENABLED';
   /**
    * Checks whether HTTP to HTTPS redirection is configured on all HTTP listeners of Application Load Balancer.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/alb-http-to-https-redirection-check.html
    */
-  public static readonly ALB_HTTP_TO_HTTPS_REDIRECTION_CHECK = 'ALB_HTTP_TO_HTTPS_REDIRECTION_CHECK';
+  public static readonly ALB_HTTP_TO_HTTPS_REDIRECTION_CHECK =
+    'ALB_HTTP_TO_HTTPS_REDIRECTION_CHECK';
   /**
    * Checks if Web Application Firewall (WAF) is enabled on Application Load Balancers (ALBs).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/alb-waf-enabled.html
@@ -639,7 +647,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon API Gatewayv2 API routes have an authorization type set.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/api-gwv2-authorization-type-configured.html
    */
-  public static readonly API_GWV2_AUTHORIZATION_TYPE_CONFIGURED = 'API_GWV2_AUTHORIZATION_TYPE_CONFIGURED';
+  public static readonly API_GWV2_AUTHORIZATION_TYPE_CONFIGURED =
+    'API_GWV2_AUTHORIZATION_TYPE_CONFIGURED';
   /**
    * Checks if an Amazon API Gateway API stage is using an AWS WAF Web ACL.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/api-gw-associated-with-waf.html
@@ -684,7 +693,8 @@ export class ManagedRuleIdentifiers {
    * Checks if a recovery point was created for Amazon Aurora DB clusters.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/aurora-last-backup-recovery-point-created.html
    */
-  public static readonly AURORA_LAST_BACKUP_RECOVERY_POINT_CREATED = 'AURORA_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly AURORA_LAST_BACKUP_RECOVERY_POINT_CREATED =
+    'AURORA_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Checks if an Amazon Aurora MySQL cluster has backtracking enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/aurora-mysql-backtracking-enabled.html
@@ -694,7 +704,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon Aurora DB clusters are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/aurora-resources-protected-by-backup-plan.html
    */
-  public static readonly AURORA_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'AURORA_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly AURORA_RESOURCES_PROTECTED_BY_BACKUP_PLAN =
+    'AURORA_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks if Capacity Rebalancing is enabled for Amazon EC2 Auto Scaling groups that use multiple instance types.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-capacity-rebalancing.html
@@ -705,22 +716,26 @@ export class ManagedRuleIdentifiers {
    * Elastic Load Balancing health checks.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-group-elb-healthcheck-required.html
    */
-  public static readonly AUTOSCALING_GROUP_ELB_HEALTHCHECK_REQUIRED = 'AUTOSCALING_GROUP_ELB_HEALTHCHECK_REQUIRED';
+  public static readonly AUTOSCALING_GROUP_ELB_HEALTHCHECK_REQUIRED =
+    'AUTOSCALING_GROUP_ELB_HEALTHCHECK_REQUIRED';
   /**
    * Checks whether only IMDSv2 is enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-launchconfig-requires-imdsv2.html
    */
-  public static readonly AUTOSCALING_LAUNCHCONFIG_REQUIRES_IMDSV2 = 'AUTOSCALING_LAUNCHCONFIG_REQUIRES_IMDSV2';
+  public static readonly AUTOSCALING_LAUNCHCONFIG_REQUIRES_IMDSV2 =
+    'AUTOSCALING_LAUNCHCONFIG_REQUIRES_IMDSV2';
   /**
    * Checks the number of network hops that the metadata token can travel.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-launch-config-hop-limit.html
    */
-  public static readonly AUTOSCALING_LAUNCH_CONFIG_HOP_LIMIT = 'AUTOSCALING_LAUNCH_CONFIG_HOP_LIMIT';
+  public static readonly AUTOSCALING_LAUNCH_CONFIG_HOP_LIMIT =
+    'AUTOSCALING_LAUNCH_CONFIG_HOP_LIMIT';
   /**
    * Checks if Amazon EC2 Auto Scaling groups have public IP addresses enabled through Launch Configurations.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-launch-config-public-ip-disabled.html
    */
-  public static readonly AUTOSCALING_LAUNCH_CONFIG_PUBLIC_IP_DISABLED = 'AUTOSCALING_LAUNCH_CONFIG_PUBLIC_IP_DISABLED';
+  public static readonly AUTOSCALING_LAUNCH_CONFIG_PUBLIC_IP_DISABLED =
+    'AUTOSCALING_LAUNCH_CONFIG_PUBLIC_IP_DISABLED';
   /**
    * Checks if an Amazon Elastic Compute Cloud (EC2) Auto Scaling group is created from an EC2 launch template.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-launch-template.html
@@ -735,12 +750,14 @@ export class ManagedRuleIdentifiers {
    * Checks if an Amazon Elastic Compute Cloud (Amazon EC2) Auto Scaling group uses multiple instance types.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/autoscaling-multiple-instance-types.html
    */
-  public static readonly AUTOSCALING_MULTIPLE_INSTANCE_TYPES = 'AUTOSCALING_MULTIPLE_INSTANCE_TYPES';
+  public static readonly AUTOSCALING_MULTIPLE_INSTANCE_TYPES =
+    'AUTOSCALING_MULTIPLE_INSTANCE_TYPES';
   /**
    * Checks if a backup plan has a backup rule that satisfies the required frequency and retention period.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/backup-plan-min-frequency-and-min-retention-check.html
    */
-  public static readonly BACKUP_PLAN_MIN_FREQUENCY_AND_MIN_RETENTION_CHECK = 'BACKUP_PLAN_MIN_FREQUENCY_AND_MIN_RETENTION_CHECK';
+  public static readonly BACKUP_PLAN_MIN_FREQUENCY_AND_MIN_RETENTION_CHECK =
+    'BACKUP_PLAN_MIN_FREQUENCY_AND_MIN_RETENTION_CHECK';
   /**
    * Checks if a recovery point is encrypted.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/backup-recovery-point-encrypted.html
@@ -750,17 +767,20 @@ export class ManagedRuleIdentifiers {
    * Checks if a backup vault has an attached resource-based policy which prevents deletion of recovery points.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/backup-recovery-point-manual-deletion-disabled.html
    */
-  public static readonly BACKUP_RECOVERY_POINT_MANUAL_DELETION_DISABLED = 'BACKUP_RECOVERY_POINT_MANUAL_DELETION_DISABLED';
+  public static readonly BACKUP_RECOVERY_POINT_MANUAL_DELETION_DISABLED =
+    'BACKUP_RECOVERY_POINT_MANUAL_DELETION_DISABLED';
   /**
    * Checks if a recovery point expires no earlier than after the specified period.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/backup-recovery-point-minimum-retention-check.html
    */
-  public static readonly BACKUP_RECOVERY_POINT_MINIMUM_RETENTION_CHECK = 'BACKUP_RECOVERY_POINT_MINIMUM_RETENTION_CHECK';
+  public static readonly BACKUP_RECOVERY_POINT_MINIMUM_RETENTION_CHECK =
+    'BACKUP_RECOVERY_POINT_MINIMUM_RETENTION_CHECK';
   /**
    * Checks if an AWS Elastic Beanstalk environment is configured for enhanced health reporting.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/beanstalk-enhanced-health-reporting-enabled.html
    */
-  public static readonly BEANSTALK_ENHANCED_HEALTH_REPORTING_ENABLED = 'BEANSTALK_ENHANCED_HEALTH_REPORTING_ENABLED';
+  public static readonly BEANSTALK_ENHANCED_HEALTH_REPORTING_ENABLED =
+    'BEANSTALK_ENHANCED_HEALTH_REPORTING_ENABLED';
   /**
    * Checks if Classic Load Balancers (CLB) are configured with a user defined Desync mitigation mode.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/clb-desync-mode-check.html
@@ -776,12 +796,14 @@ export class ManagedRuleIdentifiers {
    * from it's expected configuration.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudformation-stack-drift-detection-check.html
    */
-  public static readonly CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK = 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK';
+  public static readonly CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK =
+    'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK';
   /**
    * Checks whether your CloudFormation stacks are sending event notifications to an SNS topic.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudformation-stack-notification-check.html
    */
-  public static readonly CLOUDFORMATION_STACK_NOTIFICATION_CHECK = 'CLOUDFORMATION_STACK_NOTIFICATION_CHECK';
+  public static readonly CLOUDFORMATION_STACK_NOTIFICATION_CHECK =
+    'CLOUDFORMATION_STACK_NOTIFICATION_CHECK';
   /**
    * Checks if Amazon CloudFront distributions are configured to capture information from
    * Amazon Simple Storage Service (Amazon S3) server access logs.
@@ -802,18 +824,21 @@ export class ManagedRuleIdentifiers {
    * Checks if an Amazon CloudFront distribution is configured to return a specific object that is the default root object.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-default-root-object-configured.html
    */
-  public static readonly CLOUDFRONT_DEFAULT_ROOT_OBJECT_CONFIGURED = 'CLOUDFRONT_DEFAULT_ROOT_OBJECT_CONFIGURED';
+  public static readonly CLOUDFRONT_DEFAULT_ROOT_OBJECT_CONFIGURED =
+    'CLOUDFRONT_DEFAULT_ROOT_OBJECT_CONFIGURED';
   /**
    * Checks if CloudFront distributions are using deprecated SSL protocols for HTTPS communication between
    * CloudFront edge locations and custom origins.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-no-deprecated-ssl-protocols.html
    */
-  public static readonly CLOUDFRONT_NO_DEPRECATED_SSL_PROTOCOLS = 'CLOUDFRONT_NO_DEPRECATED_SSL_PROTOCOLS';
+  public static readonly CLOUDFRONT_NO_DEPRECATED_SSL_PROTOCOLS =
+    'CLOUDFRONT_NO_DEPRECATED_SSL_PROTOCOLS';
   /**
    * Checks that Amazon CloudFront distribution with Amazon S3 Origin type has Origin Access Identity (OAI) configured.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-origin-access-identity-enabled.html
    */
-  public static readonly CLOUDFRONT_ORIGIN_ACCESS_IDENTITY_ENABLED = 'CLOUDFRONT_ORIGIN_ACCESS_IDENTITY_ENABLED';
+  public static readonly CLOUDFRONT_ORIGIN_ACCESS_IDENTITY_ENABLED =
+    'CLOUDFRONT_ORIGIN_ACCESS_IDENTITY_ENABLED';
   /**
    * Checks whether an origin group is configured for the distribution of at least 2 origins in the
    * origin group for Amazon CloudFront.
@@ -836,7 +861,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon CloudFront distributions are encrypting traffic to custom origins.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-traffic-to-origin-encrypted.html
    */
-  public static readonly CLOUDFRONT_TRAFFIC_TO_ORIGIN_ENCRYPTED = 'CLOUDFRONT_TRAFFIC_TO_ORIGIN_ENCRYPTED';
+  public static readonly CLOUDFRONT_TRAFFIC_TO_ORIGIN_ENCRYPTED =
+    'CLOUDFRONT_TRAFFIC_TO_ORIGIN_ENCRYPTED';
   /**
    * Checks whether your Amazon CloudFront distributions use HTTPS (directly or via a redirection).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-viewer-policy-https.html
@@ -846,7 +872,8 @@ export class ManagedRuleIdentifiers {
    * Checks whether AWS CloudTrail trails are configured to send logs to Amazon CloudWatch Logs.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloud-trail-cloud-watch-logs-enabled.html
    */
-  public static readonly CLOUD_TRAIL_CLOUD_WATCH_LOGS_ENABLED = 'CLOUD_TRAIL_CLOUD_WATCH_LOGS_ENABLED';
+  public static readonly CLOUD_TRAIL_CLOUD_WATCH_LOGS_ENABLED =
+    'CLOUD_TRAIL_CLOUD_WATCH_LOGS_ENABLED';
   /**
    * Checks whether AWS CloudTrail is enabled in your AWS account.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudtrail-enabled.html
@@ -862,7 +889,8 @@ export class ManagedRuleIdentifiers {
    * Checks whether AWS CloudTrail creates a signed digest file with logs.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloud-trail-log-file-validation-enabled.html
    */
-  public static readonly CLOUD_TRAIL_LOG_FILE_VALIDATION_ENABLED = 'CLOUD_TRAIL_LOG_FILE_VALIDATION_ENABLED';
+  public static readonly CLOUD_TRAIL_LOG_FILE_VALIDATION_ENABLED =
+    'CLOUD_TRAIL_LOG_FILE_VALIDATION_ENABLED';
   /**
    * Checks whether at least one AWS CloudTrail trail is logging Amazon S3 data events for all S3 buckets.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudtrail-s3-dataevents-enabled.html
@@ -883,7 +911,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon CloudWatch alarms actions are in enabled state.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudwatch-alarm-action-enabled-check.html
    */
-  public static readonly CLOUDWATCH_ALARM_ACTION_ENABLED_CHECK = 'CLOUDWATCH_ALARM_ACTION_ENABLED_CHECK';
+  public static readonly CLOUDWATCH_ALARM_ACTION_ENABLED_CHECK =
+    'CLOUDWATCH_ALARM_ACTION_ENABLED_CHECK';
   /**
    * Checks whether the specified resource type has a CloudWatch alarm for the specified metric.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudwatch-alarm-resource-check.html
@@ -910,17 +939,20 @@ export class ManagedRuleIdentifiers {
    * Checks if an AWS CodeBuild project has encryption enabled for all of its artifacts.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-artifact-encryption.html
    */
-  public static readonly CODEBUILD_PROJECT_ARTIFACT_ENCRYPTION = 'CODEBUILD_PROJECT_ARTIFACT_ENCRYPTION';
+  public static readonly CODEBUILD_PROJECT_ARTIFACT_ENCRYPTION =
+    'CODEBUILD_PROJECT_ARTIFACT_ENCRYPTION';
   /**
    * Checks if an AWS CodeBuild project environment has privileged mode enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-environment-privileged-check.html
    */
-  public static readonly CODEBUILD_PROJECT_ENVIRONMENT_PRIVILEGED_CHECK = 'CODEBUILD_PROJECT_ENVIRONMENT_PRIVILEGED_CHECK';
+  public static readonly CODEBUILD_PROJECT_ENVIRONMENT_PRIVILEGED_CHECK =
+    'CODEBUILD_PROJECT_ENVIRONMENT_PRIVILEGED_CHECK';
   /**
    * Checks whether the project contains environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-envvar-awscred-check.html
    */
-  public static readonly CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK = 'CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK';
+  public static readonly CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK =
+    'CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK';
   /**
    * Checks if an AWS CodeBuild project environment has at least one log option enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-logging-enabled.html
@@ -930,35 +962,41 @@ export class ManagedRuleIdentifiers {
    * Checks if a AWS CodeBuild project configured with Amazon S3 Logs has encryption enabled for its logs.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-s3-logs-encrypted.html
    */
-  public static readonly CODEBUILD_PROJECT_S3_LOGS_ENCRYPTED = 'CODEBUILD_PROJECT_S3_LOGS_ENCRYPTED';
+  public static readonly CODEBUILD_PROJECT_S3_LOGS_ENCRYPTED =
+    'CODEBUILD_PROJECT_S3_LOGS_ENCRYPTED';
   /**
    * Checks whether the GitHub or Bitbucket source repository URL contains either personal access tokens
    * or user name and password.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-source-repo-url-check.html
    */
-  public static readonly CODEBUILD_PROJECT_SOURCE_REPO_URL_CHECK = 'CODEBUILD_PROJECT_SOURCE_REPO_URL_CHECK';
+  public static readonly CODEBUILD_PROJECT_SOURCE_REPO_URL_CHECK =
+    'CODEBUILD_PROJECT_SOURCE_REPO_URL_CHECK';
   /**
    * Checks if the deployment group is configured with automatic deployment rollback and
    * deployment monitoring with alarms attached.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codedeploy-auto-rollback-monitor-enabled.html
    */
-  public static readonly CODEDEPLOY_AUTO_ROLLBACK_MONITOR_ENABLED = 'CODEDEPLOY_AUTO_ROLLBACK_MONITOR_ENABLED';
+  public static readonly CODEDEPLOY_AUTO_ROLLBACK_MONITOR_ENABLED =
+    'CODEDEPLOY_AUTO_ROLLBACK_MONITOR_ENABLED';
   /**
    * Checks if the deployment group for EC2/On-Premises Compute Platform is configured with
    * a minimum healthy hosts fleet percentage or host count greater than or equal to the input threshold.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codedeploy-ec2-minimum-healthy-hosts-configured.html
    */
-  public static readonly CODEDEPLOY_EC2_MINIMUM_HEALTHY_HOSTS_CONFIGURED = 'CODEDEPLOY_EC2_MINIMUM_HEALTHY_HOSTS_CONFIGURED';
+  public static readonly CODEDEPLOY_EC2_MINIMUM_HEALTHY_HOSTS_CONFIGURED =
+    'CODEDEPLOY_EC2_MINIMUM_HEALTHY_HOSTS_CONFIGURED';
   /**
    * Checks if the deployment group for Lambda Compute Platform is not using the default deployment configuration.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codedeploy-lambda-allatonce-traffic-shift-disabled.html
    */
-  public static readonly CODEDEPLOY_LAMBDA_ALLATONCE_TRAFFIC_SHIFT_DISABLED = 'CODEDEPLOY_LAMBDA_ALLATONCE_TRAFFIC_SHIFT_DISABLED';
+  public static readonly CODEDEPLOY_LAMBDA_ALLATONCE_TRAFFIC_SHIFT_DISABLED =
+    'CODEDEPLOY_LAMBDA_ALLATONCE_TRAFFIC_SHIFT_DISABLED';
   /**
    * Checks whether the first deployment stage of the AWS CodePipeline performs more than one deployment.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codepipeline-deployment-count-check.html
    */
-  public static readonly CODEPIPELINE_DEPLOYMENT_COUNT_CHECK = 'CODEPIPELINE_DEPLOYMENT_COUNT_CHECK';
+  public static readonly CODEPIPELINE_DEPLOYMENT_COUNT_CHECK =
+    'CODEPIPELINE_DEPLOYMENT_COUNT_CHECK';
   /**
    * Checks whether each stage in the AWS CodePipeline deploys to more than N times the number of
    * the regions the AWS CodePipeline has deployed in all the previous combined stages,
@@ -1010,7 +1048,8 @@ export class ManagedRuleIdentifiers {
    * Checks if a recovery point was created for Amazon DynamoDB Tables within the specified period.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-last-backup-recovery-point-created.html
    */
-  public static readonly DYNAMODB_LAST_BACKUP_RECOVERY_POINT_CREATED = 'DYNAMODB_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly DYNAMODB_LAST_BACKUP_RECOVERY_POINT_CREATED =
+    'DYNAMODB_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Checks that point in time recovery (PITR) is enabled for Amazon DynamoDB tables.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-pitr-enabled.html
@@ -1020,7 +1059,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon DynamoDB tables are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-resources-protected-by-backup-plan.html
    */
-  public static readonly DYNAMODB_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'DYNAMODB_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly DYNAMODB_RESOURCES_PROTECTED_BY_BACKUP_PLAN =
+    'DYNAMODB_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks whether Amazon DynamoDB table is encrypted with AWS Key Management Service (KMS).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/dynamodb-table-encrypted-kms.html
@@ -1061,17 +1101,20 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon Elastic Block Store (Amazon EBS) volumes are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ebs-resources-protected-by-backup-plan.html
    */
-  public static readonly EBS_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'EBS_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly EBS_RESOURCES_PROTECTED_BY_BACKUP_PLAN =
+    'EBS_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks whether Amazon Elastic Block Store snapshots are not publicly restorable.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ebs-snapshot-public-restorable-check.html
    */
-  public static readonly EBS_SNAPSHOT_PUBLIC_RESTORABLE_CHECK = 'EBS_SNAPSHOT_PUBLIC_RESTORABLE_CHECK';
+  public static readonly EBS_SNAPSHOT_PUBLIC_RESTORABLE_CHECK =
+    'EBS_SNAPSHOT_PUBLIC_RESTORABLE_CHECK';
   /**
    * Checks whether detailed monitoring is enabled for EC2 instances.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instance-detailed-monitoring-enabled.html
    */
-  public static readonly EC2_INSTANCE_DETAILED_MONITORING_ENABLED = 'EC2_INSTANCE_DETAILED_MONITORING_ENABLED';
+  public static readonly EC2_INSTANCE_DETAILED_MONITORING_ENABLED =
+    'EC2_INSTANCE_DETAILED_MONITORING_ENABLED';
   /**
    * Checks whether the Amazon EC2 instances in your account are managed by AWS Systems Manager.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instance-managed-by-systems-manager.html
@@ -1099,7 +1142,8 @@ export class ManagedRuleIdentifiers {
    * Checks if a recovery point was created for Amazon Elastic Compute Cloud (Amazon EC2) instances.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-last-backup-recovery-point-created.html
    */
-  public static readonly EC2_LAST_BACKUP_RECOVERY_POINT_CREATED = 'EC2_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly EC2_LAST_BACKUP_RECOVERY_POINT_CREATED =
+    'EC2_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Checks whether your EC2 instances belong to a virtual private cloud (VPC).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-instances-in-vpc.html
@@ -1109,29 +1153,34 @@ export class ManagedRuleIdentifiers {
    * Checks that none of the specified applications are installed on the instance.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-managedinstance-applications-blacklisted.html
    */
-  public static readonly EC2_MANAGED_INSTANCE_APPLICATIONS_BLOCKED = 'EC2_MANAGEDINSTANCE_APPLICATIONS_BLACKLISTED';
+  public static readonly EC2_MANAGED_INSTANCE_APPLICATIONS_BLOCKED =
+    'EC2_MANAGEDINSTANCE_APPLICATIONS_BLACKLISTED';
   /**
    * Checks whether all of the specified applications are installed on the instance.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-managedinstance-applications-required.html
    */
-  public static readonly EC2_MANAGED_INSTANCE_APPLICATIONS_REQUIRED = 'EC2_MANAGEDINSTANCE_APPLICATIONS_REQUIRED';
+  public static readonly EC2_MANAGED_INSTANCE_APPLICATIONS_REQUIRED =
+    'EC2_MANAGEDINSTANCE_APPLICATIONS_REQUIRED';
   /**
    * Checks whether the compliance status of AWS Systems Manager association compliance is COMPLIANT
    * or NON_COMPLIANT after the association execution on the instance.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-managedinstance-association-compliance-status-check.html
    */
-  public static readonly EC2_MANAGED_INSTANCE_ASSOCIATION_COMPLIANCE_STATUS_CHECK = 'EC2_MANAGEDINSTANCE_ASSOCIATION_COMPLIANCE_STATUS_CHECK';
+  public static readonly EC2_MANAGED_INSTANCE_ASSOCIATION_COMPLIANCE_STATUS_CHECK =
+    'EC2_MANAGEDINSTANCE_ASSOCIATION_COMPLIANCE_STATUS_CHECK';
   /**
    * Checks whether instances managed by AWS Systems Manager are configured to collect blocked inventory types.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-managedinstance-inventory-blacklisted.html
    */
-  public static readonly EC2_MANAGED_INSTANCE_INVENTORY_BLOCKED = 'EC2_MANAGEDINSTANCE_INVENTORY_BLACKLISTED';
+  public static readonly EC2_MANAGED_INSTANCE_INVENTORY_BLOCKED =
+    'EC2_MANAGEDINSTANCE_INVENTORY_BLACKLISTED';
   /**
    * Checks whether the compliance status of the Amazon EC2 Systems Manager patch compliance is
    * COMPLIANT or NON_COMPLIANT after the patch installation on the instance.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-managedinstance-patch-compliance-status-check.html
    */
-  public static readonly EC2_MANAGED_INSTANCE_PATCH_COMPLIANCE_STATUS_CHECK = 'EC2_MANAGEDINSTANCE_PATCH_COMPLIANCE_STATUS_CHECK';
+  public static readonly EC2_MANAGED_INSTANCE_PATCH_COMPLIANCE_STATUS_CHECK =
+    'EC2_MANAGEDINSTANCE_PATCH_COMPLIANCE_STATUS_CHECK';
   /**
    * Checks whether EC2 managed instances have the desired configurations.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-managedinstance-platform-check.html
@@ -1151,7 +1200,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon Elastic Compute Cloud (Amazon EC2) instances are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-resources-protected-by-backup-plan.html
    */
-  public static readonly EC2_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'EC2_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly EC2_RESOURCES_PROTECTED_BY_BACKUP_PLAN =
+    'EC2_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks that security groups are attached to Amazon Elastic Compute Cloud (Amazon EC2) instances
    * or to an elastic network interface.
@@ -1162,7 +1212,8 @@ export class ManagedRuleIdentifiers {
    * Checks if non-default security groups are attached to Elastic network interfaces (ENIs).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-security-group-attached-to-eni-periodic.html
    */
-  public static readonly EC2_SECURITY_GROUP_ATTACHED_TO_ENI_PERIODIC = 'EC2_SECURITY_GROUP_ATTACHED_TO_ENI_PERIODIC';
+  public static readonly EC2_SECURITY_GROUP_ATTACHED_TO_ENI_PERIODIC =
+    'EC2_SECURITY_GROUP_ATTACHED_TO_ENI_PERIODIC';
   /**
    * Checks whether there are instances stopped for more than the allowed number of days.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-stopped-instance.html
@@ -1178,7 +1229,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon Elastic Compute Cloud (Amazon EC2) Transit Gateways have 'AutoAcceptSharedAttachments' enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-transit-gateway-auto-vpc-attach-disabled.html
    */
-  public static readonly EC2_TRANSIT_GATEWAY_AUTO_VPC_ATTACH_DISABLED = 'EC2_TRANSIT_GATEWAY_AUTO_VPC_ATTACH_DISABLED';
+  public static readonly EC2_TRANSIT_GATEWAY_AUTO_VPC_ATTACH_DISABLED =
+    'EC2_TRANSIT_GATEWAY_AUTO_VPC_ATTACH_DISABLED';
   /**
    * Checks whether EBS volumes are attached to EC2 instances.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-volume-inuse-check.html
@@ -1193,12 +1245,14 @@ export class ManagedRuleIdentifiers {
    * Checks if a private Amazon Elastic Container Registry (ECR) repository has at least one lifecycle policy configured.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecr-private-lifecycle-policy-configured.html
    */
-  public static readonly ECR_PRIVATE_LIFECYCLE_POLICY_CONFIGURED = 'ECR_PRIVATE_LIFECYCLE_POLICY_CONFIGURED';
+  public static readonly ECR_PRIVATE_LIFECYCLE_POLICY_CONFIGURED =
+    'ECR_PRIVATE_LIFECYCLE_POLICY_CONFIGURED';
   /**
    * Checks if a private Amazon Elastic Container Registry (ECR) repository has tag immutability enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecr-private-tag-immutability-enabled.html
    */
-  public static readonly ECR_PRIVATE_TAG_IMMUTABILITY_ENABLED = 'ECR_PRIVATE_TAG_IMMUTABILITY_ENABLED';
+  public static readonly ECR_PRIVATE_TAG_IMMUTABILITY_ENABLED =
+    'ECR_PRIVATE_TAG_IMMUTABILITY_ENABLED';
   /**
    * Checks if the networking mode for active ECSTaskDefinitions is set to ‘awsvpc’.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-awsvpc-networking-enabled.html
@@ -1224,7 +1278,8 @@ export class ManagedRuleIdentifiers {
    * is running on the latest Fargate platform version.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-fargate-latest-platform-version.html
    */
-  public static readonly ECS_FARGATE_LATEST_PLATFORM_VERSION = 'ECS_FARGATE_LATEST_PLATFORM_VERSION';
+  public static readonly ECS_FARGATE_LATEST_PLATFORM_VERSION =
+    'ECS_FARGATE_LATEST_PLATFORM_VERSION';
   /**
    * Checks if secrets are passed as container environment variables.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-no-environment-secrets.html
@@ -1234,12 +1289,14 @@ export class ManagedRuleIdentifiers {
    * Checks if logConfiguration is set on active ECS Task Definitions.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-task-definition-log-configuration.html
    */
-  public static readonly ECS_TASK_DEFINITION_LOG_CONFIGURATION = 'ECS_TASK_DEFINITION_LOG_CONFIGURATION';
+  public static readonly ECS_TASK_DEFINITION_LOG_CONFIGURATION =
+    'ECS_TASK_DEFINITION_LOG_CONFIGURATION';
   /**
    * Checks if Amazon Elastic Container Service (ECS) task definitions have a set memory limit for its container definitions.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ecs-task-definition-memory-hard-limit.html
    */
-  public static readonly ECS_TASK_DEFINITION_MEMORY_HARD_LIMIT = 'ECS_TASK_DEFINITION_MEMORY_HARD_LIMIT';
+  public static readonly ECS_TASK_DEFINITION_MEMORY_HARD_LIMIT =
+    'ECS_TASK_DEFINITION_MEMORY_HARD_LIMIT';
   /**
    * Checks if ECSTaskDefinitions specify a user
    * for Amazon Elastic Container Service (Amazon ECS) EC2 launch type containers to run on.
@@ -1257,17 +1314,20 @@ export class ManagedRuleIdentifiers {
    * with host networking mode has 'privileged' or 'user' container definitions.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-volume-inuse-check.html
    */
-  public static readonly EC2_VOLUME_IECS_TASK_DEFINITION_USER_FOR_HOST_MODE_CHECKNUSE_CHECK = 'ECS_TASK_DEFINITION_USER_FOR_HOST_MODE_CHECK';
+  public static readonly EC2_VOLUME_IECS_TASK_DEFINITION_USER_FOR_HOST_MODE_CHECKNUSE_CHECK =
+    'ECS_TASK_DEFINITION_USER_FOR_HOST_MODE_CHECK';
   /**
    * Checks if Amazon Elastic File System (Amazon EFS) access points are configured to enforce a root directory.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/efs-access-point-enforce-root-directory.html
    */
-  public static readonly EFS_ACCESS_POINT_ENFORCE_ROOT_DIRECTORY = 'EFS_ACCESS_POINT_ENFORCE_ROOT_DIRECTORY';
+  public static readonly EFS_ACCESS_POINT_ENFORCE_ROOT_DIRECTORY =
+    'EFS_ACCESS_POINT_ENFORCE_ROOT_DIRECTORY';
   /**
    * Checks if Amazon Elastic File System (Amazon EFS) access points are configured to enforce a user identity.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ec2-volume-inuse-check.html
    */
-  public static readonly EFS_ACCESS_POINT_ENFORCE_USER_IDENTITY = 'EFS_ACCESS_POINT_ENFORCE_USER_IDENTITY';
+  public static readonly EFS_ACCESS_POINT_ENFORCE_USER_IDENTITY =
+    'EFS_ACCESS_POINT_ENFORCE_USER_IDENTITY';
   /**
    * hecks whether Amazon Elastic File System (Amazon EFS) is configured to encrypt the file data
    * using AWS Key Management Service (AWS KMS).
@@ -1278,12 +1338,14 @@ export class ManagedRuleIdentifiers {
    * Checks if a recovery point was created for Amazon Elastic File System (Amazon EFS) File Systems.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/efs-last-backup-recovery-point-created.html
    */
-  public static readonly EFS_LAST_BACKUP_RECOVERY_POINT_CREATED = 'EFS_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly EFS_LAST_BACKUP_RECOVERY_POINT_CREATED =
+    'EFS_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Checks if Amazon Elastic File System (Amazon EFS) File Systems are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/efs-resources-protected-by-backup-plan.html
    */
-  public static readonly EFS_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'EFS_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly EFS_RESOURCES_PROTECTED_BY_BACKUP_PLAN =
+    'EFS_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks whether all Elastic IP addresses that are allocated to a VPC are attached to
    * EC2 instances or in-use elastic network interfaces (ENIs).
@@ -1306,7 +1368,8 @@ export class ManagedRuleIdentifiers {
    * Check if the Amazon ElastiCache Redis clusters have automatic backup turned on.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elasticache-redis-cluster-automatic-backup-check.html
    */
-  public static readonly ELASTICACHE_REDIS_CLUSTER_AUTOMATIC_BACKUP_CHECK = 'ELASTICACHE_REDIS_CLUSTER_AUTOMATIC_BACKUP_CHECK';
+  public static readonly ELASTICACHE_REDIS_CLUSTER_AUTOMATIC_BACKUP_CHECK =
+    'ELASTICACHE_REDIS_CLUSTER_AUTOMATIC_BACKUP_CHECK';
   /**
    * Checks whether your Amazon Elastic Compute Cloud (Amazon EC2) instance metadata version
    * is configured with Instance Metadata Service Version 2 (IMDSv2).
@@ -1317,7 +1380,8 @@ export class ManagedRuleIdentifiers {
    * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running the oldest supported version.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-oldest-supported-version.html
    */
-  public static readonly EKS_CLUSTER_OLDEST_SUPPORTED_VERSION = 'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION';
+  public static readonly EKS_CLUSTER_OLDEST_SUPPORTED_VERSION =
+    'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION';
   /**
    * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
@@ -1338,12 +1402,14 @@ export class ManagedRuleIdentifiers {
    * Check that Amazon ElasticSearch Service nodes are encrypted end to end.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elasticsearch-node-to-node-encryption-check.html
    */
-  public static readonly ELASTICSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK = 'ELASTICSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK';
+  public static readonly ELASTICSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK =
+    'ELASTICSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK';
   /**
    * Checks if managed platform updates in an AWS Elastic Beanstalk environment is enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elastic-beanstalk-managed-updates-enabled.html
    */
-  public static readonly ELASTIC_BEANSTALK_MANAGED_UPDATES_ENABLED = 'ELASTIC_BEANSTALK_MANAGED_UPDATES_ENABLED';
+  public static readonly ELASTIC_BEANSTALK_MANAGED_UPDATES_ENABLED =
+    'ELASTIC_BEANSTALK_MANAGED_UPDATES_ENABLED';
   /**
    * Checks if Application Load Balancers and Network Load Balancers
    * have listeners that are configured to use certificates from AWS Certificate Manager (ACM).
@@ -1360,7 +1426,8 @@ export class ManagedRuleIdentifiers {
    * Checks if cross-zone load balancing is enabled for the Classic Load Balancers (CLBs).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elb-cross-zone-load-balancing-enabled.html
    */
-  public static readonly ELB_CROSS_ZONE_LOAD_BALANCING_ENABLED = 'ELB_CROSS_ZONE_LOAD_BALANCING_ENABLED';
+  public static readonly ELB_CROSS_ZONE_LOAD_BALANCING_ENABLED =
+    'ELB_CROSS_ZONE_LOAD_BALANCING_ENABLED';
   /**
    * Checks whether your Classic Load Balancer is configured with SSL or HTTPS listeners.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elb-tls-https-listeners-only.html
@@ -1375,7 +1442,8 @@ export class ManagedRuleIdentifiers {
    * Checks whether your Classic Load Balancer SSL listeners are using a custom policy.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elb-custom-security-policy-ssl-check.html
    */
-  public static readonly ELB_CUSTOM_SECURITY_POLICY_SSL_CHECK = 'ELB_CUSTOM_SECURITY_POLICY_SSL_CHECK';
+  public static readonly ELB_CUSTOM_SECURITY_POLICY_SSL_CHECK =
+    'ELB_CUSTOM_SECURITY_POLICY_SSL_CHECK';
   /**
    * Checks whether Elastic Load Balancing has deletion protection enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elb-deletion-protection-enabled.html
@@ -1390,7 +1458,8 @@ export class ManagedRuleIdentifiers {
    * Checks whether your Classic Load Balancer SSL listeners are using a predefined policy.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/elb-predefined-security-policy-ssl-check.html
    */
-  public static readonly ELB_PREDEFINED_SECURITY_POLICY_SSL_CHECK = 'ELB_PREDEFINED_SECURITY_POLICY_SSL_CHECK';
+  public static readonly ELB_PREDEFINED_SECURITY_POLICY_SSL_CHECK =
+    'ELB_PREDEFINED_SECURITY_POLICY_SSL_CHECK';
   /**
    * Checks that Amazon EMR clusters have Kerberos enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/emr-kerberos-enabled.html
@@ -1414,7 +1483,8 @@ export class ManagedRuleIdentifiers {
    * @deprecated Inactive managed rule
    *
    */
-  public static readonly FMS_SECURITY_GROUP_AUDIT_POLICY_CHECK = 'FMS_SECURITY_GROUP_AUDIT_POLICY_CHECK';
+  public static readonly FMS_SECURITY_GROUP_AUDIT_POLICY_CHECK =
+    'FMS_SECURITY_GROUP_AUDIT_POLICY_CHECK';
   /**
    * Checks whether AWS Firewall Manager created security groups content is the same as the master security groups.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fms-security-group-content-check.html
@@ -1430,7 +1500,8 @@ export class ManagedRuleIdentifiers {
    * @deprecated Inactive managed rule
    *
    */
-  public static readonly FMS_SECURITY_GROUP_RESOURCE_ASSOCIATION_CHECK = 'FMS_SECURITY_GROUP_RESOURCE_ASSOCIATION_CHECK';
+  public static readonly FMS_SECURITY_GROUP_RESOURCE_ASSOCIATION_CHECK =
+    'FMS_SECURITY_GROUP_RESOURCE_ASSOCIATION_CHECK';
   /**
    * Checks whether an Application Load Balancer, Amazon CloudFront distributions,
    * Elastic Load Balancer or Elastic IP has AWS Shield protection.
@@ -1448,17 +1519,20 @@ export class ManagedRuleIdentifiers {
    * The correct priority is decided by the rank of the rule groups in the ruleGroups parameter.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fms-webacl-rulegroup-association-check.html
    */
-  public static readonly FMS_WEBACL_RULEGROUP_ASSOCIATION_CHECK = 'FMS_WEBACL_RULEGROUP_ASSOCIATION_CHECK';
+  public static readonly FMS_WEBACL_RULEGROUP_ASSOCIATION_CHECK =
+    'FMS_WEBACL_RULEGROUP_ASSOCIATION_CHECK';
   /**
    * Checks if a recovery point was created for Amazon FSx File Systems.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fsx-last-backup-recovery-point-created.html
    */
-  public static readonly FSX_LAST_BACKUP_RECOVERY_POINT_CREATED = 'FSX_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly FSX_LAST_BACKUP_RECOVERY_POINT_CREATED =
+    'FSX_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Checks if Amazon FSx File Systems are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/fsx-resources-protected-by-backup-plan.html
    */
-  public static readonly FSX_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'FSX_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly FSX_RESOURCES_PROTECTED_BY_BACKUP_PLAN =
+    'FSX_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks whether Amazon GuardDuty is enabled in your AWS account and region. If you provide an AWS account for centralization,
    * the rule evaluates the Amazon GuardDuty results in the centralized account.
@@ -1501,12 +1575,14 @@ export class ManagedRuleIdentifiers {
    * Checks the IAM policies that you create for Allow statements that grant permissions to all actions on all resources.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/iam-policy-no-statements-with-admin-access.html
    */
-  public static readonly IAM_POLICY_NO_STATEMENTS_WITH_ADMIN_ACCESS = 'IAM_POLICY_NO_STATEMENTS_WITH_ADMIN_ACCESS';
+  public static readonly IAM_POLICY_NO_STATEMENTS_WITH_ADMIN_ACCESS =
+    'IAM_POLICY_NO_STATEMENTS_WITH_ADMIN_ACCESS';
   /**
    * Checks if AWS Identity and Access Management (IAM) policies that you create grant permissions to all actions on individual AWS resources.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/iam-policy-no-statements-with-full-access.html
    */
-  public static readonly IAM_POLICY_NO_STATEMENTS_WITH_FULL_ACCESS = 'IAM_POLICY_NO_STATEMENTS_WITH_FULL_ACCESS';
+  public static readonly IAM_POLICY_NO_STATEMENTS_WITH_FULL_ACCESS =
+    'IAM_POLICY_NO_STATEMENTS_WITH_FULL_ACCESS';
   /**
    * Checks that AWS Identity and Access Management (IAM) policies in a list of policies are attached to all AWS roles.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/iam-role-managed-policy-check.html
@@ -1542,7 +1618,8 @@ export class ManagedRuleIdentifiers {
    * Checks that Internet gateways (IGWs) are only attached to an authorized Amazon Virtual Private Cloud (VPCs).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/internet-gateway-authorized-vpc-only.html
    */
-  public static readonly INTERNET_GATEWAY_AUTHORIZED_VPC_ONLY = 'INTERNET_GATEWAY_AUTHORIZED_VPC_ONLY';
+  public static readonly INTERNET_GATEWAY_AUTHORIZED_VPC_ONLY =
+    'INTERNET_GATEWAY_AUTHORIZED_VPC_ONLY';
   /**
    * Checks if Amazon Kinesis streams are encrypted at rest with server-side encryption.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/kinesis-stream-encrypted.html
@@ -1567,7 +1644,8 @@ export class ManagedRuleIdentifiers {
    * Checks whether the AWS Lambda function policy attached to the Lambda resource prohibits public access.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/lambda-function-public-access-prohibited.html
    */
-  public static readonly LAMBDA_FUNCTION_PUBLIC_ACCESS_PROHIBITED = 'LAMBDA_FUNCTION_PUBLIC_ACCESS_PROHIBITED';
+  public static readonly LAMBDA_FUNCTION_PUBLIC_ACCESS_PROHIBITED =
+    'LAMBDA_FUNCTION_PUBLIC_ACCESS_PROHIBITED';
   /**
    * Checks that the lambda function settings for runtime, role, timeout, and memory size match the expected values.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/lambda-function-settings-check.html
@@ -1602,12 +1680,14 @@ export class ManagedRuleIdentifiers {
    * Checks if an AWS Network Firewall policy is configured with a user defined stateless default action for fragmented packets.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/netfw-policy-default-action-fragment-packets.html
    */
-  public static readonly NETFW_POLICY_DEFAULT_ACTION_FRAGMENT_PACKETS = 'NETFW_POLICY_DEFAULT_ACTION_FRAGMENT_PACKETS';
+  public static readonly NETFW_POLICY_DEFAULT_ACTION_FRAGMENT_PACKETS =
+    'NETFW_POLICY_DEFAULT_ACTION_FRAGMENT_PACKETS';
   /**
    * Checks if an AWS Network Firewall policy is configured with a user defined default stateless action for full packets.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/netfw-policy-default-action-full-packets.html
    */
-  public static readonly NETFW_POLICY_DEFAULT_ACTION_FULL_PACKETS = 'NETFW_POLICY_DEFAULT_ACTION_FULL_PACKETS';
+  public static readonly NETFW_POLICY_DEFAULT_ACTION_FULL_PACKETS =
+    'NETFW_POLICY_DEFAULT_ACTION_FULL_PACKETS';
   /**
    * Check AWS Network Firewall policy is associated with stateful OR stateless rule groups.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/netfw-policy-rule-group-associated.html
@@ -1617,12 +1697,14 @@ export class ManagedRuleIdentifiers {
    * Checks if a Stateless Network Firewall Rule Group contains rules.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/netfw-stateless-rule-group-not-empty.html
    */
-  public static readonly NETFW_STATELESS_RULE_GROUP_NOT_EMPTY = 'NETFW_STATELESS_RULE_GROUP_NOT_EMPTY';
+  public static readonly NETFW_STATELESS_RULE_GROUP_NOT_EMPTY =
+    'NETFW_STATELESS_RULE_GROUP_NOT_EMPTY';
   /**
    * Checks if cross-zone load balancing is enabled on Network Load Balancers (NLBs).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/nlb-cross-zone-load-balancing-enabled.html
    */
-  public static readonly NLB_CROSS_ZONE_LOAD_BALANCING_ENABLED = 'NLB_CROSS_ZONE_LOAD_BALANCING_ENABLED';
+  public static readonly NLB_CROSS_ZONE_LOAD_BALANCING_ENABLED =
+    'NLB_CROSS_ZONE_LOAD_BALANCING_ENABLED';
   /**
    * Checks if Amazon OpenSearch Service domains have fine-grained access control enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-access-control-enabled.html
@@ -1637,7 +1719,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon OpenSearch Service domains are configured with at least three data nodes and zoneAwarenessEnabled is true.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-data-node-fault-tolerance.html
    */
-  public static readonly OPENSEARCH_DATA_NODE_FAULT_TOLERANCE = 'OPENSEARCH_DATA_NODE_FAULT_TOLERANCE';
+  public static readonly OPENSEARCH_DATA_NODE_FAULT_TOLERANCE =
+    'OPENSEARCH_DATA_NODE_FAULT_TOLERANCE';
   /**
    * Checks if Amazon OpenSearch Service domains have encryption at rest configuration enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-encrypted-at-rest.html
@@ -1662,12 +1745,14 @@ export class ManagedRuleIdentifiers {
    * Check if Amazon OpenSearch Service nodes are encrypted end to end.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/opensearch-node-to-node-encryption-check.html
    */
-  public static readonly OPENSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK = 'OPENSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK';
+  public static readonly OPENSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK =
+    'OPENSEARCH_NODE_TO_NODE_ENCRYPTION_CHECK';
   /**
    * Checks if Amazon Relational Database Service (RDS) database instances are configured for automatic minor version upgrades.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-automatic-minor-version-upgrade-enabled.html
    */
-  public static readonly RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED = 'RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED';
+  public static readonly RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED =
+    'RDS_AUTOMATIC_MINOR_VERSION_UPGRADE_ENABLED';
   /**
    * Checks if an Amazon Relational Database Service (Amazon RDS) database cluster has changed the admin username from its default value.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-default-admin-check.html
@@ -1677,12 +1762,14 @@ export class ManagedRuleIdentifiers {
    * Checks if an Amazon Relational Database Service (Amazon RDS) cluster has deletion protection enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-deletion-protection-enabled.html
    */
-  public static readonly RDS_CLUSTER_DELETION_PROTECTION_ENABLED = 'RDS_CLUSTER_DELETION_PROTECTION_ENABLED';
+  public static readonly RDS_CLUSTER_DELETION_PROTECTION_ENABLED =
+    'RDS_CLUSTER_DELETION_PROTECTION_ENABLED';
   /**
    * Checks if an Amazon RDS Cluster has AWS Identity and Access Management (IAM) authentication enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-iam-authentication-enabled.html
    */
-  public static readonly RDS_CLUSTER_IAM_AUTHENTICATION_ENABLED = 'RDS_CLUSTER_IAM_AUTHENTICATION_ENABLED';
+  public static readonly RDS_CLUSTER_IAM_AUTHENTICATION_ENABLED =
+    'RDS_CLUSTER_IAM_AUTHENTICATION_ENABLED';
   /**
    * Checks if Multi-AZ replication is enabled on Amazon Aurora and Hermes clusters managed by Amazon Relational Database Service (Amazon RDS).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-cluster-multi-az-enabled.html
@@ -1702,12 +1789,14 @@ export class ManagedRuleIdentifiers {
    * Checks if an Amazon Relational Database Service (Amazon RDS) instance has deletion protection enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-instance-deletion-protection-enabled.html
    */
-  public static readonly RDS_INSTANCE_DELETION_PROTECTION_ENABLED = 'RDS_INSTANCE_DELETION_PROTECTION_ENABLED';
+  public static readonly RDS_INSTANCE_DELETION_PROTECTION_ENABLED =
+    'RDS_INSTANCE_DELETION_PROTECTION_ENABLED';
   /**
    * Checks if an Amazon RDS instance has AWS Identity and Access Management (IAM) authentication enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-instance-iam-authentication-enabled.html
    */
-  public static readonly RDS_INSTANCE_IAM_AUTHENTICATION_ENABLED = 'RDS_INSTANCE_IAM_AUTHENTICATION_ENABLED';
+  public static readonly RDS_INSTANCE_IAM_AUTHENTICATION_ENABLED =
+    'RDS_INSTANCE_IAM_AUTHENTICATION_ENABLED';
   /**
    * Checks that respective logs of Amazon Relational Database Service (Amazon RDS) are enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-logging-enabled.html
@@ -1742,7 +1831,8 @@ export class ManagedRuleIdentifiers {
    * Checks if a recovery point was created for Amazon Relational Database Service (Amazon RDS).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-last-backup-recovery-point-created.html
    */
-  public static readonly RDS_LAST_BACKUP_RECOVERY_POINT_CREATED = 'RDS_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly RDS_LAST_BACKUP_RECOVERY_POINT_CREATED =
+    'RDS_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Check whether the Amazon Relational Database Service instances are not publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-instance-public-access-check.html
@@ -1757,7 +1847,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon Relational Database Service (Amazon RDS) instances are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-resources-protected-by-backup-plan.html
    */
-  public static readonly RDS_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'RDS_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly RDS_RESOURCES_PROTECTED_BY_BACKUP_PLAN =
+    'RDS_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks if Amazon Relational Database Service (Amazon RDS) snapshots are public.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/rds-snapshots-public-prohibited.html
@@ -1777,7 +1868,8 @@ export class ManagedRuleIdentifiers {
    * Checks whether Amazon Redshift clusters have the specified settings.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-cluster-configuration-check.html
    */
-  public static readonly REDSHIFT_CLUSTER_CONFIGURATION_CHECK = 'REDSHIFT_CLUSTER_CONFIGURATION_CHECK';
+  public static readonly REDSHIFT_CLUSTER_CONFIGURATION_CHECK =
+    'REDSHIFT_CLUSTER_CONFIGURATION_CHECK';
   /**
    * Checks if Amazon Redshift clusters are using a specified AWS Key Management Service (AWS KMS) key for encryption.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-cluster-kms-enabled.html
@@ -1787,12 +1879,14 @@ export class ManagedRuleIdentifiers {
    * Checks whether Amazon Redshift clusters have the specified maintenance settings.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-cluster-maintenancesettings-check.html
    */
-  public static readonly REDSHIFT_CLUSTER_MAINTENANCE_SETTINGS_CHECK = 'REDSHIFT_CLUSTER_MAINTENANCESETTINGS_CHECK';
+  public static readonly REDSHIFT_CLUSTER_MAINTENANCE_SETTINGS_CHECK =
+    'REDSHIFT_CLUSTER_MAINTENANCESETTINGS_CHECK';
   /**
    * Checks whether Amazon Redshift clusters are not publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-cluster-public-access-check.html
    */
-  public static readonly REDSHIFT_CLUSTER_PUBLIC_ACCESS_CHECK = 'REDSHIFT_CLUSTER_PUBLIC_ACCESS_CHECK';
+  public static readonly REDSHIFT_CLUSTER_PUBLIC_ACCESS_CHECK =
+    'REDSHIFT_CLUSTER_PUBLIC_ACCESS_CHECK';
   /**
    * Checks if an Amazon Redshift cluster has changed the admin username from its default value.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-default-admin-check.html
@@ -1807,7 +1901,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon Redshift cluster has 'enhancedVpcRouting' enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/redshift-enhanced-vpc-routing-enabled.html
    */
-  public static readonly REDSHIFT_ENHANCED_VPC_ROUTING_ENABLED = 'REDSHIFT_ENHANCED_VPC_ROUTING_ENABLED';
+  public static readonly REDSHIFT_ENHANCED_VPC_ROUTING_ENABLED =
+    'REDSHIFT_ENHANCED_VPC_ROUTING_ENABLED';
   /**
    * Checks whether your resources have the tags that you specify.
    * For example, you can check whether your Amazon EC2 instances have the CostCenter tag.
@@ -1818,7 +1913,8 @@ export class ManagedRuleIdentifiers {
    * Checks whether the security groups in use do not allow unrestricted incoming TCP traffic to the specified ports.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/restricted-common-ports.html
    */
-  public static readonly EC2_SECURITY_GROUPS_RESTRICTED_INCOMING_TRAFFIC = 'RESTRICTED_INCOMING_TRAFFIC';
+  public static readonly EC2_SECURITY_GROUPS_RESTRICTED_INCOMING_TRAFFIC =
+    'RESTRICTED_INCOMING_TRAFFIC';
   /**
    * Checks whether the incoming SSH traffic for the security groups is accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/restricted-ssh.html
@@ -1862,7 +1958,8 @@ export class ManagedRuleIdentifiers {
    * for the delivery status of notification messages sent to a topic for the endpoints.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/sns-topic-message-delivery-notification-enabled.html
    */
-  public static readonly SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED = 'SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED';
+  public static readonly SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED =
+    'SNS_TOPIC_MESSAGE_DELIVERY_NOTIFICATION_ENABLED';
   /**
    * Checks if AWS Systems Manager documents owned by the account are public.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/ssm-document-not-public.html
@@ -1872,22 +1969,26 @@ export class ManagedRuleIdentifiers {
    * Checks if a recovery point was created for AWS Storage Gateway volumes.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/storagegateway-last-backup-recovery-point-created.html
    */
-  public static readonly STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED = 'STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED =
+    'STORAGEGATEWAY_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * hecks if Amazon Virtual Private Cloud (Amazon VPC) subnets are assigned a public IP address.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/subnet-auto-assign-public-ip-disabled.html
    */
-  public static readonly SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED = 'SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED';
+  public static readonly SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED =
+    'SUBNET_AUTO_ASSIGN_PUBLIC_IP_DISABLED';
   /**
    * Checks whether the required public access block settings are configured from account level.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-account-level-public-access-blocks.html
    */
-  public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS = 'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS';
+  public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS =
+    'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS';
   /**
    * Checks if the required public access block settings are configured from account level.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-account-level-public-access-blocks-periodic.html
    */
-  public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS_PERIODIC = 'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS_PERIODIC';
+  public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS_PERIODIC =
+    'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS_PERIODIC';
   /**
    * Checks if Amazon Simple Storage Service (Amazon S3) Buckets allow user permissions through access control lists (ACLs).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-acl-prohibited.html
@@ -1898,12 +1999,14 @@ export class ManagedRuleIdentifiers {
    * and object-level actions on resources in the bucket for principals from other AWS accounts.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-blacklisted-actions-prohibited.html
    */
-  public static readonly S3_BUCKET_BLOCKED_ACTIONS_PROHIBITED = 'S3_BUCKET_BLACKLISTED_ACTIONS_PROHIBITED';
+  public static readonly S3_BUCKET_BLOCKED_ACTIONS_PROHIBITED =
+    'S3_BUCKET_BLACKLISTED_ACTIONS_PROHIBITED';
   /**
    * Checks if Amazon Simple Storage Service (Amazon S3) buckets are publicly accessible.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-level-public-access-prohibited.html
    */
-  public static readonly S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED = 'S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED';
+  public static readonly S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED =
+    'S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED';
   /**
    * Checks whether logging is enabled for your S3 buckets.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-logging-enabled.html
@@ -1920,7 +2023,8 @@ export class ManagedRuleIdentifiers {
    * than the control Amazon S3 bucket policy that you provide.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-policy-not-more-permissive.html
    */
-  public static readonly S3_BUCKET_POLICY_NOT_MORE_PERMISSIVE = 'S3_BUCKET_POLICY_NOT_MORE_PERMISSIVE';
+  public static readonly S3_BUCKET_POLICY_NOT_MORE_PERMISSIVE =
+    'S3_BUCKET_POLICY_NOT_MORE_PERMISSIVE';
   /**
    * Checks if your Amazon S3 buckets do not allow public read access.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-public-read-prohibited.html
@@ -1942,7 +2046,8 @@ export class ManagedRuleIdentifiers {
    * uses AES-256 or AWS Key Management Service.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-server-side-encryption-enabled.html
    */
-  public static readonly S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED = 'S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED';
+  public static readonly S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED =
+    'S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED';
   /**
    * Checks whether S3 buckets have policies that require requests to use Secure Socket Layer (SSL).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
@@ -1962,7 +2067,8 @@ export class ManagedRuleIdentifiers {
    * Checks if a recovery point was created for Amazon Simple Storage Service (Amazon S3).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-last-backup-recovery-point-created.html
    */
-  public static readonly S3_LAST_BACKUP_RECOVERY_POINT_CREATED = 'S3_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly S3_LAST_BACKUP_RECOVERY_POINT_CREATED =
+    'S3_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Checks if a lifecycle rule is configured for an Amazon Simple Storage Service (Amazon S3) bucket.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-lifecycle-policy-check.html
@@ -1972,7 +2078,8 @@ export class ManagedRuleIdentifiers {
    * Checks if Amazon Simple Storage Service (Amazon S3) buckets are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-resources-protected-by-backup-plan.html
    */
-  public static readonly S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN =
+    'S3_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks if Amazon Simple Storage Service (Amazon S3) version enabled buckets have lifecycle policy configured.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-version-lifecycle-policy-check.html
@@ -1982,32 +2089,38 @@ export class ManagedRuleIdentifiers {
    * Checks whether AWS Key Management Service (KMS) key is configured for an Amazon SageMaker endpoint configuration.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/sagemaker-endpoint-configuration-kms-key-configured.html
    */
-  public static readonly SAGEMAKER_ENDPOINT_CONFIGURATION_KMS_KEY_CONFIGURED = 'SAGEMAKER_ENDPOINT_CONFIGURATION_KMS_KEY_CONFIGURED';
+  public static readonly SAGEMAKER_ENDPOINT_CONFIGURATION_KMS_KEY_CONFIGURED =
+    'SAGEMAKER_ENDPOINT_CONFIGURATION_KMS_KEY_CONFIGURED';
   /**
    * Check whether an AWS Key Management Service (KMS) key is configured for SageMaker notebook instance.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/sagemaker-notebook-instance-kms-key-configured.html
    */
-  public static readonly SAGEMAKER_NOTEBOOK_INSTANCE_KMS_KEY_CONFIGURED = 'SAGEMAKER_NOTEBOOK_INSTANCE_KMS_KEY_CONFIGURED';
+  public static readonly SAGEMAKER_NOTEBOOK_INSTANCE_KMS_KEY_CONFIGURED =
+    'SAGEMAKER_NOTEBOOK_INSTANCE_KMS_KEY_CONFIGURED';
   /**
    * Checks whether direct internet access is disabled for an Amazon SageMaker notebook instance.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/sagemaker-notebook-no-direct-internet-access.html
    */
-  public static readonly SAGEMAKER_NOTEBOOK_NO_DIRECT_INTERNET_ACCESS = 'SAGEMAKER_NOTEBOOK_NO_DIRECT_INTERNET_ACCESS';
+  public static readonly SAGEMAKER_NOTEBOOK_NO_DIRECT_INTERNET_ACCESS =
+    'SAGEMAKER_NOTEBOOK_NO_DIRECT_INTERNET_ACCESS';
   /**
    * Checks whether AWS Secrets Manager secret has rotation enabled.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/secretsmanager-rotation-enabled-check.html
    */
-  public static readonly SECRETSMANAGER_ROTATION_ENABLED_CHECK = 'SECRETSMANAGER_ROTATION_ENABLED_CHECK';
+  public static readonly SECRETSMANAGER_ROTATION_ENABLED_CHECK =
+    'SECRETSMANAGER_ROTATION_ENABLED_CHECK';
   /**
    * Checks whether AWS Secrets Manager secret rotation has rotated successfully as per the rotation schedule.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/secretsmanager-scheduled-rotation-success-check.html
    */
-  public static readonly SECRETSMANAGER_SCHEDULED_ROTATION_SUCCESS_CHECK = 'SECRETSMANAGER_SCHEDULED_ROTATION_SUCCESS_CHECK';
+  public static readonly SECRETSMANAGER_SCHEDULED_ROTATION_SUCCESS_CHECK =
+    'SECRETSMANAGER_SCHEDULED_ROTATION_SUCCESS_CHECK';
   /**
    * Checks if AWS Secrets Manager secrets have been rotated in the past specified number of days.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/secretsmanager-secret-periodic-rotation.html
    */
-  public static readonly SECRETSMANAGER_SECRET_PERIODIC_ROTATION = 'SECRETSMANAGER_SECRET_PERIODIC_ROTATION';
+  public static readonly SECRETSMANAGER_SECRET_PERIODIC_ROTATION =
+    'SECRETSMANAGER_SECRET_PERIODIC_ROTATION';
   /**
    * Checks if AWS Secrets Manager secrets have been accessed within a specified number of days.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/secretsmanager-secret-unused.html
@@ -2038,12 +2151,14 @@ export class ManagedRuleIdentifiers {
    * Checks if a recovery point was created for AWS Backup-Gateway VirtualMachines.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/virtualmachine-last-backup-recovery-point-created.html
    */
-  public static readonly VIRTUALMACHINE_LAST_BACKUP_RECOVERY_POINT_CREATED = 'VIRTUALMACHINE_LAST_BACKUP_RECOVERY_POINT_CREATED';
+  public static readonly VIRTUALMACHINE_LAST_BACKUP_RECOVERY_POINT_CREATED =
+    'VIRTUALMACHINE_LAST_BACKUP_RECOVERY_POINT_CREATED';
   /**
    * Checks if AWS Backup-Gateway VirtualMachines are protected by a backup plan.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/virtualmachine-resources-protected-by-backup-plan.html
    */
-  public static readonly VIRTUALMACHINE_RESOURCES_PROTECTED_BY_BACKUP_PLAN = 'VIRTUALMACHINE_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
+  public static readonly VIRTUALMACHINE_RESOURCES_PROTECTED_BY_BACKUP_PLAN =
+    'VIRTUALMACHINE_RESOURCES_PROTECTED_BY_BACKUP_PLAN';
   /**
    * Checks that the default security group of any Amazon Virtual Private Cloud (VPC) does not
    * allow inbound or outbound traffic. The rule returns NOT_APPLICABLE if the security group
@@ -2071,7 +2186,8 @@ export class ManagedRuleIdentifiers {
    * allows only specific inbound TCP or UDP traffic.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/vpc-sg-open-only-to-authorized-ports.html
    */
-  public static readonly VPC_SG_OPEN_ONLY_TO_AUTHORIZED_PORTS = 'VPC_SG_OPEN_ONLY_TO_AUTHORIZED_PORTS';
+  public static readonly VPC_SG_OPEN_ONLY_TO_AUTHORIZED_PORTS =
+    'VPC_SG_OPEN_ONLY_TO_AUTHORIZED_PORTS';
   /**
    * Checks that both AWS Virtual Private Network tunnels provided by AWS Site-to-Site VPN are in
    * UP status.
@@ -2121,7 +2237,7 @@ export class ManagedRuleIdentifiers {
   public static readonly WAF_REGIONAL_WEBACL_NOT_EMPTY = 'WAF_REGIONAL_WEBACL_NOT_EMPTY';
 
   // utility class
-  private constructor() { }
+  private constructor() {}
 }
 
 /**
@@ -2138,9 +2254,13 @@ export class ResourceType {
   /** API Gatewayv2 API */
   public static readonly APIGATEWAYV2_API = new ResourceType('AWS::ApiGatewayV2::Api');
   /** Amazon CloudFront Distribution */
-  public static readonly CLOUDFRONT_DISTRIBUTION = new ResourceType('AWS::CloudFront::Distribution');
+  public static readonly CLOUDFRONT_DISTRIBUTION = new ResourceType(
+    'AWS::CloudFront::Distribution'
+  );
   /** Amazon CloudFront streaming distribution */
-  public static readonly CLOUDFRONT_STREAMING_DISTRIBUTION = new ResourceType('AWS::CloudFront::StreamingDistribution');
+  public static readonly CLOUDFRONT_STREAMING_DISTRIBUTION = new ResourceType(
+    'AWS::CloudFront::StreamingDistribution'
+  );
   /** Amazon CloudWatch Alarm */
   public static readonly CLOUDWATCH_ALARM = new ResourceType('AWS::CloudWatch::Alarm');
   /** Amazon CloudWatch RUM */
@@ -2162,33 +2282,53 @@ export class ResourceType {
   /** EC2 NAT gateway */
   public static readonly EC2_NAT_GATEWAY = new ResourceType('AWS::EC2::NatGateway');
   /** EC2 Egress only internet gateway */
-  public static readonly EC2_EGRESS_ONLY_INTERNET_GATEWAY = new ResourceType('AWS::EC2::EgressOnlyInternetGateway');
+  public static readonly EC2_EGRESS_ONLY_INTERNET_GATEWAY = new ResourceType(
+    'AWS::EC2::EgressOnlyInternetGateway'
+  );
   /** EC2 flow log */
   public static readonly EC2_FLOW_LOG = new ResourceType('AWS::EC2::FlowLog');
   /** EC2 transit gateway */
   public static readonly EC2_TRANSIT_GATEWAY = new ResourceType('AWS::EC2::TransitGateway');
   /** EC2 transit gateway attachment */
-  public static readonly EC2_TRANSIT_GATEWAY_ATTACHMENT = new ResourceType('AWS::EC2::TransitGatewayAttachment');
+  public static readonly EC2_TRANSIT_GATEWAY_ATTACHMENT = new ResourceType(
+    'AWS::EC2::TransitGatewayAttachment'
+  );
   /** EC2 transit gateway route table */
-  public static readonly EC2_TRANSIT_GATEWAY_ROUTE_TABLE = new ResourceType('AWS::EC2::TransitGatewayRouteTable');
+  public static readonly EC2_TRANSIT_GATEWAY_ROUTE_TABLE = new ResourceType(
+    'AWS::EC2::TransitGatewayRouteTable'
+  );
   /** EC2 VPC endpoint */
   public static readonly EC2_VPC_ENDPOINT = new ResourceType('AWS::EC2::VPCEndpoint');
   /** EC2 VPC endpoint service */
-  public static readonly EC2_VPC_ENDPOINT_SERVICE = new ResourceType('AWS::EC2::VPCEndpointService');
+  public static readonly EC2_VPC_ENDPOINT_SERVICE = new ResourceType(
+    'AWS::EC2::VPCEndpointService'
+  );
   /** EC2 VPC peering connection */
-  public static readonly EC2_VPC_PEERING_CONNECTION = new ResourceType('AWS::EC2::VPCPeeringConnection');
+  public static readonly EC2_VPC_PEERING_CONNECTION = new ResourceType(
+    'AWS::EC2::VPCPeeringConnection'
+  );
   /** EC2 registered HA instance */
-  public static readonly EC2_REGISTERED_HA_INSTANCE = new ResourceType('AWS::EC2::RegisteredHAInstance');
+  public static readonly EC2_REGISTERED_HA_INSTANCE = new ResourceType(
+    'AWS::EC2::RegisteredHAInstance'
+  );
   /** EC2 launch template */
   public static readonly EC2_LAUNCH_TEMPLATE = new ResourceType('AWS::EC2::LaunchTemplate');
   /** EC2 Network Insights Access Scope Analysis */
-  public static readonly EC2_NETWORK_INSIGHTS_ACCESS_SCOPE_ANALYSIS = new ResourceType('AWS::EC2::NetworkInsightsAccessScopeAnalysis');
+  public static readonly EC2_NETWORK_INSIGHTS_ACCESS_SCOPE_ANALYSIS = new ResourceType(
+    'AWS::EC2::NetworkInsightsAccessScopeAnalysis'
+  );
   /** EC2 Image Builder ContainerRecipe */
-  public static readonly IMAGEBUILDER_CONTAINER_RECIPE = new ResourceType('AWS::ImageBuilder::ContainerRecipe');
+  public static readonly IMAGEBUILDER_CONTAINER_RECIPE = new ResourceType(
+    'AWS::ImageBuilder::ContainerRecipe'
+  );
   /** EC2 Image Builder DistributionConfiguration */
-  public static readonly IMAGEBUILDER_DISTRIBUTION_CONFIGURATION = new ResourceType('AWS::ImageBuilder::DistributionConfiguration');
+  public static readonly IMAGEBUILDER_DISTRIBUTION_CONFIGURATION = new ResourceType(
+    'AWS::ImageBuilder::DistributionConfiguration'
+  );
   /** EC2 Image Builder InfrastructureConfiguration */
-  public static readonly IMAGEBUILDER_INFRASTRUCTURE_CONFIGURATION = new ResourceType('AWS::ImageBuilder::InfrastructureConfiguration');
+  public static readonly IMAGEBUILDER_INFRASTRUCTURE_CONFIGURATION = new ResourceType(
+    'AWS::ImageBuilder::InfrastructureConfiguration'
+  );
   /** Amazon ECR repository */
   public static readonly ECR_REPOSITORY = new ResourceType('AWS::ECR::Repository');
   /** Amazon ECR registry policy */
@@ -2208,15 +2348,21 @@ export class ResourceType {
   /** Amazon Elastic Kubernetes Service cluster */
   public static readonly EKS_CLUSTER = new ResourceType('AWS::EKS::Cluster');
   /** Amazon Elastic Kubernetes Service identity provider config */
-  public static readonly EKS_IDENTITY_PROVIDER_CONFIG = new ResourceType('AWS::EKS::IdentityProviderConfig');
+  public static readonly EKS_IDENTITY_PROVIDER_CONFIG = new ResourceType(
+    'AWS::EKS::IdentityProviderConfig'
+  );
   /** Amazon Elastic Kubernetes Service addon */
   public static readonly EKS_ADDON = new ResourceType('AWS::EKS::Addon');
   /** Amazon EMR security configuration */
-  public static readonly EMR_SECURITY_CONFIGURATION = new ResourceType('AWS::EMR::SecurityConfiguration');
+  public static readonly EMR_SECURITY_CONFIGURATION = new ResourceType(
+    'AWS::EMR::SecurityConfiguration'
+  );
   /** Amazon EventBridge EventBus */
   public static readonly EVENTBRIDGE_EVENTBUS = new ResourceType('AWS::Events::EventBus');
   /** Amazon EventBridge Api Destination */
-  public static readonly EVENTBRIDGE_API_DESTINATION = new ResourceType('AWS::Events::ApiDestination');
+  public static readonly EVENTBRIDGE_API_DESTINATION = new ResourceType(
+    'AWS::Events::ApiDestination'
+  );
   /** Amazon EventBridge Archive */
   public static readonly EVENTBRIDGE_ARCHIVE = new ResourceType('AWS::Events::Archive');
   /** Amazon EventBridge Endpoint */
@@ -2224,13 +2370,19 @@ export class ResourceType {
   /** Amazon EventBridge EventSchemas registry */
   public static readonly EVENTSCHEMAS_REGISTRY = new ResourceType('AWS::EventSchemas::Registry');
   /** Amazon EventBridge EventSchemas registry policy */
-  public static readonly EVENTSCHEMAS_REGISTRY_POLICY = new ResourceType('AWS::EventSchemas::RegistryPolicy');
+  public static readonly EVENTSCHEMAS_REGISTRY_POLICY = new ResourceType(
+    'AWS::EventSchemas::RegistryPolicy'
+  );
   /** Amazon EventBridge EventSchemas discoverer */
-  public static readonly EVENTSCHEMAS_DISCOVERER = new ResourceType('AWS::EventSchemas::Discoverer');
+  public static readonly EVENTSCHEMAS_DISCOVERER = new ResourceType(
+    'AWS::EventSchemas::Discoverer'
+  );
   /** AWS FraudDetector label */
   public static readonly FRAUDDETECTOR_LABEL = new ResourceType('AWS::FraudDetector::Label');
   /** AWS FraudDetector entity type */
-  public static readonly FRAUDDETECTOR_ENTITY_TYPE = new ResourceType('AWS::FraudDetector::EntityType');
+  public static readonly FRAUDDETECTOR_ENTITY_TYPE = new ResourceType(
+    'AWS::FraudDetector::EntityType'
+  );
   /** AWS FraudDetector variable */
   public static readonly FRAUDDETECTOR_VARIABLE = new ResourceType('AWS::FraudDetector::Variable');
   /** AWS FraudDetector outcome */
@@ -2238,7 +2390,9 @@ export class ResourceType {
   /** Amazon GuardDuty detector */
   public static readonly GUARDDUTY_DETECTOR = new ResourceType('AWS::GuardDuty::Detector');
   /** Amazon GuardDuty Threat Intel Set */
-  public static readonly GUARDDUTY_THREAT_INTEL_SET = new ResourceType('AWS::GuardDuty::ThreatIntelSet');
+  public static readonly GUARDDUTY_THREAT_INTEL_SET = new ResourceType(
+    'AWS::GuardDuty::ThreatIntelSet'
+  );
   /** Amazon GuardDuty IP Set */
   public static readonly GUARDDUTY_IP_SET = new ResourceType(' AWS::GuardDuty::IPSet');
   /** Amazon GuardDuty Filter */
@@ -2248,7 +2402,9 @@ export class ResourceType {
   /** Amazon Interactive Video Service (IVS) channel */
   public static readonly IVS_CHANNEL = new ResourceType('AWS::IVS::Channel');
   /** Amazon Interactive Video Service (IVS) recording configuration */
-  public static readonly IVS_RECORDING_CONFIGURATION = new ResourceType('AWS::IVS::RecordingConfiguration');
+  public static readonly IVS_RECORDING_CONFIGURATION = new ResourceType(
+    'AWS::IVS::RecordingConfiguration'
+  );
   /** Amazon Interactive Video Service (IVS) playback key pair */
   public static readonly IVS_PLAYBACK_KEYPAIR = new ResourceType('AWS::IVS::PlaybackKeyPair');
   /** Amazon OpenSearch domain */
@@ -2260,7 +2416,9 @@ export class ResourceType {
   /** Amazon Kinesis stream consumer */
   public static readonly KINESIS_STREAM_CONSUMER = new ResourceType('AWS::Kinesis::StreamConsumer');
   /** Amazon Kinesis Analytics V2 application */
-  public static readonly KINESIS_ANALYTICS_V2_APPLICATION = new ResourceType('AWS::KinesisAnalyticsV2::Application');
+  public static readonly KINESIS_ANALYTICS_V2_APPLICATION = new ResourceType(
+    'AWS::KinesisAnalyticsV2::Application'
+  );
   /** Amazon Lightsail Certificate */
   public static readonly LIGHTSAIL_CERTIFICATE = new ResourceType('AWS::Lightsail::Certificate');
   /** Amazon Lightsail Disk */
@@ -2276,15 +2434,25 @@ export class ResourceType {
   /** Amazon Redshift cluster */
   public static readonly REDSHIFT_CLUSTER = new ResourceType('AWS::Redshift::Cluster');
   /** Amazon Redshift cluster parameter group */
-  public static readonly REDSHIFT_CLUSTER_PARAMETER_GROUP = new ResourceType('AWS::Redshift::ClusterParameterGroup');
+  public static readonly REDSHIFT_CLUSTER_PARAMETER_GROUP = new ResourceType(
+    'AWS::Redshift::ClusterParameterGroup'
+  );
   /** Amazon Redshift cluster security group */
-  public static readonly REDSHIFT_CLUSTER_SECURITY_GROUP = new ResourceType('AWS::Redshift::ClusterSecurityGroup');
+  public static readonly REDSHIFT_CLUSTER_SECURITY_GROUP = new ResourceType(
+    'AWS::Redshift::ClusterSecurityGroup'
+  );
   /** Amazon Redshift cluster snapshot */
-  public static readonly REDSHIFT_CLUSTER_SNAPSHOT = new ResourceType('AWS::Redshift::ClusterSnapshot');
+  public static readonly REDSHIFT_CLUSTER_SNAPSHOT = new ResourceType(
+    'AWS::Redshift::ClusterSnapshot'
+  );
   /** Amazon Redshift cluster subnet group */
-  public static readonly REDSHIFT_CLUSTER_SUBNET_GROUP = new ResourceType('AWS::Redshift::ClusterSubnetGroup');
+  public static readonly REDSHIFT_CLUSTER_SUBNET_GROUP = new ResourceType(
+    'AWS::Redshift::ClusterSubnetGroup'
+  );
   /** Amazon Redshift event subscription */
-  public static readonly REDSHIFT_EVENT_SUBSCRIPTION = new ResourceType('AWS::Redshift::EventSubscription');
+  public static readonly REDSHIFT_EVENT_SUBSCRIPTION = new ResourceType(
+    'AWS::Redshift::EventSubscription'
+  );
   /** Amazon RDS database instance */
   public static readonly RDS_DB_INSTANCE = new ResourceType('AWS::RDS::DBInstance');
   /** Amazon RDS database security group */
@@ -2306,17 +2474,29 @@ export class ResourceType {
   /** Amazon Route53 Health Check */
   public static readonly ROUTE53_HEALTH_CHECK = new ResourceType('AWS::Route53::HealthCheck');
   /** Amazon Route53 resolver resolver endpoint */
-  public static readonly ROUTE53_RESOLVER_RESOLVER_ENDPOINT = new ResourceType('AWS::Route53Resolver::ResolverEndpoint');
+  public static readonly ROUTE53_RESOLVER_RESOLVER_ENDPOINT = new ResourceType(
+    'AWS::Route53Resolver::ResolverEndpoint'
+  );
   /** Amazon Route53 resolver resolver rule */
-  public static readonly ROUTE53_RESOLVER_RESOLVER_RULE = new ResourceType('AWS::Route53Resolver::ResolverRule');
+  public static readonly ROUTE53_RESOLVER_RESOLVER_RULE = new ResourceType(
+    'AWS::Route53Resolver::ResolverRule'
+  );
   /** Amazon Route53 resolver resolver rule association */
-  public static readonly ROUTE53_RESOLVER_RESOLVER_RULE_ASSOCIATION = new ResourceType('AWS::Route53Resolver::ResolverRuleAssociation');
+  public static readonly ROUTE53_RESOLVER_RESOLVER_RULE_ASSOCIATION = new ResourceType(
+    'AWS::Route53Resolver::ResolverRuleAssociation'
+  );
   /** Amazon Route 53 Application Recovery Controller Cell */
-  public static readonly ROUTE53_RECOVERY_READINESS_CELL = new ResourceType('AWS::Route53RecoveryReadiness::Cell');
+  public static readonly ROUTE53_RECOVERY_READINESS_CELL = new ResourceType(
+    'AWS::Route53RecoveryReadiness::Cell'
+  );
   /** Amazon Route 53 Application Recovery Controller Readiness Check */
-  public static readonly ROUTE53_RECOVERY_READINESS_READINESS_CHECK = new ResourceType('AWS::Route53RecoveryReadiness::ReadinessCheck');
+  public static readonly ROUTE53_RECOVERY_READINESS_READINESS_CHECK = new ResourceType(
+    'AWS::Route53RecoveryReadiness::ReadinessCheck'
+  );
   /** Amazon Route53 recovery readiness recovery group */
-  public static readonly ROUTE53_RECOVERY_READINESS_RECOVERY_GROUP = new ResourceType('AWS::Route53RecoveryReadiness::RecoveryGroup');
+  public static readonly ROUTE53_RECOVERY_READINESS_RECOVERY_GROUP = new ResourceType(
+    'AWS::Route53RecoveryReadiness::RecoveryGroup'
+  );
   /** Amazon SQS queue */
   public static readonly SQS_QUEUE = new ResourceType('AWS::SQS::Queue');
   /** Amazon SNS topic */
@@ -2324,13 +2504,19 @@ export class ResourceType {
   /** Amazon S3 bucket */
   public static readonly S3_BUCKET = new ResourceType('AWS::S3::Bucket');
   /** Amazon S3 Multi-Region Access Point */
-  public static readonly S3_MULTIREGION_ACCESS_POINT = new ResourceType('AWS::S3::MultiRegionAccessPoint');
+  public static readonly S3_MULTIREGION_ACCESS_POINT = new ResourceType(
+    'AWS::S3::MultiRegionAccessPoint'
+  );
   /** Amazon SageMaker code repository */
-  public static readonly SAGEMAKER_CODE_REPOSITORY = new ResourceType('AWS::SageMaker::CodeRepository');
+  public static readonly SAGEMAKER_CODE_REPOSITORY = new ResourceType(
+    'AWS::SageMaker::CodeRepository'
+  );
   /** Amazon SageMaker model */
   public static readonly SAGEMAKER_MODEL = new ResourceType('AWS::SageMaker::Model');
   /** Amazon SageMaker notebook instance */
-  public static readonly SAGEMAKER_NOTEBOOK_INSTANCE = new ResourceType('AWS::SageMaker::NotebookInstance');
+  public static readonly SAGEMAKER_NOTEBOOK_INSTANCE = new ResourceType(
+    'AWS::SageMaker::NotebookInstance'
+  );
   /** Amazon SageMaker workteam */
   public static readonly SAGEMAKER_WORKTEAM = new ResourceType('AWS::SageMaker::Workteam');
   /** Amazon SES Configuration Set */
@@ -2342,9 +2528,13 @@ export class ResourceType {
   /** Amazon SES ReceiptFilter */
   public static readonly SES_RECEIPT_FILTER = new ResourceType('AWS::SES::ReceiptFilter');
   /** Amazon SES ReceiptRuleSet */
-  public static readonly SES_RECEIPT_RECEIPT_RULE_SET = new ResourceType('AWS::SES::ReceiptRuleSet');
+  public static readonly SES_RECEIPT_RECEIPT_RULE_SET = new ResourceType(
+    'AWS::SES::ReceiptRuleSet'
+  );
   /** Amazon S3 account public access block */
-  public static readonly S3_ACCOUNT_PUBLIC_ACCESS_BLOCK = new ResourceType('AWS::S3::AccountPublicAccessBlock');
+  public static readonly S3_ACCOUNT_PUBLIC_ACCESS_BLOCK = new ResourceType(
+    'AWS::S3::AccountPublicAccessBlock'
+  );
   /** Amazon EC2 customer gateway */
   public static readonly EC2_CUSTOMER_GATEWAY = new ResourceType('AWS::EC2::CustomerGateway');
   /** Amazon EC2 internet gateway */
@@ -2362,15 +2552,23 @@ export class ResourceType {
   /** Amazon EC2 VPN gateway */
   public static readonly EC2_VPN_GATEWAY = new ResourceType('AWS::EC2::VPNGateway');
   /** AWS Auto Scaling group */
-  public static readonly AUTO_SCALING_GROUP = new ResourceType('AWS::AutoScaling::AutoScalingGroup');
+  public static readonly AUTO_SCALING_GROUP = new ResourceType(
+    'AWS::AutoScaling::AutoScalingGroup'
+  );
   /** AWS Auto Scaling launch configuration */
-  public static readonly AUTO_SCALING_LAUNCH_CONFIGURATION = new ResourceType('AWS::AutoScaling::LaunchConfiguration');
+  public static readonly AUTO_SCALING_LAUNCH_CONFIGURATION = new ResourceType(
+    'AWS::AutoScaling::LaunchConfiguration'
+  );
   /** AWS Auto Scaling policy */
   public static readonly AUTO_SCALING_POLICY = new ResourceType('AWS::AutoScaling::ScalingPolicy');
   /** AWS Auto Scaling scheduled action */
-  public static readonly AUTO_SCALING_SCHEDULED_ACTION = new ResourceType('AWS::AutoScaling::ScheduledAction');
+  public static readonly AUTO_SCALING_SCHEDULED_ACTION = new ResourceType(
+    'AWS::AutoScaling::ScheduledAction'
+  );
   /** Amazon WorkSpaces connection alias */
-  public static readonly WORKSPACES_CONNECTION_ALIAS = new ResourceType('AWS::WorkSpaces::ConnectionAlias');
+  public static readonly WORKSPACES_CONNECTION_ALIAS = new ResourceType(
+    'AWS::WorkSpaces::ConnectionAlias'
+  );
   /** Amazon WorkSpaces workSpace */
   public static readonly WORKSPACES_WORKSPACE = new ResourceType('AWS::WorkSpaces::Workspace');
   /** AWS AppConfig application */
@@ -2378,7 +2576,9 @@ export class ResourceType {
   /** AWS AppConfig environment */
   public static readonly APPCONFIG_ENVIRONMENT = new ResourceType('AWS::AppConfig::Environment');
   /** AWS AppConfig configuration profile */
-  public static readonly APPCONFIG_CONFIGURATION_PROFILE = new ResourceType('AWS::AppConfig::ConfigurationProfile');
+  public static readonly APPCONFIG_CONFIGURATION_PROFILE = new ResourceType(
+    'AWS::AppConfig::ConfigurationProfile'
+  );
   /** AWS AppSync GraphQL Api */
   public static readonly APPSYNC_GRAPHQL_API = new ResourceType('AWS::AppSync::GraphQLApi');
   /** AWS Backup backup plan */
@@ -2394,7 +2594,9 @@ export class ResourceType {
   /** AWS Batch job queue */
   public static readonly BATCH_JOB_QUEUE = new ResourceType('AWS::Batch::JobQueue');
   /** AWS Batch compute environment */
-  public static readonly BATCH_COMPUTE_ENVIRONMENT = new ResourceType('AWS::Batch::ComputeEnvironment');
+  public static readonly BATCH_COMPUTE_ENVIRONMENT = new ResourceType(
+    'AWS::Batch::ComputeEnvironment'
+  );
   /** AWS Certificate manager certificate */
   public static readonly ACM_CERTIFICATE = new ResourceType('AWS::ACM::Certificate');
   /** AWS CloudFormation stack */
@@ -2404,35 +2606,55 @@ export class ResourceType {
   /** AWS Cloud9 environment EC2 */
   public static readonly CLOUD9_ENVIRONMENT_EC2 = new ResourceType('AWS::Cloud9::EnvironmentEC2');
   /** AWS Cloud Map(ServiceDiscovery) service */
-  public static readonly SERVICEDISCOVERY_SERVICE = new ResourceType('AWS::ServiceDiscovery::Service');
+  public static readonly SERVICEDISCOVERY_SERVICE = new ResourceType(
+    'AWS::ServiceDiscovery::Service'
+  );
   /** AWS Cloud Map(ServiceDiscovery) Public Dns Namespace */
-  public static readonly SERVICEDISCOVERY_PUBLIC_DNS_NAMESPACE = new ResourceType('AWS::ServiceDiscovery::PublicDnsNamespace');
+  public static readonly SERVICEDISCOVERY_PUBLIC_DNS_NAMESPACE = new ResourceType(
+    'AWS::ServiceDiscovery::PublicDnsNamespace'
+  );
   /** AWS Cloud Map(ServiceDiscovery) Http Namespace */
-  public static readonly SERVICEDISCOVERY_HTTP_NAMESPACE = new ResourceType('AWS::ServiceDiscovery::HttpNamespace');
+  public static readonly SERVICEDISCOVERY_HTTP_NAMESPACE = new ResourceType(
+    'AWS::ServiceDiscovery::HttpNamespace'
+  );
   /** AWS CodeBuild project */
   public static readonly CODEBUILD_PROJECT = new ResourceType('AWS::CodeBuild::Project');
   /** AWS CodeDeploy application */
   public static readonly CODEDEPLOY_APPLICATION = new ResourceType('AWS::CodeDeploy::Application');
   /** AWS CodeDeploy deployment config */
-  public static readonly CODEDEPLOY_DEPLOYMENT_CONFIG = new ResourceType('AWS::CodeDeploy::DeploymentConfig');
+  public static readonly CODEDEPLOY_DEPLOYMENT_CONFIG = new ResourceType(
+    'AWS::CodeDeploy::DeploymentConfig'
+  );
   /** AWS CodeDeploy deployment group */
-  public static readonly CODEDEPLOY_DEPLOYMENT_GROUP = new ResourceType('AWS::CodeDeploy::DeploymentGroup');
+  public static readonly CODEDEPLOY_DEPLOYMENT_GROUP = new ResourceType(
+    'AWS::CodeDeploy::DeploymentGroup'
+  );
   /** AWS CodePipeline pipeline */
   public static readonly CODEPIPELINE_PIPELINE = new ResourceType('AWS::CodePipeline::Pipeline');
   /** AWS Config resource compliance */
-  public static readonly CONFIG_RESOURCE_COMPLIANCE = new ResourceType('AWS::Config::ResourceCompliance');
+  public static readonly CONFIG_RESOURCE_COMPLIANCE = new ResourceType(
+    'AWS::Config::ResourceCompliance'
+  );
   /** AWS Config conformance pack compliance */
-  public static readonly CONFIG_CONFORMANCE_PACK_COMPLIANCE = new ResourceType('AWS::Config::ConformancePackCompliance');
+  public static readonly CONFIG_CONFORMANCE_PACK_COMPLIANCE = new ResourceType(
+    'AWS::Config::ConformancePackCompliance'
+  );
   /** AWS DMS event subscription */
   public static readonly DMS_EVENT_SUBSCRIPTION = new ResourceType('AWS::DMS::EventSubscription');
   /** AWS DMS replication subnet group */
-  public static readonly DMS_REPLICATION_SUBNET_GROUP = new ResourceType('AWS::DMS::ReplicationSubnetGroup');
+  public static readonly DMS_REPLICATION_SUBNET_GROUP = new ResourceType(
+    'AWS::DMS::ReplicationSubnetGroup'
+  );
   /** AWS DataSync location SMB */
   public static readonly DATASYNC_LOCATION_SMB = new ResourceType('AWS::DataSync::LocationSMB');
   /** AWS DataSync location FSx Lustre */
-  public static readonly DATASYNC_LOCATION_FSX_LUSTRE = new ResourceType('AWS::DataSync::LocationFSxLustre');
+  public static readonly DATASYNC_LOCATION_FSX_LUSTRE = new ResourceType(
+    'AWS::DataSync::LocationFSxLustre'
+  );
   /** AWS DataSync location FSx Windows */
-  public static readonly DATASYNC_LOCATION_FSX_WINDOWS = new ResourceType('AWS::DataSync::LocationFSxWindows');
+  public static readonly DATASYNC_LOCATION_FSX_WINDOWS = new ResourceType(
+    'AWS::DataSync::LocationFSxWindows'
+  );
   /** AWS DataSync location S3 */
   public static readonly DATASYNC_LOCATION_S3 = new ResourceType('AWS::DataSync::LocationS3');
   /** AWS DataSync location EFS */
@@ -2442,23 +2664,37 @@ export class ResourceType {
   /** AWS DataSync location NFS */
   public static readonly DATASYNC_LOCATION_NFS = new ResourceType('AWS::DataSync::LocationNFS');
   /** AWS DataSync location object storage */
-  public static readonly DATASYNC_LOCATION_OBJECT_STORAGE = new ResourceType('AWS::DataSync::LocationObjectStorage');
+  public static readonly DATASYNC_LOCATION_OBJECT_STORAGE = new ResourceType(
+    'AWS::DataSync::LocationObjectStorage'
+  );
   /** AWS DataSync location HDFS */
   public static readonly DATASYNC_LOCATION_HDFS = new ResourceType('AWS::DataSync::LocationHDFS');
   /** AWS Elastic Beanstalk (EB) application */
-  public static readonly ELASTIC_BEANSTALK_APPLICATION = new ResourceType('AWS::ElasticBeanstalk::Application');
+  public static readonly ELASTIC_BEANSTALK_APPLICATION = new ResourceType(
+    'AWS::ElasticBeanstalk::Application'
+  );
   /** AWS Elastic Beanstalk (EB) application version */
-  public static readonly ELASTIC_BEANSTALK_APPLICATION_VERSION = new ResourceType('AWS::ElasticBeanstalk::ApplicationVersion');
+  public static readonly ELASTIC_BEANSTALK_APPLICATION_VERSION = new ResourceType(
+    'AWS::ElasticBeanstalk::ApplicationVersion'
+  );
   /** AWS Elastic Beanstalk (EB) environment */
-  public static readonly ELASTIC_BEANSTALK_ENVIRONMENT = new ResourceType('AWS::ElasticBeanstalk::Environment');
+  public static readonly ELASTIC_BEANSTALK_ENVIRONMENT = new ResourceType(
+    'AWS::ElasticBeanstalk::Environment'
+  );
   /** AWS Fault Injection Simulator Experiment_Template */
   public static readonly FIS_EXPERIMENT_TEMPLATE = new ResourceType('AWS::FIS::ExperimentTemplate');
   /** AWS GlobalAccelerator listener */
-  public static readonly GLOBALACCELERATOR_LISTENER = new ResourceType('AWS::GlobalAccelerator::Listener');
+  public static readonly GLOBALACCELERATOR_LISTENER = new ResourceType(
+    'AWS::GlobalAccelerator::Listener'
+  );
   /** AWS GlobalAccelerator endpoint group */
-  public static readonly GLOBALACCELERATOR_ENDPOINT_GROUP = new ResourceType('AWS::GlobalAccelerator::EndpointGroup');
+  public static readonly GLOBALACCELERATOR_ENDPOINT_GROUP = new ResourceType(
+    'AWS::GlobalAccelerator::EndpointGroup'
+  );
   /** AWS GlobalAccelerator accelerator */
-  public static readonly GLOBALACCELERATOR_ACCELERATOR = new ResourceType('AWS::GlobalAccelerator::Accelerator');
+  public static readonly GLOBALACCELERATOR_ACCELERATOR = new ResourceType(
+    'AWS::GlobalAccelerator::Accelerator'
+  );
   /** AWS Glue Job */
   public static readonly GLUE_JOB = new ResourceType('AWS::Glue::Job');
   /** AWS Glue Classifier */
@@ -2474,7 +2710,9 @@ export class ResourceType {
   /** AWS IAM policy */
   public static readonly IAM_POLICY = new ResourceType('AWS::IAM::Policy');
   /** AWS IAM AccessAnalyzer analyzer */
-  public static readonly IAM_ACCESSANALYZER_ANALYZER = new ResourceType('AWS::AccessAnalyzer::Analyzer');
+  public static readonly IAM_ACCESSANALYZER_ANALYZER = new ResourceType(
+    'AWS::AccessAnalyzer::Analyzer'
+  );
   /** AWS IoT authorizer */
   public static readonly IOT_AUTHORIZER = new ResourceType('AWS::IoT::Authorizer');
   /** AWS IoT security profile */
@@ -2502,7 +2740,9 @@ export class ResourceType {
   /** AWS IoT Events Input */
   public static readonly IOT_EVENTS_INPUT = new ResourceType('AWS::IoTEvents::Input');
   /** AWS IoT Events Detector Model */
-  public static readonly IOT_EVENTS_DETECTOR_MODEL = new ResourceType('AWS::IoTEvents::DetectorModel');
+  public static readonly IOT_EVENTS_DETECTOR_MODEL = new ResourceType(
+    'AWS::IoTEvents::DetectorModel'
+  );
   /** AWS IoT Events Alarm Model */
   public static readonly IOT_EVENTS_ALARM_MODEL = new ResourceType('AWS::IoTEvents::AlarmModel');
   /** AWS IoT SiteWise dashboard */
@@ -2518,36 +2758,59 @@ export class ResourceType {
   /** AWS Lambda function */
   public static readonly LAMBDA_FUNCTION = new ResourceType('AWS::Lambda::Function');
   /** AWS Network Firewall Firewall */
-  public static readonly NETWORK_FIREWALL_FIREWALL = new ResourceType('AWS::NetworkFirewall::Firewall');
+  public static readonly NETWORK_FIREWALL_FIREWALL = new ResourceType(
+    'AWS::NetworkFirewall::Firewall'
+  );
   /** AWS Network Firewall Firewall Policy */
-  public static readonly NETWORK_FIREWALL_FIREWALL_POLICY = new ResourceType('AWS::NetworkFirewall::FirewallPolicy');
+  public static readonly NETWORK_FIREWALL_FIREWALL_POLICY = new ResourceType(
+    'AWS::NetworkFirewall::FirewallPolicy'
+  );
   /** AWS Network Firewall Rule Group */
-  public static readonly NETWORK_FIREWALL_RULE_GROUP = new ResourceType('AWS::NetworkFirewall::RuleGroup');
+  public static readonly NETWORK_FIREWALL_RULE_GROUP = new ResourceType(
+    'AWS::NetworkFirewall::RuleGroup'
+  );
   /** AWS ResilienceHub resiliency policy */
-  public static readonly RESILIENCEHUB_RESILIENCY_POLICY = new ResourceType('AWS::ResilienceHub::ResiliencyPolicy');
+  public static readonly RESILIENCEHUB_RESILIENCY_POLICY = new ResourceType(
+    'AWS::ResilienceHub::ResiliencyPolicy'
+  );
   /**AWS Secrets Manager secret */
   public static readonly SECRETS_MANAGER_SECRET = new ResourceType('AWS::SecretsManager::Secret');
   /** AWS Service Catalog CloudFormation product */
-  public static readonly SERVICE_CATALOG_CLOUDFORMATION_PRODUCT = new ResourceType('AWS::ServiceCatalog::CloudFormationProduct');
+  public static readonly SERVICE_CATALOG_CLOUDFORMATION_PRODUCT = new ResourceType(
+    'AWS::ServiceCatalog::CloudFormationProduct'
+  );
   /** AWS Service Catalog CloudFormation provisioned product */
   public static readonly SERVICE_CATALOG_CLOUDFORMATION_PROVISIONED_PRODUCT = new ResourceType(
-    'AWS::ServiceCatalog::CloudFormationProvisionedProduct');
+    'AWS::ServiceCatalog::CloudFormationProvisionedProduct'
+  );
   /** AWS Service Catalog portfolio */
-  public static readonly SERVICE_CATALOG_PORTFOLIO = new ResourceType('AWS::ServiceCatalog::Portfolio');
+  public static readonly SERVICE_CATALOG_PORTFOLIO = new ResourceType(
+    'AWS::ServiceCatalog::Portfolio'
+  );
   /** AWS Shield protection */
   public static readonly SHIELD_PROTECTION = new ResourceType('AWS::Shield::Protection');
   /** AWS Shield regional protection */
-  public static readonly SHIELD_REGIONAL_PROTECTION = new ResourceType('AWS::ShieldRegional::Protection');
+  public static readonly SHIELD_REGIONAL_PROTECTION = new ResourceType(
+    'AWS::ShieldRegional::Protection'
+  );
   /** AWS StepFunctions activity */
   public static readonly STEPFUNCTIONS_ACTIVITY = new ResourceType('AWS::StepFunctions::Activity');
   /** AWS StepFunctions state machine */
-  public static readonly STEPFUNCTIONS_STATE_MACHINE = new ResourceType('AWS::StepFunctions::StateMachine');
+  public static readonly STEPFUNCTIONS_STATE_MACHINE = new ResourceType(
+    'AWS::StepFunctions::StateMachine'
+  );
   /** AWS Systems Manager managed instance inventory */
-  public static readonly SYSTEMS_MANAGER_MANAGED_INSTANCE_INVENTORY = new ResourceType('AWS::SSM::ManagedInstanceInventory');
+  public static readonly SYSTEMS_MANAGER_MANAGED_INSTANCE_INVENTORY = new ResourceType(
+    'AWS::SSM::ManagedInstanceInventory'
+  );
   /** AWS Systems Manager patch compliance */
-  public static readonly SYSTEMS_MANAGER_PATCH_COMPLIANCE = new ResourceType('AWS::SSM::PatchCompliance');
+  public static readonly SYSTEMS_MANAGER_PATCH_COMPLIANCE = new ResourceType(
+    'AWS::SSM::PatchCompliance'
+  );
   /** AWS Systems Manager association compliance */
-  public static readonly SYSTEMS_MANAGER_ASSOCIATION_COMPLIANCE = new ResourceType('AWS::SSM::AssociationCompliance');
+  public static readonly SYSTEMS_MANAGER_ASSOCIATION_COMPLIANCE = new ResourceType(
+    'AWS::SSM::AssociationCompliance'
+  );
   /** AWS Systems Manager file data */
   public static readonly SYSTEMS_MANAGER_FILE_DATA = new ResourceType('AWS::SSM::FileData');
   /** AWS Transfer workflow */
@@ -2561,7 +2824,9 @@ export class ResourceType {
   /** AWS WAF rule group */
   public static readonly WAF_RULE_GROUP = new ResourceType('AWS::WAF::RuleGroup');
   /** AWS WAF regional rate based rule */
-  public static readonly WAF_REGIONAL_RATE_BASED_RULE = new ResourceType('AWS::WAFRegional::RateBasedRule');
+  public static readonly WAF_REGIONAL_RATE_BASED_RULE = new ResourceType(
+    'AWS::WAFRegional::RateBasedRule'
+  );
   /** AWS WAF regional rule */
   public static readonly WAF_REGIONAL_RULE = new ResourceType('AWS::WAFRegional::Rule');
   /** AWS WAF web ACL */
@@ -2579,17 +2844,27 @@ export class ResourceType {
   /** AWS WAFv2 regex pattern set */
   public static readonly WAFV2_REGEX_PATTERN_SET = new ResourceType('AWS::WAFv2::RegexPatternSet');
   /** AWS X-Ray encryption configuration */
-  public static readonly XRAY_ENCRYPTION_CONFIGURATION = new ResourceType('AWS::XRay::EncryptionConfig');
+  public static readonly XRAY_ENCRYPTION_CONFIGURATION = new ResourceType(
+    'AWS::XRay::EncryptionConfig'
+  );
   /** AWS ELB classic load balancer */
-  public static readonly ELB_LOAD_BALANCER = new ResourceType('AWS::ElasticLoadBalancing::LoadBalancer');
+  public static readonly ELB_LOAD_BALANCER = new ResourceType(
+    'AWS::ElasticLoadBalancing::LoadBalancer'
+  );
   /** AWS ELBv2 network load balancer or AWS ELBv2 application load balancer */
-  public static readonly ELBV2_LOAD_BALANCER = new ResourceType('AWS::ElasticLoadBalancingV2::LoadBalancer');
+  public static readonly ELBV2_LOAD_BALANCER = new ResourceType(
+    'AWS::ElasticLoadBalancingV2::LoadBalancer'
+  );
   /** AWS ELBv2 application load balancer listener */
   public static readonly ELBV2_LISTENER = new ResourceType('AWS::ElasticLoadBalancingV2::Listener');
   /** AWS Elemental MediaPackage packaging group */
-  public static readonly MEDIAPACKAGE_PACKAGING_GROUP = new ResourceType('AWS::MediaPackage::PackagingGroup');
+  public static readonly MEDIAPACKAGE_PACKAGING_GROUP = new ResourceType(
+    'AWS::MediaPackage::PackagingGroup'
+  );
   /** AWS Device Farm Test Grid Project */
-  public static readonly DEVICE_FARM_TEST_GRID_PROJECT = new ResourceType('AWS::DeviceFarm::TestGridProject');
+  public static readonly DEVICE_FARM_TEST_GRID_PROJECT = new ResourceType(
+    'AWS::DeviceFarm::TestGridProject'
+  );
   /** AWS Budgets Budgets Action */
   public static readonly BUDGETS_BUDGETS_ACTION = new ResourceType('AWS::Budgets::BudgetsAction');
   /** Amazon Lex Bot */
@@ -2597,21 +2872,33 @@ export class ResourceType {
   /** Amazon Lex Bot Alias */
   public static readonly LEX_BOT_ALIAS = new ResourceType('AWS::Lex::BotAlias');
   /** Amazon CodeGuru Reviewer Repository Association */
-  public static readonly CODE_GURU_REVIEWER_REPOSITORY_ASSOCIATION = new ResourceType('AWS::CodeGuruReviewer::RepositoryAssociation');
+  public static readonly CODE_GURU_REVIEWER_REPOSITORY_ASSOCIATION = new ResourceType(
+    'AWS::CodeGuruReviewer::RepositoryAssociation'
+  );
   /** AWS IoT Custom Metric */
   public static readonly IOT_CUSTOM_METRIC = new ResourceType('AWS::IoT::CustomMetric');
   /** AWS IoT Account Audit Configuration */
-  public static readonly IOT_ACCOUNT_AUDIT_CONFIGURATION = new ResourceType('AWS::IoT::AccountAuditConfiguration');
+  public static readonly IOT_ACCOUNT_AUDIT_CONFIGURATION = new ResourceType(
+    'AWS::IoT::AccountAuditConfiguration'
+  );
   /** AWS IoT Scheduled Audit */
   public static readonly IOT_SCHEDULED_AUDIT = new ResourceType('AWS::IoT::ScheduledAudit');
   /** Amazon Route53 Resolver Firewall Domain List */
-  public static readonly ROUTE53_RESOLVER_FIREWALL_DOMAIN_LIST = new ResourceType('AWS::Route53Resolver::FirewallDomainList');
+  public static readonly ROUTE53_RESOLVER_FIREWALL_DOMAIN_LIST = new ResourceType(
+    'AWS::Route53Resolver::FirewallDomainList'
+  );
   /** AWS RoboMaker Robot Application Version */
-  public static readonly ROBO_MAKER_ROBOT_APPLICATION_VERSION = new ResourceType('AWS::RoboMaker::RobotApplicationVersion');
+  public static readonly ROBO_MAKER_ROBOT_APPLICATION_VERSION = new ResourceType(
+    'AWS::RoboMaker::RobotApplicationVersion'
+  );
   /** EC2 Traffic Mirror Session */
-  public static readonly EC2_TRAFFIC_MIRROR_SESSION = new ResourceType('AWS::EC2::TrafficMirrorSession');
+  public static readonly EC2_TRAFFIC_MIRROR_SESSION = new ResourceType(
+    'AWS::EC2::TrafficMirrorSession'
+  );
   /** EC2 Traffic Mirror Target */
-  public static readonly EC2_TRAFFIC_MIRROR_TARGET = new ResourceType('AWS::EC2::TrafficMirrorTarget');
+  public static readonly EC2_TRAFFIC_MIRROR_TARGET = new ResourceType(
+    'AWS::EC2::TrafficMirrorTarget'
+  );
   /** AWS IoT SiteWise Gateway */
   public static readonly IOT_SITEWISE_GATEWAY = new ResourceType('AWS::IoTSiteWise::Gateway');
   /** AWS Lookout Metrics Alert */
@@ -2623,115 +2910,179 @@ export class ResourceType {
   /** Amazon EventBridge Schemas Schema */
   public static readonly EVENT_SCHEMAS_SCHEMA = new ResourceType('AWS::EventSchemas::Schema');
   /** AWS Elemental MediaPackage Packaging Configuration */
-  public static readonly MEDIA_PACKAGE_PACKAGING_CONFIGURATION = new ResourceType('AWS::MediaPackage::PackagingConfiguration');
+  public static readonly MEDIA_PACKAGE_PACKAGING_CONFIGURATION = new ResourceType(
+    'AWS::MediaPackage::PackagingConfiguration'
+  );
   /** Amazon AppStream Directory Config */
-  public static readonly APP_STREAM_DIRECTORY_CONFIG = new ResourceType('AWS::AppStream::DirectoryConfig');
+  public static readonly APP_STREAM_DIRECTORY_CONFIG = new ResourceType(
+    'AWS::AppStream::DirectoryConfig'
+  );
   /** EC2 Auto Scaling Warm Pool */
   public static readonly AUTO_SCALING_WARM_POOL = new ResourceType('AWS::AutoScaling::WarmPool');
   /** Amazon Connect Phone Number */
   public static readonly CONNECT_PHONE_NUMBER = new ResourceType('AWS::Connect::PhoneNumber');
   /** Amazon Connect Customer Profiles Domain */
-  public static readonly CUSTOMER_PROFILES_DOMAIN = new ResourceType('AWS::CustomerProfiles::Domain');
+  public static readonly CUSTOMER_PROFILES_DOMAIN = new ResourceType(
+    'AWS::CustomerProfiles::Domain'
+  );
   /** EC2 DHCP Options */
   public static readonly EC2_DHCP_OPTIONS = new ResourceType('AWS::EC2::DHCPOptions');
   /** EC2 IPAM */
   public static readonly EC2_IPAM = new ResourceType('AWS::EC2::IPAM');
   /** EC2 Network Insights Path */
-  public static readonly EC2_NETWORK_INSIGHTS_PATH = new ResourceType('AWS::EC2::NetworkInsightsPath');
+  public static readonly EC2_NETWORK_INSIGHTS_PATH = new ResourceType(
+    'AWS::EC2::NetworkInsightsPath'
+  );
   /** EC2 Traffic Mirror Filter */
-  public static readonly EC2_TRAFFIC_MIRROR_FILTER = new ResourceType('AWS::EC2::TrafficMirrorFilter');
+  public static readonly EC2_TRAFFIC_MIRROR_FILTER = new ResourceType(
+    'AWS::EC2::TrafficMirrorFilter'
+  );
   /** Amazon EventBridge Events Rule */
   public static readonly EVENTS_RULE = new ResourceType('AWS::Events::Rule');
   /** AWS HealthLake FHIR Datastore */
-  public static readonly HEALTH_LAKE_FHIR_DATASTORE = new ResourceType('AWS::HealthLake::FHIRDatastore');
+  public static readonly HEALTH_LAKE_FHIR_DATASTORE = new ResourceType(
+    'AWS::HealthLake::FHIRDatastore'
+  );
   /** AWS IoT Twin Maker Scene */
   public static readonly IOT_TWIN_MAKER_SCENE = new ResourceType('AWS::IoTTwinMaker::Scene');
   /** Amazon Kinesis Video Streams Signaling Channel */
-  public static readonly KINESIS_VIDEO_SIGNALING_CHANNEL = new ResourceType('AWS::KinesisVideo::SignalingChannel');
+  public static readonly KINESIS_VIDEO_SIGNALING_CHANNEL = new ResourceType(
+    'AWS::KinesisVideo::SignalingChannel'
+  );
   /** Amazon Lookout Vision Project */
   public static readonly LOOKOUT_VISION_PROJECT = new ResourceType('AWS::LookoutVision::Project');
   /** AWS Network Manager Transit Gateway Registration */
-  public static readonly NETWORK_MANAGER_TRANSIT_GATEWAY_REGISTRATION = new ResourceType('AWS::NetworkManager::TransitGatewayRegistration');
+  public static readonly NETWORK_MANAGER_TRANSIT_GATEWAY_REGISTRATION = new ResourceType(
+    'AWS::NetworkManager::TransitGatewayRegistration'
+  );
   /** Amazon Pinpoint Application Settings */
-  public static readonly PINPOINT_APPLICATION_SETTINGS = new ResourceType('AWS::Pinpoint::ApplicationSettings');
+  public static readonly PINPOINT_APPLICATION_SETTINGS = new ResourceType(
+    'AWS::Pinpoint::ApplicationSettings'
+  );
   /** Amazon Pinpoint Segment */
   public static readonly PINPOINT_SEGMENT = new ResourceType('AWS::Pinpoint::Segment');
   /** AWS RoboMaker Robot Application */
-  public static readonly ROBO_MAKER_ROBOT_APPLICATION = new ResourceType('AWS::RoboMaker::RobotApplication');
+  public static readonly ROBO_MAKER_ROBOT_APPLICATION = new ResourceType(
+    'AWS::RoboMaker::RobotApplication'
+  );
   /** AWS RoboMaker Simulation Application */
-  public static readonly ROBO_MAKER_SIMULATION_APPLICATION = new ResourceType('AWS::RoboMaker::SimulationApplication');
+  public static readonly ROBO_MAKER_SIMULATION_APPLICATION = new ResourceType(
+    'AWS::RoboMaker::SimulationApplication'
+  );
   /** Amazon Route53 Recovery Control Cluster */
-  public static readonly ROUTE53_RECOVERY_CONTROL_CLUSTER = new ResourceType('AWS::Route53RecoveryControl::Cluster');
+  public static readonly ROUTE53_RECOVERY_CONTROL_CLUSTER = new ResourceType(
+    'AWS::Route53RecoveryControl::Cluster'
+  );
   /** Amazon Route53 Recovery Control Control Panel */
-  public static readonly ROUTE53_RECOVERY_CONTROL_CONTROL_PANEL = new ResourceType('AWS::Route53RecoveryControl::ControlPanel');
+  public static readonly ROUTE53_RECOVERY_CONTROL_CONTROL_PANEL = new ResourceType(
+    'AWS::Route53RecoveryControl::ControlPanel'
+  );
   /** Amazon Route53 Recovery Control Routing Control */
-  public static readonly ROUTE53_RECOVERY_CONTROL_ROUTING_CONTROL = new ResourceType('AWS::Route53RecoveryControl::RoutingControl');
+  public static readonly ROUTE53_RECOVERY_CONTROL_ROUTING_CONTROL = new ResourceType(
+    'AWS::Route53RecoveryControl::RoutingControl'
+  );
   /** Amazon Route53 Recovery Control Safety Rule */
-  public static readonly ROUTE53_RECOVERY_CONTROL_SAFETY_RULE = new ResourceType('AWS::Route53RecoveryControl::SafetyRule');
+  public static readonly ROUTE53_RECOVERY_CONTROL_SAFETY_RULE = new ResourceType(
+    'AWS::Route53RecoveryControl::SafetyRule'
+  );
   /** Amazon Route53 Recovery Readiness Resource Set */
-  public static readonly ROUTE53_RECOVERY_READINESS_RESOURCE_SET = new ResourceType('AWS::Route53RecoveryReadiness::ResourceSet');
+  public static readonly ROUTE53_RECOVERY_READINESS_RESOURCE_SET = new ResourceType(
+    'AWS::Route53RecoveryReadiness::ResourceSet'
+  );
   /** Amazon Route53 Resolver Firewall Rule Group Association */
-  public static readonly ROUTE53_RESOLVER_FIREWALL_RULE_GROUP_ASSOCIATION = new ResourceType('AWS::Route53Resolver::FirewallRuleGroupAssociation');
+  public static readonly ROUTE53_RESOLVER_FIREWALL_RULE_GROUP_ASSOCIATION = new ResourceType(
+    'AWS::Route53Resolver::FirewallRuleGroupAssociation'
+  );
   /** EC2 EC2 Fleet */
   public static readonly EC2_EC2_FLEET = new ResourceType('AWS::EC2::EC2Fleet');
   /** AWS IoTWireless Service Profile */
-  public static readonly IOT_WIRELESS_SERVICE_PROFILE = new ResourceType('AWS::IoTWireless::ServiceProfile');
+  public static readonly IOT_WIRELESS_SERVICE_PROFILE = new ResourceType(
+    'AWS::IoTWireless::ServiceProfile'
+  );
   /** EC2 Subnet Route Table Association */
-  public static readonly EC2_SUBNET_ROUTE_TABLE_ASSOCIATION = new ResourceType('AWS::EC2::SubnetRouteTableAssociation');
+  public static readonly EC2_SUBNET_ROUTE_TABLE_ASSOCIATION = new ResourceType(
+    'AWS::EC2::SubnetRouteTableAssociation'
+  );
   /** AWS Network Manager Global Network */
-  public static readonly NETWORK_MANAGER_GLOBAL_NETWORK = new ResourceType('AWS::NetworkManager::GlobalNetwork');
+  public static readonly NETWORK_MANAGER_GLOBAL_NETWORK = new ResourceType(
+    'AWS::NetworkManager::GlobalNetwork'
+  );
   /** AWS DeviceFarm Instance Profile */
-  public static readonly DEVICE_FARM_INSTANCE_PROFILE = new ResourceType('AWS::DeviceFarm::InstanceProfile');
+  public static readonly DEVICE_FARM_INSTANCE_PROFILE = new ResourceType(
+    'AWS::DeviceFarm::InstanceProfile'
+  );
   /** AWS GroundStation Config */
   public static readonly GROUND_STATION_CONFIG = new ResourceType('AWS::GroundStation::Config');
   /** Amazon AppFlow Flow */
   public static readonly APP_FLOW_FLOW = new ResourceType('AWS::AppFlow::Flow');
   /** Amazon Redshift Scheduled Action */
-  public static readonly REDSHIFT_SCHEDULED_ACTION = new ResourceType('AWS::Redshift::ScheduledAction');
+  public static readonly REDSHIFT_SCHEDULED_ACTION = new ResourceType(
+    'AWS::Redshift::ScheduledAction'
+  );
   /** Amazon Pinpoint App */
   public static readonly PINPOINT_APP = new ResourceType('AWS::Pinpoint::App');
   /** AWS IoT Fleet Metric */
   public static readonly IOT_FLEET_METRIC = new ResourceType('AWS::IoT::FleetMetric');
   /** AWS AppConfig Deployment Strategy */
-  public static readonly APP_CONFIG_DEPLOYMENT_STRATEGY = new ResourceType('AWS::AppConfig::DeploymentStrategy');
+  public static readonly APP_CONFIG_DEPLOYMENT_STRATEGY = new ResourceType(
+    'AWS::AppConfig::DeploymentStrategy'
+  );
   /** AWS Network Manager Device */
   public static readonly NETWORK_MANAGER_DEVICE = new ResourceType('AWS::NetworkManager::Device');
   /** EC2 Image Builder Image Pipeline */
-  public static readonly IMAGE_BUILDER_IMAGE_PIPELINE = new ResourceType('AWS::ImageBuilder::ImagePipeline');
+  public static readonly IMAGE_BUILDER_IMAGE_PIPELINE = new ResourceType(
+    'AWS::ImageBuilder::ImagePipeline'
+  );
   /** Amazon CloudWatch Metric Stream */
-  public static readonly CLOUD_WATCH_METRIC_STREAM = new ResourceType('AWS::CloudWatch::MetricStream');
+  public static readonly CLOUD_WATCH_METRIC_STREAM = new ResourceType(
+    'AWS::CloudWatch::MetricStream'
+  );
   /** AWS Panorama Package */
   public static readonly PANORAMA_PACKAGE = new ResourceType('AWS::Panorama::Package');
   /** Amazon SageMaker Image */
   public static readonly SAGE_MAKER_IMAGE = new ResourceType('AWS::SageMaker::Image');
   /** Amazon ECR PullThrough Cache Rule */
-  public static readonly ECR_PULL_THROUGH_CACHE_RULE = new ResourceType('AWS::ECR::PullThroughCacheRule');
+  public static readonly ECR_PULL_THROUGH_CACHE_RULE = new ResourceType(
+    'AWS::ECR::PullThroughCacheRule'
+  );
   /** AWS AuditManager Assessment */
-  public static readonly AUDIT_MANAGER_ASSESSMENT = new ResourceType('AWS::AuditManager::Assessment');
+  public static readonly AUDIT_MANAGER_ASSESSMENT = new ResourceType(
+    'AWS::AuditManager::Assessment'
+  );
   /** AWS NetworkManager Site */
   public static readonly NETWORK_MANAGER_SITE = new ResourceType('AWS::NetworkManager::Site');
   /** Amazon SageMaker AppImageConfig */
-  public static readonly SAGE_MAKER_APP_IMAGE_CONFIG = new ResourceType('AWS::SageMaker::AppImageConfig');
+  public static readonly SAGE_MAKER_APP_IMAGE_CONFIG = new ResourceType(
+    'AWS::SageMaker::AppImageConfig'
+  );
   /** AWS DeviceFarm Project */
   public static readonly DEVICE_FARM_PROJECT = new ResourceType('AWS::DeviceFarm::Project');
   /** AWS NetworkManager Link */
   public static readonly NETWORK_MANAGER_LINK = new ResourceType('AWS::NetworkManager::Link');
   /** AWS NetworkFirewall TLSInspectionConfiguration */
-  public static readonly NETWORK_FIREWALL_TLS_INSPECTION_CONFIGURATION = new ResourceType('AWS::NetworkFirewall::TLSInspectionConfiguration');
+  public static readonly NETWORK_FIREWALL_TLS_INSPECTION_CONFIGURATION = new ResourceType(
+    'AWS::NetworkFirewall::TLSInspectionConfiguration'
+  );
   /** AWS Amplify App */
   public static readonly AMPLIFY_APP = new ResourceType('AWS::Amplify::App');
   /** AWS AppMesh VirtualNode */
   public static readonly APP_MESH_VIRTUAL_NODE = new ResourceType('AWS::AppMesh::VirtualNode');
   /** AWS AppMesh VirtualService */
-  public static readonly APP_MESH_VIRTUAL_SERVICE = new ResourceType('AWS::AppMesh::VirtualService');
+  public static readonly APP_MESH_VIRTUAL_SERVICE = new ResourceType(
+    'AWS::AppMesh::VirtualService'
+  );
   /** AWS AppRunner VpcConnector */
-  public static readonly APP_RUNNER_VPC_CONNECTOR = new ResourceType('AWS::AppRunner::VpcConnector');
+  public static readonly APP_RUNNER_VPC_CONNECTOR = new ResourceType(
+    'AWS::AppRunner::VpcConnector'
+  );
   /** Amazon AppStream Application */
   public static readonly APP_STREAM_APPLICATION = new ResourceType('AWS::AppStream::Application');
   /** Amazon KeySpaces Cassandra Keyspace */
   public static readonly CASSANDRA_KEYSPACE = new ResourceType('AWS::Cassandra::Keyspace');
   /** AWS CodeArtifact Repository */
-  public static readonly CODE_ARTIFACT_REPOSITORY = new ResourceType('AWS::CodeArtifact::Repository');
+  public static readonly CODE_ARTIFACT_REPOSITORY = new ResourceType(
+    'AWS::CodeArtifact::Repository'
+  );
   /** EC2 PrefixList */
   public static readonly EC2_PREFIX_LIST = new ResourceType('AWS::EC2::PrefixList');
   /** EC2 SpotFleet */
@@ -2747,11 +3098,15 @@ export class ResourceType {
   /** AWS IAM ServerCertificate */
   public static readonly IAM_SERVER_CERTIFICATE = new ResourceType('AWS::IAM::ServerCertificate');
   /** Amazon Kinesis Firehose DeliveryStream */
-  public static readonly KINESIS_FIREHOSE_DELIVERY_STREAM = new ResourceType('AWS::KinesisFirehose::DeliveryStream');
+  public static readonly KINESIS_FIREHOSE_DELIVERY_STREAM = new ResourceType(
+    'AWS::KinesisFirehose::DeliveryStream'
+  );
   /** Amazon Pinpoint Campaign */
   public static readonly PINPOINT_CAMPAIGN = new ResourceType('AWS::Pinpoint::Campaign');
   /** Amazon Pinpoint InAppTemplate */
-  public static readonly PINPOINT_IN_APP_TEMPLATE = new ResourceType('AWS::Pinpoint::InAppTemplate');
+  public static readonly PINPOINT_IN_APP_TEMPLATE = new ResourceType(
+    'AWS::Pinpoint::InAppTemplate'
+  );
   /** AWS Signer SigningProfile */
   public static readonly SIGNER_SIGNING_PROFILE = new ResourceType('AWS::Signer::SigningProfile');
   /** Amazon SageMaker Domain */
@@ -2761,21 +3116,31 @@ export class ResourceType {
   /** AWS Transfer Connector */
   public static readonly TRANSFER_CONNECTOR = new ResourceType('AWS::Transfer::Connector');
   /** AWS Private Certificate Authority CertificateAuthority */
-  public static readonly ACMPCA_CERTIFICATE_AUTHORITY = new ResourceType('AWS::ACMPCA::CertificateAuthority');
+  public static readonly ACMPCA_CERTIFICATE_AUTHORITY = new ResourceType(
+    'AWS::ACMPCA::CertificateAuthority'
+  );
   /** AWS AppConfig HostedConfigurationVersion */
-  public static readonly APP_CONFIG_HOSTED_CONFIGURATION_VERSION = new ResourceType('AWS::AppConfig::HostedConfigurationVersion');
+  public static readonly APP_CONFIG_HOSTED_CONFIGURATION_VERSION = new ResourceType(
+    'AWS::AppConfig::HostedConfigurationVersion'
+  );
   /** AWS AppMesh VirtualGateway */
-  public static readonly APP_MESH_VIRTUAL_GATEWAY = new ResourceType('AWS::AppMesh::VirtualGateway');
+  public static readonly APP_MESH_VIRTUAL_GATEWAY = new ResourceType(
+    'AWS::AppMesh::VirtualGateway'
+  );
   /** AWS AppMesh VirtualRouter */
   public static readonly APP_MESH_VIRTUAL_ROUTER = new ResourceType('AWS::AppMesh::VirtualRouter');
   /** AWS AppRunner Service */
   public static readonly APP_RUNNER_SERVICE = new ResourceType('AWS::AppRunner::Service');
   /** Amazon Connect CustomerProfiles ObjectType */
-  public static readonly CUSTOMER_PROFILES_OBJECT_TYPE = new ResourceType('AWS::CustomerProfiles::ObjectType');
+  public static readonly CUSTOMER_PROFILES_OBJECT_TYPE = new ResourceType(
+    'AWS::CustomerProfiles::ObjectType'
+  );
   /** AWS DMS Endpoint */
   public static readonly DMS_ENDPOINT = new ResourceType('AWS::DMS::Endpoint');
   /** EC2 CapacityReservation */
-  public static readonly EC2_CAPACITY_RESERVATION = new ResourceType('AWS::EC2::CapacityReservation');
+  public static readonly EC2_CAPACITY_RESERVATION = new ResourceType(
+    'AWS::EC2::CapacityReservation'
+  );
   /** EC2 ClientVpnEndpoint */
   public static readonly EC2_CLIENT_VPN_ENDPOINT = new ResourceType('AWS::EC2::ClientVpnEndpoint');
   /** Amazon Kendra Index */
@@ -2785,9 +3150,13 @@ export class ResourceType {
   /** Amazon CloudWatch Logs Destination */
   public static readonly LOGS_DESTINATION = new ResourceType('AWS::Logs::Destination');
   /** AWS NetworkManager CustomerGatewayAssociation */
-  public static readonly NETWORK_MANAGER_CUSTOMER_GATEWAY_ASSOCIATION = new ResourceType('AWS::NetworkManager::CustomerGatewayAssociation');
+  public static readonly NETWORK_MANAGER_CUSTOMER_GATEWAY_ASSOCIATION = new ResourceType(
+    'AWS::NetworkManager::CustomerGatewayAssociation'
+  );
   /** AWS NetworkManager LinkAssociation */
-  public static readonly NETWORK_MANAGER_LINK_ASSOCIATION = new ResourceType('AWS::NetworkManager::LinkAssociation');
+  public static readonly NETWORK_MANAGER_LINK_ASSOCIATION = new ResourceType(
+    'AWS::NetworkManager::LinkAssociation'
+  );
   /** Amazon Pinpoint EmailChannel */
   public static readonly PINPOINT_EMAIL_CHANNEL = new ResourceType('AWS::Pinpoint::EmailChannel');
   /** Amazon S3 AccessPoint */
@@ -2795,11 +3164,15 @@ export class ResourceType {
   /** AWS Amplify Branch */
   public static readonly AMPLIFY_BRANCH = new ResourceType('AWS::Amplify::Branch');
   /** Amazon AppIntegrations EventIntegration */
-  public static readonly APP_INTEGRATIONS_EVENT_INTEGRATION = new ResourceType('AWS::AppIntegrations::EventIntegration');
+  public static readonly APP_INTEGRATIONS_EVENT_INTEGRATION = new ResourceType(
+    'AWS::AppIntegrations::EventIntegration'
+  );
   /** AWS AppMesh Route */
   public static readonly APP_MESH_ROUTE = new ResourceType('AWS::AppMesh::Route');
   /** Amazon Athena PreparedStatement */
-  public static readonly ATHENA_PREPARED_STATEMENT = new ResourceType('AWS::Athena::PreparedStatement');
+  public static readonly ATHENA_PREPARED_STATEMENT = new ResourceType(
+    'AWS::Athena::PreparedStatement'
+  );
   /** EC2 IPAMScope */
   public static readonly EC2_IPAM_SCOPE = new ResourceType('AWS::EC2::IPAMScope');
   /** Amazon CloudWatch Evidently Launch */
@@ -2807,15 +3180,25 @@ export class ResourceType {
   /** Amazon Forecast DatasetGroup */
   public static readonly FORECAST_DATASET_GROUP = new ResourceType('AWS::Forecast::DatasetGroup');
   /** AWS IoT Greengrass Version2 ComponentVersion */
-  public static readonly GREENGRASSV2_COMPONENT_VERSION = new ResourceType('AWS::GreengrassV2::ComponentVersion');
+  public static readonly GREENGRASSV2_COMPONENT_VERSION = new ResourceType(
+    'AWS::GreengrassV2::ComponentVersion'
+  );
   /** AWS GroundStation MissionProfile */
-  public static readonly GROUNDSTATION_MISSION_PROFILE = new ResourceType('AWS::GroundStation::MissionProfile');
+  public static readonly GROUNDSTATION_MISSION_PROFILE = new ResourceType(
+    'AWS::GroundStation::MissionProfile'
+  );
   /** AWS Elemental MediaConnect FlowEntitlement */
-  public static readonly MEDIACONNECT_FLOW_ENTITLEMENT = new ResourceType('AWS::MediaConnect::FlowEntitlement');
+  public static readonly MEDIACONNECT_FLOW_ENTITLEMENT = new ResourceType(
+    'AWS::MediaConnect::FlowEntitlement'
+  );
   /** AWS Elemental MediaConnect FlowVpcInterface */
-  public static readonly MEDIACONNECT_FLOW_VPC_INTERFACE = new ResourceType('AWS::MediaConnect::FlowVpcInterface');
+  public static readonly MEDIACONNECT_FLOW_VPC_INTERFACE = new ResourceType(
+    'AWS::MediaConnect::FlowVpcInterface'
+  );
   /** AWS Elemental MediaTailor PlaybackConfiguration */
-  public static readonly MEDIATAILOR_PLAYBACK_CONFIGURATION = new ResourceType('AWS::MediaTailor::PlaybackConfiguration');
+  public static readonly MEDIATAILOR_PLAYBACK_CONFIGURATION = new ResourceType(
+    'AWS::MediaTailor::PlaybackConfiguration'
+  );
   /** Amazon MSK Configuration */
   public static readonly MSK_CONFIGURATION = new ResourceType('AWS::MSK::Configuration');
   /** Amazon Personalize Dataset */
@@ -2831,31 +3214,51 @@ export class ResourceType {
   /** AWS ResilienceHub App */
   public static readonly RESILIENCEHUB_APP = new ResourceType('AWS::ResilienceHub::App');
   /** Amazon CodeGuruP rofiler ProfilingGroup */
-  public static readonly CODE_GURU_PROFILER_PROFILING_GROUP = new ResourceType('AWS::CodeGuruProfiler::ProfilingGroup');
+  public static readonly CODE_GURU_PROFILER_PROFILING_GROUP = new ResourceType(
+    'AWS::CodeGuruProfiler::ProfilingGroup'
+  );
   /** AWS Elemental MediaConnect FlowSource */
-  public static readonly MEDIA_CONNECT_FLOW_SOURCE = new ResourceType('AWS::MediaConnect::FlowSource');
+  public static readonly MEDIA_CONNECT_FLOW_SOURCE = new ResourceType(
+    'AWS::MediaConnect::FlowSource'
+  );
   /** AWS Transfer Family Certificate */
   public static readonly TRANSFER_CERTIFICATE = new ResourceType('AWS::Transfer::Certificate');
   /** Amazon Managed Service for Prometheus RuleGroupsNamespace */
-  public static readonly APS_RULE_GROUPS_NAMESPACE = new ResourceType('AWS::APS::RuleGroupsNamespace');
+  public static readonly APS_RULE_GROUPS_NAMESPACE = new ResourceType(
+    'AWS::APS::RuleGroupsNamespace'
+  );
   /** AWS Batch SchedulingPolicy */
   public static readonly BATCH_SCHEDULING_POLICY = new ResourceType('AWS::Batch::SchedulingPolicy');
   /** AWS Cloud Map Instance */
-  public static readonly SERVICE_DISCOVERY_INSTANCE = new ResourceType('AWS::ServiceDiscovery::Instance');
+  public static readonly SERVICE_DISCOVERY_INSTANCE = new ResourceType(
+    'AWS::ServiceDiscovery::Instance'
+  );
   /** Amazon Route53 Resolver ResolverQueryLoggingConfig */
-  public static readonly ROUTE53_RESOLVER_QUERY_LOGGING_CONFIG = new ResourceType('AWS::Route53Resolver::ResolverQueryLoggingConfig');
+  public static readonly ROUTE53_RESOLVER_QUERY_LOGGING_CONFIG = new ResourceType(
+    'AWS::Route53Resolver::ResolverQueryLoggingConfig'
+  );
   /** Amazon Route53 Resolver ResolverQueryLoggingConfigAssociation */
-  public static readonly ROUTE53_RESOLVER_QUERY_LOGGING_CONFIG_ASSOCIATION = new ResourceType('AWS::Route53Resolver::ResolverQueryLoggingConfigAssociation');
+  public static readonly ROUTE53_RESOLVER_QUERY_LOGGING_CONFIG_ASSOCIATION = new ResourceType(
+    'AWS::Route53Resolver::ResolverQueryLoggingConfigAssociation'
+  );
   /** AWS IoT JobTemplate */
   public static readonly IOT_JOB_TEMPLATE = new ResourceType('AWS::IoT::JobTemplate');
   /** AWS IoT TwinMaker ComponentType */
-  public static readonly IOT_TWIN_MAKER_COMPONENT_TYPE = new ResourceType('AWS::IoTTwinMaker::ComponentType');
+  public static readonly IOT_TWIN_MAKER_COMPONENT_TYPE = new ResourceType(
+    'AWS::IoTTwinMaker::ComponentType'
+  );
   /** AWS IoT Wireless MulticastGroup */
-  public static readonly IOT_WIRELESS_MULTICAST_GROUP = new ResourceType('AWS::IoTWireless::MulticastGroup');
+  public static readonly IOT_WIRELESS_MULTICAST_GROUP = new ResourceType(
+    'AWS::IoTWireless::MulticastGroup'
+  );
   /** Amazon Personalize DatasetGroup */
-  public static readonly PERSONALIZE_DATASET_GROUP = new ResourceType('AWS::Personalize::DatasetGroup');
+  public static readonly PERSONALIZE_DATASET_GROUP = new ResourceType(
+    'AWS::Personalize::DatasetGroup'
+  );
   /** AWS IoT ProvisioningTemplate */
-  public static readonly IOT_PROVISIONING_TEMPLATE = new ResourceType('AWS::IoT::ProvisioningTemplate');
+  public static readonly IOT_PROVISIONING_TEMPLATE = new ResourceType(
+    'AWS::IoT::ProvisioningTemplate'
+  );
   /** AWS IoT Wireless FuotaTask */
   public static readonly IOT_WIRELESS_FUOTA_TASK = new ResourceType('AWS::IoTWireless::FuotaTask');
   /** Amazon MSK BatchScramSecret */
@@ -2877,13 +3280,19 @@ export class ResourceType {
   /** Amazon RDS OptionGroup */
   public static readonly RDS_OPTION_GROUP = new ResourceType('AWS::RDS::OptionGroup');
   /** AWS Route53 Resolver FirewallRuleGroup */
-  public static readonly ROUTE53_RESOLVER_FIREWALL_RULE_GROUP = new ResourceType('AWS::Route53Resolver::FirewallRuleGroup');
+  public static readonly ROUTE53_RESOLVER_FIREWALL_RULE_GROUP = new ResourceType(
+    'AWS::Route53Resolver::FirewallRuleGroup'
+  );
   /** AWS IAM InstanceProfile */
   public static readonly IAM_INSTANCE_PROFILE = new ResourceType('AWS::IAM::InstanceProfile');
   /** AWS NetworkManager ConnectPeer */
-  public static readonly NETWORK_MANAGER_CONNECT_PEER = new ResourceType('AWS::NetworkManager::ConnectPeer');
+  public static readonly NETWORK_MANAGER_CONNECT_PEER = new ResourceType(
+    'AWS::NetworkManager::ConnectPeer'
+  );
   /** AWS Private Certificate Authority CertificateAuthorityActivation */
-  public static readonly ACMPCA_CERTIFICATE_AUTHORITY_ACTIVATION = new ResourceType('AWS::ACMPCA::CertificateAuthorityActivation');
+  public static readonly ACMPCA_CERTIFICATE_AUTHORITY_ACTIVATION = new ResourceType(
+    'AWS::ACMPCA::CertificateAuthorityActivation'
+  );
   /** AWS AppMesh GatewayRoute */
   public static readonly APP_MESH_GATEWAY_ROUTE = new ResourceType('AWS::AppMesh::GatewayRoute');
   /** AWS AppMesh Mesh */
@@ -2893,7 +3302,9 @@ export class ResourceType {
   /** EC2 CarrierGateway */
   public static readonly EC2_CARRIER_GATEWAY = new ResourceType('AWS::EC2::CarrierGateway');
   /** EC2 TransitGatewayConnect */
-  public static readonly EC2_TRANSIT_GATEWAY_CONNECT = new ResourceType('AWS::EC2::TransitGatewayConnect');
+  public static readonly EC2_TRANSIT_GATEWAY_CONNECT = new ResourceType(
+    'AWS::EC2::TransitGatewayConnect'
+  );
   /** Amazon ECS CapacityProvider */
   public static readonly ECS_CAPACITY_PROVIDER = new ResourceType('AWS::ECS::CapacityProvider');
   /** AWS IoT CACertificate */
@@ -2903,15 +3314,21 @@ export class ResourceType {
   /** Amazon Managed Streaming for Apache Kafka Connect Connector */
   public static readonly KAFKA_CONNECT_CONNECTOR = new ResourceType('AWS::KafkaConnect::Connector');
   /** AWS Lambda CodeSigningConfig */
-  public static readonly LAMBDA_CODE_SIGNING_CONFIG = new ResourceType('AWS::Lambda::CodeSigningConfig');
+  public static readonly LAMBDA_CODE_SIGNING_CONFIG = new ResourceType(
+    'AWS::Lambda::CodeSigningConfig'
+  );
   /** AWS Resource Explorer Index */
-  public static readonly RESOURCE_EXPLORER2_INDEX = new ResourceType('AWS::ResourceExplorer2::Index');
+  public static readonly RESOURCE_EXPLORER2_INDEX = new ResourceType(
+    'AWS::ResourceExplorer2::Index'
+  );
   /** Amazon Connect Instance */
   public static readonly CONNECT_INSTANCE = new ResourceType('AWS::Connect::Instance');
   /** EC2 IPAMPool */
   public static readonly EC2_IPAM_POOL = new ResourceType('AWS::EC2::IPAMPool');
   /** EC2 TransitGatewayMulticastDomain */
-  public static readonly EC2_TRANSIT_GATEWAY_MULTICAST_DOMAIN = new ResourceType('AWS::EC2::TransitGatewayMulticastDomain');
+  public static readonly EC2_TRANSIT_GATEWAY_MULTICAST_DOMAIN = new ResourceType(
+    'AWS::EC2::TransitGatewayMulticastDomain'
+  );
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
@@ -2926,14 +3343,17 @@ export class ResourceType {
   private constructor(type: string) {
     this.complianceResourceType = type;
   }
-
 }
 
 function renderScope(ruleScope?: RuleScope): CfnConfigRule.ScopeProperty | undefined {
-  return ruleScope ? {
-    complianceResourceId: ruleScope.resourceId,
-    complianceResourceTypes: ruleScope.resourceTypes?.map(resource => resource.complianceResourceType),
-    tagKey: ruleScope.key,
-    tagValue: ruleScope.value,
-  } : undefined;
+  return ruleScope
+    ? {
+        complianceResourceId: ruleScope.resourceId,
+        complianceResourceTypes: ruleScope.resourceTypes?.map(
+          (resource) => resource.complianceResourceType
+        ),
+        tagKey: ruleScope.key,
+        tagValue: ruleScope.value,
+      }
+    : undefined;
 }

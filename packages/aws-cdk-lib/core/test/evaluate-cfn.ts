@@ -5,12 +5,12 @@
  */
 import { isNameOfCloudFormationIntrinsic } from '../lib/private/cloudformation-lang';
 
-export function evaluateCFN(object: any, context: {[key: string]: string} = {}): any {
+export function evaluateCFN(object: any, context: { [key: string]: string } = {}): any {
   const intrinsicFns: any = {
     'Fn::Join'(separator: string, args: string[]) {
       if (typeof separator !== 'string') {
         // CFN does not support expressions here!
-        throw new Error('\'separator\' argument of { Fn::Join } must be a string literal');
+        throw new Error("'separator' argument of { Fn::Join } must be a string literal");
       }
       return evaluate(args).map(evaluate).join(separator);
     },
@@ -18,7 +18,7 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
     'Fn::Split'(separator: string, args: any) {
       if (typeof separator !== 'string') {
         // CFN does not support expressions here!
-        throw new Error('\'separator\' argument of { Fn::Split } must be a string literal');
+        throw new Error("'separator' argument of { Fn::Split } must be a string literal");
       }
       return evaluate(args).split(separator);
     },
@@ -27,7 +27,7 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
       return evaluate(args).map(evaluate)[index];
     },
 
-    'Ref'(logicalId: string) {
+    Ref(logicalId: string) {
       if (!(logicalId in context)) {
         throw new Error(`Trying to evaluate Ref of '${logicalId}' but not in context!`);
       }
@@ -37,7 +37,9 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
     'Fn::GetAtt'(logicalId: string, attributeName: string) {
       const key = `${logicalId}.${attributeName}`;
       if (!(key in context)) {
-        throw new Error(`Trying to evaluate Fn::GetAtt of '${logicalId}.${attributeName}' but not in context!`);
+        throw new Error(
+          `Trying to evaluate Fn::GetAtt of '${logicalId}.${attributeName}' but not in context!`
+        );
       }
       return context[key];
     },
@@ -46,11 +48,15 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
       const placeholders = explicitPlaceholders ? evaluate(explicitPlaceholders) : context;
 
       if (typeof template !== 'string') {
-        throw new Error('The first argument to {Fn::Sub} must be a string literal (cannot be the result of an expression)');
+        throw new Error(
+          'The first argument to {Fn::Sub} must be a string literal (cannot be the result of an expression)'
+        );
       }
 
       return template.replace(/\$\{([a-zA-Z0-9.:-]*)\}/g, (_: string, key: string) => {
-        if (key in placeholders) { return placeholders[key]; }
+        if (key in placeholders) {
+          return placeholders[key];
+        }
         throw new Error(`Unknown placeholder in Fn::Sub: ${key}`);
       });
     },
@@ -69,7 +75,7 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
         return evaluateIntrinsic(intrinsic);
       }
 
-      const ret: {[key: string]: any} = {};
+      const ret: { [key: string]: any } = {};
       for (const key of Object.keys(obj)) {
         ret[key] = evaluate(obj[key]);
       }
@@ -96,7 +102,9 @@ interface Intrinsic {
 }
 
 function parseIntrinsic(x: any): Intrinsic | undefined {
-  if (typeof x !== 'object' || x === null) { return undefined; }
+  if (typeof x !== 'object' || x === null) {
+    return undefined;
+  }
   const keys = Object.keys(x);
   if (keys.length === 1 && (isNameOfCloudFormationIntrinsic(keys[0]) || keys[0] === 'Ref')) {
     return {

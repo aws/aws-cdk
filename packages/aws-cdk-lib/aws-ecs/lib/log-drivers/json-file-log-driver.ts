@@ -62,9 +62,9 @@ export class JsonFileLogDriver extends LogDriver {
       options: stringifyOptions({
         'max-size': this.props.maxSize,
         'max-file': this.props.maxFile,
-        'compress': this.props.compress,
-        'labels': joinWithCommas(this.props.labels),
-        'env': joinWithCommas(this.props.env),
+        compress: this.props.compress,
+        labels: joinWithCommas(this.props.labels),
+        env: joinWithCommas(this.props.env),
         'env-regex': this.props.envRegex,
       }),
     };

@@ -18,7 +18,7 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
     case 'Delete':
       return onDelete(event.ResourceProperties?.RepositoryName);
   }
-};
+}
 
 async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
@@ -43,7 +43,7 @@ async function emptyRepository(params: ListImagesRequest) {
 
   const imageIds: ImageIdentifier[] = [];
   const imageIdsTagged: ImageIdentifier[] = [];
-  (listedImages.imageIds ?? []).forEach(imageId => {
+  (listedImages.imageIds ?? []).forEach((imageId) => {
     if ('imageTag' in imageId) {
       imageIdsTagged.push(imageId);
     } else {
@@ -84,10 +84,12 @@ async function onDelete(repositoryName: string) {
   }
 
   const response = await ecr.describeRepositories({ repositoryNames: [repositoryName] });
-  const repository = response.repositories?.find(repo => repo.repositoryName === repositoryName);
+  const repository = response.repositories?.find((repo) => repo.repositoryName === repositoryName);
 
-  if (!await isRepositoryTaggedForDeletion(repository?.repositoryArn!)) {
-    process.stdout.write(`Repository does not have '${AUTO_DELETE_IMAGES_TAG}' tag, skipping cleaning.\n`);
+  if (!(await isRepositoryTaggedForDeletion(repository?.repositoryArn!))) {
+    process.stdout.write(
+      `Repository does not have '${AUTO_DELETE_IMAGES_TAG}' tag, skipping cleaning.\n`
+    );
     return;
   }
   try {
@@ -110,5 +112,5 @@ async function onDelete(repositoryName: string) {
  */
 async function isRepositoryTaggedForDeletion(repositoryArn: string) {
   const response = await ecr.listTagsForResource({ resourceArn: repositoryArn });
-  return response.tags?.some(tag => tag.Key === AUTO_DELETE_IMAGES_TAG && tag.Value === 'true');
+  return response.tags?.some((tag) => tag.Key === AUTO_DELETE_IMAGES_TAG && tag.Value === 'true');
 }

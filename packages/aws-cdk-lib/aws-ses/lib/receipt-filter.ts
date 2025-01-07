@@ -84,7 +84,7 @@ export class AllowListReceiptFilter extends Construct {
 
     new ReceiptFilter(this, 'BlockAll');
 
-    props.ips.forEach(ip => {
+    props.ips.forEach((ip) => {
       new ReceiptFilter(this, `Allow${ip.replace(/[^\d]/g, '')}`, {
         ip,
         policy: ReceiptFilterPolicy.ALLOW,
@@ -97,7 +97,7 @@ export class AllowListReceiptFilter extends Construct {
  * Construction properties for a WhiteListReceiptFilter.
  * @deprecated use `AllowListReceiptFilterProps`
  */
-export interface WhiteListReceiptFilterProps extends AllowListReceiptFilterProps { }
+export interface WhiteListReceiptFilterProps extends AllowListReceiptFilterProps {}
 
 /**
  * An allow list receipt filter.

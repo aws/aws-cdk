@@ -15,7 +15,18 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations } from '../../core';
+import {
+  ArnFormat,
+  IResource,
+  Lazy,
+  Resource,
+  Stack,
+  Token,
+  Duration,
+  Names,
+  FeatureFlags,
+  Annotations,
+} from '../../core';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 
 /**
@@ -281,12 +292,15 @@ export interface DistributionProps {
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
 export class Distribution extends Resource implements IDistribution {
-
   /**
    * Creates a Distribution construct that represents an external (imported) distribution.
    */
-  public static fromDistributionAttributes(scope: Construct, id: string, attrs: DistributionAttributes): IDistribution {
-    return new class extends Resource implements IDistribution {
+  public static fromDistributionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DistributionAttributes
+  ): IDistribution {
+    return new (class extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
@@ -302,12 +316,16 @@ export class Distribution extends Resource implements IDistribution {
         return formatDistributionArn(this);
       }
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-        return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
+        return iam.Grant.addToPrincipal({
+          grantee,
+          actions,
+          resourceArns: [formatDistributionArn(this)],
+        });
       }
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
         return this.grant(grantee, 'cloudfront:CreateInvalidation');
       }
-    }();
+    })();
   }
 
   public readonly domainName: string;
@@ -328,18 +346,29 @@ export class Distribution extends Resource implements IDistribution {
     super(scope, id);
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+      const certificateRegion = Stack.of(this).splitArn(
+        props.certificate.certificateArn,
+        ArnFormat.SLASH_RESOURCE_NAME
+      ).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
+        throw new Error(
+          `Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`
+        );
       }
 
       if ((props.domainNames ?? []).length === 0) {
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:emptyDomainNames', 'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info.');
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-cloudfront:emptyDomainNames',
+          'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info.'
+        );
       }
     }
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
-    this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
+    this.defaultBehavior = new CacheBehavior(originId, {
+      pathPattern: '*',
+      ...props.defaultBehavior,
+    });
     if (props.additionalBehaviors) {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
         this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
@@ -377,8 +406,13 @@ export class Distribution extends Resource implements IDistribution {
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
-        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
-          props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
+        viewerCertificate: this.certificate
+          ? this.renderViewerCertificate(
+              this.certificate,
+              props.minimumProtocolVersion,
+              props.sslSupportMethod
+            )
+          : undefined,
         webAclId: Lazy.string({ produce: () => this.webAclId }),
       },
     });
@@ -481,7 +515,9 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metricOriginLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('Origin latency metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new Error(
+        "Origin latency metric is only available if 'publishAdditionalMetrics' is set 'true'"
+      );
     }
     return this.metric('OriginLatency', props);
   }
@@ -497,7 +533,9 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metricCacheHitRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('Cache hit rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new Error(
+        "Cache hit rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
+      );
     }
     return this.metric('CacheHitRate', props);
   }
@@ -511,7 +549,9 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric401ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('401 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new Error(
+        "401 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
+      );
     }
     return this.metric('401ErrorRate', props);
   }
@@ -525,7 +565,9 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric403ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('403 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new Error(
+        "403 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
+      );
     }
     return this.metric('403ErrorRate', props);
   }
@@ -539,7 +581,9 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric404ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('404 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new Error(
+        "404 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
+      );
     }
     return this.metric('404ErrorRate', props);
   }
@@ -553,7 +597,9 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric502ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('502 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new Error(
+        "502 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
+      );
     }
     return this.metric('502ErrorRate', props);
   }
@@ -567,7 +613,9 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric503ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('503 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new Error(
+        "503 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
+      );
     }
     return this.metric('503ErrorRate', props);
   }
@@ -581,7 +629,9 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric504ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('504 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new Error(
+        "504 error rate metric is only available if 'publishAdditionalMetrics' is set 'true'"
+      );
     }
     return this.metric('504ErrorRate', props);
   }
@@ -593,9 +643,13 @@ export class Distribution extends Resource implements IDistribution {
    * @param origin the origin to use for this behavior
    * @param behaviorOptions the options for the behavior at this path.
    */
-  public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: AddBehaviorOptions = {}) {
+  public addBehavior(
+    pathPattern: string,
+    origin: IOrigin,
+    behaviorOptions: AddBehaviorOptions = {}
+  ) {
     if (pathPattern === '*') {
-      throw new Error('Only the default behavior can have a path pattern of \'*\'');
+      throw new Error("Only the default behavior can have a path pattern of '*'");
     }
     const originId = this.addOrigin(origin);
     this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
@@ -609,7 +663,11 @@ export class Distribution extends Resource implements IDistribution {
    * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
    */
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({ grantee: identity, actions, resourceArns: [formatDistributionArn(this)] });
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [formatDistributionArn(this)],
+    });
   }
 
   /**
@@ -640,7 +698,9 @@ export class Distribution extends Resource implements IDistribution {
     if (webAclId.startsWith('arn:')) {
       const webAclRegion = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
-        throw new Error(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`);
+        throw new Error(
+          `WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`
+        );
       }
     }
   }
@@ -648,7 +708,7 @@ export class Distribution extends Resource implements IDistribution {
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
     const ORIGIN_ID_MAX_LENGTH = 128;
 
-    const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
+    const existingOrigin = this.boundOrigins.find((boundOrigin) => boundOrigin.origin === origin);
     if (existingOrigin) {
       return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
@@ -656,31 +716,61 @@ export class Distribution extends Resource implements IDistribution {
       const scope = new Construct(this, `Origin${originIndex}`);
       const generatedId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const distributionId = this.distributionId;
-      const originBindConfig = origin.bind(scope, { originId: generatedId, distributionId: Lazy.string({ produce: () => this.distributionId }) });
+      const originBindConfig = origin.bind(scope, {
+        originId: generatedId,
+        distributionId: Lazy.string({ produce: () => this.distributionId }),
+      });
       const originId = originBindConfig.originProperty?.id ?? generatedId;
-      const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
+      const duplicateId = this.boundOrigins.find(
+        (boundOrigin) => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id
+      );
       if (duplicateId) {
-        throw new Error(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`);
+        throw new Error(
+          `Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`
+        );
       }
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, distributionId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
-          throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
+          throw new Error(
+            'An Origin cannot use an Origin with its own failover configuration as its fallback origin!'
+          );
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
-        this.boundOrigins.push({ origin, originId, distributionId, originGroupId, ...originBindConfig });
+        const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(
+          -ORIGIN_ID_MAX_LENGTH
+        );
+        this.boundOrigins.push({
+          origin,
+          originId,
+          distributionId,
+          originGroupId,
+          ...originBindConfig,
+        });
 
-        const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
-        this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+        const failoverOriginId = this.addOrigin(
+          originBindConfig.failoverConfig.failoverOrigin,
+          true
+        );
+        this.addOriginGroup(
+          originGroupId,
+          originBindConfig.failoverConfig.statusCodes,
+          originId,
+          failoverOriginId
+        );
         return originGroupId;
       }
       return originBindConfig.originProperty?.id ?? originId;
     }
   }
 
-  private addOriginGroup(originGroupId: string, statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+  private addOriginGroup(
+    originGroupId: string,
+    statusCodes: number[] | undefined,
+    originId: string,
+    failoverOriginId: string
+  ): void {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
       throw new Error('fallbackStatusCodes cannot be empty');
@@ -694,10 +784,7 @@ export class Distribution extends Resource implements IDistribution {
       },
       id: originGroupId,
       members: {
-        items: [
-          { originId },
-          { originId: failoverOriginId },
-        ],
+        items: [{ originId }, { originId: failoverOriginId }],
         quantity: 2,
       },
     });
@@ -705,7 +792,7 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
     const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.boundOrigins.forEach(boundOrigin => {
+    this.boundOrigins.forEach((boundOrigin) => {
       if (boundOrigin.originProperty) {
         renderedOrigins.push(boundOrigin.originProperty);
       }
@@ -717,29 +804,35 @@ export class Distribution extends Resource implements IDistribution {
     return this.originGroups.length === 0
       ? undefined
       : {
-        items: this.originGroups,
-        quantity: this.originGroups.length,
-      };
+          items: this.originGroups,
+          quantity: this.originGroups.length,
+        };
   }
 
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
-    if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
+    if (this.additionalBehaviors.length === 0) {
+      return undefined;
+    }
+    return this.additionalBehaviors.map((behavior) => behavior._renderBehavior());
   }
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
-    if (this.errorResponses.length === 0) { return undefined; }
+    if (this.errorResponses.length === 0) {
+      return undefined;
+    }
 
-    return this.errorResponses.map(errorConfig => {
+    return this.errorResponses.map((errorConfig) => {
       if (!errorConfig.responseHttpStatus && !errorConfig.ttl && !errorConfig.responsePagePath) {
-        throw new Error('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.');
+        throw new Error(
+          "A custom error response without either a 'responseHttpStatus', 'ttl' or 'responsePagePath' is not valid."
+        );
       }
 
       return {
         errorCachingMinTtl: errorConfig.ttl?.toSeconds(),
         errorCode: errorConfig.httpStatus,
         responseCode: errorConfig.responsePagePath
-          ? errorConfig.responseHttpStatus ?? errorConfig.httpStatus
+          ? (errorConfig.responseHttpStatus ?? errorConfig.httpStatus)
           : errorConfig.responseHttpStatus,
         responsePagePath: errorConfig.responsePagePath,
       };
@@ -747,16 +840,20 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderLogging(props: DistributionProps): CfnDistribution.LoggingProperty | undefined {
-    if (!props.enableLogging && !props.logBucket) { return undefined; }
+    if (!props.enableLogging && !props.logBucket) {
+      return undefined;
+    }
     if (props.enableLogging === false && props.logBucket) {
       throw new Error('Explicitly disabled logging but provided a logging bucket.');
     }
 
-    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket', {
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      // We need set objectOwnership to OBJECT_WRITER to enable ACL, which is disabled by default.
-      objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
-    });
+    const bucket =
+      props.logBucket ??
+      new s3.Bucket(this, 'LoggingBucket', {
+        encryption: s3.BucketEncryption.S3_MANAGED,
+        // We need set objectOwnership to OBJECT_WRITER to enable ACL, which is disabled by default.
+        objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
+      });
     return {
       bucket: bucket.bucketRegionalDomainName,
       includeCookies: props.logIncludesCookies,
@@ -765,19 +862,26 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderRestrictions(geoRestriction?: GeoRestriction) {
-    return geoRestriction ? {
-      geoRestriction: {
-        restrictionType: geoRestriction.restrictionType,
-        locations: geoRestriction.locations,
-      },
-    } : undefined;
+    return geoRestriction
+      ? {
+          geoRestriction: {
+            restrictionType: geoRestriction.restrictionType,
+            locations: geoRestriction.locations,
+          },
+        }
+      : undefined;
   }
 
-  private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
-
-    const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
-      ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
+  private renderViewerCertificate(
+    certificate: acm.ICertificate,
+    minimumProtocolVersionProp?: SecurityPolicyProtocol,
+    sslSupportMethodProp?: SSLMethod
+  ): CfnDistribution.ViewerCertificateProperty {
+    const defaultVersion = FeatureFlags.of(this).isEnabled(
+      CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021
+    )
+      ? SecurityPolicyProtocol.TLS_V1_2_2021
+      : SecurityPolicyProtocol.TLS_V1_2_2019;
     const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
     const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
 
@@ -882,12 +986,22 @@ export class AllowedMethods {
   /** HEAD, GET, and OPTIONS */
   public static readonly ALLOW_GET_HEAD_OPTIONS = new AllowedMethods(['GET', 'HEAD', 'OPTIONS']);
   /** All supported HTTP methods */
-  public static readonly ALLOW_ALL = new AllowedMethods(['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE']);
+  public static readonly ALLOW_ALL = new AllowedMethods([
+    'GET',
+    'HEAD',
+    'OPTIONS',
+    'PUT',
+    'PATCH',
+    'POST',
+    'DELETE',
+  ]);
 
   /** HTTP methods supported */
   public readonly methods: string[];
 
-  private constructor(methods: string[]) { this.methods = methods; }
+  private constructor(methods: string[]) {
+    this.methods = methods;
+  }
 }
 
 /**
@@ -902,7 +1016,9 @@ export class CachedMethods {
   /** HTTP methods supported */
   public readonly methods: string[];
 
-  private constructor(methods: string[]) { this.methods = methods; }
+  private constructor(methods: string[]) {
+    this.methods = methods;
+  }
 }
 
 /**

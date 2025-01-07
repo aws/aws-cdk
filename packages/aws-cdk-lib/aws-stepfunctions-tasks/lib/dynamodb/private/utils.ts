@@ -10,7 +10,11 @@ export enum DynamoMethod {
 }
 
 export function getDynamoResourceArn(method: DynamoMethod) {
-  return integrationResourceArn('dynamodb', `${method.toLowerCase()}Item`, sfn.IntegrationPattern.REQUEST_RESPONSE);
+  return integrationResourceArn(
+    'dynamodb',
+    `${method.toLowerCase()}Item`,
+    sfn.IntegrationPattern.REQUEST_RESPONSE
+  );
 }
 
 export function transformAttributeValueMap(attrMap?: { [key: string]: DynamoAttributeValue }) {

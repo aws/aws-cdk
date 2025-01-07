@@ -1,4 +1,3 @@
-
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
@@ -307,7 +306,12 @@ export class BucketDeployment extends Construct {
         throw new Error('Distribution must be specified if distribution paths are specified');
       }
       if (!cdk.Token.isUnresolved(props.distributionPaths)) {
-        if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
+        if (
+          !props.distributionPaths.every(
+            (distributionPath) =>
+              cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/')
+          )
+        ) {
           throw new Error('Distribution paths must start with "/"');
         }
       }
@@ -353,7 +357,7 @@ export class BucketDeployment extends Construct {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       environment: {
-        ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
+        ...(props.useEfs ? { MOUNT_PATH: mountPath } : undefined),
         // Override the built-in CA bundle from the AWS CLI with the Lambda-curated one
         // This is necessary to make the CLI work in ADC regions.
         AWS_CA_BUNDLE: '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
@@ -365,10 +369,9 @@ export class BucketDeployment extends Construct {
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
-      filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
-        accessPoint,
-        mountPath,
-      ) : undefined,
+      filesystem: accessPoint
+        ? lambda.FileSystem.fromEfsAccessPoint(accessPoint, mountPath)
+        : undefined,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided
       // otherwise jsii will print warnings even for users that don't use this directly
       ...(props.logRetention ? { logRetention: props.logRetention } : {}),
@@ -376,21 +379,27 @@ export class BucketDeployment extends Construct {
     });
 
     const handlerRole = handler.role;
-    if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+    if (!handlerRole) {
+      throw new Error('lambda.SingletonFunction should have created a Role');
+    }
     this.handlerRole = handlerRole;
 
-    this.sources = props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole }));
+    this.sources = props.sources.map((source: ISource) =>
+      source.bind(this, { handlerRole: this.handlerRole })
+    );
 
     this.destinationBucket.grantReadWrite(handler);
     if (props.accessControl) {
       this.destinationBucket.grantPutAcl(handler);
     }
     if (props.distribution) {
-      handler.addToRolePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['cloudfront:GetInvalidation', 'cloudfront:CreateInvalidation'],
-        resources: ['*'],
-      }));
+      handler.addToRolePolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['cloudfront:GetInvalidation', 'cloudfront:CreateInvalidation'],
+          resources: ['*'],
+        })
+      );
     }
 
     // Markers are not replaced if zip sources are not extracted, so throw an error
@@ -398,8 +407,10 @@ export class BucketDeployment extends Construct {
     const _this = this;
     this.node.addValidation({
       validate(): string[] {
-        if (_this.sources.some(source => source.markers) && props.extract == false) {
-          return ['Some sources are incompatible with extract=false; sources with deploy-time values (such as \'snsTopic.topicArn\') must be extracted.'];
+        if (_this.sources.some((source) => source.markers) && props.extract == false) {
+          return [
+            "Some sources are incompatible with extract=false; sources with deploy-time values (such as 'snsTopic.topicArn') must be extracted.",
+          ];
         }
         return [];
       },
@@ -410,22 +421,32 @@ export class BucketDeployment extends Construct {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
-        SourceBucketNames: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
-        SourceObjectKeys: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.zipObjectKey) }),
-        SourceMarkers: cdk.Lazy.uncachedAny({
-          produce: () => {
-            return this.sources.reduce((acc, source) => {
-              if (source.markers) {
-                acc.push(source.markers);
-                // if there are more than 1 source, then all sources
-                // require markers (custom resource will throw an error otherwise)
-              } else if (this.sources.length > 1) {
-                acc.push({});
-              }
-              return acc;
-            }, [] as Array<Record<string, any>>);
+        SourceBucketNames: cdk.Lazy.uncachedList({
+          produce: () => this.sources.map((source) => source.bucket.bucketName),
+        }),
+        SourceObjectKeys: cdk.Lazy.uncachedList({
+          produce: () => this.sources.map((source) => source.zipObjectKey),
+        }),
+        SourceMarkers: cdk.Lazy.uncachedAny(
+          {
+            produce: () => {
+              return this.sources.reduce(
+                (acc, source) => {
+                  if (source.markers) {
+                    acc.push(source.markers);
+                    // if there are more than 1 source, then all sources
+                    // require markers (custom resource will throw an error otherwise)
+                  } else if (this.sources.length > 1) {
+                    acc.push({});
+                  }
+                  return acc;
+                },
+                [] as Array<Record<string, any>>
+              );
+            },
           },
-        }, { omitEmptyArray: true }),
+          { omitEmptyArray: true }
+        ),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
@@ -440,13 +461,14 @@ export class BucketDeployment extends Construct {
         SignContent: props.signContent,
         OutputObjectKeys: props.outputObjectKeys ?? true,
         // Passing through the ARN sequences dependency on the deployment
-        DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined }),
+        DestinationBucketArn: cdk.Lazy.string({
+          produce: () =>
+            this.requestDestinationArn ? this.destinationBucket.bucketArn : undefined,
+        }),
       },
     });
 
-    let prefix: string = props.destinationKeyPrefix ?
-      `:${props.destinationKeyPrefix}` :
-      '';
+    let prefix: string = props.destinationKeyPrefix ? `:${props.destinationKeyPrefix}` : '';
     prefix += `:${this.cr.node.addr.slice(-8)}`;
     const tagKey = CUSTOM_RESOURCE_OWNER_TAG + prefix;
 
@@ -455,7 +477,9 @@ export class BucketDeployment extends Construct {
     // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
     // better to throw an error here than wait for CloudFormation to fail
     if (!cdk.Token.isUnresolved(tagKey) && tagKey.length > 128) {
-      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.');
+      throw new Error(
+        'The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.'
+      );
     }
 
     /*
@@ -498,7 +522,6 @@ export class BucketDeployment extends Construct {
      * be set to true on the Bucket.
      */
     cdk.Tags.of(this.destinationBucket).add(tagKey, 'true');
-
   }
 
   /**
@@ -514,12 +537,14 @@ export class BucketDeployment extends Construct {
    */
   public get deployedBucket(): s3.IBucket {
     this.requestDestinationArn = true;
-    this._deployedBucket = this._deployedBucket ?? s3.Bucket.fromBucketAttributes(this, 'DestinationBucket', {
-      bucketArn: cdk.Token.asString(this.cr.getAtt('DestinationBucketArn')),
-      region: this.destinationBucket.env.region,
-      account: this.destinationBucket.env.account,
-      isWebsite: this.destinationBucket.isWebsite,
-    });
+    this._deployedBucket =
+      this._deployedBucket ??
+      s3.Bucket.fromBucketAttributes(this, 'DestinationBucket', {
+        bucketArn: cdk.Token.asString(this.cr.getAtt('DestinationBucketArn')),
+        region: this.destinationBucket.env.region,
+        account: this.destinationBucket.env.account,
+        isWebsite: this.destinationBucket.isWebsite,
+      });
     return this._deployedBucket;
   }
 
@@ -567,7 +592,9 @@ export class BucketDeployment extends Construct {
     // configurations since we have a singleton.
     if (memoryLimit) {
       if (cdk.Token.isUnresolved(memoryLimit)) {
-        throw new Error("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.");
+        throw new Error(
+          "Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler."
+        );
       }
 
       uuid += `-${memoryLimit.toString()}MiB`;
@@ -578,7 +605,9 @@ export class BucketDeployment extends Construct {
     // configurations since we have a singleton.
     if (ephemeralStorageSize) {
       if (ephemeralStorageSize.isUnresolved()) {
-        throw new Error("Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.");
+        throw new Error(
+          "Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler."
+        );
       }
 
       uuid += `-${ephemeralStorageSize.toMebibytes().toString()}MiB`;
@@ -595,7 +624,11 @@ export class BucketDeployment extends Construct {
     return uuid;
   }
 
-  private renderSingletonUuid(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
+  private renderSingletonUuid(
+    memoryLimit?: number,
+    ephemeralStorageSize?: cdk.Size,
+    vpc?: ec2.IVpc
+  ) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
     uuid += this.renderUniqueId(memoryLimit, ephemeralStorageSize, vpc);
@@ -609,10 +642,16 @@ export class BucketDeployment extends Construct {
    * @param scope Construct
    * @param fileSystemProps EFS FileSystemProps
    */
-  private getOrCreateEfsFileSystem(scope: Construct, fileSystemProps: efs.FileSystemProps): efs.FileSystem {
+  private getOrCreateEfsFileSystem(
+    scope: Construct,
+    fileSystemProps: efs.FileSystemProps
+  ): efs.FileSystem {
     const stack = cdk.Stack.of(scope);
     const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
-    return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
+    return (
+      (stack.node.tryFindChild(uuid) as efs.FileSystem) ??
+      new efs.FileSystem(scope, uuid, fileSystemProps)
+    );
   }
 }
 
@@ -656,7 +695,6 @@ export interface DeployTimeSubstitutedFileProps {
  * upload individual files and specify to make substitutions in the file.
  */
 export class DeployTimeSubstitutedFile extends BucketDeployment {
-
   public readonly objectKey: string;
 
   constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
@@ -665,7 +703,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
     }
     // Makes substitutions on the file
     let fileData = fs.readFileSync(props.source, 'utf-8');
-    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function(match, expr) {
+    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function (match, expr) {
       return props.substitutions[expr] ?? match;
     });
 
@@ -705,18 +743,42 @@ function mapUserMetadata(metadata: { [key: string]: string }) {
 function mapSystemMetadata(metadata: BucketDeploymentProps) {
   const res: { [key: string]: string } = {};
 
-  if (metadata.cacheControl) { res['cache-control'] = metadata.cacheControl.map(c => c.value).join(', '); }
-  if (metadata.expires) { res.expires = metadata.expires.date.toUTCString(); }
-  if (metadata.contentDisposition) { res['content-disposition'] = metadata.contentDisposition; }
-  if (metadata.contentEncoding) { res['content-encoding'] = metadata.contentEncoding; }
-  if (metadata.contentLanguage) { res['content-language'] = metadata.contentLanguage; }
-  if (metadata.contentType) { res['content-type'] = metadata.contentType; }
-  if (metadata.serverSideEncryption) { res.sse = metadata.serverSideEncryption; }
-  if (metadata.storageClass) { res['storage-class'] = metadata.storageClass; }
-  if (metadata.websiteRedirectLocation) { res['website-redirect'] = metadata.websiteRedirectLocation; }
-  if (metadata.serverSideEncryptionAwsKmsKeyId) { res['sse-kms-key-id'] = metadata.serverSideEncryptionAwsKmsKeyId; }
-  if (metadata.serverSideEncryptionCustomerAlgorithm) { res['sse-c-copy-source'] = metadata.serverSideEncryptionCustomerAlgorithm; }
-  if (metadata.accessControl) { res.acl = toKebabCase(metadata.accessControl.toString()); }
+  if (metadata.cacheControl) {
+    res['cache-control'] = metadata.cacheControl.map((c) => c.value).join(', ');
+  }
+  if (metadata.expires) {
+    res.expires = metadata.expires.date.toUTCString();
+  }
+  if (metadata.contentDisposition) {
+    res['content-disposition'] = metadata.contentDisposition;
+  }
+  if (metadata.contentEncoding) {
+    res['content-encoding'] = metadata.contentEncoding;
+  }
+  if (metadata.contentLanguage) {
+    res['content-language'] = metadata.contentLanguage;
+  }
+  if (metadata.contentType) {
+    res['content-type'] = metadata.contentType;
+  }
+  if (metadata.serverSideEncryption) {
+    res.sse = metadata.serverSideEncryption;
+  }
+  if (metadata.storageClass) {
+    res['storage-class'] = metadata.storageClass;
+  }
+  if (metadata.websiteRedirectLocation) {
+    res['website-redirect'] = metadata.websiteRedirectLocation;
+  }
+  if (metadata.serverSideEncryptionAwsKmsKeyId) {
+    res['sse-kms-key-id'] = metadata.serverSideEncryptionAwsKmsKeyId;
+  }
+  if (metadata.serverSideEncryptionCustomerAlgorithm) {
+    res['sse-c-copy-source'] = metadata.serverSideEncryptionCustomerAlgorithm;
+  }
+  if (metadata.accessControl) {
+    res.acl = toKebabCase(metadata.accessControl.toString());
+  }
 
   return Object.keys(res).length === 0 ? undefined : res;
 }
@@ -726,83 +788,110 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export class CacheControl {
-
   /**
    * Sets 'must-revalidate'.
    */
-  public static mustRevalidate() { return new CacheControl('must-revalidate'); }
+  public static mustRevalidate() {
+    return new CacheControl('must-revalidate');
+  }
 
   /**
    * Sets 'no-cache'.
    */
-  public static noCache() { return new CacheControl('no-cache'); }
+  public static noCache() {
+    return new CacheControl('no-cache');
+  }
 
   /**
    * Sets 'no-transform'.
    */
-  public static noTransform() { return new CacheControl('no-transform'); }
+  public static noTransform() {
+    return new CacheControl('no-transform');
+  }
 
   /**
    * Sets 'no-store'.
    */
-  public static noStore() { return new CacheControl('no-store'); }
+  public static noStore() {
+    return new CacheControl('no-store');
+  }
 
   /**
    * Sets 'must-understand'.
    */
-  public static mustUnderstand() { return new CacheControl('must-understand'); }
+  public static mustUnderstand() {
+    return new CacheControl('must-understand');
+  }
 
   /**
    * Sets 'public'.
    */
-  public static setPublic() { return new CacheControl('public'); }
+  public static setPublic() {
+    return new CacheControl('public');
+  }
 
   /**
    * Sets 'private'.
    */
-  public static setPrivate() { return new CacheControl('private'); }
+  public static setPrivate() {
+    return new CacheControl('private');
+  }
 
   /**
    * Sets 'immutable'.
    */
-  public static immutable() { return new CacheControl('immutable'); }
+  public static immutable() {
+    return new CacheControl('immutable');
+  }
 
   /**
    * Sets 'proxy-revalidate'.
    */
-  public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
+  public static proxyRevalidate() {
+    return new CacheControl('proxy-revalidate');
+  }
 
   /**
    * Sets 'max-age=<duration-in-seconds>'.
    */
-  public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
+  public static maxAge(t: cdk.Duration) {
+    return new CacheControl(`max-age=${t.toSeconds()}`);
+  }
 
   /**
    * Sets 's-maxage=<duration-in-seconds>'.
    */
-  public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
+  public static sMaxAge(t: cdk.Duration) {
+    return new CacheControl(`s-maxage=${t.toSeconds()}`);
+  }
 
   /**
    * Sets 'stale-while-revalidate=<duration-in-seconds>'.
    */
-  public static staleWhileRevalidate(t: cdk.Duration) { return new CacheControl(`stale-while-revalidate=${t.toSeconds()}`); }
+  public static staleWhileRevalidate(t: cdk.Duration) {
+    return new CacheControl(`stale-while-revalidate=${t.toSeconds()}`);
+  }
 
   /**
    * Sets 'stale-if-error=<duration-in-seconds>'.
    */
-  public static staleIfError(t: cdk.Duration) { return new CacheControl(`stale-if-error=${t.toSeconds()}`); }
+  public static staleIfError(t: cdk.Duration) {
+    return new CacheControl(`stale-if-error=${t.toSeconds()}`);
+  }
 
   /**
    * Constructs a custom cache control key from the literal value.
    */
-  public static fromString(s: string) { return new CacheControl(s); }
+  public static fromString(s: string) {
+    return new CacheControl(s);
+  }
 
   private constructor(
     /**
      * The raw cache control setting.
      */
-    public readonly value: any,
-  ) { }
+    public readonly value: any
+  ) {}
 }
 
 /**
@@ -811,7 +900,6 @@ export class CacheControl {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export enum ServerSideEncryption {
-
   /**
    * 'AES256'
    */
@@ -828,7 +916,6 @@ export enum ServerSideEncryption {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export enum StorageClass {
-
   /**
    * 'STANDARD'
    */
@@ -876,31 +963,39 @@ export class Expires {
    * Expire at the specified date
    * @param d date to expire at
    */
-  public static atDate(d: Date) { return new Expires(d.toUTCString()); }
+  public static atDate(d: Date) {
+    return new Expires(d.toUTCString());
+  }
 
   /**
    * Expire at the specified timestamp
    * @param t timestamp in unix milliseconds
    */
-  public static atTimestamp(t: number) { return Expires.atDate(new Date(t)); }
+  public static atTimestamp(t: number) {
+    return Expires.atDate(new Date(t));
+  }
 
   /**
    * Expire once the specified duration has passed since deployment time
    * @param t the duration to wait before expiring
    */
-  public static after(t: cdk.Duration) { return Expires.atDate(new Date(Date.now() + t.toMilliseconds())); }
+  public static after(t: cdk.Duration) {
+    return Expires.atDate(new Date(Date.now() + t.toMilliseconds()));
+  }
 
   /**
    * Create an expiration date from a raw date string.
    */
-  public static fromString(s: string) { return new Expires(s); }
+  public static fromString(s: string) {
+    return new Expires(s);
+  }
 
   private constructor(
     /**
      * The raw expiration date expression.
      */
-    public readonly value: any,
-  ) { }
+    public readonly value: any
+  ) {}
 }
 
 /**
@@ -924,7 +1019,10 @@ export interface UserDefinedObjectMetadata {
 
 function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
   return (
-    JSON.stringify(stack.resolve(a.bucket.bucketName)) === JSON.stringify(stack.resolve(b.bucket.bucketName))
-    && a.zipObjectKey === b.zipObjectKey
-    && a.markers === undefined && b.markers === undefined);
+    JSON.stringify(stack.resolve(a.bucket.bucketName)) ===
+      JSON.stringify(stack.resolve(b.bucket.bucketName)) &&
+    a.zipObjectKey === b.zipObjectKey &&
+    a.markers === undefined &&
+    b.markers === undefined
+  );
 }

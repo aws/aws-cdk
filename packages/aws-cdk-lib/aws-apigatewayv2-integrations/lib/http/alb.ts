@@ -1,14 +1,16 @@
 import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
-import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
+import {
+  HttpRouteIntegrationBindOptions,
+  HttpRouteIntegrationConfig,
+} from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 
 /**
  * Properties to initialize `HttpAlbIntegration`.
  */
-export interface HttpAlbIntegrationProps extends HttpPrivateIntegrationOptions {
-}
+export interface HttpAlbIntegrationProps extends HttpPrivateIntegrationOptions {}
 
 /**
  * The Application Load Balancer integration resource for HTTP API
@@ -22,18 +24,20 @@ export class HttpAlbIntegration extends HttpPrivateIntegration {
   constructor(
     id: string,
     private readonly listener: elbv2.IApplicationListener,
-    private readonly props: HttpAlbIntegrationProps = {}) {
-
+    private readonly props: HttpAlbIntegrationProps = {}
+  ) {
     super(id);
   }
 
   public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     let vpc: ec2.IVpc | undefined = this.props.vpcLink?.vpc;
-    if (!vpc && (this.listener instanceof elbv2.ApplicationListener)) {
+    if (!vpc && this.listener instanceof elbv2.ApplicationListener) {
       vpc = this.listener.loadBalancer.vpc;
     }
     if (!vpc) {
-      throw new Error('The vpcLink property must be specified when using an imported Application Listener.');
+      throw new Error(
+        'The vpcLink property must be specified when using an imported Application Listener.'
+      );
     }
 
     const vpcLink = this._configureVpcLink(options, {

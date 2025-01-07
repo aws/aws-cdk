@@ -102,11 +102,14 @@ export interface KeySigningKeyAttributes {
  * @resource AWS::Route53::KeySigningKey
  */
 export class KeySigningKey extends Resource implements IKeySigningKey {
-
   /**
    * Imports a key signing key from its attributes.
    */
-  public static fromKeySigningKeyAttributes(scope: Construct, id: string, attrs: KeySigningKeyAttributes): IKeySigningKey {
+  public static fromKeySigningKeyAttributes(
+    scope: Construct,
+    id: string,
+    attrs: KeySigningKeyAttributes
+  ): IKeySigningKey {
     class Import extends Resource implements IKeySigningKey {
       public readonly keySigningKeyName: string;
       public readonly hostedZone: IHostedZone;
@@ -131,9 +134,12 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
 
   constructor(scope: Construct, id: string, props: KeySigningKeyProps) {
     super(scope, id, {
-      physicalName: props.keySigningKeyName ?? Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
-      }),
+      physicalName:
+        props.keySigningKeyName ??
+        Lazy.string({
+          produce: () =>
+            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+        }),
     });
 
     this.grantKeyPermissionsForZone(props.kmsKey, props.hostedZone);
@@ -167,7 +173,7 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
         }),
         'kms:DescribeKey',
         'kms:GetPublicKey',
-        'kms:Sign',
+        'kms:Sign'
       ),
       key.grant(
         new iam.ServicePrincipal('dnssec-route53.amazonaws.com', {
@@ -177,7 +183,7 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
             },
           },
         }),
-        'kms:CreateGrant',
+        'kms:CreateGrant'
       ),
     ];
   }

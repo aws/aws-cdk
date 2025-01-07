@@ -34,7 +34,7 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
 /**
  * Properties for configuring a origin using a standard Lambda Functions URLs.
  */
-export interface FunctionUrlOriginBaseProps extends cloudfront.OriginProps { }
+export interface FunctionUrlOriginBaseProps extends cloudfront.OriginProps {}
 
 /**
  * Properties for configuring a Lambda Functions URLs with OAC.
@@ -46,7 +46,6 @@ export interface FunctionUrlOriginWithOACProps extends FunctionUrlOriginProps {
    * @default - an Origin Access Control will be created.
    */
   readonly originAccessControl?: cloudfront.IOriginAccessControl;
-
 }
 
 /**
@@ -56,11 +55,17 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
   /**
    * Create a Lambda Function URL Origin with Origin Access Control (OAC) configured
    */
-  public static withOriginAccessControl(lambdaFunctionUrl: lambda.IFunctionUrl, props?: FunctionUrlOriginWithOACProps): cloudfront.IOrigin {
+  public static withOriginAccessControl(
+    lambdaFunctionUrl: lambda.IFunctionUrl,
+    props?: FunctionUrlOriginWithOACProps
+  ): cloudfront.IOrigin {
     return new FunctionUrlOriginWithOAC(lambdaFunctionUrl, props);
   }
 
-  constructor(lambdaFunctionUrl: lambda.IFunctionUrl, private readonly props: FunctionUrlOriginProps = {}) {
+  constructor(
+    lambdaFunctionUrl: lambda.IFunctionUrl,
+    private readonly props: FunctionUrlOriginProps = {}
+  ) {
     // Lambda Function URL is of the form 'https://<lambda-id>.lambda-url.<region>.on.aws/'
     // No need to split URL as we do with REST API, the entire URL is needed
     const domainName = cdk.Fn.select(2, cdk.Fn.split('/', lambdaFunctionUrl.url));
@@ -70,7 +75,9 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
-  protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
+  protected renderCustomOriginConfig():
+    | cloudfront.CfnDistribution.CustomOriginConfigProperty
+    | undefined {
     return {
       originSslProtocols: [cloudfront.OriginSslPolicy.TLS_V1_2],
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
@@ -100,7 +107,9 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
-  protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
+  protected renderCustomOriginConfig():
+    | cloudfront.CfnDistribution.CustomOriginConfigProperty
+    | undefined {
     return {
       originSslProtocols: [cloudfront.OriginSslPolicy.TLS_V1_2],
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
@@ -109,11 +118,17 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     };
   }
 
-  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+  public bind(
+    scope: Construct,
+    options: cloudfront.OriginBindOptions
+  ): cloudfront.OriginBindConfig {
     const originBindConfig = super.bind(scope, options);
 
     if (!this.originAccessControl) {
-      this.originAccessControl = new cloudfront.FunctionUrlOriginAccessControl(scope, 'FunctionUrlOriginAccessControl');
+      this.originAccessControl = new cloudfront.FunctionUrlOriginAccessControl(
+        scope,
+        'FunctionUrlOriginAccessControl'
+      );
     }
     this.validateAuthType();
 
@@ -144,20 +159,23 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
    */
   private validateAuthType() {
     const cfnOriginAccessControl = this.originAccessControl?.node.children.find(
-      (child) => child instanceof cloudfront.CfnOriginAccessControl,
+      (child) => child instanceof cloudfront.CfnOriginAccessControl
     ) as cloudfront.CfnOriginAccessControl;
     const originConfig = cfnOriginAccessControl.originAccessControlConfig;
-    const originAccessControlConfig = originConfig as cloudfront.CfnOriginAccessControl.OriginAccessControlConfigProperty;
+    const originAccessControlConfig =
+      originConfig as cloudfront.CfnOriginAccessControl.OriginAccessControlConfigProperty;
 
     const isAlwaysSigning: boolean =
       originAccessControlConfig.signingBehavior === cloudfront.SigningBehavior.ALWAYS &&
       originAccessControlConfig.signingProtocol === cloudfront.SigningProtocol.SIGV4;
 
-    const isAuthTypeIsNone: boolean = this.functionUrl.authType !== lambda.FunctionUrlAuthType.AWS_IAM;
+    const isAuthTypeIsNone: boolean =
+      this.functionUrl.authType !== lambda.FunctionUrlAuthType.AWS_IAM;
 
     if (isAlwaysSigning && isAuthTypeIsNone) {
-      throw new Error('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
+      throw new Error(
+        'The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.'
+      );
     }
-
   }
 }

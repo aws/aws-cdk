@@ -33,7 +33,7 @@ export class Result {
   /**
    * The result of the operation is an object
    */
-  public static fromObject(value: {[key: string]: any}): Result {
+  public static fromObject(value: { [key: string]: any }): Result {
     return new Result(value);
   }
 
@@ -48,8 +48,7 @@ export class Result {
    *
    * @param value result of the Pass operation
    */
-  protected constructor(public readonly value: any) {
-  }
+  protected constructor(public readonly value: any) {}
 }
 
 /**

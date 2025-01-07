@@ -1,5 +1,10 @@
 import { Construct } from 'constructs';
-import { BaseDeploymentConfig, BaseDeploymentConfigOptions, IBaseDeploymentConfig, ZonalConfig } from '../base-deployment-config';
+import {
+  BaseDeploymentConfig,
+  BaseDeploymentConfigOptions,
+  IBaseDeploymentConfig,
+  ZonalConfig,
+} from '../base-deployment-config';
 import { MinimumHealthyHosts } from '../host-health-config';
 import { deploymentConfig } from '../private/utils';
 
@@ -10,8 +15,7 @@ import { deploymentConfig } from '../private/utils';
  * To create a custom Deployment Configuration,
  * instantiate the `ServerDeploymentConfig` Construct.
  */
-export interface IServerDeploymentConfig extends IBaseDeploymentConfig {
-}
+export interface IServerDeploymentConfig extends IBaseDeploymentConfig {}
 
 /**
  * Construction properties of `ServerDeploymentConfig`.
@@ -35,25 +39,34 @@ export interface ServerDeploymentConfigProps extends BaseDeploymentConfigOptions
  *
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
-export class ServerDeploymentConfig extends BaseDeploymentConfig implements IServerDeploymentConfig {
+export class ServerDeploymentConfig
+  extends BaseDeploymentConfig
+  implements IServerDeploymentConfig
+{
   /**
    * The CodeDeployDefault.OneAtATime predefined deployment configuration for EC2/on-premises compute platform
    *
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html#deployment-configuration-server
    */
-  public static readonly ONE_AT_A_TIME = ServerDeploymentConfig.deploymentConfig('CodeDeployDefault.OneAtATime');
+  public static readonly ONE_AT_A_TIME = ServerDeploymentConfig.deploymentConfig(
+    'CodeDeployDefault.OneAtATime'
+  );
   /**
    * The CodeDeployDefault.HalfAtATime predefined deployment configuration for EC2/on-premises compute platform
    *
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html#deployment-configuration-server
    */
-  public static readonly HALF_AT_A_TIME = ServerDeploymentConfig.deploymentConfig('CodeDeployDefault.HalfAtATime');
+  public static readonly HALF_AT_A_TIME = ServerDeploymentConfig.deploymentConfig(
+    'CodeDeployDefault.HalfAtATime'
+  );
   /**
    * The CodeDeployDefault.AllAtOnce predefined deployment configuration for EC2/on-premises compute platform
    *
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html#deployment-configuration-server
    */
-  public static readonly ALL_AT_ONCE = ServerDeploymentConfig.deploymentConfig('CodeDeployDefault.AllAtOnce');
+  public static readonly ALL_AT_ONCE = ServerDeploymentConfig.deploymentConfig(
+    'CodeDeployDefault.AllAtOnce'
+  );
 
   /**
    * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK app,
@@ -67,7 +80,8 @@ export class ServerDeploymentConfig extends BaseDeploymentConfig implements ISer
   public static fromServerDeploymentConfigName(
     scope: Construct,
     id: string,
-    serverDeploymentConfigName: string): IServerDeploymentConfig {
+    serverDeploymentConfigName: string
+  ): IServerDeploymentConfig {
     return this.fromDeploymentConfigName(scope, id, serverDeploymentConfigName);
   }
 

@@ -26,7 +26,6 @@ export enum HttpLambdaResponseType {
  * Properties to initialize HttpTokenAuthorizer.
  */
 export interface HttpLambdaAuthorizerProps {
-
   /**
    * Friendly authorizer name
    * @default - same value as `id` passed in the constructor.
@@ -82,40 +81,39 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   constructor(
     private readonly id: string,
     private readonly handler: IFunction,
-    private readonly props: HttpLambdaAuthorizerProps = {}) {
-  }
+    private readonly props: HttpLambdaAuthorizerProps = {}
+  ) {}
 
   /**
    * Return the id of the authorizer if it's been constructed
    */
   public get authorizerId(): string {
     if (!this.authorizer) {
-      throw new Error(
-        'Cannot access authorizerId until authorizer is attached to a HttpRoute',
-      );
+      throw new Error('Cannot access authorizerId until authorizer is attached to a HttpRoute');
     }
     return this.authorizer.authorizerId;
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
-    if (this.httpApi && (this.httpApi.apiId !== options.route.httpApi.apiId)) {
+    if (this.httpApi && this.httpApi.apiId !== options.route.httpApi.apiId) {
       throw new Error('Cannot attach the same authorizer to multiple Apis');
     }
 
     if (!this.authorizer) {
       const responseTypes = this.props.responseTypes ?? [HttpLambdaResponseType.IAM];
-      const enableSimpleResponses = responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
+      const enableSimpleResponses =
+        responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
 
       this.httpApi = options.route.httpApi;
       this.authorizer = new HttpAuthorizer(options.scope, this.id, {
         httpApi: options.route.httpApi,
-        identitySource: this.props.identitySource ?? [
-          '$request.header.Authorization',
-        ],
+        identitySource: this.props.identitySource ?? ['$request.header.Authorization'],
         type: HttpAuthorizerType.LAMBDA,
         authorizerName: this.props.authorizerName ?? this.id,
         enableSimpleResponses,
-        payloadFormatVersion: enableSimpleResponses ? AuthorizerPayloadVersion.VERSION_2_0 : AuthorizerPayloadVersion.VERSION_1_0,
+        payloadFormatVersion: enableSimpleResponses
+          ? AuthorizerPayloadVersion.VERSION_2_0
+          : AuthorizerPayloadVersion.VERSION_1_0,
         authorizerUri: lambdaAuthorizerArn(this.handler),
         resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
       });

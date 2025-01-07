@@ -39,7 +39,6 @@ export function flatten<A>(xs: A[][]): A[] {
  * NetworkUtils contains helpers to work with network constructs (subnets/ranges)
  */
 export class NetworkUtils {
-
   /**
    * Validates an IPv4 address string.
    *
@@ -55,8 +54,9 @@ export class NetworkUtils {
     if (octets.length !== 4) {
       return false;
     }
-    return octets.map((octet: string) => parseInt(octet, 10)).
-      every((octet: number) => octet >= 0 && octet <= 255);
+    return octets
+      .map((octet: string) => parseInt(octet, 10))
+      .every((octet: number) => octet >= 0 && octet <= 255);
   }
 
   /**
@@ -76,10 +76,7 @@ export class NetworkUtils {
 
     return ipAddress
       .split('.')
-      .reduce(
-        (p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i),
-        0,
-      );
+      .reduce((p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i), 0);
   }
 
   /**
@@ -104,7 +101,7 @@ export class NetworkUtils {
       }
     }
     const ipAddress: string = address.join('.');
-    if ( !this.validIp(ipAddress) ) {
+    if (!this.validIp(ipAddress)) {
       throw new Error(`${ipAddress} is not a valid IP Address`);
     }
     return ipAddress;
@@ -116,7 +113,6 @@ export class NetworkUtils {
  * and CIDR validation
  */
 export class CidrBlock {
-
   /**
    * Calculates the netmask for a given CIDR mask
    *
@@ -179,13 +175,15 @@ export class CidrBlock {
    * then the next available block will be returned. For example, if
    * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
    */
-  constructor(cidr: string)
-  constructor(ipAddress: number, mask: number)
+  constructor(cidr: string);
+  constructor(ipAddress: number, mask: number);
   constructor(ipAddressOrCidr: string | number, mask?: number) {
     if (typeof ipAddressOrCidr === 'string') {
       this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
-      this.networkAddress = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +
-        CidrBlock.calculateNetsize(this.mask) - 1;
+      this.networkAddress =
+        NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +
+        CidrBlock.calculateNetsize(this.mask) -
+        1;
     } else {
       if (typeof mask === 'number') {
         this.mask = mask;
@@ -255,8 +253,7 @@ export class CidrBlock {
    * Returns true if this CidrBlock fully contains the provided CidrBlock
    */
   public containsCidr(other: CidrBlock): boolean {
-    return (this.maxAddress() >= other.maxAddress()) &&
-      (this.minAddress() <= other.minAddress());
+    return this.maxAddress() >= other.maxAddress() && this.minAddress() <= other.minAddress();
   }
 
   /**
@@ -269,12 +266,11 @@ export class CidrBlock {
    * Note: This method assumes that the start and end addresses are valid IPv4 addresses.
    */
   public rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
-    const [start1, end1] = range1.map(ip => NetworkUtils.ipToNum(ip));
-    const [start2, end2] = range2.map(ip => NetworkUtils.ipToNum(ip));
+    const [start1, end1] = range1.map((ip) => NetworkUtils.ipToNum(ip));
+    const [start2, end2] = range2.map((ip) => NetworkUtils.ipToNum(ip));
     // Check if ranges overlap
     return start1 <= end2 && start2 <= end1;
   }
-
 }
 
 /**
@@ -285,7 +281,6 @@ export class CidrBlock {
  * IP addresses in a CIDR block, and checking if two CIDR blocks overlap.
  */
 export class CidrBlockIpv6 {
-
   /**
    * Ipv6 CIDR range
    */
@@ -345,7 +340,7 @@ export class CidrBlockIpv6 {
     const [start1, end1] = this.getIPv6Range(range1);
     const [start2, end2] = this.getIPv6Range(range2);
 
-    return (start1 <= end2) && (start2 <= end1);
+    return start1 <= end2 && start2 <= end1;
   }
 
   /**

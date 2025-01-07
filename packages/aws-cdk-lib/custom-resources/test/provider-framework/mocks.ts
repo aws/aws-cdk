@@ -42,7 +42,9 @@ export async function httpRequestMock(options: https.RequestOptions, body: strin
   expect(headers['content-type']).toStrictEqual('');
   cfnResponse = JSON.parse(body);
 
-  if (!cfnResponse) { throw new Error('unexpected'); }
+  if (!cfnResponse) {
+    throw new Error('unexpected');
+  }
 
   // we always expect a physical resource id
   expect(cfnResponse.PhysicalResourceId).toBeTruthy();
@@ -57,14 +59,13 @@ export async function httpRequestMock(options: https.RequestOptions, body: strin
 }
 
 export async function invokeFunctionMock(req: InvokeCommandInput): Promise<InvocationResponse> {
-  if (!req.Payload || typeof (req.Payload) !== 'string') {
-    throw new Error(`invalid payload of type ${typeof (req.Payload)}}`);
+  if (!req.Payload || typeof req.Payload !== 'string') {
+    throw new Error(`invalid payload of type ${typeof req.Payload}}`);
   }
 
   const input = JSON.parse(req.Payload);
 
   try {
-
     let ret;
     switch (req.FunctionName) {
       case MOCK_ON_EVENT_FUNCTION_ARN:
@@ -88,29 +89,31 @@ export async function invokeFunctionMock(req: InvokeCommandInput): Promise<Invoc
     return {
       Payload: ret
         ? new TextEncoder().encode(typeof ret !== 'string' ? JSON.stringify(ret) : ret)
-        // handle undefined explicitly for mocks so we don't encode it
-        : undefined,
+        : // handle undefined explicitly for mocks so we don't encode it
+          undefined,
     };
   } catch (e: any) {
     return {
       FunctionError: 'Unhandled',
-      Payload: new TextEncoder().encode(JSON.stringify({
-        errorType: e.name,
-        errorMessage: e.message,
-        trace: [
-          'AccessDenied: Access Denied',
-          '    at Request.extractError (/var/runtime/node_modules/aws-sdk/lib/services/s3.js:585:35)',
-          '    at Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:106:20)',
-          '    at Request.emit (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:78:10)',
-          '    at Request.emit (/var/runtime/node_modules/aws-sdk/lib/request.js:683:14)',
-          '    at Request.transition (/var/runtime/node_modules/aws-sdk/lib/request.js:22:10)',
-          '    at AcceptorStateMachine.runTo (/var/runtime/node_modules/aws-sdk/lib/state_machine.js:14:12)',
-          '    at /var/runtime/node_modules/aws-sdk/lib/state_machine.js:26:10',
-          '    at Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:38:9)',
-          '    at Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:685:12)',
-          '    at Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:116:18)',
-        ],
-      })),
+      Payload: new TextEncoder().encode(
+        JSON.stringify({
+          errorType: e.name,
+          errorMessage: e.message,
+          trace: [
+            'AccessDenied: Access Denied',
+            '    at Request.extractError (/var/runtime/node_modules/aws-sdk/lib/services/s3.js:585:35)',
+            '    at Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:106:20)',
+            '    at Request.emit (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:78:10)',
+            '    at Request.emit (/var/runtime/node_modules/aws-sdk/lib/request.js:683:14)',
+            '    at Request.transition (/var/runtime/node_modules/aws-sdk/lib/request.js:22:10)',
+            '    at AcceptorStateMachine.runTo (/var/runtime/node_modules/aws-sdk/lib/state_machine.js:14:12)',
+            '    at /var/runtime/node_modules/aws-sdk/lib/state_machine.js:26:10',
+            '    at Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:38:9)',
+            '    at Request.<anonymous> (/var/runtime/node_modules/aws-sdk/lib/request.js:685:12)',
+            '    at Request.callListeners (/var/runtime/node_modules/aws-sdk/lib/sequential_executor.js:116:18)',
+          ],
+        })
+      ),
     };
   }
 }

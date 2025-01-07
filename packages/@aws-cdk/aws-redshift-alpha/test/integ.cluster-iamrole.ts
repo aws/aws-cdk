@@ -23,9 +23,11 @@ class RedshiftEnv extends Stack {
       masterUser: {
         masterUsername: 'admin',
       },
-      roles: [new iam.Role(this, 'RoleB', {
-        assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
-      })],
+      roles: [
+        new iam.Role(this, 'RoleB', {
+          assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com'),
+        }),
+      ],
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -56,9 +58,20 @@ class SingleProviderRoleStack extends Stack {
         cluster: cluster,
         databaseName: SingleProviderRoleStack.databaseName,
         tableColumns: [
-          { name: 'col1', dataType: 'varchar(4)', distKey: true, comment: 'A test column', encoding: redshift.ColumnEncoding.LZO },
+          {
+            name: 'col1',
+            dataType: 'varchar(4)',
+            distKey: true,
+            comment: 'A test column',
+            encoding: redshift.ColumnEncoding.LZO,
+          },
           { name: 'col2', dataType: 'float', sortKey: true, comment: 'A test column' },
-          { name: 'col3', dataType: 'float', comment: 'A test column', encoding: redshift.ColumnEncoding.RAW },
+          {
+            name: 'col3',
+            dataType: 'float',
+            comment: 'A test column',
+            encoding: redshift.ColumnEncoding.RAW,
+          },
         ],
         distStyle: redshift.TableDistStyle.KEY,
         sortStyle: redshift.TableSortStyle.INTERLEAVED,
@@ -80,8 +93,5 @@ Aspects.of(singleProviderRoleTestStack).add({
 });
 
 new integ.IntegTest(app, 'IamRoleInteg', {
-  testCases: [
-    new RedshiftEnv(app, 'redshift-iamrole-integ'),
-    singleProviderRoleTestStack,
-  ],
+  testCases: [new RedshiftEnv(app, 'redshift-iamrole-integ'), singleProviderRoleTestStack],
 });

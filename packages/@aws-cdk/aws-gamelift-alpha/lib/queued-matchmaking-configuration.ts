@@ -4,7 +4,12 @@ import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IGameSessionQueue } from './game-session-queue';
 import * as gamelift from 'aws-cdk-lib/aws-gamelift';
-import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
+import {
+  MatchmakingConfigurationProps,
+  GameProperty,
+  MatchmakingConfigurationBase,
+  IMatchmakingConfiguration,
+} from './matchmaking-configuration';
 
 /**
  * Properties for a new queued matchmaking configuration
@@ -70,15 +75,27 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
   /**
    * Import an existing matchmaking configuration from its name.
    */
-  static fromQueuedMatchmakingConfigurationName(scope: Construct, id: string, matchmakingConfigurationName: string): IMatchmakingConfiguration {
-    return this.fromMatchmakingConfigurationAttributes(scope, id, { matchmakingConfigurationName: matchmakingConfigurationName });
+  static fromQueuedMatchmakingConfigurationName(
+    scope: Construct,
+    id: string,
+    matchmakingConfigurationName: string
+  ): IMatchmakingConfiguration {
+    return this.fromMatchmakingConfigurationAttributes(scope, id, {
+      matchmakingConfigurationName: matchmakingConfigurationName,
+    });
   }
 
   /**
    * Import an existing matchmaking configuration from its ARN.
    */
-  static fromQueuedMatchmakingConfigurationArn(scope: Construct, id: string, matchmakingConfigurationArn: string): IMatchmakingConfiguration {
-    return this.fromMatchmakingConfigurationAttributes(scope, id, { matchmakingConfigurationArn: matchmakingConfigurationArn });
+  static fromQueuedMatchmakingConfigurationArn(
+    scope: Construct,
+    id: string,
+    matchmakingConfigurationArn: string
+  ): IMatchmakingConfiguration {
+    return this.fromMatchmakingConfigurationAttributes(scope, id, {
+      matchmakingConfigurationArn: matchmakingConfigurationArn,
+    });
   }
 
   /**
@@ -106,40 +123,59 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
       physicalName: props.matchmakingConfigurationName,
     });
 
-    if (props.matchmakingConfigurationName && !cdk.Token.isUnresolved(props.matchmakingConfigurationName)) {
+    if (
+      props.matchmakingConfigurationName &&
+      !cdk.Token.isUnresolved(props.matchmakingConfigurationName)
+    ) {
       if (props.matchmakingConfigurationName.length > 128) {
-        throw new Error(`Matchmaking configuration name can not be longer than 128 characters but has ${props.matchmakingConfigurationName.length} characters.`);
+        throw new Error(
+          `Matchmaking configuration name can not be longer than 128 characters but has ${props.matchmakingConfigurationName.length} characters.`
+        );
       }
 
       if (!/^[a-zA-Z0-9-\.]+$/.test(props.matchmakingConfigurationName)) {
-        throw new Error(`Matchmaking configuration name ${props.matchmakingConfigurationName} can contain only letters, numbers, hyphens, back slash or dot with no spaces.`);
+        throw new Error(
+          `Matchmaking configuration name ${props.matchmakingConfigurationName} can contain only letters, numbers, hyphens, back slash or dot with no spaces.`
+        );
       }
     }
 
     if (props.description && !cdk.Token.isUnresolved(props.description)) {
       if (props.description.length > 1024) {
-        throw new Error(`Matchmaking configuration description can not be longer than 1024 characters but has ${props.description.length} characters.`);
+        throw new Error(
+          `Matchmaking configuration description can not be longer than 1024 characters but has ${props.description.length} characters.`
+        );
       }
     }
 
     if (props.gameProperties && props.gameProperties.length > 16) {
-      throw new Error(`The maximum number of game properties allowed in the matchmaking configuration cannot be higher than 16, given ${props.gameProperties.length}`);
+      throw new Error(
+        `The maximum number of game properties allowed in the matchmaking configuration cannot be higher than 16, given ${props.gameProperties.length}`
+      );
     }
 
     if (props.gameSessionData && props.gameSessionData.length > 4096) {
-      throw new Error(`Matchmaking configuration game session data can not be longer than 4096 characters but has ${props.gameSessionData.length} characters.`);
+      throw new Error(
+        `Matchmaking configuration game session data can not be longer than 4096 characters but has ${props.gameSessionData.length} characters.`
+      );
     }
 
     if (props.customEventData && props.customEventData.length > 256) {
-      throw new Error(`Matchmaking configuration custom event data can not be longer than 256 characters but has ${props.customEventData.length} characters.`);
+      throw new Error(
+        `Matchmaking configuration custom event data can not be longer than 256 characters but has ${props.customEventData.length} characters.`
+      );
     }
 
     if (props.acceptanceTimeout && props.acceptanceTimeout.toSeconds() > 600) {
-      throw new Error(`Matchmaking configuration acceptance timeout can not exceed 600 seconds, actual ${props.acceptanceTimeout.toSeconds()} seconds.`);
+      throw new Error(
+        `Matchmaking configuration acceptance timeout can not exceed 600 seconds, actual ${props.acceptanceTimeout.toSeconds()} seconds.`
+      );
     }
 
     if (props.requestTimeout && props.requestTimeout.toSeconds() > 43200) {
-      throw new Error(`Matchmaking configuration request timeout can not exceed 43200 seconds, actual ${props.requestTimeout.toSeconds()} seconds.`);
+      throw new Error(
+        `Matchmaking configuration request timeout can not exceed 43200 seconds, actual ${props.requestTimeout.toSeconds()} seconds.`
+      );
     }
 
     //Notification target
@@ -151,11 +187,13 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
     const topicPolicy = new sns.TopicPolicy(this, 'TopicPolicy', {
       topics: [this.notificationTarget],
     });
-    topicPolicy.document.addStatements(new iam.PolicyStatement({
-      actions: ['sns:Publish'],
-      principals: [new iam.ServicePrincipal('gamelift.amazonaws.com')],
-      resources: [this.notificationTarget.topicArn],
-    }));
+    topicPolicy.document.addStatements(
+      new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        principals: [new iam.ServicePrincipal('gamelift.amazonaws.com')],
+        resources: [this.notificationTarget.topicArn],
+      })
+    );
 
     // Add all queues
     (props.gameSessionQueues || []).forEach(this.addGameSessionQueue.bind(this));
@@ -173,7 +211,9 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
       gameSessionData: props.gameSessionData,
       gameSessionQueueArns: cdk.Lazy.list({ produce: () => this.parseGameSessionQueues() }),
       notificationTarget: this.notificationTarget.topicArn,
-      requestTimeoutSeconds: props.requestTimeout && props.requestTimeout.toSeconds() || cdk.Duration.seconds(300).toSeconds(),
+      requestTimeoutSeconds:
+        (props.requestTimeout && props.requestTimeout.toSeconds()) ||
+        cdk.Duration.seconds(300).toSeconds(),
       ruleSetName: props.ruleSet.matchmakingRuleSetName,
     });
 
@@ -203,14 +243,18 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
     return this.gameSessionQueues.map((queue) => queue.gameSessionQueueArn);
   }
 
-  private parseGameProperties(props: QueuedMatchmakingConfigurationProps): gamelift.CfnMatchmakingConfiguration.GamePropertyProperty[] | undefined {
+  private parseGameProperties(
+    props: QueuedMatchmakingConfigurationProps
+  ): gamelift.CfnMatchmakingConfiguration.GamePropertyProperty[] | undefined {
     if (!props.gameProperties || props.gameProperties.length === 0) {
       return undefined;
     }
 
     return props.gameProperties.map(parseGameProperty);
 
-    function parseGameProperty(gameProperty: GameProperty): gamelift.CfnMatchmakingConfiguration.GamePropertyProperty {
+    function parseGameProperty(
+      gameProperty: GameProperty
+    ): gamelift.CfnMatchmakingConfiguration.GamePropertyProperty {
       return {
         key: gameProperty.key,
         value: gameProperty.value,

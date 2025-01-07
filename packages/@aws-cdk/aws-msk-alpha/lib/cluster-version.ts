@@ -7,7 +7,7 @@ export interface KafkaVersionFeatures {
    *
    * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
    * @default false
-  */
+   */
   readonly tieredStorage?: boolean;
 }
 
@@ -182,12 +182,15 @@ export class KafkaVersion {
    * @param version cluster version number
    * @param features features for the cluster version
    */
-  private constructor(public readonly version: string, public readonly features?: KafkaVersionFeatures) {}
+  private constructor(
+    public readonly version: string,
+    public readonly features?: KafkaVersionFeatures
+  ) {}
 
   /**
    * Checks if the cluster version supports tiered storage mode.
    */
   public isTieredStorageCompatible(): boolean {
     return this.features?.tieredStorage ?? false;
-  };
+  }
 }

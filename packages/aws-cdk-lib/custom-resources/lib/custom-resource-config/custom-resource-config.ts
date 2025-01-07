@@ -8,7 +8,8 @@ import { AspectPriority, Aspects, IAspect, RemovalPolicy } from '../../../core/l
 export const CUSTOM_RESOURCE_PROVIDER = 'aws:cdk:is-custom-resource-handler-customResourceProvider';
 export const CUSTOM_RESOURCE_SINGLETON = 'aws:cdk:is-custom-resource-handler-singleton';
 export const CUSTOM_RESOURCE_SINGLETON_LOG_GROUP = 'aws:cdk:is-custom-resource-handler-logGroup';
-export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION = 'aws:cdk:is-custom-resource-handler-logRetention';
+export const CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION =
+  'aws:cdk:is-custom-resource-handler-logRetention';
 export const CUSTOM_RESOURCE_RUNTIME_FAMILY = 'aws:cdk:is-custom-resource-handler-runtime-family';
 
 /**
@@ -24,7 +25,7 @@ export class CustomResourceConfig {
     return new CustomResourceConfig(scope);
   }
 
-  private constructor(private readonly scope: IConstruct) { }
+  private constructor(private readonly scope: IConstruct) {}
 
   /**
    * Set the log retention of AWS-vended custom resource lambdas.
@@ -32,7 +33,9 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addLogRetentionLifetime(rentention: logs.RetentionDays) {
-    Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention), { priority: AspectPriority.MUTATING });
+    Aspects.of(this.scope).add(new CustomResourceLogRetention(rentention), {
+      priority: AspectPriority.MUTATING,
+    });
   }
 
   /**
@@ -41,7 +44,9 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addRemovalPolicy(removalPolicy: RemovalPolicy) {
-    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy), { priority: AspectPriority.MUTATING });
+    Aspects.of(this.scope).add(new CustomResourceRemovalPolicy(removalPolicy), {
+      priority: AspectPriority.MUTATING,
+    });
   }
 
   /**
@@ -50,9 +55,10 @@ export class CustomResourceConfig {
    * This feature is currently experimental.
    */
   public addLambdaRuntime(lambdaRuntime: lambda.Runtime) {
-    Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime), { priority: AspectPriority.MUTATING });
+    Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime), {
+      priority: AspectPriority.MUTATING,
+    });
   }
-
 }
 
 /**

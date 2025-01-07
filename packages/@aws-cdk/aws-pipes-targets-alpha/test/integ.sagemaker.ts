@@ -109,7 +109,9 @@ class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
     const pipelineRole = new iam.Role(this, 'SageMakerPipelineRole', {
       assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
     });
-    pipelineRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
+    pipelineRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
+    );
 
     const pipeline = new sagemaker.CfnPipeline(this, 'Resource', {
       pipelineName: this.pipelineName,
@@ -156,12 +158,18 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: 'Nebraska',
 });
 
-const message = putMessageOnQueue.next(test.assertions.awsApiCall('SageMaker', 'ListPipelineExecutions', {
-  PipelineName: targetPipeline.pipelineName,
-}));
+const message = putMessageOnQueue.next(
+  test.assertions.awsApiCall('SageMaker', 'ListPipelineExecutions', {
+    PipelineName: targetPipeline.pipelineName,
+  })
+);
 
 // The pipeline won't succeed, but we want to test that it was started.
-message.assertAtPath('PipelineExecutionSummaries.0.PipelineExecutionArn', ExpectedResult.stringLikeRegexp(targetPipeline.pipelineArn))
+message
+  .assertAtPath(
+    'PipelineExecutionSummaries.0.PipelineExecutionArn',
+    ExpectedResult.stringLikeRegexp(targetPipeline.pipelineArn)
+  )
   .waitForAssertions({
     totalTimeout: cdk.Duration.minutes(2),
     interval: cdk.Duration.seconds(10),

@@ -61,7 +61,7 @@ export interface CertificateProps {
    * @default - Apex domain is used for every domain that's not overridden.
    * @deprecated use `validation` instead.
    */
-  readonly validationDomains?: {[domainName: string]: string};
+  readonly validationDomains?: { [domainName: string]: string };
 
   /**
    * Validation method used to assert domain ownership
@@ -140,8 +140,8 @@ export class KeyAlgorithm {
     /**
      * The name of the algorithm
      */
-    public readonly name: string,
-  ) { };
+    public readonly name: string
+  ) {}
 }
 
 /**
@@ -255,7 +255,11 @@ export class Certificate extends CertificateBase implements ICertificate {
   /**
    * Import a certificate
    */
-  public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
+  public static fromCertificateArn(
+    scope: Construct,
+    id: string,
+    certificateArn: string
+  ): ICertificate {
     class Import extends CertificateBase {
       public readonly certificateArn = certificateArn;
     }
@@ -274,7 +278,8 @@ export class Certificate extends CertificateBase implements ICertificate {
     let validation: CertificateValidation;
     if (props.validation) {
       validation = props.validation;
-    } else { // Deprecated props
+    } else {
+      // Deprecated props
       if (props.validationMethod === ValidationMethod.DNS) {
         validation = CertificateValidation.fromDns();
       } else {
@@ -291,7 +296,9 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     let certificateTransparencyLoggingPreference: string | undefined;
     if (props.transparencyLoggingEnabled !== undefined) {
-      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
+      certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled
+        ? 'ENABLED'
+        : 'DISABLED';
     }
 
     const cert = new CfnCertificate(this, 'Resource', {
@@ -329,13 +336,17 @@ export enum ValidationMethod {
 }
 
 // eslint-disable-next-line max-len
-function renderDomainValidation(validation: CertificateValidation, domainNames: string[]): CfnCertificate.DomainValidationOptionProperty[] | undefined {
+function renderDomainValidation(
+  validation: CertificateValidation,
+  domainNames: string[]
+): CfnCertificate.DomainValidationOptionProperty[] | undefined {
   const domainValidation: CfnCertificate.DomainValidationOptionProperty[] = [];
 
   switch (validation.method) {
     case ValidationMethod.DNS:
       for (const domainName of getUniqueDnsDomainNames(domainNames)) {
-        const hostedZone = validation.props.hostedZones?.[domainName] ?? validation.props.hostedZone;
+        const hostedZone =
+          validation.props.hostedZones?.[domainName] ?? validation.props.hostedZone;
         if (hostedZone) {
           domainValidation.push({ domainName, hostedZoneId: hostedZone.hostedZoneId });
         }
@@ -345,9 +356,14 @@ function renderDomainValidation(validation: CertificateValidation, domainNames: 
       for (const domainName of domainNames) {
         const validationDomain = validation.props.validationDomains?.[domainName];
         if (!validationDomain && Token.isUnresolved(domainName)) {
-          throw new Error('When using Tokens for domain names, \'validationDomains\' needs to be supplied');
+          throw new Error(
+            "When using Tokens for domain names, 'validationDomains' needs to be supplied"
+          );
         }
-        domainValidation.push({ domainName, validationDomain: validationDomain ?? apexDomain(domainName) });
+        domainValidation.push({
+          domainName,
+          validationDomain: validationDomain ?? apexDomain(domainName),
+        });
       }
       break;
     default:
@@ -363,7 +379,11 @@ function renderDomainValidation(validation: CertificateValidation, domainNames: 
  * DNS validation errors out with the duplicate records.
  */
 function getUniqueDnsDomainNames(domainNames: string[]) {
-  return domainNames.filter(domain => {
-    return Token.isUnresolved(domain) || !domain.startsWith('*.') || !domainNames.includes(domain.replace('*.', ''));
+  return domainNames.filter((domain) => {
+    return (
+      Token.isUnresolved(domain) ||
+      !domain.startsWith('*.') ||
+      !domainNames.includes(domain.replace('*.', ''))
+    );
   });
 }

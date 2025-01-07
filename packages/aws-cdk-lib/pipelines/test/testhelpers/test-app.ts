@@ -4,7 +4,16 @@ import { Construct } from 'constructs';
 import * as ecr_assets from '../../../aws-ecr-assets';
 import * as s3 from '../../../aws-s3';
 import * as s3_assets from '../../../aws-s3-assets';
-import { App, AppProps, Environment, CfnOutput, Stage, StageProps, Stack, StackProps } from '../../../core';
+import {
+  App,
+  AppProps,
+  Environment,
+  CfnOutput,
+  Stage,
+  StageProps,
+  Stack,
+  StackProps,
+} from '../../../core';
 import { assemblyBuilderOf } from '../../lib/private/construct-internals';
 
 export const PIPELINE_ENV: Environment = {
@@ -31,7 +40,10 @@ export class TestApp extends App {
     }
 
     this.synth();
-    const supportStack = this.node.findAll().filter(Stack.isStack).find(s => s.stackName === stackName);
+    const supportStack = this.node
+      .findAll()
+      .filter(Stack.isStack)
+      .find((s) => s.stackName === stackName);
     expect(supportStack).not.toBeUndefined();
     return supportStack;
   }
@@ -147,13 +159,17 @@ export function rimraf(fsPath: string) {
     }
   } catch (e: any) {
     // We will survive ENOENT
-    if (e.code !== 'ENOENT') { throw e; }
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
   }
 }
 
 export function stackTemplate(stack: Stack) {
   const stage = Stage.of(stack);
-  if (!stage) { throw new Error('stack not in a Stage'); }
+  if (!stage) {
+    throw new Error('stack not in a Stage');
+  }
   return stage.synth().getStackArtifact(stack.artifactId);
 }
 

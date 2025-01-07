@@ -104,9 +104,10 @@ export class Resolver extends Construct {
   constructor(scope: Construct, id: string, props: ResolverProps) {
     super(scope, id);
 
-    const pipelineConfig = props.pipelineConfig && props.pipelineConfig.length ?
-      { functions: props.pipelineConfig.map((func) => func.functionId) }
-      : undefined;
+    const pipelineConfig =
+      props.pipelineConfig && props.pipelineConfig.length
+        ? { functions: props.pipelineConfig.map((func) => func.functionId) }
+        : undefined;
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
@@ -118,17 +119,31 @@ export class Resolver extends Construct {
     }
 
     if (pipelineConfig && props.dataSource) {
-      throw new Error(`Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`);
+      throw new Error(
+        `Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`
+      );
     }
 
-    if (props.cachingConfig?.ttl && (props.cachingConfig.ttl.toSeconds() < 1 || props.cachingConfig.ttl.toSeconds() > 3600)) {
-      throw new Error(`Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`);
+    if (
+      props.cachingConfig?.ttl &&
+      (props.cachingConfig.ttl.toSeconds() < 1 || props.cachingConfig.ttl.toSeconds() > 3600)
+    ) {
+      throw new Error(
+        `Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`
+      );
     }
 
     if (props.cachingConfig?.cachingKeys) {
-      if (props.cachingConfig.cachingKeys.find(cachingKey =>
-        !Token.isUnresolved(cachingKey) && !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {
-        throw new Error(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`);
+      if (
+        props.cachingConfig.cachingKeys.find(
+          (cachingKey) =>
+            !Token.isUnresolved(cachingKey) &&
+            !BASE_CACHING_KEYS.find((baseCachingKey) => cachingKey.startsWith(baseCachingKey))
+        )
+      ) {
+        throw new Error(
+          `Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`
+        );
       }
     }
 
@@ -143,8 +158,12 @@ export class Resolver extends Construct {
       codeS3Location: code?.s3Location,
       code: code?.inlineCode,
       pipelineConfig: pipelineConfig,
-      requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
-      responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
+      requestMappingTemplate: props.requestMappingTemplate
+        ? props.requestMappingTemplate.renderTemplate()
+        : undefined,
+      responseMappingTemplate: props.responseMappingTemplate
+        ? props.responseMappingTemplate.renderTemplate()
+        : undefined,
       cachingConfig: this.createCachingConfig(props.cachingConfig),
       maxBatchSize: props.maxBatchSize,
     });
@@ -156,10 +175,11 @@ export class Resolver extends Construct {
   }
 
   private createCachingConfig(config?: CachingConfig) {
-    return config ? {
-      cachingKeys: config.cachingKeys,
-      ttl: config.ttl?.toSeconds(),
-    } : undefined;
+    return config
+      ? {
+          cachingKeys: config.cachingKeys,
+          ttl: config.ttl?.toSeconds(),
+        }
+      : undefined;
   }
-
 }

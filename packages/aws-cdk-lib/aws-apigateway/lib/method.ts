@@ -189,8 +189,9 @@ export class Method extends Resource {
 
     // do not use the default authorizer config in case if the provided authorizer type is None
     const authorizer =
-        options.authorizationType === AuthorizationType.NONE
-        && options.authorizer == undefined ? undefined : options.authorizer || defaultMethodOptions.authorizer;
+      options.authorizationType === AuthorizationType.NONE && options.authorizer == undefined
+        ? undefined
+        : options.authorizer || defaultMethodOptions.authorizer;
     const authorizerId = authorizer?.authorizerId ? authorizer.authorizerId : undefined;
 
     /**
@@ -213,13 +214,21 @@ export class Method extends Resource {
      *
      * Note that "authorizer.authorizerType" should match method or resource's "authorizationType" if exists.
      */
-    const authorizationType = this.getMethodAuthorizationType(options, defaultMethodOptions, authorizer);
+    const authorizationType = this.getMethodAuthorizationType(
+      options,
+      defaultMethodOptions,
+      authorizer
+    );
 
     // AuthorizationScope should only be applied to COGNITO_USER_POOLS AuthorizationType.
     const defaultScopes = options.authorizationScopes ?? defaultMethodOptions.authorizationScopes;
-    const authorizationScopes = authorizationType === AuthorizationType.COGNITO ? defaultScopes : undefined;
+    const authorizationScopes =
+      authorizationType === AuthorizationType.COGNITO ? defaultScopes : undefined;
     if (authorizationType !== AuthorizationType.COGNITO && defaultScopes) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:invalidAuthScope', '\'AuthorizationScopes\' can only be set when \'AuthorizationType\' sets \'COGNITO_USER_POOLS\'. Default to ignore the values set in \'AuthorizationScopes\'.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-apigateway:invalidAuthScope',
+        "'AuthorizationScopes' can only be set when 'AuthorizationType' sets 'COGNITO_USER_POOLS'. Default to ignore the values set in 'AuthorizationScopes'."
+      );
     }
 
     if (Authorizer.isAuthorizer(authorizer)) {
@@ -230,7 +239,8 @@ export class Method extends Resource {
       this.addMethodResponse(mr);
     }
 
-    const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
+    const integration =
+      props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
 
     const methodProps: CfnMethodProps = {
@@ -243,7 +253,10 @@ export class Method extends Resource {
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(bindResult),
-      methodResponses: Lazy.any({ produce: () => this.renderMethodResponses(this.methodResponses) }, { omitEmptyArray: true }),
+      methodResponses: Lazy.any(
+        { produce: () => this.renderMethodResponses(this.methodResponses) },
+        { omitEmptyArray: true }
+      ),
       requestModels: this.renderRequestModels(options.requestModels),
       requestValidatorId: this.requestValidatorId(options),
       authorizationScopes: authorizationScopes,
@@ -298,7 +311,11 @@ export class Method extends Resource {
    * This stage is used by the AWS Console UI when testing the method.
    */
   public get testMethodArn(): string {
-    return this.api.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), 'test-invoke-stage');
+    return this.api.arnForExecuteApi(
+      this.httpMethod,
+      pathForArn(this.resource.path),
+      'test-invoke-stage'
+    );
   }
 
   /**
@@ -311,7 +328,10 @@ export class Method extends Resource {
   public addMethodResponse(methodResponse: MethodResponse): void {
     const mr = this.methodResponses.find((x) => x.statusCode === methodResponse.statusCode);
     if (mr) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:duplicateStatusCodes', `addMethodResponse called multiple times with statusCode=${methodResponse.statusCode}, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response.`);
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-apigateway:duplicateStatusCodes',
+        `addMethodResponse called multiple times with statusCode=${methodResponse.statusCode}, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response.`
+      );
     }
     this.methodResponses.push(methodResponse);
   }
@@ -323,15 +343,21 @@ export class Method extends Resource {
    * @param authorizer Authorizer used for API Gateway Method
    * @returns API Gateway Method's authorizer type
    */
-  private getMethodAuthorizationType(options: MethodOptions, defaultMethodOptions: MethodOptions, authorizer?: IAuthorizer): string {
+  private getMethodAuthorizationType(
+    options: MethodOptions,
+    defaultMethodOptions: MethodOptions,
+    authorizer?: IAuthorizer
+  ): string {
     const authorizerAuthType = authorizer?.authorizationType;
     const optionsAuthType = options.authorizationType || defaultMethodOptions.authorizationType;
     const finalAuthType = authorizerAuthType || optionsAuthType || AuthorizationType.NONE;
 
     // if the authorizer defines an authorization type and we also have an explicit option set, check that they are the same
     if (authorizerAuthType && optionsAuthType && authorizerAuthType !== optionsAuthType) {
-      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
-        `which is different from what is required by the authorizer [${authorizerAuthType}]`);
+      throw new Error(
+        `${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
+          `which is different from what is required by the authorizer [${authorizerAuthType}]`
+      );
     }
 
     return finalAuthType;
@@ -345,7 +371,14 @@ export class Method extends Resource {
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
       // eslint-disable-next-line max-len
-      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', arnFormat: ArnFormat.SLASH_RESOURCE_NAME, resourceName: '*' });
+      credentials = Stack.of(this).formatArn({
+        service: 'iam',
+        region: '',
+        account: '*',
+        resource: 'user',
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        resourceName: '*',
+      });
     }
 
     return {
@@ -366,18 +399,21 @@ export class Method extends Resource {
     };
   }
 
-  private renderMethodResponses(methodResponses: MethodResponse[] | undefined): CfnMethod.MethodResponseProperty[] | undefined {
+  private renderMethodResponses(
+    methodResponses: MethodResponse[] | undefined
+  ): CfnMethod.MethodResponseProperty[] | undefined {
     if (!methodResponses) {
       // Fall back to nothing
       return undefined;
     }
 
-    return methodResponses.map(mr => {
-      let responseModels: {[contentType: string]: string} | undefined;
+    return methodResponses.map((mr) => {
+      let responseModels: { [contentType: string]: string } | undefined;
 
       if (mr.responseModels) {
-        responseModels = Object.fromEntries(Object.entries(mr.responseModels)
-          .map(([contentType, rm]) => [contentType, rm.modelId]));
+        responseModels = Object.fromEntries(
+          Object.entries(mr.responseModels).map(([contentType, rm]) => [contentType, rm.modelId])
+        );
       }
 
       const methodResponseProp = {
@@ -390,13 +426,15 @@ export class Method extends Resource {
     });
   }
 
-  private renderRequestModels(requestModels: { [param: string]: IModel } | undefined): { [param: string]: string } | undefined {
+  private renderRequestModels(
+    requestModels: { [param: string]: IModel } | undefined
+  ): { [param: string]: string } | undefined {
     if (!requestModels) {
       // Fall back to nothing
       return undefined;
     }
 
-    const models: {[param: string]: string} = {};
+    const models: { [param: string]: string } = {};
     for (const contentType in requestModels) {
       if (requestModels.hasOwnProperty(contentType)) {
         models[contentType] = requestModels[contentType].modelId;
@@ -408,7 +446,9 @@ export class Method extends Resource {
 
   private requestValidatorId(options: MethodOptions): string | undefined {
     if (options.requestValidator && options.requestValidatorOptions) {
-      throw new Error('Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.');
+      throw new Error(
+        "Only one of 'requestValidator' or 'requestValidatorOptions' must be specified."
+      );
     }
 
     if (options.requestValidatorOptions) {
@@ -416,7 +456,10 @@ export class Method extends Resource {
       const id = useUniqueId
         ? `${Names.uniqueResourceName(new Construct(this, 'Validator'), {})}`
         : 'validator';
-      const validator = (this.api as RestApi).addRequestValidator(id, options.requestValidatorOptions);
+      const validator = (this.api as RestApi).addRequestValidator(
+        id,
+        options.requestValidatorOptions
+      );
       return validator.requestValidatorId;
     }
 
@@ -427,11 +470,20 @@ export class Method extends Resource {
   /**
    * Returns the given named metric for this API method
    */
-  public metric(metricName: string, stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metric(
+    metricName: string,
+    stage: IStage,
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
-      dimensionsMap: { ApiName: this.api.restApiName, Method: this.httpMethod, Resource: this.resource.path, Stage: stage.stageName },
+      dimensionsMap: {
+        ApiName: this.api.restApiName,
+        Method: this.httpMethod,
+        Resource: this.resource.path,
+        Stage: stage.stageName,
+      },
       ...props,
     }).attachTo(this);
   }
@@ -491,7 +543,10 @@ export class Method extends Resource {
    *
    * @default - average over 5 minutes.
    */
-  public metricIntegrationLatency(stage: IStage, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricIntegrationLatency(
+    stage: IStage,
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, stage, props);
   }
 
@@ -519,14 +574,23 @@ export class Method extends Resource {
     });
   }
 
-  private cannedMetric(fn: (dims: {
-    ApiName: string;
-    Method: string;
-    Resource: string;
-    Stage: string;
-  }) => cloudwatch.MetricProps, stage: IStage, props?: cloudwatch.MetricOptions) {
+  private cannedMetric(
+    fn: (dims: {
+      ApiName: string;
+      Method: string;
+      Resource: string;
+      Stage: string;
+    }) => cloudwatch.MetricProps,
+    stage: IStage,
+    props?: cloudwatch.MetricOptions
+  ) {
     return new cloudwatch.Metric({
-      ...fn({ ApiName: this.api.restApiName, Method: this.httpMethod, Resource: this.resource.path, Stage: stage.stageName }),
+      ...fn({
+        ApiName: this.api.restApiName,
+        Method: this.httpMethod,
+        Resource: this.resource.path,
+        Stage: stage.stageName,
+      }),
       ...props,
     }).attachTo(this);
   }

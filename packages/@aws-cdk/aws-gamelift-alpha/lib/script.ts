@@ -119,7 +119,13 @@ export class Script extends ScriptBase {
   /**
    * Create a new realtime server script from s3 content
    */
-  static fromBucket(scope: Construct, id: string, bucket: s3.IBucket, key: string, objectVersion?: string) {
+  static fromBucket(
+    scope: Construct,
+    id: string,
+    bucket: s3.IBucket,
+    key: string,
+    objectVersion?: string
+  ) {
     return new Script(scope, id, {
       content: Content.fromBucket(bucket, key, objectVersion),
     });
@@ -152,7 +158,7 @@ export class Script extends ScriptBase {
     class Import extends ScriptBase {
       public readonly scriptArn = scriptArn;
       public readonly scriptId = scriptId;
-      public readonly grantPrincipal:iam.IPrincipal;
+      public readonly grantPrincipal: iam.IPrincipal;
       public readonly role = role;
 
       constructor(s: Construct, i: string) {
@@ -194,12 +200,16 @@ export class Script extends ScriptBase {
 
     if (props.scriptName && !cdk.Token.isUnresolved(props.scriptName)) {
       if (props.scriptName.length > 1024) {
-        throw new Error(`Script name can not be longer than 1024 characters but has ${props.scriptName.length} characters.`);
+        throw new Error(
+          `Script name can not be longer than 1024 characters but has ${props.scriptName.length} characters.`
+        );
       }
     }
-    this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
-    });
+    this.role =
+      props.role ??
+      new iam.Role(this, 'ServiceRole', {
+        assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
+      });
     this.grantPrincipal = this.role;
     const content = props.content.bind(this, this.role);
 

@@ -279,13 +279,23 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
    * @param id The construct's name
    * @param scheduledAuditArn The ARN of the scheduled audit
    */
-  public static fromScheduledAuditArn(scope: Construct, id: string, scheduledAuditArn: string): IScheduledAudit {
-    const name = Stack.of(scope).splitArn(scheduledAuditArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+  public static fromScheduledAuditArn(
+    scope: Construct,
+    id: string,
+    scheduledAuditArn: string
+  ): IScheduledAudit {
+    const name = Stack.of(scope).splitArn(
+      scheduledAuditArn,
+      ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName;
     if (!name) {
       throw new Error(`No scheduled audit name found in ARN: '${scheduledAuditArn}'`);
     }
 
-    return this.fromScheduledAuditAttributes(scope, id, { scheduledAuditArn: scheduledAuditArn, scheduledAuditName: name });
+    return this.fromScheduledAuditAttributes(scope, id, {
+      scheduledAuditArn: scheduledAuditArn,
+      scheduledAuditName: name,
+    });
   }
 
   /**
@@ -295,7 +305,11 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
    * @param id The construct's name
    * @param attrs The scheduled audit attributes
    */
-  public static fromScheduledAuditAttributes(scope: Construct, id: string, attrs: ScheduledAuditAttributes): IScheduledAudit {
+  public static fromScheduledAuditAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ScheduledAuditAttributes
+  ): IScheduledAudit {
     class Import extends Resource implements IScheduledAudit {
       public readonly scheduledAuditArn = attrs.scheduledAuditArn;
       public readonly scheduledAuditName = attrs.scheduledAuditName;
@@ -319,7 +333,7 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
     super(scope, id);
 
     if (props.auditChecks.length === 0) {
-      throw new Error('At least one \'auditChecks\' must be specified.');
+      throw new Error("At least one 'auditChecks' must be specified.");
     }
 
     switch (props.frequency) {
@@ -354,10 +368,14 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
 
     if (props.scheduledAuditName !== undefined && !Token.isUnresolved(props.scheduledAuditName)) {
       if (props.scheduledAuditName.length < 1 || props.scheduledAuditName.length > 128) {
-        throw new Error(`Scheduled audit name must be between 1 and 128 characters, got: ${props.scheduledAuditName.length}`);
+        throw new Error(
+          `Scheduled audit name must be between 1 and 128 characters, got: ${props.scheduledAuditName.length}`
+        );
       }
       if (!/^[a-zA-Z0-9:_-]+$/.test(props.scheduledAuditName)) {
-        throw new Error(`Scheduled audit name must be alphanumeric and may include colons, underscores, and hyphens, got: ${props.scheduledAuditName}`);
+        throw new Error(
+          `Scheduled audit name must be alphanumeric and may include colons, underscores, and hyphens, got: ${props.scheduledAuditName}`
+        );
       }
     }
 
@@ -375,4 +393,3 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
     resource.node.addDependency(props.accountAuditConfiguration);
   }
 }
-

@@ -17,7 +17,6 @@ export interface ISageMakerTask extends iam.IGrantable {}
  * Specify the training algorithm and algorithm-specific metadata
  */
 export interface AlgorithmSpecification {
-
   /**
    * Name of the algorithm resource to use for the training job.
    * This must be an algorithm resource that you created or subscribe to on AWS Marketplace.
@@ -54,7 +53,6 @@ export interface AlgorithmSpecification {
  *
  */
 export interface Channel {
-
   /**
    * Name of the channel
    */
@@ -195,7 +193,6 @@ export interface StoppingCondition {
  *
  */
 export interface ResourceConfig {
-
   /**
    * The number of ML compute instances to use.
    *
@@ -256,7 +253,6 @@ export interface VpcConfig {
  *
  */
 export interface MetricDefinition {
-
   /**
    * Name of the metric.
    */
@@ -273,7 +269,6 @@ export interface MetricDefinition {
  *
  */
 export interface S3LocationConfig {
-
   /**
    * Uniquely identifies the resource in Amazon S3
    */
@@ -355,8 +350,14 @@ export abstract class DockerImage {
    * @param repository the ECR repository where the image is hosted.
    * @param tagOrDigest an optional tag or digest (digests must start with `sha256:`)
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): DockerImage {
-    return new StandardDockerImage({ repository, imageUri: repository.repositoryUriForTagOrDigest(tagOrDigest) });
+  public static fromEcrRepository(
+    repository: ecr.IRepository,
+    tagOrDigest: string = 'latest'
+  ): DockerImage {
+    return new StandardDockerImage({
+      repository,
+      imageUri: repository.repositoryUriForTagOrDigest(tagOrDigest),
+    });
   }
 
   /**
@@ -497,7 +498,6 @@ export enum CompressionType {
  *
  */
 export interface ModelClientOptions {
-
   /**
    * The maximum number of retries when invocation requests are failing.
    *
@@ -518,7 +518,6 @@ export interface ModelClientOptions {
  *
  */
 export interface TransformInput {
-
   /**
    * The compression type of the transform data.
    *
@@ -551,7 +550,6 @@ export interface TransformInput {
  *
  */
 export interface TransformDataSource {
-
   /**
    * S3 location of the input data
    */
@@ -563,7 +561,6 @@ export interface TransformDataSource {
  *
  */
 export interface TransformS3DataSource {
-
   /**
    * S3 Data Type
    *
@@ -582,7 +579,6 @@ export interface TransformS3DataSource {
  *
  */
 export interface TransformOutput {
-
   /**
    * MIME type used to specify the output data.
    *
@@ -615,7 +611,6 @@ export interface TransformOutput {
  *
  */
 export interface TransformResources {
-
   /**
    * Number of ML compute instances to use in the transform job
    */
@@ -688,7 +683,6 @@ export interface ContainerDefinitionOptions {
  * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
  */
 export class ContainerDefinition implements IContainerDefinition {
-
   constructor(private readonly options: ContainerDefinitionOptions) {}
 
   /**
@@ -804,12 +798,14 @@ export class AcceleratorClass {
   /**
    * Custom AcceleratorType
    * @param version - Elastic Inference accelerator generation
-  */
-  public static of(version: string) { return new AcceleratorClass(version); }
+   */
+  public static of(version: string) {
+    return new AcceleratorClass(version);
+  }
   /**
    * @param version - Elastic Inference accelerator generation
    */
-  private constructor(public readonly version: string) { }
+  private constructor(public readonly version: string) {}
 }
 
 /**
@@ -828,8 +824,7 @@ export class AcceleratorType {
     return new AcceleratorType(`ml.${acceleratorClass}.${instanceSize}`);
   }
 
-  constructor(private readonly instanceTypeIdentifier: string) {
-  }
+  constructor(private readonly instanceTypeIdentifier: string) {}
 
   /**
    * Return the accelerator type as a dotted string
@@ -844,7 +839,6 @@ export class AcceleratorType {
  *
  */
 export enum BatchStrategy {
-
   /**
    * Fits multiple records in a mini-batch.
    */
@@ -861,7 +855,6 @@ export enum BatchStrategy {
  *
  */
 export enum SplitType {
-
   /**
    * Input data files are not split,
    */
@@ -888,7 +881,6 @@ export enum SplitType {
  *
  */
 export enum AssembleWith {
-
   /**
    * Concatenate the results in binary format.
    */
@@ -898,7 +890,6 @@ export enum AssembleWith {
    * Add a newline character at the end of every transformed record.
    */
   LINE = 'Line',
-
 }
 
 class StandardDockerImage extends DockerImage {
@@ -906,7 +897,11 @@ class StandardDockerImage extends DockerImage {
   private readonly imageUri: string;
   private readonly repository?: ecr.IRepository;
 
-  constructor(opts: { allowAnyEcrImagePull?: boolean; imageUri: string; repository?: ecr.IRepository }) {
+  constructor(opts: {
+    allowAnyEcrImagePull?: boolean;
+    imageUri: string;
+    repository?: ecr.IRepository;
+  }) {
     super();
 
     this.allowAnyEcrImagePull = !!opts.allowAnyEcrImagePull;
@@ -919,14 +914,16 @@ class StandardDockerImage extends DockerImage {
       this.repository.grantPull(task);
     }
     if (this.allowAnyEcrImagePull) {
-      task.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: [
-          'ecr:BatchCheckLayerAvailability',
-          'ecr:GetDownloadUrlForLayer',
-          'ecr:BatchGetImage',
-        ],
-        resources: ['*'],
-      }));
+      task.grantPrincipal.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: [
+            'ecr:BatchCheckLayerAvailability',
+            'ecr:GetDownloadUrlForLayer',
+            'ecr:BatchGetImage',
+          ],
+          resources: ['*'],
+        })
+      );
     }
     return {
       imageUri: this.imageUri,
@@ -962,7 +959,9 @@ class StandardS3Location extends S3Location {
       if (opts.forWriting) {
         actions.push('s3:PutObject');
       }
-      task.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({ actions, resources: ['*'] }));
+      task.grantPrincipal.addToPrincipalPolicy(
+        new iam.PolicyStatement({ actions, resources: ['*'] })
+      );
     }
     return { uri: this.uri };
   }

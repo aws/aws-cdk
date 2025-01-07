@@ -103,8 +103,11 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
  * A new receipt rule.
  */
 export class ReceiptRule extends Resource implements IReceiptRule {
-
-  public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
+  public static fromReceiptRuleName(
+    scope: Construct,
+    id: string,
+    receiptRuleName: string
+  ): IReceiptRule {
     class Import extends Resource implements IReceiptRule {
       public readonly receiptRuleName = receiptRuleName;
     }
@@ -155,9 +158,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   }
 }
 
-export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
-
-}
+export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {}
 
 /**
  * A rule added at the top of the rule set to drop spam/virus.

@@ -23,7 +23,7 @@ export class ArtifactMap {
       // They all need a name
       const artifactName = this.makeUniqueName(`${x.producer.id}.${x.id}`);
       this.usedNames.add(artifactName);
-      this.artifacts.set(x, ret = new cp.Artifact(artifactName));
+      this.artifacts.set(x, (ret = new cp.Artifact(artifactName)));
     }
     return ret;
   }

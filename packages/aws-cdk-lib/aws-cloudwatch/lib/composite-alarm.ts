@@ -7,7 +7,6 @@ import { ArnFormat, Lazy, Names, Stack, Duration } from '../../core';
  * Properties for creating a Composite Alarm
  */
 export interface CompositeAlarmProps {
-
   /**
    * Whether the actions for this alarm are enabled
    *
@@ -62,7 +61,6 @@ export interface CompositeAlarmProps {
  * A Composite Alarm based on Alarm Rule.
  */
 export class CompositeAlarm extends AlarmBase {
-
   /**
    * Import an existing CloudWatch composite alarm provided an Name.
    *
@@ -70,15 +68,23 @@ export class CompositeAlarm extends AlarmBase {
    * @param id The construct's name
    * @param compositeAlarmName Composite Alarm Name
    */
-  public static fromCompositeAlarmName(scope: Construct, id: string, compositeAlarmName: string): IAlarm {
+  public static fromCompositeAlarmName(
+    scope: Construct,
+    id: string,
+    compositeAlarmName: string
+  ): IAlarm {
     const stack = Stack.of(scope);
 
-    return this.fromCompositeAlarmArn(scope, id, stack.formatArn({
-      service: 'cloudwatch',
-      resource: 'alarm',
-      resourceName: compositeAlarmName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    }));
+    return this.fromCompositeAlarmArn(
+      scope,
+      id,
+      stack.formatArn({
+        service: 'cloudwatch',
+        resource: 'alarm',
+        resourceName: compositeAlarmName,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })
+    );
   }
 
   /**
@@ -88,10 +94,17 @@ export class CompositeAlarm extends AlarmBase {
    * @param id The construct's name
    * @param compositeAlarmArn Composite Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:CompositeAlarmName)
    */
-  public static fromCompositeAlarmArn(scope: Construct, id: string, compositeAlarmArn: string): IAlarm {
+  public static fromCompositeAlarmArn(
+    scope: Construct,
+    id: string,
+    compositeAlarmArn: string
+  ): IAlarm {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = compositeAlarmArn;
-      public readonly alarmName = Stack.of(scope).splitArn(compositeAlarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+      public readonly alarmName = Stack.of(scope).splitArn(
+        compositeAlarmArn,
+        ArnFormat.COLON_RESOURCE_NAME
+      ).resourceName!;
     }
     return new Import(scope, id);
   }
@@ -114,18 +127,23 @@ export class CompositeAlarm extends AlarmBase {
 
   constructor(scope: Construct, id: string, props: CompositeAlarmProps) {
     super(scope, id, {
-      physicalName: props.compositeAlarmName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
+      physicalName:
+        props.compositeAlarmName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
 
     if (props.alarmRule.renderAlarmRule().length > 10240) {
-      throw new Error('Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule');
+      throw new Error(
+        'Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule'
+      );
     }
 
     let extensionPeriod = props.actionsSuppressorExtensionPeriod;
     let waitPeriod = props.actionsSuppressorWaitPeriod;
     if (props.actionsSuppressor === undefined) {
       if (extensionPeriod !== undefined || waitPeriod !== undefined) {
-        throw new Error('ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.');
+        throw new Error(
+          'ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.'
+        );
       }
     } else {
       extensionPeriod = extensionPeriod ?? Duration.minutes(1);
@@ -140,7 +158,7 @@ export class CompositeAlarm extends AlarmBase {
       alarmDescription: props.alarmDescription,
       actionsEnabled: props.actionsEnabled,
       alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
-      insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
+      insufficientDataActions: Lazy.list({ produce: () => this.insufficientDataActionArns }),
       okActions: Lazy.list({ produce: () => this.okActionArns }),
       actionsSuppressor: props.actionsSuppressor?.alarmArn,
       actionsSuppressorExtensionPeriod: extensionPeriod?.toSeconds(),
@@ -154,7 +172,6 @@ export class CompositeAlarm extends AlarmBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
-
   }
 
   private generateUniqueId(): string {
@@ -164,5 +181,4 @@ export class CompositeAlarm extends AlarmBase {
     }
     return name;
   }
-
 }

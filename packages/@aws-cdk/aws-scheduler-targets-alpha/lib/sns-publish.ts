@@ -9,7 +9,7 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 export class SnsPublish extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly topic: sns.ITopic,
-    props: ScheduleTargetBaseProps = {},
+    props: ScheduleTargetBaseProps = {}
   ) {
     super(props, topic.topicArn);
   }

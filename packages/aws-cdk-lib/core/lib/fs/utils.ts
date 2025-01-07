@@ -11,7 +11,11 @@ import { SymlinkFollowMode } from './options';
  *
  * @returns true if the link should be followed.
  */
-export function shouldFollow(mode: SymlinkFollowMode, sourceRoot: string, realPath: string): boolean {
+export function shouldFollow(
+  mode: SymlinkFollowMode,
+  sourceRoot: string,
+  realPath: string
+): boolean {
   switch (mode) {
     case SymlinkFollowMode.ALWAYS:
       return fs.existsSync(realPath);

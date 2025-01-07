@@ -7,11 +7,16 @@ const ALLOWED_METHODS = ['ANY', ...ALL_METHODS];
 
 export function validateHttpMethod(method: string, messagePrefix: string = '') {
   if (!ALLOWED_METHODS.includes(method)) {
-    throw new Error(`${messagePrefix}Invalid HTTP method "${method}". Allowed methods: ${ALLOWED_METHODS.join(',')}`);
+    throw new Error(
+      `${messagePrefix}Invalid HTTP method "${method}". Allowed methods: ${ALLOWED_METHODS.join(',')}`
+    );
   }
 }
 
-export function parseMethodOptionsPath(originalPath: string): { resourcePath: string; httpMethod: string } {
+export function parseMethodOptionsPath(originalPath: string): {
+  resourcePath: string;
+  httpMethod: string;
+} {
   if (!originalPath.startsWith('/')) {
     throw new Error(`Method options path must start with '/': ${originalPath}`);
   }
@@ -21,7 +26,9 @@ export function parseMethodOptionsPath(originalPath: string): { resourcePath: st
   const components = path.split('/');
 
   if (components.length < 2) {
-    throw new Error(`Method options path must include at least two components: /{resource}/{method} (i.e. /foo/bar/GET): ${path}`);
+    throw new Error(
+      `Method options path must include at least two components: /{resource}/{method} (i.e. /foo/bar/GET): ${path}`
+    );
   }
 
   const httpMethod = components.pop()!.toUpperCase(); // last component is an HTTP method
@@ -42,13 +49,19 @@ export function parseMethodOptionsPath(originalPath: string): { resourcePath: st
   };
 }
 
-export function parseAwsApiCall(path?: string, action?: string, actionParams?: { [key: string]: string }): { apiType: string; apiValue: string } {
+export function parseAwsApiCall(
+  path?: string,
+  action?: string,
+  actionParams?: { [key: string]: string }
+): { apiType: string; apiValue: string } {
   if (actionParams && !action) {
     throw new Error('"actionParams" requires that "action" will be set');
   }
 
   if (path && action) {
-    throw new Error(`"path" and "action" are mutually exclusive (path="${path}", action="${action}")`);
+    throw new Error(
+      `"path" and "action" are mutually exclusive (path="${path}", action="${action}")`
+    );
   }
 
   if (path) {
@@ -92,7 +105,7 @@ export class JsonSchemaMapper {
    */
   public static toCfnJsonSchema(schema: jsonSchema.JsonSchema): any {
     const result = JsonSchemaMapper._toCfnJsonSchema(schema);
-    if (! ('$schema' in result)) {
+    if (!('$schema' in result)) {
       result.$schema = jsonSchema.JsonSchemaVersion.DRAFT4;
     }
     return result;
@@ -115,14 +128,20 @@ export class JsonSchemaMapper {
       return schema;
     }
     if (Array.isArray(schema)) {
-      return schema.map(entry => JsonSchemaMapper._toCfnJsonSchema(entry));
+      return schema.map((entry) => JsonSchemaMapper._toCfnJsonSchema(entry));
     }
-    return Object.assign({}, ...Object.entries(schema).map(([key, value]) => {
-      const mapKey = !preserveKeys && (key in JsonSchemaMapper.SchemaPropsWithPrefix);
-      const newKey = mapKey ? JsonSchemaMapper.SchemaPropsWithPrefix[key] : key;
-      // If keys were preserved, don't consider SchemaPropsWithUserDefinedChildren for those keys (they are user-defined!)
-      const newValue = JsonSchemaMapper._toCfnJsonSchema(value, !preserveKeys && JsonSchemaMapper.SchemaPropsWithUserDefinedChildren[key]);
-      return { [newKey]: newValue };
-    }));
+    return Object.assign(
+      {},
+      ...Object.entries(schema).map(([key, value]) => {
+        const mapKey = !preserveKeys && key in JsonSchemaMapper.SchemaPropsWithPrefix;
+        const newKey = mapKey ? JsonSchemaMapper.SchemaPropsWithPrefix[key] : key;
+        // If keys were preserved, don't consider SchemaPropsWithUserDefinedChildren for those keys (they are user-defined!)
+        const newValue = JsonSchemaMapper._toCfnJsonSchema(
+          value,
+          !preserveKeys && JsonSchemaMapper.SchemaPropsWithUserDefinedChildren[key]
+        );
+        return { [newKey]: newValue };
+      })
+    );
   }
 }

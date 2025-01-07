@@ -1,12 +1,16 @@
-import { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '../../aws-lambda';
+import {
+  DlqDestinationConfig,
+  IEventSourceDlq,
+  IEventSourceMapping,
+  IFunction,
+} from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 
 /**
  * An SNS dead letter queue destination configuration for a Lambda event source
  */
 export class SnsDlq implements IEventSourceDlq {
-  constructor(private readonly topic: sns.ITopic) {
-  }
+  constructor(private readonly topic: sns.ITopic) {}
 
   /**
    * Returns a destination configuration for the DLQ

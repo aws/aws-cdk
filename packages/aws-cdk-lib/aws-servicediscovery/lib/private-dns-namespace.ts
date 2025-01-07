@@ -12,7 +12,7 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   readonly vpc: ec2.IVpc;
 }
 
-export interface IPrivateDnsNamespace extends INamespace { }
+export interface IPrivateDnsNamespace extends INamespace {}
 
 export interface PrivateDnsNamespaceAttributes {
   /**
@@ -35,8 +35,11 @@ export interface PrivateDnsNamespaceAttributes {
  * Define a Service Discovery HTTP Namespace
  */
 export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespace {
-
-  public static fromPrivateDnsNamespaceAttributes(scope: Construct, id: string, attrs: PrivateDnsNamespaceAttributes): IPrivateDnsNamespace {
+  public static fromPrivateDnsNamespaceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: PrivateDnsNamespaceAttributes
+  ): IPrivateDnsNamespace {
     class Import extends Resource implements IPrivateDnsNamespace {
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
@@ -91,13 +94,19 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
   }
 
   /** @attribute */
-  public get privateDnsNamespaceArn() { return this.namespaceArn; }
+  public get privateDnsNamespaceArn() {
+    return this.namespaceArn;
+  }
 
   /** @attribute */
-  public get privateDnsNamespaceName() { return this.namespaceName; }
+  public get privateDnsNamespaceName() {
+    return this.namespaceName;
+  }
 
   /** @attribute */
-  public get privateDnsNamespaceId() { return this.namespaceId; }
+  public get privateDnsNamespaceId() {
+    return this.namespaceId;
+  }
 
   /**
    * Creates a service within the namespace

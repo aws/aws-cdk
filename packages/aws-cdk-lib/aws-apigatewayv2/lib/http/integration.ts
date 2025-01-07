@@ -257,7 +257,11 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       throw new Error('Either `integrationSubtype` or `integrationUri` must be specified.');
     }
 
-    if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
+    if (
+      props.timeout &&
+      !props.timeout.isUnresolved() &&
+      (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)
+    ) {
       throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
     }
 
@@ -319,8 +323,13 @@ export abstract class HttpRouteIntegration {
    * Internal method called when binding this integration to the route.
    * @internal
    */
-  public _bindToRoute(options: HttpRouteIntegrationBindOptions): { readonly integrationId: string } {
-    if (this.integration && this.integration.httpApi.node.addr !== options.route.httpApi.node.addr) {
+  public _bindToRoute(options: HttpRouteIntegrationBindOptions): {
+    readonly integrationId: string;
+  } {
+    if (
+      this.integration &&
+      this.integration.httpApi.node.addr !== options.route.httpApi.node.addr
+    ) {
       throw new Error('A single integration cannot be associated with multiple APIs.');
     }
 
@@ -431,10 +440,10 @@ export interface HttpRouteIntegrationConfig {
   readonly timeout?: Duration;
 
   /**
-  * Specifies how to transform HTTP requests before sending them to the backend
-  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
-  * @default undefined requests are sent to the backend unmodified
-  */
+   * Specifies how to transform HTTP requests before sending them to the backend
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+   * @default undefined requests are sent to the backend unmodified
+   */
   readonly parameterMapping?: ParameterMapping;
 
   /**

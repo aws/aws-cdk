@@ -2,7 +2,14 @@ import { Construct } from 'constructs';
 import { CfnDeployment, CfnEnvironment } from './appconfig.generated';
 import { IApplication } from './application';
 import { IConfiguration } from './configuration';
-import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
+import {
+  ActionPoint,
+  IEventDestination,
+  ExtensionOptions,
+  IExtension,
+  IExtensible,
+  ExtensibleBase,
+} from './extension';
 import { getHash } from './private/hash';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -66,7 +73,7 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
         configurationVersion: configuration.versionNumber!,
         description: configuration.description,
         kmsKeyIdentifier: configuration.deploymentKey?.keyArn,
-      }),
+      })
     );
 
     // This internal member is used to keep track of configuration deployments
@@ -81,11 +88,18 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     configurations.forEach((config) => this.addDeployment(config));
   }
 
-  public on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions) {
+  public on(
+    actionPoint: ActionPoint,
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ) {
     this.extensible.on(actionPoint, eventDestination, options);
   }
 
-  public preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions) {
+  public preCreateHostedConfigurationVersion(
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ) {
     this.extensible.preCreateHostedConfigurationVersion(eventDestination, options);
   }
 
@@ -132,10 +146,7 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
   public grantReadConfig(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: [
-        'appconfig:GetLatestConfiguration',
-        'appconfig:StartConfigurationSession',
-      ],
+      actions: ['appconfig:GetLatestConfiguration', 'appconfig:StartConfigurationSession'],
       resourceArns: [`${this.environmentArn}/configuration/*`],
     });
   }
@@ -191,15 +202,23 @@ export class Environment extends EnvironmentBase {
    * @param id The name of the environment construct
    * @param environmentArn The Amazon Resource Name (ARN) of the environment
    */
-  public static fromEnvironmentArn(scope: Construct, id: string, environmentArn: string): IEnvironment {
+  public static fromEnvironmentArn(
+    scope: Construct,
+    id: string,
+    environmentArn: string
+  ): IEnvironment {
     const parsedArn = Stack.of(scope).splitArn(environmentArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new Error(`Missing required /$/{applicationId}/environment//$/{environmentId} from environment ARN: ${parsedArn.resourceName}`);
+      throw new Error(
+        `Missing required /$/{applicationId}/environment//$/{environmentId} from environment ARN: ${parsedArn.resourceName}`
+      );
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 3 || !resourceName[0] || !resourceName[2]) {
-      throw new Error('Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}');
+      throw new Error(
+        'Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}'
+      );
     }
 
     const applicationId = resourceName[0];
@@ -224,7 +243,11 @@ export class Environment extends EnvironmentBase {
    * @param id The name of the environment construct
    * @param attrs The attributes of the environment
    */
-  public static fromEnvironmentAttributes(scope: Construct, id: string, attrs: EnvironmentAttributes): IEnvironment {
+  public static fromEnvironmentAttributes(
+    scope: Construct,
+    id: string,
+    attrs: EnvironmentAttributes
+  ): IEnvironment {
     const applicationId = attrs.application.applicationId;
     const environmentId = attrs.environmentId;
 
@@ -296,10 +319,12 @@ export class Environment extends EnvironmentBase {
       physicalName: props.environmentName,
     });
 
-    this.name = props.environmentName || Names.uniqueResourceName(this, {
-      maxLength: 64,
-      separator: '-',
-    });
+    this.name =
+      props.environmentName ||
+      Names.uniqueResourceName(this, {
+        maxLength: 64,
+        separator: '-',
+      });
     this.application = props.application;
     this.applicationId = this.application.applicationId;
     this.description = props.description;
@@ -399,7 +424,9 @@ export abstract class Monitor {
    *
    * @param monitorsProperty The monitors property.
    */
-  public static fromCfnMonitorsProperty(monitorsProperty: CfnEnvironment.MonitorsProperty): Monitor {
+  public static fromCfnMonitorsProperty(
+    monitorsProperty: CfnEnvironment.MonitorsProperty
+  ): Monitor {
     if (monitorsProperty.alarmArn === undefined) {
       throw new Error('You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
     }
@@ -495,7 +522,11 @@ export interface IEnvironment extends IResource {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions): void;
+  on(
+    actionPoint: ActionPoint,
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ): void;
 
   /**
    * Adds a PRE_CREATE_HOSTED_CONFIGURATION_VERSION extension with the provided event destination
@@ -504,7 +535,10 @@ export interface IEnvironment extends IResource {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+  preCreateHostedConfigurationVersion(
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ): void;
 
   /**
    * Adds a PRE_START_DEPLOYMENT extension with the provided event destination and also creates

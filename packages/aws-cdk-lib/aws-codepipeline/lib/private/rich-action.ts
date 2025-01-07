@@ -1,7 +1,14 @@
 import { Construct } from 'constructs';
 import * as events from '../../../aws-events';
 import { ResourceEnvironment, Stack, Token, TokenComparison } from '../../../core';
-import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IPipeline, IStage } from '../action';
+import {
+  ActionBindOptions,
+  ActionConfig,
+  ActionProperties,
+  IAction,
+  IPipeline,
+  IStage,
+} from '../action';
 
 /**
  * Helper routines to work with Actions
@@ -19,7 +26,10 @@ import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IPipeline, 
 export class RichAction implements IAction {
   public readonly actionProperties: ActionProperties;
 
-  constructor(private readonly action: IAction, private readonly pipeline: IPipeline) {
+  constructor(
+    private readonly action: IAction,
+    private readonly pipeline: IPipeline
+  ) {
     this.actionProperties = action.actionProperties;
   }
 
@@ -27,7 +37,11 @@ export class RichAction implements IAction {
     return this.action.bind(scope, stage, options);
   }
 
-  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
+  public onStateChange(
+    name: string,
+    target?: events.IRuleTarget,
+    options?: events.RuleProps
+  ): events.Rule {
     return this.action.onStateChange(name, target, options);
   }
 
@@ -36,7 +50,10 @@ export class RichAction implements IAction {
   }
 
   public get isCrossAccount(): boolean {
-    return !actionDimensionSameAsPipelineDimension(this.effectiveAccount, this.pipeline.env.account);
+    return !actionDimensionSameAsPipelineDimension(
+      this.effectiveAccount,
+      this.pipeline.env.account
+    );
   }
 
   /**
@@ -66,8 +83,7 @@ export class RichAction implements IAction {
    * `undefined` means it wants to execute in the same region as the pipeline.
    */
   public get effectiveRegion(): string | undefined {
-    return this.action.actionProperties.resource?.env.region
-      ?? this.action.actionProperties.region;
+    return this.action.actionProperties.resource?.env.region ?? this.action.actionProperties.region;
   }
 
   /**
@@ -75,13 +91,18 @@ export class RichAction implements IAction {
    * `undefined` means it wants to execute in the same account as the pipeline.
    */
   public get effectiveAccount(): string | undefined {
-    return this.action.actionProperties.role?.env.account
-      ?? this.action.actionProperties?.resource?.env.account
-      ?? this.action.actionProperties.account;
+    return (
+      this.action.actionProperties.role?.env.account ??
+      this.action.actionProperties?.resource?.env.account ??
+      this.action.actionProperties.account
+    );
   }
 }
 
-function actionDimensionSameAsPipelineDimension(actionDim: string | undefined, pipelineDim: string) {
+function actionDimensionSameAsPipelineDimension(
+  actionDim: string | undefined,
+  pipelineDim: string
+) {
   // if the action's dimension is `undefined`,
   // it means it is in the same region/account as the pipeline
   if (!actionDim) {
@@ -102,8 +123,7 @@ function actionDimensionSameAsPipelineDimension(actionDim: string | undefined, p
  * Whether the two envs represent the same environment
  */
 function sameEnv(env1: ResourceEnvironment, env2: ResourceEnvironment) {
-  return sameEnvDimension(env1.region, env2.region)
-    && sameEnvDimension(env1.account, env2.account);
+  return sameEnvDimension(env1.region, env2.region) && sameEnvDimension(env1.account, env2.account);
 }
 
 /**
@@ -113,5 +133,7 @@ function sameEnv(env1: ResourceEnvironment, env2: ResourceEnvironment) {
  * are unresolved (in which case both are expted to be "current region" or "current account").
  */
 function sameEnvDimension(dim1: string, dim2: string) {
-  return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(dim1, dim2));
+  return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(
+    Token.compareStrings(dim1, dim2)
+  );
 }

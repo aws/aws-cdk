@@ -10,7 +10,12 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { CfnResource, Duration, Lazy, Names, Resource, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
+import {
+  BaseLoadBalancer,
+  BaseLoadBalancerLookupOptions,
+  BaseLoadBalancerProps,
+  ILoadBalancerV2,
+} from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol, DesyncMitigationMode } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
@@ -143,8 +148,7 @@ export enum XffHeaderProcessingMode {
 /**
  * Options for looking up an ApplicationLoadBalancer
  */
-export interface ApplicationLoadBalancerLookupOptions extends BaseLoadBalancerLookupOptions {
-}
+export interface ApplicationLoadBalancerLookupOptions extends BaseLoadBalancerLookupOptions {}
 
 /**
  * Define an Application Load Balancer
@@ -155,7 +159,11 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Look up an application load balancer.
    */
-  public static fromLookup(scope: Construct, id: string, options: ApplicationLoadBalancerLookupOptions): IApplicationLoadBalancer {
+  public static fromLookup(
+    scope: Construct,
+    id: string,
+    options: ApplicationLoadBalancerLookupOptions
+  ): IApplicationLoadBalancer {
     const props = BaseLoadBalancer._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
@@ -168,8 +176,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * Import an existing Application Load Balancer
    */
   public static fromApplicationLoadBalancerAttributes(
-    scope: Construct, id: string, attrs: ApplicationLoadBalancerAttributes): IApplicationLoadBalancer {
-
+    scope: Construct,
+    id: string,
+    attrs: ApplicationLoadBalancerAttributes
+  ): IApplicationLoadBalancer {
     return new ImportedApplicationLoadBalancer(scope, id, attrs);
   }
 
@@ -181,43 +191,75 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
       type: 'application',
-      securityGroups: Lazy.list({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
+      securityGroups: Lazy.list({
+        produce: () => this.connections.securityGroups.map((sg) => sg.securityGroupId),
+      }),
       ipAddressType: props.ipAddressType,
     });
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
 
-    if (props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 && !props.internetFacing) {
-      throw new Error('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
+    if (
+      props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
+      !props.internetFacing
+    ) {
+      throw new Error(
+        'dual-stack without public IPv4 address can only be used with internet-facing scheme.'
+      );
     }
 
-    const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc,
-      description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
-      allowAllOutbound: false,
-    })];
+    const securityGroups = [
+      props.securityGroup ||
+        new ec2.SecurityGroup(this, 'SecurityGroup', {
+          vpc: props.vpc,
+          description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
+          allowAllOutbound: false,
+        }),
+    ];
     this.connections = new ec2.Connections({ securityGroups });
     this.listeners = [];
     this.metrics = new ApplicationLoadBalancerMetrics(this, this.loadBalancerFullName);
 
-    if (props.http2Enabled !== undefined) { this.setAttribute('routing.http2.enabled', props.http2Enabled ? 'true' : 'false'); }
-    if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
-    if (props.dropInvalidHeaderFields) { this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
-    if (props.desyncMitigationMode !== undefined) { this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
-    if (props.preserveHostHeader) { this.setAttribute('routing.http.preserve_host_header.enabled', 'true'); }
-    if (props.xAmznTlsVersionAndCipherSuiteHeaders) { this.setAttribute('routing.http.x_amzn_tls_version_and_cipher_suite.enabled', 'true'); }
-    if (props.preserveXffClientPort) { this.setAttribute('routing.http.xff_client_port.enabled', 'true'); }
-    if (props.xffHeaderProcessingMode !== undefined) { this.setAttribute('routing.http.xff_header_processing.mode', props.xffHeaderProcessingMode); }
-    if (props.wafFailOpen) { this.setAttribute('waf.fail_open.enabled', 'true'); }
+    if (props.http2Enabled !== undefined) {
+      this.setAttribute('routing.http2.enabled', props.http2Enabled ? 'true' : 'false');
+    }
+    if (props.idleTimeout !== undefined) {
+      this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString());
+    }
+    if (props.dropInvalidHeaderFields) {
+      this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true');
+    }
+    if (props.desyncMitigationMode !== undefined) {
+      this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode);
+    }
+    if (props.preserveHostHeader) {
+      this.setAttribute('routing.http.preserve_host_header.enabled', 'true');
+    }
+    if (props.xAmznTlsVersionAndCipherSuiteHeaders) {
+      this.setAttribute('routing.http.x_amzn_tls_version_and_cipher_suite.enabled', 'true');
+    }
+    if (props.preserveXffClientPort) {
+      this.setAttribute('routing.http.xff_client_port.enabled', 'true');
+    }
+    if (props.xffHeaderProcessingMode !== undefined) {
+      this.setAttribute('routing.http.xff_header_processing.mode', props.xffHeaderProcessingMode);
+    }
+    if (props.wafFailOpen) {
+      this.setAttribute('waf.fail_open.enabled', 'true');
+    }
     if (props.clientKeepAlive !== undefined) {
       const clientKeepAliveInMillis = props.clientKeepAlive.toMilliseconds();
       if (clientKeepAliveInMillis < 1000) {
-        throw new Error(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`);
+        throw new Error(
+          `\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`
+        );
       }
 
       const clientKeepAliveInSeconds = props.clientKeepAlive.toSeconds();
       if (clientKeepAliveInSeconds < 60 || clientKeepAliveInSeconds > 604800) {
-        throw new Error(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`);
+        throw new Error(
+          `\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`
+        );
       }
       this.setAttribute('client_keep_alive.seconds', clientKeepAliveInSeconds.toString());
     }
@@ -264,11 +306,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
-
     /**
-    * KMS key encryption is not supported on Access Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
-    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
-    */
+     * KMS key encryption is not supported on Access Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+     * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
+     */
 
     if (bucket.encryptionKey) {
       throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
@@ -280,13 +321,15 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.setAttribute('access_logs.s3.prefix', prefix);
 
     const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
-    bucket.addToResourcePolicy(new PolicyStatement({
-      actions: ['s3:PutObject'],
-      principals: [this.resourcePolicyPrincipal()],
-      resources: [
-        bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
-      ],
-    }));
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [this.resourcePolicyPrincipal()],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+        ],
+      })
+    );
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
@@ -297,14 +340,14 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
         },
-      }),
+      })
     );
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:GetBucketAcl'],
         principals: [logsDeliveryServicePrincipal],
         resources: [bucket.bucketArn],
-      }),
+      })
     );
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
@@ -312,7 +355,12 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     // and https://github.com/aws/aws-cdk/issues/27928)
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
-    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
+    if (
+      lb &&
+      bucketPolicy &&
+      CfnResource.isCfnResource(lb) &&
+      CfnResource.isCfnResource(bucketPolicy)
+    ) {
       lb.addDependency(bucketPolicy);
     }
   }
@@ -327,9 +375,9 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    */
   public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
     /**
-    * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
-    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
-    */
+     * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+     * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
+     */
     if (bucket.encryptionKey) {
       throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
     }
@@ -341,13 +389,15 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html
     const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
-    bucket.addToResourcePolicy(new PolicyStatement({
-      actions: ['s3:PutObject'],
-      principals: [this.resourcePolicyPrincipal()],
-      resources: [
-        bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
-      ],
-    }));
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [this.resourcePolicyPrincipal()],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+        ],
+      })
+    );
     // We still need this policy for the bucket using the ACL
     bucket.addToResourcePolicy(
       new PolicyStatement({
@@ -359,14 +409,14 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
         },
-      }),
+      })
     );
     bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:GetBucketAcl'],
         principals: [logsDeliveryServicePrincipal],
         resources: [bucket.bucketArn],
-      }),
+      })
     );
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
@@ -374,7 +424,12 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     // and https://github.com/aws/aws-cdk/issues/27928)
     const lb = this.node.defaultChild;
     const bucketPolicy = bucket.policy?.node.defaultChild;
-    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
+    if (
+      lb &&
+      bucketPolicy &&
+      CfnResource.isCfnResource(lb) &&
+      CfnResource.isCfnResource(bucketPolicy)
+    ) {
       lb.addDependency(bucketPolicy);
     }
   }
@@ -787,7 +842,7 @@ class ApplicationLoadBalancerMetrics implements IApplicationLoadBalancerMetrics 
 
   private cannedMetric(
     fn: (dims: { LoadBalancer: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions,
+    props?: cloudwatch.MetricOptions
   ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ LoadBalancer: this.loadBalancerFullName }),
@@ -871,7 +926,6 @@ export enum HttpCodeTarget {
  * Contains all metrics for an Application Load Balancer.
  */
 export interface IApplicationLoadBalancerMetrics {
-
   /**
    * Return the given named metric for this Application Load Balancer
    *
@@ -1144,7 +1198,6 @@ export interface ApplicationLoadBalancerAttributes {
    * the VPC is not available.
    */
   readonly vpc?: ec2.IVpc;
-
 }
 
 /**
@@ -1162,7 +1215,9 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly loadBalancerArn: string;
 
   public get listeners(): ApplicationListener[] {
-    throw Error('.listeners can only be accessed if the class was constructed as an owned, not imported, load balancer');
+    throw Error(
+      '.listeners can only be accessed if the class was constructed as an owned, not imported, load balancer'
+    );
   }
 
   /**
@@ -1173,7 +1228,11 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly vpc?: ec2.IVpc;
   public readonly metrics: IApplicationLoadBalancerMetrics;
 
-  constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: ApplicationLoadBalancerAttributes
+  ) {
     super(scope, id, {
       environmentFromArn: props.loadBalancerArn,
     });
@@ -1181,11 +1240,16 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
     this.vpc = props.vpc;
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
-        allowAllOutbound: props.securityGroupAllowsAllOutbound,
-      })],
+      securityGroups: [
+        ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
+          allowAllOutbound: props.securityGroupAllowsAllOutbound,
+        }),
+      ],
     });
-    this.metrics = new ApplicationLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
+    this.metrics = new ApplicationLoadBalancerMetrics(
+      this,
+      parseLoadBalancerFullName(props.loadBalancerArn)
+    );
   }
 
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
@@ -1196,15 +1260,23 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   }
 
   public get loadBalancerCanonicalHostedZoneId(): string {
-    if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
+    if (this.props.loadBalancerCanonicalHostedZoneId) {
+      return this.props.loadBalancerCanonicalHostedZoneId;
+    }
     // eslint-disable-next-line max-len
-    throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
+    throw new Error(
+      `'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`
+    );
   }
 
   public get loadBalancerDnsName(): string {
-    if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
+    if (this.props.loadBalancerDnsName) {
+      return this.props.loadBalancerDnsName;
+    }
     // eslint-disable-next-line max-len
-    throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
+    throw new Error(
+      `'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`
+    );
   }
 }
 
@@ -1218,7 +1290,9 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly metrics: IApplicationLoadBalancerMetrics;
 
   public get listeners(): ApplicationListener[] {
-    throw Error('.listeners can only be accessed if the class was constructed as an owned, not looked up, load balancer');
+    throw Error(
+      '.listeners can only be accessed if the class was constructed as an owned, not looked up, load balancer'
+    );
   }
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
@@ -1234,7 +1308,9 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
       this.ipAddressType = IpAddressType.IPV4;
     } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK) {
       this.ipAddressType = IpAddressType.DUAL_STACK;
-    } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) {
+    } else if (
+      props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4
+    ) {
       this.ipAddressType = IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4;
     }
 
@@ -1244,10 +1320,17 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
 
     this.connections = new ec2.Connections();
     for (const securityGroupId of props.securityGroupIds) {
-      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      const securityGroup = ec2.SecurityGroup.fromLookupById(
+        this,
+        `SecurityGroup-${securityGroupId}`,
+        securityGroupId
+      );
       this.connections.addSecurityGroup(securityGroup);
     }
-    this.metrics = new ApplicationLoadBalancerMetrics(this, parseLoadBalancerFullName(this.loadBalancerArn));
+    this.metrics = new ApplicationLoadBalancerMetrics(
+      this,
+      parseLoadBalancerFullName(this.loadBalancerArn)
+    );
   }
 
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
@@ -1262,7 +1345,6 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
  * Properties for a redirection config
  */
 export interface ApplicationLoadBalancerRedirectConfig {
-
   /**
    * The protocol of the listener being created
    *
@@ -1305,5 +1387,4 @@ export interface ApplicationLoadBalancerRedirectConfig {
    * @default true
    */
   readonly open?: boolean;
-
 }

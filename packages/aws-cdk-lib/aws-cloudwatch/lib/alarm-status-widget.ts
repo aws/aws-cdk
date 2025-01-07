@@ -6,7 +6,6 @@ import { ConcreteWidget } from './widget';
  * The sort possibilities for AlarmStatusWidgets
  */
 export enum AlarmStatusWidgetSortBy {
-
   /**
    * Choose DEFAULT to sort them in alphabetical order by alarm name.
    */

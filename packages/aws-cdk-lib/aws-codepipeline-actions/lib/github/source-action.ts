@@ -126,8 +126,11 @@ export class GitHubSourceAction extends Action {
     };
   }
 
-  protected bound(scope: Construct, stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    scope: Construct,
+    stage: codepipeline.IStage,
+    _options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     if (!this.props.trigger || this.props.trigger === GitHubTrigger.WEBHOOK) {
       new codepipeline.CfnWebhook(scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',

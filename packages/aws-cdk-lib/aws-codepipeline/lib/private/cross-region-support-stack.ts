@@ -61,15 +61,23 @@ export class CrossRegionSupportConstruct extends Construct {
 
     let encryptionAlias;
     if (createKmsKey) {
-      const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        enableKeyRotation: props.enableKeyRotation,
-      });
-      encryptionAlias = new AliasWithShorterGeneratedName(this, 'CrossRegionCodePipelineReplicationBucketEncryptionAlias', {
-        targetKey: encryptionKey,
-        aliasName: cdk.PhysicalName.GENERATE_IF_NEEDED,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-      });
+      const encryptionKey = new kms.Key(
+        this,
+        'CrossRegionCodePipelineReplicationBucketEncryptionKey',
+        {
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+          enableKeyRotation: props.enableKeyRotation,
+        }
+      );
+      encryptionAlias = new AliasWithShorterGeneratedName(
+        this,
+        'CrossRegionCodePipelineReplicationBucketEncryptionAlias',
+        {
+          targetKey: encryptionKey,
+          aliasName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+        }
+      );
     }
     this.replicationBucket = new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
@@ -155,7 +163,10 @@ function generateStackName(props: CrossRegionSupportStackProps): string {
   // When the pipeline stack name is an unresolved token, we generate stack name here
   // without including tokenized value in the generated stack name.
   if (cdk.Token.isUnresolved(props.pipelineStackName)) {
-    return makeUniqueResourceName([`cross-region-support-${props.region}`], { maxLength: 128, allowedSpecialCharacters: '-' });
+    return makeUniqueResourceName([`cross-region-support-${props.region}`], {
+      maxLength: 128,
+      allowedSpecialCharacters: '-',
+    });
   }
   return `${props.pipelineStackName}-support-${props.region}`;
 }

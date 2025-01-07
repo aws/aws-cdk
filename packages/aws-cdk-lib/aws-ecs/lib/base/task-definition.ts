@@ -3,9 +3,19 @@ import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '../../../core';
-import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
+import {
+  ContainerDefinition,
+  ContainerDefinitionOptions,
+  PortMapping,
+  Protocol,
+} from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
-import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
+import {
+  FirelensLogRouter,
+  FirelensLogRouterDefinitionOptions,
+  FirelensLogRouterType,
+  obtainDefaultFluentBitECRImage,
+} from '../firelens-log-router';
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
@@ -278,7 +288,6 @@ export interface TaskDefinitionAttributes extends CommonTaskDefinitionAttributes
 }
 
 abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
-
   public abstract readonly compatibility: Compatibility;
   public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
@@ -311,20 +320,27 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
  * The base class for all task definitions.
  */
 export class TaskDefinition extends TaskDefinitionBase {
-
   /**
    * Imports a task definition from the specified task definition ARN.
    *
    * The task will have a compatibility of EC2+Fargate.
    */
-  public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
+  public static fromTaskDefinitionArn(
+    scope: Construct,
+    id: string,
+    taskDefinitionArn: string
+  ): ITaskDefinition {
     return new ImportedTaskDefinition(scope, id, { taskDefinitionArn: taskDefinitionArn });
   }
 
   /**
    * Create a task definition from a task definition reference
    */
-  public static fromTaskDefinitionAttributes(scope: Construct, id: string, attrs: TaskDefinitionAttributes): ITaskDefinition {
+  public static fromTaskDefinitionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: TaskDefinitionAttributes
+  ): ITaskDefinition {
     return new ImportedTaskDefinition(scope, id, {
       taskDefinitionArn: attrs.taskDefinitionArn,
       compatibility: attrs.compatibility,
@@ -401,7 +417,8 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Placement constraints for task instances
    */
-  private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
+  private readonly placementConstraints =
+    new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
   /**
    * Inference accelerators for task instances
@@ -428,30 +445,48 @@ export class TaskDefinition extends TaskDefinitionBase {
     this.compatibility = props.compatibility;
 
     if (props.volumes) {
-      props.volumes.forEach(v => this.addVolume(v));
+      props.volumes.forEach((v) => this.addVolume(v));
     }
 
-    this.networkMode = props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
+    this.networkMode =
+      props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
     if (props.proxyConfiguration && this.networkMode !== NetworkMode.AWS_VPC) {
-      throw new Error(`ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`);
+      throw new Error(
+        `ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`
+      );
     }
-    if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
+    if (
+      props.placementConstraints &&
+      props.placementConstraints.length > 0 &&
+      this.isFargateCompatible
+    ) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
 
     if (this.isFargateCompatible && (!props.cpu || !props.memoryMiB)) {
-      throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
+      throw new Error(
+        `Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`
+      );
     }
 
-    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
+    if (
+      props.inferenceAccelerators &&
+      props.inferenceAccelerators.length > 0 &&
+      this.isFargateCompatible
+    ) {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
-    if (this.isExternalCompatible && ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)) {
-      throw new Error(`External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`);
+    if (
+      this.isExternalCompatible &&
+      ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)
+    ) {
+      throw new Error(
+        `External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`
+      );
     }
 
     if (!this.isFargateCompatible && props.runtimePlatform) {
@@ -460,12 +495,14 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this._executionRole = props.executionRole;
 
-    this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
-      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-    });
+    this.taskRole =
+      props.taskRole ||
+      new iam.Role(this, 'TaskRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
 
     if (props.inferenceAccelerators) {
-      props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
+      props.inferenceAccelerators.forEach((ia) => this.addInferenceAccelerator(ia));
     }
 
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
@@ -483,9 +520,14 @@ export class TaskDefinition extends TaskDefinitionBase {
     this._memory = props.memoryMiB;
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
-      containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
+      containerDefinitions: Lazy.any(
+        { produce: () => this.renderContainers() },
+        { omitEmptyArray: true }
+      ),
       volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
-      executionRoleArn: Lazy.string({ produce: () => this.executionRole && this.executionRole.roleArn }),
+      executionRoleArn: Lazy.string({
+        produce: () => this.executionRole && this.executionRole.roleArn,
+      }),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [
@@ -494,30 +536,46 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isExternalCompatible(props.compatibility) ? ['EXTERNAL'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
-      placementConstraints: Lazy.any({
-        produce: () =>
-          !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
-      }, { omitEmptyArray: true }),
-      proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
+      placementConstraints: Lazy.any(
+        {
+          produce: () =>
+            !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
+        },
+        { omitEmptyArray: true }
+      ),
+      proxyConfiguration: props.proxyConfiguration
+        ? props.proxyConfiguration.bind(this.stack, this)
+        : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
       pidMode: this.pidMode,
-      inferenceAccelerators: Lazy.any({
-        produce: () =>
-          !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
-      }, { omitEmptyArray: true }),
-      ephemeralStorage: this.ephemeralStorageGiB ? {
-        sizeInGiB: this.ephemeralStorageGiB,
-      } : undefined,
-      runtimePlatform: this.isFargateCompatible && this.runtimePlatform ? {
-        cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
-        operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
-      } : undefined,
+      inferenceAccelerators: Lazy.any(
+        {
+          produce: () =>
+            !isFargateCompatible(this.compatibility)
+              ? this.renderInferenceAccelerators()
+              : undefined,
+        },
+        { omitEmptyArray: true }
+      ),
+      ephemeralStorage: this.ephemeralStorageGiB
+        ? {
+            sizeInGiB: this.ephemeralStorageGiB,
+          }
+        : undefined,
+      runtimePlatform:
+        this.isFargateCompatible && this.runtimePlatform
+          ? {
+              cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
+              operatingSystemFamily:
+                this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
+            }
+          : undefined,
     });
 
     if (props.placementConstraints) {
-      props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
+      props.placementConstraints.forEach((pc) => this.addPlacementConstraint(pc));
     }
 
     this.taskDefinitionArn = taskDef.ref;
@@ -556,7 +614,6 @@ export class TaskDefinition extends TaskDefinitionBase {
           rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
           transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
           transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
-
         },
       };
     }
@@ -565,7 +622,9 @@ export class TaskDefinition extends TaskDefinitionBase {
   private renderInferenceAccelerators(): CfnTaskDefinition.InferenceAcceleratorProperty[] {
     return this._inferenceAccelerators.map(renderInferenceAccelerator);
 
-    function renderInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) : CfnTaskDefinition.InferenceAcceleratorProperty {
+    function renderInferenceAccelerator(
+      inferenceAccelerator: InferenceAccelerator
+    ): CfnTaskDefinition.InferenceAcceleratorProperty {
       return {
         deviceName: inferenceAccelerator.deviceName,
         deviceType: inferenceAccelerator.deviceType,
@@ -581,14 +640,18 @@ export class TaskDefinition extends TaskDefinitionBase {
   public _validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget {
     const targetContainer = this.findContainer(options.containerName);
     if (targetContainer === undefined) {
-      throw new Error(`No container named '${options.containerName}'. Did you call "addContainer()"?`);
+      throw new Error(
+        `No container named '${options.containerName}'. Did you call "addContainer()"?`
+      );
     }
     const targetProtocol = options.protocol || Protocol.TCP;
     const targetContainerPort = options.containerPort || targetContainer.containerPort;
     const portMapping = targetContainer.findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
       // eslint-disable-next-line max-len
-      throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`);
+      throw new Error(
+        `Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`
+      );
     }
     return {
       containerName: options.containerName,
@@ -603,16 +666,24 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   public _portRangeFromPortMapping(portMapping: PortMapping): ec2.Port {
     if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
-      return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.hostPort) : ec2.Port.tcp(portMapping.hostPort);
+      return portMapping.protocol === Protocol.UDP
+        ? ec2.Port.udp(portMapping.hostPort)
+        : ec2.Port.tcp(portMapping.hostPort);
     }
     if (this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NAT) {
       return EPHEMERAL_PORT_RANGE;
     }
     if (portMapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE) {
-      return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
+      return portMapping.protocol === Protocol.UDP
+        ? ec2.Port.udp(portMapping.containerPort)
+        : ec2.Port.tcp(portMapping.containerPort);
     }
-    const [startPort, endPort] = portMapping.containerPortRange!.split('-', 2).map(v => Number(v));
-    return portMapping.protocol === Protocol.UDP ? ec2.Port.udpRange(startPort, endPort) : ec2.Port.tcpRange(startPort, endPort);
+    const [startPort, endPort] = portMapping
+      .containerPortRange!.split('-', 2)
+      .map((v) => Number(v));
+    return portMapping.protocol === Protocol.UDP
+      ? ec2.Port.udpRange(startPort, endPort)
+      : ec2.Port.tcpRange(startPort, endPort);
   }
 
   /**
@@ -641,7 +712,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   public addFirelensLogRouter(id: string, props: FirelensLogRouterDefinitionOptions) {
     // only one firelens log router is allowed in each task.
-    if (this.containers.find(x => x instanceof FirelensLogRouter)) {
+    if (this.containers.find((x) => x instanceof FirelensLogRouter)) {
       throw new Error('Firelens log router is already added in this task.');
     }
 
@@ -655,9 +726,14 @@ export class TaskDefinition extends TaskDefinitionBase {
   public _linkContainer(container: ContainerDefinition) {
     if (this._cpu) {
       const taskCpu = Number(this._cpu);
-      const sumOfContainerCpu = [...this.containers, container].map(c => c.cpu).filter((cpu): cpu is number => typeof cpu === 'number').reduce((a, c) => a + c, 0);
+      const sumOfContainerCpu = [...this.containers, container]
+        .map((c) => c.cpu)
+        .filter((cpu): cpu is number => typeof cpu === 'number')
+        .reduce((a, c) => a + c, 0);
       if (taskCpu < sumOfContainerCpu) {
-        throw new Error('The sum of all container cpu values cannot be greater than the value of the task cpu');
+        throw new Error(
+          'The sum of all container cpu values cannot be greater than the value of the task cpu'
+        );
       }
     }
 
@@ -675,14 +751,16 @@ export class TaskDefinition extends TaskDefinitionBase {
     this.volumes.push(volume);
   }
 
-  private validateVolume(volume: Volume):void {
+  private validateVolume(volume: Volume): void {
     if (volume.configuredAtLaunch !== true) {
       return;
     }
 
     // Other volume configurations must not be specified.
     if (volume.host || volume.dockerVolumeConfiguration || volume.efsVolumeConfiguration) {
-      throw new Error(`Volume Configurations must not be specified for '${volume.name}' when 'configuredAtLaunch' is set to true`);
+      throw new Error(
+        `Volume Configurations must not be specified for '${volume.name}' when 'configuredAtLaunch' is set to true`
+      );
     }
   }
 
@@ -776,7 +854,9 @@ export class TaskDefinition extends TaskDefinitionBase {
       if (!this._memory) {
         for (const container of this.containers) {
           if (!container.memoryLimitSpecified) {
-            ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+            ret.push(
+              `ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`
+            );
           }
         }
       }
@@ -784,32 +864,36 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     // Validate that there are no named port mapping conflicts for Service Connect.
     const portMappingNames = new Map<string, string>(); // Map from port mapping name to most recent container it appears in.
-    this.containers.forEach(container => {
+    this.containers.forEach((container) => {
       for (const pm of container.portMappings) {
         if (pm.name) {
           if (portMappingNames.has(pm.name)) {
-            ret.push(`Port mapping name '${pm.name}' cannot appear in both '${container.containerName}' and '${portMappingNames.get(pm.name)}'`);
+            ret.push(
+              `Port mapping name '${pm.name}' cannot appear in both '${container.containerName}' and '${portMappingNames.get(pm.name)}'`
+            );
           }
           portMappingNames.set(pm.name, container.containerName);
         }
       }
     });
     // Validate if multiple volumes configured with configuredAtLaunch.
-    const runtimeVolumes = this.volumes.filter(vol => vol.configuredAtLaunch);
+    const runtimeVolumes = this.volumes.filter((vol) => vol.configuredAtLaunch);
     if (runtimeVolumes.length > 1) {
-      const volumeNames = runtimeVolumes.map(vol => vol.name).join(',');
+      const volumeNames = runtimeVolumes.map((vol) => vol.name).join(',');
       ret.push(`More than one volume is configured at launch: [${volumeNames}]`);
     }
 
     // Validate that volume with configuredAtLaunch set to true is mounted by at least one container.
     for (const volume of this.volumes) {
       if (volume.configuredAtLaunch) {
-        const isVolumeMounted = this.containers.some(container => {
-          return container.mountPoints.some(mp => mp.sourceVolume === volume.name);
+        const isVolumeMounted = this.containers.some((container) => {
+          return container.mountPoints.some((mp) => mp.sourceVolume === volume.name);
         });
 
         if (!isVolumeMounted) {
-          ret.push(`Volume '${volume.name}' should be mounted by at least one container when 'configuredAtLaunch' is true`);
+          ret.push(
+            `Volume '${volume.name}' should be mounted by at least one container when 'configuredAtLaunch' is true`
+          );
         }
       }
     }
@@ -824,11 +908,11 @@ export class TaskDefinition extends TaskDefinitionBase {
   public findPortMappingByName(name: string): PortMapping | undefined {
     let portMapping;
 
-    this.containers.forEach(container => {
+    this.containers.forEach((container) => {
       const pm = container.findPortMappingByName(name);
       if (pm) {
         portMapping = pm;
-      };
+      }
     });
 
     return portMapping;
@@ -838,7 +922,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Returns the container that match the provided containerName.
    */
   public findContainer(containerName: string): ContainerDefinition | undefined {
-    return this.containers.find(c => c.containerName === containerName);
+    return this.containers.find((c) => c.containerName === containerName);
   }
 
   private get passRoleStatement() {
@@ -846,7 +930,9 @@ export class TaskDefinition extends TaskDefinitionBase {
       this._passRoleStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['iam:PassRole'],
-        resources: this.executionRole ? [this.taskRole.roleArn, this.executionRole.roleArn] : [this.taskRole.roleArn],
+        resources: this.executionRole
+          ? [this.taskRole.roleArn, this.executionRole.roleArn]
+          : [this.taskRole.roleArn],
         conditions: {
           StringLike: { 'iam:PassedToService': 'ecs-tasks.amazonaws.com' },
         },
@@ -857,15 +943,18 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   private renderNetworkMode(networkMode: NetworkMode): string | undefined {
-    return (networkMode === NetworkMode.NAT) ? undefined : networkMode;
+    return networkMode === NetworkMode.NAT ? undefined : networkMode;
   }
 
   private renderContainers() {
     // add firelens log router container if any application container is using firelens log driver,
     // also check if already created log router container
     for (const container of this.containers) {
-      if (container.logDriverConfig && container.logDriverConfig.logDriver === 'awsfirelens'
-        && !this.containers.find(x => x instanceof FirelensLogRouter)) {
+      if (
+        container.logDriverConfig &&
+        container.logDriverConfig.logDriver === 'awsfirelens' &&
+        !this.containers.find((x) => x instanceof FirelensLogRouter)
+      ) {
         this.addFirelensLogRouter('log-router', {
           image: obtainDefaultFluentBitECRImage(this, container.logDriverConfig),
           firelensConfig: {
@@ -879,26 +968,38 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
     }
 
-    return this.containers.map(x => x.renderContainerDefinition());
+    return this.containers.map((x) => x.renderContainerDefinition());
   }
 
-  private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
+  private checkFargateWindowsBasedTasksSize(
+    cpu: string,
+    memory: string,
+    runtimePlatform: RuntimePlatform
+  ) {
     if (Number(cpu) === 1024) {
-      if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory)% 1024 !== 0)) {
-        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was ${Number(memory)}.`);
+      if (Number(memory) < 1024 || Number(memory) > 8192 || Number(memory) % 1024 !== 0) {
+        throw new Error(
+          `If provided cpu is ${cpu}, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was ${Number(memory)}.`
+        );
       }
     } else if (Number(cpu) === 2048) {
-      if (Number(memory) < 4096 || Number(memory) > 16384 || (Number(memory) % 1024 !== 0)) {
-        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 4096 and max of 16384, in 1024 increments. Provided memoryMiB ${Number(memory)}.`);
+      if (Number(memory) < 4096 || Number(memory) > 16384 || Number(memory) % 1024 !== 0) {
+        throw new Error(
+          `If provided cpu is ${cpu}, then memoryMiB must have a min of 4096 and max of 16384, in 1024 increments. Provided memoryMiB ${Number(memory)}.`
+        );
       }
     } else if (Number(cpu) === 4096) {
-      if (Number(memory) < 8192 || Number(memory) > 30720 || (Number(memory) % 1024 !== 0)) {
-        throw new Error(`If provided cpu is ${ cpu }, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${ Number(memory) }.`);
+      if (Number(memory) < 8192 || Number(memory) > 30720 || Number(memory) % 1024 !== 0) {
+        throw new Error(
+          `If provided cpu is ${cpu}, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${Number(memory)}.`
+        );
       }
     } else {
-      throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
+      throw new Error(
+        `If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`
+      );
     }
-  };
+  }
 }
 
 /**
@@ -1031,7 +1132,7 @@ export interface Volume {
    *
    * @default false
    */
-  readonly configuredAtLaunch ?: boolean;
+  readonly configuredAtLaunch?: boolean;
 
   /**
    * This property is specified when you are using Docker volumes.
@@ -1131,7 +1232,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No options
    */
-  readonly driverOpts?: {[key: string]: string};
+  readonly driverOpts?: { [key: string]: string };
   /**
    * Custom metadata to add to your Docker volume.
    *
@@ -1305,7 +1406,9 @@ export class TaskDefinitionRevision {
    */
   public static of(revision: number) {
     if (revision < 1) {
-      throw new Error(`A task definition revision must be 'latest' or a positive number, got ${revision}`);
+      throw new Error(
+        `A task definition revision must be 'latest' or a positive number, got ${revision}`
+      );
     }
     return new TaskDefinitionRevision(revision.toString());
   }

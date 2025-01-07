@@ -162,9 +162,7 @@ export class S3ObjectsItemReader implements IItemReader {
   public providePolicyStatements(): iam.PolicyStatement[] {
     return [
       new iam.PolicyStatement({
-        actions: [
-          's3:ListBucket',
-        ],
+        actions: ['s3:ListBucket'],
         resources: [this._bucket ? this._bucket.bucketArn : '*'],
       }),
     ];
@@ -286,9 +284,7 @@ abstract class S3FileItemReader implements IItemReader {
 
     return [
       new iam.PolicyStatement({
-        actions: [
-          's3:GetObject',
-        ],
+        actions: ['s3:GetObject'],
         resources: [resource],
       }),
     ];

@@ -35,7 +35,7 @@ export abstract class QueryParameterMatch {
 class QueryParameterMatchImpl extends QueryParameterMatch {
   constructor(
     private readonly queryParameterName: string,
-    private readonly matchProperty: CfnRoute.HttpQueryParameterMatchProperty,
+    private readonly matchProperty: CfnRoute.HttpQueryParameterMatchProperty
   ) {
     super();
   }

@@ -5,14 +5,12 @@ import * as lambda from '../../aws-lambda';
 /**
  * Props for `InvokeFunction`.
  */
-export interface TriggerFunctionProps extends lambda.FunctionProps, TriggerOptions {
-}
+export interface TriggerFunctionProps extends lambda.FunctionProps, TriggerOptions {}
 
 /**
  * Invokes an AWS Lambda function during deployment.
  */
 export class TriggerFunction extends lambda.Function implements ITrigger {
-
   /**
    * The underlying trigger resource.
    */

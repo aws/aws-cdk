@@ -48,8 +48,8 @@ export class InstanceType {
   public static readonly X2G_16XLARGE = InstanceType.of('db.x2g.16xlarge');
 
   /**
-  * db.x2iedn.xlarge
-  */
+   * db.x2iedn.xlarge
+   */
   public static readonly X2IEDN_XLARGE = InstanceType.of('db.x2iedn.xlarge');
 
   /**
@@ -108,8 +108,8 @@ export class InstanceType {
   public static readonly R6G_8XLARGE = InstanceType.of('db.r6g.8xlarge');
 
   /**
-  * db.r6g.12xlarge
-  */
+   * db.r6g.12xlarge
+   */
   public static readonly R6G_12XLARGE = InstanceType.of('db.r6g.12xlarge');
 
   /**
@@ -419,7 +419,11 @@ export abstract class DatabaseInstanceBase extends cdk.Resource implements IData
   /**
    * Import an existing database instance.
    */
-  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
+  public static fromDatabaseInstanceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DatabaseInstanceAttributes
+  ): IDatabaseInstance {
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly instanceIdentifier = attrs.instanceIdentifier;
@@ -471,7 +475,6 @@ export abstract class DatabaseInstanceBase extends cdk.Resource implements IData
  * @resource AWS::Neptune::DBInstance
  */
 export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
-
   /**
    * The instance's database cluster
    */

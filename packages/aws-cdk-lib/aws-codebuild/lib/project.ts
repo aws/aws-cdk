@@ -13,7 +13,11 @@ import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
 import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
-import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
+import {
+  runScriptLinuxBuildSpec,
+  S3_BUCKET_ENV,
+  S3_KEY_ENV,
+} from './private/run-script-linux-build-spec';
 import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
@@ -28,7 +32,22 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
+import {
+  ArnFormat,
+  Aws,
+  Duration,
+  IResource,
+  Lazy,
+  Names,
+  PhysicalName,
+  Reference,
+  Resource,
+  SecretValue,
+  Stack,
+  Token,
+  TokenComparison,
+  Tokenization,
+} from '../../core';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -67,7 +86,11 @@ export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOp
   readonly events: ProjectNotificationEvents[];
 }
 
-export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
+export interface IProject
+  extends IResource,
+    iam.IGrantable,
+    ec2.IConnectable,
+    notifications.INotificationRuleSource {
   /**
    * The ARN of this Project.
    * @attribute
@@ -217,7 +240,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
   notifyOn(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options: ProjectNotifyOnOptions,
+    options: ProjectNotifyOnOptions
   ): notifications.INotificationRule;
 
   /**
@@ -226,7 +249,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
   notifyOnBuildSucceeded(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -235,7 +258,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
   notifyOnBuildFailed(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 }
 
@@ -274,7 +297,9 @@ abstract class ProjectBase extends Resource implements IProject {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new Error('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project');
+      throw new Error(
+        'Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project'
+      );
     }
     return this._connections;
   }
@@ -475,7 +500,7 @@ abstract class ProjectBase extends Resource implements IProject {
   public notifyOn(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options: ProjectNotifyOnOptions,
+    options: ProjectNotifyOnOptions
   ): notifications.INotificationRule {
     return new notifications.NotificationRule(this, id, {
       ...options,
@@ -487,7 +512,7 @@ abstract class ProjectBase extends Resource implements IProject {
   public notifyOnBuildSucceeded(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
@@ -498,7 +523,7 @@ abstract class ProjectBase extends Resource implements IProject {
   public notifyOnBuildFailed(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
@@ -506,7 +531,9 @@ abstract class ProjectBase extends Resource implements IProject {
     });
   }
 
-  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
+  public bindAsNotificationRuleSource(
+    _scope: Construct
+  ): notifications.NotificationRuleSourceConfig {
     return {
       sourceArn: this.projectArn,
     };
@@ -514,7 +541,8 @@ abstract class ProjectBase extends Resource implements IProject {
 
   private cannedMetric(
     fn: (dims: { ProjectName: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ ProjectName: this.projectName }),
       ...props,
@@ -865,9 +893,11 @@ export class Project extends ProjectBase {
    *   if any of the plain text environment variables contain secrets, defaults to 'false'
    * @returns an array of `CfnProject.EnvironmentVariableProperty` instances
    */
-  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
-    validateNoPlainTextSecrets: boolean = false, principal?: iam.IGrantable): CfnProject.EnvironmentVariableProperty[] {
-
+  public static serializeEnvVariables(
+    environmentVariables: { [name: string]: BuildEnvironmentVariable },
+    validateNoPlainTextSecrets: boolean = false,
+    principal?: iam.IGrantable
+  ): CfnProject.EnvironmentVariableProperty[] {
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
     const secretsManagerIamResources = new Set<string>();
@@ -883,15 +913,20 @@ export class Project extends ProjectBase {
       ret.push(cfnEnvVariable);
 
       // validate that the plain-text environment variables don't contain any secrets in them
-      if (validateNoPlainTextSecrets && cfnEnvVariable.type === BuildEnvironmentVariableType.PLAINTEXT) {
+      if (
+        validateNoPlainTextSecrets &&
+        cfnEnvVariable.type === BuildEnvironmentVariableType.PLAINTEXT
+      ) {
         const fragments = Tokenization.reverseString(cfnEnvVariable.value);
         for (const token of fragments.tokens) {
           if (token instanceof SecretValue) {
-            throw new Error(`Plaintext environment variable '${name}' contains a secret value! ` +
-              'This means the value of this variable will be visible in plain text in the AWS Console. ' +
-              "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
-              "If you'd like to continue with having this secret in the plaintext environment variables, " +
-              'please set the checkSecretsInPlainTextEnvVariables property to false');
+            throw new Error(
+              `Plaintext environment variable '${name}' contains a secret value! ` +
+                'This means the value of this variable will be visible in plain text in the AWS Console. ' +
+                "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
+                "If you'd like to continue with having this secret in the plaintext environment variables, " +
+                'please set the checkSecretsInPlainTextEnvVariables property to false'
+            );
           }
         }
       }
@@ -901,15 +936,17 @@ export class Project extends ProjectBase {
 
         // save the SSM env variables
         if (envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE) {
-          ssmIamResources.push(stack.formatArn({
-            service: 'ssm',
-            resource: 'parameter',
-            // If the parameter name starts with / the resource name is not separated with a double '/'
-            // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
-            resourceName: envVariableValue.startsWith('/')
-              ? envVariableValue.slice(1)
-              : envVariableValue,
-          }));
+          ssmIamResources.push(
+            stack.formatArn({
+              service: 'ssm',
+              resource: 'parameter',
+              // If the parameter name starts with / the resource name is not separated with a double '/'
+              // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
+              resourceName: envVariableValue.startsWith('/')
+                ? envVariableValue.slice(1)
+                : envVariableValue,
+            })
+          );
         }
 
         // save SecretsManager env variables
@@ -921,38 +958,47 @@ export class Project extends ProjectBase {
           if (envVariableValue.startsWith('arn:')) {
             const parsedArn = stack.splitArn(envVariableValue, ArnFormat.COLON_RESOURCE_NAME);
             if (!parsedArn.resourceName) {
-              throw new Error('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
+              throw new Error(
+                'SecretManager ARN is missing the name of the secret: ' + envVariableValue
+              );
             }
 
             // the value of the property can be a complex string, separated by ':';
             // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
             const secretName = parsedArn.resourceName.split(':')[0];
-            secretsManagerIamResources.add(stack.formatArn({
-              service: 'secretsmanager',
-              resource: 'secret',
-              // since we don't know whether the ARN was full, or partial
-              // (CodeBuild supports both),
-              // stick a "*" at the end, which makes it work for both
-              resourceName: `${secretName}*`,
-              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-              partition: parsedArn.partition,
-              account: parsedArn.account,
-              region: parsedArn.region,
-            }));
-            // if secret comes from another account, SecretsManager will need to access
-            // KMS on the other account as well to be able to get the secret
-            if (parsedArn.account && Token.compareStrings(parsedArn.account, stack.account) === TokenComparison.DIFFERENT) {
-              kmsIamResources.add(stack.formatArn({
-                service: 'kms',
-                resource: 'key',
-                // We do not know the ID of the key, but since this is a cross-account access,
-                // the key policies have to allow this access, so a wildcard is safe here
-                resourceName: '*',
-                arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+            secretsManagerIamResources.add(
+              stack.formatArn({
+                service: 'secretsmanager',
+                resource: 'secret',
+                // since we don't know whether the ARN was full, or partial
+                // (CodeBuild supports both),
+                // stick a "*" at the end, which makes it work for both
+                resourceName: `${secretName}*`,
+                arnFormat: ArnFormat.COLON_RESOURCE_NAME,
                 partition: parsedArn.partition,
                 account: parsedArn.account,
                 region: parsedArn.region,
-              }));
+              })
+            );
+            // if secret comes from another account, SecretsManager will need to access
+            // KMS on the other account as well to be able to get the secret
+            if (
+              parsedArn.account &&
+              Token.compareStrings(parsedArn.account, stack.account) === TokenComparison.DIFFERENT
+            ) {
+              kmsIamResources.add(
+                stack.formatArn({
+                  service: 'kms',
+                  resource: 'key',
+                  // We do not know the ID of the key, but since this is a cross-account access,
+                  // the key policies have to allow this access, so a wildcard is safe here
+                  resourceName: '*',
+                  arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+                  partition: parsedArn.partition,
+                  account: parsedArn.account,
+                  region: parsedArn.region,
+                })
+              );
             }
           } else if (Token.isUnresolved(envVariableValue)) {
             // the value of the property can be a complex string, separated by ':';
@@ -967,20 +1013,25 @@ export class Project extends ProjectBase {
               if (Reference.isReference(resolvable)) {
                 // check the Stack the resource owning the reference belongs to
                 const resourceStack = Stack.of(resolvable.target);
-                if (Token.compareStrings(stack.account, resourceStack.account) === TokenComparison.DIFFERENT) {
+                if (
+                  Token.compareStrings(stack.account, resourceStack.account) ===
+                  TokenComparison.DIFFERENT
+                ) {
                   // since this is a cross-account access,
                   // add the appropriate KMS permissions
-                  kmsIamResources.add(stack.formatArn({
-                    service: 'kms',
-                    resource: 'key',
-                    // We do not know the ID of the key, but since this is a cross-account access,
-                    // the key policies have to allow this access, so a wildcard is safe here
-                    resourceName: '*',
-                    arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-                    partition: resourceStack.partition,
-                    account: resourceStack.account,
-                    region: resourceStack.region,
-                  }));
+                  kmsIamResources.add(
+                    stack.formatArn({
+                      service: 'kms',
+                      resource: 'key',
+                      // We do not know the ID of the key, but since this is a cross-account access,
+                      // the key policies have to allow this access, so a wildcard is safe here
+                      resourceName: '*',
+                      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+                      partition: resourceStack.partition,
+                      account: resourceStack.account,
+                      region: resourceStack.region,
+                    })
+                  );
 
                   // Work around a bug in SecretsManager -
                   // when the access is cross-environment,
@@ -998,34 +1049,42 @@ export class Project extends ProjectBase {
             // the value of the property can be a complex string, separated by ':';
             // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
             const secretName = envVariableValue.split(':')[0];
-            secretsManagerIamResources.add(stack.formatArn({
-              service: 'secretsmanager',
-              resource: 'secret',
-              resourceName: `${secretName}-??????`,
-              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-            }));
+            secretsManagerIamResources.add(
+              stack.formatArn({
+                service: 'secretsmanager',
+                resource: 'secret',
+                resourceName: `${secretName}-??????`,
+                arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+              })
+            );
           }
         }
       }
     }
 
     if (ssmIamResources.length !== 0) {
-      principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['ssm:GetParameters'],
-        resources: ssmIamResources,
-      }));
+      principal?.grantPrincipal.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: ['ssm:GetParameters'],
+          resources: ssmIamResources,
+        })
+      );
     }
     if (secretsManagerIamResources.size !== 0) {
-      principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['secretsmanager:GetSecretValue'],
-        resources: Array.from(secretsManagerIamResources),
-      }));
+      principal?.grantPrincipal.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: ['secretsmanager:GetSecretValue'],
+          resources: Array.from(secretsManagerIamResources),
+        })
+      );
     }
     if (kmsIamResources.size !== 0) {
-      principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['kms:Decrypt'],
-        resources: Array.from(kmsIamResources),
-      }));
+      principal?.grantPrincipal.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: ['kms:Decrypt'],
+          resources: Array.from(kmsIamResources),
+        })
+      );
     }
 
     return ret;
@@ -1062,13 +1121,16 @@ export class Project extends ProjectBase {
       physicalName: props.projectName,
     });
 
-    this.role = props.role || new iam.Role(this, 'Role', {
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
-    });
+    this.role =
+      props.role ||
+      new iam.Role(this, 'Role', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
     this.grantPrincipal = this.role;
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
+    this.buildImage =
+      (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -1080,9 +1142,9 @@ export class Project extends ProjectBase {
 
     const artifacts = props.artifacts
       ? props.artifacts
-      : (this.source.type === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE
+      : this.source.type === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE
         ? new CodePipelineArtifacts()
-        : new NoArtifacts());
+        : new NoArtifacts();
     const artifactsConfig = artifacts.bind(this, this);
 
     const cache = props.cache || Cache.none();
@@ -1093,8 +1155,13 @@ export class Project extends ProjectBase {
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
     const buildSpec = props.buildSpec;
-    if (this.source.type === NO_SOURCE_TYPE && (buildSpec === undefined || !buildSpec.isImmediate)) {
-      throw new Error("If the Project's source is NoSource, you need to provide a concrete buildSpec");
+    if (
+      this.source.type === NO_SOURCE_TYPE &&
+      (buildSpec === undefined || !buildSpec.isImmediate)
+    ) {
+      throw new Error(
+        "If the Project's source is NoSource, you need to provide a concrete buildSpec"
+      );
     }
 
     this._secondarySources = [];
@@ -1115,11 +1182,13 @@ export class Project extends ProjectBase {
       this.addFileSystemLocation(fileSystemLocation);
     }
 
-    if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
+    if (!Token.isUnresolved(props.autoRetryLimit) && props.autoRetryLimit !== undefined) {
       if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
-        throw new Error(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`);
-      };
-    };
+        throw new Error(
+          `autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`
+        );
+      }
+    }
 
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
@@ -1134,7 +1203,9 @@ export class Project extends ProjectBase {
       // lazy, because we have a setter for it in setEncryptionKey
       // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
       // empty will not remove existing encryptionKeys during an update (ref. t/D17810523)
-      encryptionKey: Lazy.string({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
+      encryptionKey: Lazy.string({
+        produce: () => (this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3'),
+      }),
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName,
@@ -1151,9 +1222,12 @@ export class Project extends ProjectBase {
       logsConfig: this.renderLoggingConfiguration(props.logging),
       buildBatchConfig: Lazy.any({
         produce: () => {
-          const config: CfnProject.ProjectBuildBatchConfigProperty | undefined = this._batchServiceRole ? {
-            serviceRole: this._batchServiceRole.roleArn,
-          } : undefined;
+          const config: CfnProject.ProjectBuildBatchConfigProperty | undefined = this
+            ._batchServiceRole
+            ? {
+                serviceRole: this._batchServiceRole.roleArn,
+              }
+            : undefined;
           return config;
         },
       }),
@@ -1174,37 +1248,41 @@ export class Project extends ProjectBase {
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
     if (props.grantReportGroupPermissions !== false) {
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: [
-          'codebuild:CreateReportGroup',
-          'codebuild:CreateReport',
-          'codebuild:UpdateReport',
-          'codebuild:BatchPutTestCases',
-          'codebuild:BatchPutCodeCoverages',
-        ],
-        resources: [renderReportGroupArn(this, `${this.projectName}-*`)],
-      }));
+      this.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: [
+            'codebuild:CreateReportGroup',
+            'codebuild:CreateReport',
+            'codebuild:UpdateReport',
+            'codebuild:BatchPutTestCases',
+            'codebuild:BatchPutCodeCoverages',
+          ],
+          resources: [renderReportGroupArn(this, `${this.projectName}-*`)],
+        })
+      );
     }
 
     // https://docs.aws.amazon.com/codebuild/latest/userguide/session-manager.html
     if (props.ssmSessionPermissions) {
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: [
-          // For the SSM channel
-          'ssmmessages:CreateControlChannel',
-          'ssmmessages:CreateDataChannel',
-          'ssmmessages:OpenControlChannel',
-          'ssmmessages:OpenDataChannel',
-          // In case the SSM session is set up to log commands to CloudWatch
-          'logs:DescribeLogGroups',
-          'logs:CreateLogStream',
-          'logs:PutLogEvents',
-          // In case the SSM session is set up to log commands to S3.
-          's3:GetEncryptionConfiguration',
-          's3:PutObject',
-        ],
-        resources: ['*'],
-      }));
+      this.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: [
+            // For the SSM channel
+            'ssmmessages:CreateControlChannel',
+            'ssmmessages:CreateDataChannel',
+            'ssmmessages:OpenControlChannel',
+            'ssmmessages:OpenDataChannel',
+            // In case the SSM session is set up to log commands to CloudWatch
+            'logs:DescribeLogGroups',
+            'logs:CreateLogStream',
+            'logs:PutLogEvents',
+            // In case the SSM session is set up to log commands to S3.
+            's3:GetEncryptionConfiguration',
+            's3:PutObject',
+          ],
+          resources: ['*'],
+        })
+      );
     }
 
     if (props.encryptionKey) {
@@ -1224,16 +1302,16 @@ export class Project extends ProjectBase {
       this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
         assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
       });
-      this._batchServiceRole.addToPrincipalPolicy(new iam.PolicyStatement({
-        resources: [Lazy.string({
-          produce: () => this.projectArn,
-        })],
-        actions: [
-          'codebuild:StartBuild',
-          'codebuild:StopBuild',
-          'codebuild:RetryBuild',
-        ],
-      }));
+      this._batchServiceRole.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          resources: [
+            Lazy.string({
+              produce: () => this.projectArn,
+            }),
+          ],
+          actions: ['codebuild:StartBuild', 'codebuild:StopBuild', 'codebuild:RetryBuild'],
+        })
+      );
     }
     return {
       role: this._batchServiceRole,
@@ -1298,8 +1376,12 @@ export class Project extends ProjectBase {
       // (that would cause an illegal reference, as KMS keys don't have physical names)
       const keyStack = Stack.of(options.artifactBucket.encryptionKey);
       const projectStack = Stack.of(this);
-      if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
-          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
+      if (
+        !(
+          options.artifactBucket.encryptionKey instanceof kms.Key &&
+          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region)
+        )
+      ) {
         this.encryptionKey = options.artifactBucket.encryptionKey;
       }
     }
@@ -1309,12 +1391,16 @@ export class Project extends ProjectBase {
     const ret = new Array<string>();
     if (this.source.type === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) {
       if (this._secondarySources.length > 0) {
-        ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
-          "Use the CodeBuild Pipeline Actions' `extraInputs` property instead");
+        ret.push(
+          'A Project with a CodePipeline Source cannot have secondary sources. ' +
+            "Use the CodeBuild Pipeline Actions' `extraInputs` property instead"
+        );
       }
       if (this._secondaryArtifacts.length > 0) {
-        ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
-          "Use the CodeBuild Pipeline Actions' `outputs` property instead");
+        ret.push(
+          'A Project with a CodePipeline Source cannot have secondary artifacts. ' +
+            "Use the CodeBuild Pipeline Actions' `outputs` property instead"
+        );
       }
     }
     return ret;
@@ -1343,8 +1429,8 @@ export class Project extends ProjectBase {
 
   private renderEnvironment(
     props: ProjectProps,
-    projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
-
+    projectVars: { [name: string]: BuildEnvironmentVariable } = {}
+  ): CfnProject.EnvironmentProperty {
     const env = props.environment ?? {};
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
@@ -1369,8 +1455,9 @@ export class Project extends ProjectBase {
       throw new Error('Invalid CodeBuild environment: ' + errors.join('\n'));
     }
 
-    const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage) ? undefined :
-      this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
+    const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage)
+      ? undefined
+      : this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
         ? ImagePullPrincipalType.CODEBUILD
         : ImagePullPrincipalType.SERVICE_ROLE;
     if (this.buildImage.repository) {
@@ -1379,7 +1466,11 @@ export class Project extends ProjectBase {
       } else {
         const statement = new iam.PolicyStatement({
           principals: [new iam.ServicePrincipal('codebuild.amazonaws.com')],
-          actions: ['ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage', 'ecr:BatchCheckLayerAvailability'],
+          actions: [
+            'ecr:GetDownloadUrlForLayer',
+            'ecr:BatchGetImage',
+            'ecr:BatchCheckLayerAvailability',
+          ],
         });
         statement.sid = 'CodeBuild';
         this.buildImage.repository.addToResourcePolicy(statement);
@@ -1396,44 +1487,40 @@ export class Project extends ProjectBase {
       imagePullCredentialsType: imagePullPrincipalType,
       registryCredential: secret
         ? {
-          credentialProvider: 'SECRETS_MANAGER',
-          // Secrets must be referenced by either the full ARN (with SecretsManager suffix), or by name.
-          // "Partial" ARNs (without the suffix) will fail a validation regex at deploy-time.
-          credential: secret.secretFullArn ?? secret.secretName,
-        }
+            credentialProvider: 'SECRETS_MANAGER',
+            // Secrets must be referenced by either the full ARN (with SecretsManager suffix), or by name.
+            // "Partial" ARNs (without the suffix) will fail a validation regex at deploy-time.
+            credential: secret.secretFullArn ?? secret.secretName,
+          }
         : undefined,
       certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
       fleet: this.configureFleet(env),
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
-        ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
+        ? Project.serializeEnvVariables(
+            vars,
+            props.checkSecretsInPlainTextEnvVariables ?? true,
+            this
+          )
         : undefined,
     };
   }
 
   private renderFileSystemLocations(): CfnProject.ProjectFileSystemLocationProperty[] | undefined {
-    return this._fileSystemLocations.length === 0
-      ? undefined
-      : this._fileSystemLocations;
+    return this._fileSystemLocations.length === 0 ? undefined : this._fileSystemLocations;
   }
 
   private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
-    return this._secondarySources.length === 0
-      ? undefined
-      : this._secondarySources;
+    return this._secondarySources.length === 0 ? undefined : this._secondarySources;
   }
 
   private renderSecondarySourceVersions(): CfnProject.ProjectSourceVersionProperty[] | undefined {
-    return this._secondarySourceVersions.length === 0
-      ? undefined
-      : this._secondarySourceVersions;
+    return this._secondarySourceVersions.length === 0 ? undefined : this._secondarySourceVersions;
   }
 
   private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
-    return this._secondaryArtifacts.length === 0
-      ? undefined
-      : this._secondaryArtifacts;
+    return this._secondaryArtifacts.length === 0 ? undefined : this._secondaryArtifacts;
   }
 
   private configureFleet({ fleet }: BuildEnvironment): { fleetArn: string } | undefined {
@@ -1443,7 +1530,9 @@ export class Project extends ProjectBase {
 
     // If the fleetArn is resolved, the fleet is imported and we cannot validate the environment type
     if (Token.isUnresolved(fleet.fleetArn) && this.buildImage.type !== fleet.environmentType) {
-      throw new Error(`The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`);
+      throw new Error(
+        `The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`
+      );
     }
 
     return { fleetArn: fleet.fleetArn };
@@ -1457,13 +1546,21 @@ export class Project extends ProjectBase {
    */
   private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
+      throw new Error(
+        "Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC"
+      );
     }
 
-    if (!props.vpc) { return undefined; }
+    if (!props.vpc) {
+      return undefined;
+    }
 
-    if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.');
+    if (
+      props.securityGroups &&
+      props.securityGroups.length > 0 &&
+      props.allowAllOutbound !== undefined
+    ) {
+      throw new Error("Configure 'allowAllOutbound' directly on the supplied SecurityGroup.");
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -1482,11 +1579,13 @@ export class Project extends ProjectBase {
     return {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
-      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId),
+      securityGroupIds: this.connections.securityGroups.map((s) => s.securityGroupId),
     };
   }
 
-  private renderLoggingConfiguration(props: LoggingOptions | undefined): CfnProject.LogsConfigProperty | undefined {
+  private renderLoggingConfiguration(
+    props: LoggingOptions | undefined
+  ): CfnProject.LogsConfigProperty | undefined {
     if (props === undefined) {
       return undefined;
     }
@@ -1508,8 +1607,10 @@ export class Project extends ProjectBase {
       const cloudWatchLogs = props.cloudWatch;
       const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
 
-      if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
-        throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
+      if (status === 'ENABLED' && !cloudWatchLogs.logGroup) {
+        throw new Error(
+          'Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled'
+        );
       }
       cloudWatchLogs.logGroup?.grantWrite(this);
 
@@ -1531,18 +1632,22 @@ export class Project extends ProjectBase {
       return;
     }
 
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
-      actions: ['ec2:CreateNetworkInterfacePermission'],
-      conditions: {
-        StringEquals: {
-          'ec2:Subnet': props.vpc
-            .selectSubnets(props.subnetSelection).subnetIds
-            .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
-          'ec2:AuthorizedService': 'codebuild.amazonaws.com',
+    this.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
+        actions: ['ec2:CreateNetworkInterfacePermission'],
+        conditions: {
+          StringEquals: {
+            'ec2:Subnet': props.vpc
+              .selectSubnets(props.subnetSelection)
+              .subnetIds.map(
+                (si) => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`
+              ),
+            'ec2:AuthorizedService': 'codebuild.amazonaws.com',
+          },
         },
-      },
-    }));
+      })
+    );
 
     // If the same Role is used for multiple Projects, always creating a new `iam.Policy`
     // will attach the same policy multiple times, probably exceeding the maximum size of the
@@ -1582,15 +1687,19 @@ export class Project extends ProjectBase {
     const sourceType = this.source.type;
     const artifactsType = artifacts.type;
 
-    if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
+    if (
+      (sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
         artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
-        (sourceType !== artifactsType)) {
+      sourceType !== artifactsType
+    ) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
 
   private isLambdaBuildImage(buildImage: IBuildImage): boolean {
-    return buildImage instanceof LinuxLambdaBuildImage || buildImage instanceof LinuxArmLambdaBuildImage;
+    return (
+      buildImage instanceof LinuxLambdaBuildImage || buildImage instanceof LinuxArmLambdaBuildImage
+    );
   }
 
   /**
@@ -1748,10 +1857,10 @@ export interface IBuildImage {
 }
 
 /** Optional arguments to `IBuildImage.binder` - currently empty. */
-export interface BuildImageBindOptions { }
+export interface BuildImageBindOptions {}
 
 /** The return type from `IBuildImage.binder` - currently empty. */
-export interface BuildImageConfig { }
+export interface BuildImageConfig {}
 
 // @deprecated(not in tsdoc on purpose): add bind() to IBuildImage
 // and get rid of IBindableBuildImage
@@ -1810,41 +1919,69 @@ import { LinuxArmBuildImage } from './linux-arm-build-image';
  */
 export class LinuxBuildImage implements IBuildImage {
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead. */
-  public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:1.0');
+  public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/standard:1.0'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead. */
-  public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:2.0');
+  public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/standard:2.0'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead. */
-  public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:3.0');
+  public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/standard:3.0'
+  );
   /**
    * The `aws/codebuild/standard:4.0` build image.
    * @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} instead.
    * */
-  public static readonly STANDARD_4_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:4.0');
+  public static readonly STANDARD_4_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/standard:4.0'
+  );
   /** The `aws/codebuild/standard:5.0` build image. */
-  public static readonly STANDARD_5_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:5.0');
+  public static readonly STANDARD_5_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/standard:5.0'
+  );
   /** The `aws/codebuild/standard:6.0` build image. */
-  public static readonly STANDARD_6_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:6.0');
+  public static readonly STANDARD_6_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/standard:6.0'
+  );
   /** The `aws/codebuild/standard:7.0` build image. */
-  public static readonly STANDARD_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:7.0');
+  public static readonly STANDARD_7_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/standard:7.0'
+  );
 
   /** @deprecated Use {@link LinuxBuildImage.AMAZON_LINUX_2_5} instead. */
-  public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
+  public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/amazonlinux2-x86_64-standard:1.0'
+  );
   /** @deprecated Use {@link LinuxBuildImage.AMAZON_LINUX_2_5} instead. */
-  public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
+  public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/amazonlinux2-x86_64-standard:2.0'
+  );
   /**
    * The Amazon Linux 2 x86_64 standard image, version `3.0`.
    * @deprecated Use {@link LinuxBuildImage.AMAZON_LINUX_2_5} instead.
    * */
-  public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
+  public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/amazonlinux2-x86_64-standard:3.0'
+  );
   /** The Amazon Linux 2 x86_64 standard image, version `4.0`. */
-  public static readonly AMAZON_LINUX_2_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:4.0');
+  public static readonly AMAZON_LINUX_2_4 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/amazonlinux2-x86_64-standard:4.0'
+  );
   /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
-  public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
+  public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/amazonlinux2-x86_64-standard:5.0'
+  );
 
   /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2. */
-  public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto8');
+  public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/amazonlinux2-x86_64-standard:corretto8'
+  );
   /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2. */
-  public static readonly AMAZON_LINUX_2_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto11');
+  public static readonly AMAZON_LINUX_2_CORETTO_11 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/amazonlinux2-x86_64-standard:corretto11'
+  );
 
   /**
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
@@ -1865,65 +2002,122 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
 
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
+  public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/ubuntu-base:14.04'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:24.4.1');
+  public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/android-java-8:24.4.1'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:26.1.1');
+  public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/android-java-8:26.1.1'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOCKER_17_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:17.09.0');
+  public static readonly UBUNTU_14_04_DOCKER_17_09_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/docker:17.09.0'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:18.09.0');
+  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/docker:18.09.0'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_GOLANG_1_10 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.10');
+  public static readonly UBUNTU_14_04_GOLANG_1_10 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/golang:1.10'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_GOLANG_1_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.11');
+  public static readonly UBUNTU_14_04_GOLANG_1_11 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/golang:1.11'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_OPEN_JDK_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-8');
+  public static readonly UBUNTU_14_04_OPEN_JDK_8 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/java:openjdk-8'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_OPEN_JDK_9 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-9');
+  public static readonly UBUNTU_14_04_OPEN_JDK_9 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/java:openjdk-9'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_OPEN_JDK_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-11');
+  public static readonly UBUNTU_14_04_OPEN_JDK_11 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/java:openjdk-11'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.14.1');
+  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/nodejs:10.14.1'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_10_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.1.0');
+  public static readonly UBUNTU_14_04_NODEJS_10_1_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/nodejs:10.1.0'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_8_11_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:8.11.0');
+  public static readonly UBUNTU_14_04_NODEJS_8_11_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/nodejs:8.11.0'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_6_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:6.3.1');
+  public static readonly UBUNTU_14_04_NODEJS_6_3_1 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/nodejs:6.3.1'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PHP_5_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:5.6');
+  public static readonly UBUNTU_14_04_PHP_5_6 =
+    LinuxBuildImage.codeBuildImage('aws/codebuild/php:5.6');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PHP_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.0');
+  public static readonly UBUNTU_14_04_PHP_7_0 =
+    LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.0');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PHP_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.1');
+  public static readonly UBUNTU_14_04_PHP_7_1 =
+    LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.1');
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.7.1');
+  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/python:3.7.1'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_6_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.6.5');
+  public static readonly UBUNTU_14_04_PYTHON_3_6_5 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/python:3.6.5'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_5_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.5.2');
+  public static readonly UBUNTU_14_04_PYTHON_3_5_2 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/python:3.5.2'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_4_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.4.5');
+  public static readonly UBUNTU_14_04_PYTHON_3_4_5 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/python:3.4.5'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_3_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.3.6');
+  public static readonly UBUNTU_14_04_PYTHON_3_3_6 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/python:3.3.6'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_2_7_12 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:2.7.12');
+  public static readonly UBUNTU_14_04_PYTHON_2_7_12 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/python:2.7.12'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_5_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.3');
+  public static readonly UBUNTU_14_04_RUBY_2_5_3 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/ruby:2.5.3'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_5_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.1');
+  public static readonly UBUNTU_14_04_RUBY_2_5_1 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/ruby:2.5.1'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.3.1');
+  public static readonly UBUNTU_14_04_RUBY_2_3_1 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/ruby:2.3.1'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.2.5');
+  public static readonly UBUNTU_14_04_RUBY_2_2_5 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/ruby:2.2.5'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-1');
+  public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/dot-net:core-1'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.0');
+  public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/dot-net:core-2.0'
+  );
   /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.1');
+  public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage(
+    'aws/codebuild/dot-net:core-2.1'
+  );
 
   /**
    * @returns a x86-64 Linux build image from a Docker Hub image.
@@ -1947,7 +2141,10 @@ export class LinuxBuildImage implements IBuildImage {
    * @param repository The ECR repository
    * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
+  public static fromEcrRepository(
+    repository: ecr.IRepository,
+    tagOrDigest: string = 'latest'
+  ): IBuildImage {
     return new LinuxBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2140,8 +2337,8 @@ export class WindowsBuildImage implements IBuildImage {
   public static fromDockerRegistry(
     name: string,
     options: DockerImageOptions = {},
-    imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
+    imageType: WindowsImageType = WindowsImageType.STANDARD
+  ): IBuildImage {
     return new WindowsBuildImage({
       ...options,
       imageId: name,
@@ -2164,8 +2361,8 @@ export class WindowsBuildImage implements IBuildImage {
   public static fromEcrRepository(
     repository: ecr.IRepository,
     tagOrDigest: string = 'latest',
-    imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
+    imageType: WindowsImageType = WindowsImageType.STANDARD
+  ): IBuildImage {
     return new WindowsBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2181,8 +2378,8 @@ export class WindowsBuildImage implements IBuildImage {
     scope: Construct,
     id: string,
     props: DockerImageAssetProps,
-    imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
+    imageType: WindowsImageType = WindowsImageType.STANDARD
+  ): IBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
     return new WindowsBuildImage({
       imageId: asset.imageUri,
@@ -2219,8 +2416,13 @@ export class WindowsBuildImage implements IBuildImage {
     }
 
     const unsupportedComputeTypes = [ComputeType.SMALL, ComputeType.X_LARGE, ComputeType.X2_LARGE];
-    if (buildEnvironment.computeType !== undefined && unsupportedComputeTypes.includes(buildEnvironment.computeType)) {
-      errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
+    if (
+      buildEnvironment.computeType !== undefined &&
+      unsupportedComputeTypes.includes(buildEnvironment.computeType)
+    ) {
+      errors.push(
+        `Windows images do not support the '${buildEnvironment.computeType}' compute type`
+      );
     }
 
     if (!buildEnvironment.fleet && this.type === WindowsImageType.SERVER_2022) {
@@ -2304,7 +2506,10 @@ export class MacBuildImage implements IBuildImage {
   /**
    * Makes an ARM MacOS build image from an ECR repository.
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
+  public static fromEcrRepository(
+    repository: ecr.IRepository,
+    tagOrDigest: string = 'latest'
+  ): IBuildImage {
     return new MacBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2450,6 +2655,8 @@ function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
 }
 
 export function isLambdaComputeType(computeType: ComputeType): boolean {
-  const lambdaComputeTypes = Object.values(ComputeType).filter(value => value.startsWith('BUILD_LAMBDA'));
+  const lambdaComputeTypes = Object.values(ComputeType).filter((value) =>
+    value.startsWith('BUILD_LAMBDA')
+  );
   return lambdaComputeTypes.includes(computeType);
 }

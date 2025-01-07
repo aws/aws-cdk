@@ -24,8 +24,10 @@ export interface InvokeActivityProps {
  * @deprecated use `StepFunctionsInvokeActivity`
  */
 export class InvokeActivity implements sfn.IStepFunctionsTask {
-  constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {
-  }
+  constructor(
+    private readonly activity: sfn.IActivity,
+    private readonly props: InvokeActivityProps = {}
+  ) {}
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {

@@ -101,7 +101,9 @@ export class LinuxParameters extends Construct {
       props.swappiness !== undefined &&
       (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
     ) {
-      throw new Error(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`);
+      throw new Error(
+        `swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`
+      );
     }
   }
 
@@ -131,7 +133,10 @@ export class LinuxParameters extends Construct {
       sharedMemorySize: this.sharedMemorySize?.toMebibytes(),
       maxSwap: this.maxSwap?.toMebibytes(),
       swappiness: this.swappiness,
-      devices: cdk.Lazy.any({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
+      devices: cdk.Lazy.any(
+        { produce: () => this.devices.map(renderDevice) },
+        { omitEmptyArray: true }
+      ),
       tmpfs: cdk.Lazy.any({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true }),
     };
   }

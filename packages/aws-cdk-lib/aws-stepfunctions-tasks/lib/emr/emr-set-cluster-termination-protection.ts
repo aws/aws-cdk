@@ -25,11 +25,14 @@ export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBa
  *
  */
 export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
-
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrSetClusterTerminationProtectionProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EmrSetClusterTerminationProtectionProps
+  ) {
     super(scope, id, props);
 
     this.taskPolicies = [
@@ -51,8 +54,11 @@ export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('elasticmapreduce', 'setClusterTerminationProtection',
-        sfn.IntegrationPattern.REQUEST_RESPONSE),
+      Resource: integrationResourceArn(
+        'elasticmapreduce',
+        'setClusterTerminationProtection',
+        sfn.IntegrationPattern.REQUEST_RESPONSE
+      ),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         TerminationProtected: this.props.terminationProtected,

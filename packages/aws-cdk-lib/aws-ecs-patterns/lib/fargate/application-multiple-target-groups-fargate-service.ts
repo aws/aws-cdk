@@ -12,8 +12,9 @@ import { FargateServiceBaseProps } from '../base/fargate-service-base';
 /**
  * The properties for the ApplicationMultipleTargetGroupsFargateService service.
  */
-export interface ApplicationMultipleTargetGroupsFargateServiceProps extends ApplicationMultipleTargetGroupsServiceBaseProps, FargateServiceBaseProps {
-
+export interface ApplicationMultipleTargetGroupsFargateServiceProps
+  extends ApplicationMultipleTargetGroupsServiceBaseProps,
+    FargateServiceBaseProps {
   /**
    * Determines whether the service will be assigned a public IP address.
    *
@@ -26,7 +27,6 @@ export interface ApplicationMultipleTargetGroupsFargateServiceProps extends Appl
  * A Fargate service running on an ECS cluster fronted by an application load balancer.
  */
 export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMultipleTargetGroupsServiceBase {
-
   /**
    * Determines whether the service will be assigned a public IP address.
    */
@@ -51,7 +51,11 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsFargateService class.
    */
-  constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsFargateServiceProps = {}) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: ApplicationMultipleTargetGroupsFargateServiceProps = {}
+  ) {
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp ?? false;
@@ -102,7 +106,11 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
     this.service = this.createFargateService(props);
     if (props.targetGroups) {
       this.addPortMappingForTargets(this.taskDefinition.defaultContainer, props.targetGroups);
-      this.targetGroup = this.registerECSTargets(this.service, this.taskDefinition.defaultContainer, props.targetGroups);
+      this.targetGroup = this.registerECSTargets(
+        this.service,
+        this.taskDefinition.defaultContainer,
+        props.targetGroups
+      );
     } else {
       this.targetGroup = this.listener.addTargets('ECS', {
         targets: [this.service],
@@ -111,8 +119,12 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
     }
   }
 
-  private createFargateService(props: ApplicationMultipleTargetGroupsFargateServiceProps): FargateService {
-    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+  private createFargateService(
+    props: ApplicationMultipleTargetGroupsFargateServiceProps
+  ): FargateService {
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)
+      ? this.internalDesiredCount
+      : this.desiredCount;
 
     return new FargateService(this, 'Service', {
       cluster: this.cluster,

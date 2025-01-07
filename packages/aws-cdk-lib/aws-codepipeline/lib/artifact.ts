@@ -125,9 +125,10 @@ export class ArtifactPath {
     return new ArtifactPath(Artifact.artifact(artifactName), fileName);
   }
 
-  constructor(readonly artifact: Artifact, readonly fileName: string) {
-
-  }
+  constructor(
+    readonly artifact: Artifact,
+    readonly fileName: string
+  ) {}
 
   public get location() {
     const artifactName = this.artifact.artifactName

@@ -78,7 +78,9 @@ class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
     const pipelineRole = new Role(this, 'SageMakerPipelineRole', {
       assumedBy: new ServicePrincipal('sagemaker.amazonaws.com'),
     });
-    pipelineRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
+    pipelineRole.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
+    );
 
     const pipeline = new sagemaker.CfnPipeline(this, 'Resource', {
       pipelineName: this.pipelineName,
@@ -106,10 +108,12 @@ class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution');
 
-const pipelineParameterList: SageMakerPipelineParameter[] = [{
-  name: 'ParameterName',
-  value: 'ParameterValue',
-}];
+const pipelineParameterList: SageMakerPipelineParameter[] = [
+  {
+    name: 'ParameterName',
+    value: 'ParameterValue',
+  },
+];
 const pipeline = new FakePipeline(stack, 'Pipeline', {
   pipelineName: 'my-pipeline',
 });
@@ -126,12 +130,15 @@ const integrationTest = new IntegTest(app, 'integrationtest-sagemaker-start-pipe
   stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
 });
 
-integrationTest.assertions.awsApiCall('Sagemaker', 'listPipelineExecutions', {
-  PipelineName: 'my-pipeline',
-}).assertAtPath(
-  'PipelineExecutionSummaries.0.PipelineExecutionArn',
-  ExpectedResult.stringLikeRegexp('my-pipeline'),
-).waitForAssertions({
-  interval: cdk.Duration.seconds(30),
-  totalTimeout: cdk.Duration.minutes(10),
-});
+integrationTest.assertions
+  .awsApiCall('Sagemaker', 'listPipelineExecutions', {
+    PipelineName: 'my-pipeline',
+  })
+  .assertAtPath(
+    'PipelineExecutionSummaries.0.PipelineExecutionArn',
+    ExpectedResult.stringLikeRegexp('my-pipeline')
+  )
+  .waitForAssertions({
+    interval: cdk.Duration.seconds(30),
+    totalTimeout: cdk.Duration.minutes(10),
+  });

@@ -1,4 +1,9 @@
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import {
+  addToDeadLetterQueueResourcePolicy,
+  bindBaseTargetConfig,
+  singletonEventRole,
+  TargetBaseProps,
+} from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
@@ -28,7 +33,10 @@ export interface SfnStateMachineProps extends TargetBaseProps {
 export class SfnStateMachine implements events.IRuleTarget {
   private readonly role: iam.IRole;
 
-  constructor(public readonly machine: sfn.IStateMachine, private readonly props: SfnStateMachineProps = {}) {
+  constructor(
+    public readonly machine: sfn.IStateMachine,
+    private readonly props: SfnStateMachineProps = {}
+  ) {
     // no statements are passed because we are configuring permissions by using grant* helper below
     this.role = props.role ?? singletonEventRole(machine);
     machine.grantStartExecution(this.role);

@@ -33,7 +33,10 @@ export interface EventBusProps {
  * Notify an existing Event Bus of an event
  */
 export class EventBus implements events.IRuleTarget {
-  constructor(private readonly eventBus: events.IEventBus, private readonly props: EventBusProps = {}) { }
+  constructor(
+    private readonly eventBus: events.IEventBus,
+    private readonly props: EventBusProps = {}
+  ) {}
 
   bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = this.props.role ?? singletonEventRole(rule);
@@ -45,7 +48,9 @@ export class EventBus implements events.IRuleTarget {
 
     return {
       arn: this.eventBus.eventBusArn,
-      deadLetterConfig: this.props.deadLetterQueue ? { arn: this.props.deadLetterQueue?.queueArn } : undefined,
+      deadLetterConfig: this.props.deadLetterQueue
+        ? { arn: this.props.deadLetterQueue?.queueArn }
+        : undefined,
       role,
     };
   }

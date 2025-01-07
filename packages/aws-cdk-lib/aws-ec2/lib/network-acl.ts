@@ -44,7 +44,6 @@ abstract class NetworkAclBase extends Resource implements INetworkAcl {
       ...options,
     });
   }
-
 }
 
 /**
@@ -172,7 +171,6 @@ export interface INetworkAclEntry extends IResource {
    * The network ACL.
    */
   readonly networkAcl: INetworkAcl;
-
 }
 
 /**
@@ -282,7 +280,8 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
       networkAclId: this.networkAcl.networkAclId,
       ruleNumber: props.ruleNumber,
       ruleAction: props.ruleAction ?? Action.ALLOW,
-      egress: props.direction !== undefined ? props.direction === TrafficDirection.EGRESS : undefined,
+      egress:
+        props.direction !== undefined ? props.direction === TrafficDirection.EGRESS : undefined,
       ...props.traffic.toTrafficConfig(),
       ...props.cidr.toCidrConfig(),
     });
@@ -337,15 +336,21 @@ export interface SubnetNetworkAclAssociationProps {
  *
  *
  */
-abstract class SubnetNetworkAclAssociationBase extends Resource implements ISubnetNetworkAclAssociation {
+abstract class SubnetNetworkAclAssociationBase
+  extends Resource
+  implements ISubnetNetworkAclAssociation
+{
   public abstract readonly subnetNetworkAclAssociationAssociationId: string;
 }
 export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase {
   public static fromSubnetNetworkAclAssociationAssociationId(
-    scope: Construct, id: string,
-    subnetNetworkAclAssociationAssociationId: string): ISubnetNetworkAclAssociation {
+    scope: Construct,
+    id: string,
+    subnetNetworkAclAssociationAssociationId: string
+  ): ISubnetNetworkAclAssociation {
     class Import extends SubnetNetworkAclAssociationBase {
-      public readonly subnetNetworkAclAssociationAssociationId = subnetNetworkAclAssociationAssociationId;
+      public readonly subnetNetworkAclAssociationAssociationId =
+        subnetNetworkAclAssociationAssociationId;
     }
 
     return new Import(scope, id);

@@ -103,13 +103,18 @@ export class LambdaInvokeAction extends Action {
     return this.variableExpression(variableName);
   }
 
-  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    scope: Construct,
+    _stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     // allow pipeline to list functions
-    options.role.addToPolicy(new iam.PolicyStatement({
-      actions: ['lambda:ListFunctions'],
-      resources: ['*'],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['lambda:ListFunctions'],
+        resources: ['*'],
+      })
+    );
 
     // allow pipeline to invoke this lambda functionn
     this.props.lambda.grantInvoke(options.role);
@@ -125,15 +130,19 @@ export class LambdaInvokeAction extends Action {
     // allow lambda to put job results for this pipeline
     // CodePipeline requires this to be granted to '*'
     // (the Pipeline ARN will not be enough)
-    this.props.lambda.addToRolePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult'],
-    }));
+    this.props.lambda.addToRolePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult'],
+      })
+    );
 
     return {
       configuration: {
         FunctionName: this.props.lambda.functionName,
-        UserParameters: this.props.userParametersString ?? Stack.of(scope).toJsonString(this.props.userParameters),
+        UserParameters:
+          this.props.userParametersString ??
+          Stack.of(scope).toJsonString(this.props.userParameters),
       },
     };
   }

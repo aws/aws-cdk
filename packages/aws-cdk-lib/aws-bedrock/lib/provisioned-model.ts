@@ -15,7 +15,11 @@ export class ProvisionedModel implements IModel {
   /**
    * Import an provisioned model given an ARN
    */
-  public static fromProvisionedModelArn(_scope: Construct, _id: string, provisionedModelArn: string): IModel {
+  public static fromProvisionedModelArn(
+    _scope: Construct,
+    _id: string,
+    provisionedModelArn: string
+  ): IModel {
     return new ProvisionedModel(provisionedModelArn);
   }
 

@@ -22,7 +22,7 @@ export abstract class Step implements IFileSetProducer {
    */
   public static sequence(steps: Step[]): Step[] {
     for (let i = 1; i < steps.length; i++) {
-      steps[i].addStepDependency(steps[i-1]);
+      steps[i].addStepDependency(steps[i - 1]);
     }
     return steps;
   }
@@ -45,8 +45,8 @@ export abstract class Step implements IFileSetProducer {
 
   constructor(
     /** Identifier for this step */
-    public readonly id: string) {
-
+    public readonly id: string
+  ) {
     if (Token.isUnresolved(id)) {
       throw new Error(`Step id cannot be unresolved, got '${id}'`);
     }
@@ -56,10 +56,9 @@ export abstract class Step implements IFileSetProducer {
    * Return the steps this step depends on, based on the FileSets it requires
    */
   public get dependencies(): Step[] {
-    return Array.from(new Set([
-      ...this.dependencyFileSets.map(f => f.producer),
-      ...this._dependencies,
-    ]));
+    return Array.from(
+      new Set([...this.dependencyFileSets.map((f) => f.producer), ...this._dependencies])
+    );
   }
 
   /**

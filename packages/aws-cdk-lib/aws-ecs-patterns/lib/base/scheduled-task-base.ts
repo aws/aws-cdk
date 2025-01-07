@@ -1,7 +1,16 @@
 import { Construct } from 'constructs';
 import { Schedule } from '../../../aws-applicationautoscaling';
 import { ISecurityGroup, IVpc, SubnetSelection, SubnetType } from '../../../aws-ec2';
-import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret, TaskDefinition } from '../../../aws-ecs';
+import {
+  AwsLogDriver,
+  Cluster,
+  ContainerImage,
+  ICluster,
+  LogDriver,
+  PropagatedTagSource,
+  Secret,
+  TaskDefinition,
+} from '../../../aws-ecs';
 import { Rule } from '../../../aws-events';
 import { EcsTask, Tag } from '../../../aws-events-targets';
 import { Stack } from '../../../core';
@@ -215,7 +224,7 @@ export abstract class ScheduledTaskBase extends Construct {
    */
   protected addTaskDefinitionToEventTarget(taskDefinition: TaskDefinition): EcsTask {
     // Use the EcsTask as the target of the EventRule
-    const eventRuleTarget = new EcsTask( {
+    const eventRuleTarget = new EcsTask({
       cluster: this.cluster,
       taskDefinition,
       taskCount: this.desiredTaskCount,
@@ -246,7 +255,10 @@ export abstract class ScheduledTaskBase extends Construct {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return (
+      (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) ||
+      new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc })
+    );
   }
 
   /**

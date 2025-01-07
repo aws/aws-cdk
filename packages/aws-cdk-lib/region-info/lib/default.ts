@@ -5,7 +5,6 @@
  * @deprecated - Service principals are now globally `<SERVICE>.amazonaws.com`, use iam.ServicePrincipal instead.
  */
 export class Default {
-
   /**
    * The default value for a VPC Endpoint Service name prefix, useful if you do
    * not have a synthesize-time region literal available (all you have is
@@ -45,25 +44,30 @@ export class Default {
       return serviceFqn;
     }
 
-    function determineConfiguration(service: string): (service: string, region: string, urlSuffix: string) => string {
-      function universal(s: string) { return `${s}.amazonaws.com`; }
-      function partitional(s: string, _: string, u: string) { return `${s}.${u}`; }
-      function regional(s: string, r: string) { return `${s}.${r}.amazonaws.com`; }
-      function regionalPartitional(s: string, r: string, u: string) { return `${s}.${r}.${u}`; }
+    function determineConfiguration(
+      service: string
+    ): (service: string, region: string, urlSuffix: string) => string {
+      function universal(s: string) {
+        return `${s}.amazonaws.com`;
+      }
+      function partitional(s: string, _: string, u: string) {
+        return `${s}.${u}`;
+      }
+      function regional(s: string, r: string) {
+        return `${s}.${r}.amazonaws.com`;
+      }
+      function regionalPartitional(s: string, r: string, u: string) {
+        return `${s}.${r}.${u}`;
+      }
 
       // Exceptions for Service Principals in us-iso-*
-      const US_ISO_EXCEPTIONS = new Set([
-        'cloudhsm',
-        'config',
-        'states',
-        'workspaces',
-      ]);
+      const US_ISO_EXCEPTIONS = new Set(['cloudhsm', 'config', 'states', 'workspaces']);
 
       // Account for idiosyncratic Service Principals in `us-iso-*` regions
       if (region.startsWith('us-iso-') && US_ISO_EXCEPTIONS.has(service)) {
         switch (service) {
           // Services with universal principal
-          case ('states'):
+          case 'states':
             return universal;
 
           // Services with a partitional principal
@@ -73,16 +77,13 @@ export class Default {
       }
 
       // Exceptions for Service Principals in us-isob-*
-      const US_ISOB_EXCEPTIONS = new Set([
-        'dms',
-        'states',
-      ]);
+      const US_ISOB_EXCEPTIONS = new Set(['dms', 'states']);
 
       // Account for idiosyncratic Service Principals in `us-isob-*` regions
       if (region.startsWith('us-isob-') && US_ISOB_EXCEPTIONS.has(service)) {
         switch (service) {
           // Services with universal principal
-          case ('states'):
+          case 'states':
             return universal;
 
           // Services with a partitional principal
@@ -96,8 +97,10 @@ export class Default {
         case 'codedeploy':
           return region.startsWith('cn-')
             ? regionalPartitional
-            // ...except in the isolated regions, where it's universal
-            : (region.startsWith('us-iso') ? universal : regional);
+            : // ...except in the isolated regions, where it's universal
+              region.startsWith('us-iso')
+              ? universal
+              : regional;
 
         // Services with a regional AND partitional principal
         case 'logs':
@@ -108,25 +111,24 @@ export class Default {
           return regional;
 
         case 'elasticmapreduce':
-          return region.startsWith('cn-')
-            ? partitional
-            : universal;
+          return region.startsWith('cn-') ? partitional : universal;
 
         // Services with a universal principal across all regions/partitions (the default case)
         default:
           return universal;
-
       }
-    };
+    }
 
     const configuration = determineConfiguration(serviceName);
     return configuration(serviceName, region, urlSuffix);
   }
 
-  private constructor() { }
+  private constructor() {}
 }
 
 function extractSimpleName(serviceFqn: string) {
-  const matches = serviceFqn.match(/^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/);
+  const matches = serviceFqn.match(
+    /^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/
+  );
   return matches ? matches[1] : undefined;
 }

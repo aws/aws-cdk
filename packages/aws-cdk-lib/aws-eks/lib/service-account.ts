@@ -3,7 +3,13 @@ import { ICluster } from './cluster';
 import { CfnPodIdentityAssociation, FargateCluster } from './index';
 import { KubernetesManifest } from './k8s-manifest';
 import {
-  AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
+  AddToPrincipalPolicyResult,
+  IPrincipal,
+  IRole,
+  OpenIdConnectPrincipal,
+  PolicyStatement,
+  PrincipalPolicyFragment,
+  Role,
   ServicePrincipal,
 } from '../../aws-iam';
 import { CfnJson, Names } from '../../core';
@@ -103,14 +109,14 @@ export interface ServiceAccountOptions {
    *
    * @default - no additional annotations
    */
-  readonly annotations?: {[key:string]: string};
+  readonly annotations?: { [key: string]: string };
 
   /**
    * Additional labels of the service account.
    *
    * @default - no additional labels
    */
-  readonly labels?: {[key:string]: string};
+  readonly labels?: { [key: string]: string };
 }
 
 /**
@@ -166,8 +172,8 @@ export class ServiceAccount extends Construct implements IPrincipal {
     let principal: IPrincipal;
     if (props.identityType !== IdentityType.POD_IDENTITY) {
       /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
-      * See documentation: https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
-      */
+       * See documentation: https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
+       */
       const conditions = new CfnJson(this, 'ConditionJson', {
         value: {
           [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:aud`]: 'sts.amazonaws.com',
@@ -177,7 +183,6 @@ export class ServiceAccount extends Construct implements IPrincipal {
       principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
         StringEquals: conditions,
       });
-
     } else {
       /**
        * Identity type is POD_IDENTITY.
@@ -199,10 +204,12 @@ export class ServiceAccount extends Construct implements IPrincipal {
       /**
        * EKS Pod Identities requires both assumed role actions otherwise it would fail.
        */
-      role.assumeRolePolicy!.addStatements(new PolicyStatement({
-        actions: ['sts:AssumeRole', 'sts:TagSession'],
-        principals: [new ServicePrincipal('pods.eks.amazonaws.com')],
-      }));
+      role.assumeRolePolicy!.addStatements(
+        new PolicyStatement({
+          actions: ['sts:AssumeRole', 'sts:TagSession'],
+          principals: [new ServicePrincipal('pods.eks.amazonaws.com')],
+        })
+      );
 
       // ensure the pod identity agent
       cluster.eksPodIdentityAgent;
@@ -214,8 +221,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
         roleArn: role.roleArn,
         serviceAccount: this.serviceAccountName,
       });
-
-    };
+    }
 
     this.role = role;
 
@@ -229,22 +235,24 @@ export class ServiceAccount extends Construct implements IPrincipal {
     // and since this stack inherintely depends on the cluster stack, we will have a circular dependency.
     new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
       cluster,
-      manifest: [{
-        apiVersion: 'v1',
-        kind: 'ServiceAccount',
-        metadata: {
-          name: this.serviceAccountName,
-          namespace: this.serviceAccountNamespace,
-          labels: {
-            'app.kubernetes.io/name': this.serviceAccountName,
-            ...props.labels,
-          },
-          annotations: {
-            'eks.amazonaws.com/role-arn': this.role.roleArn,
-            ...props.annotations,
+      manifest: [
+        {
+          apiVersion: 'v1',
+          kind: 'ServiceAccount',
+          metadata: {
+            name: this.serviceAccountName,
+            namespace: this.serviceAccountNamespace,
+            labels: {
+              'app.kubernetes.io/name': this.serviceAccountName,
+              ...props.labels,
+            },
+            annotations: {
+              'eks.amazonaws.com/role-arn': this.role.roleArn,
+              ...props.annotations,
+            },
           },
         },
-      }],
+      ],
     });
   }
 

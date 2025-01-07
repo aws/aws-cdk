@@ -104,16 +104,20 @@ export class WaiterStateMachine extends Construct {
       States: {
         'framework-isComplete-task': {
           End: true,
-          Retry: [{
-            ErrorEquals: ['States.ALL'],
-            IntervalSeconds: props.interval.toSeconds(),
-            MaxAttempts: props.maxAttempts,
-            BackoffRate: props.backoffRate,
-          }],
-          Catch: [{
-            ErrorEquals: ['States.ALL'],
-            Next: 'framework-onTimeout-task',
-          }],
+          Retry: [
+            {
+              ErrorEquals: ['States.ALL'],
+              IntervalSeconds: props.interval.toSeconds(),
+              MaxAttempts: props.maxAttempts,
+              BackoffRate: props.backoffRate,
+            },
+          ],
+          Catch: [
+            {
+              ErrorEquals: ['States.ALL'],
+              Next: 'framework-onTimeout-task',
+            },
+          ],
           Type: 'Task',
           Resource: props.isCompleteHandler.functionArn,
         },
@@ -129,7 +133,11 @@ export class WaiterStateMachine extends Construct {
     const resource = new CfnStateMachine(this, 'Resource', {
       definitionString: definition,
       roleArn: role.roleArn,
-      loggingConfiguration: this.renderLoggingConfiguration(role, props.logOptions, props.disableLogging),
+      loggingConfiguration: this.renderLoggingConfiguration(
+        role,
+        props.logOptions,
+        props.disableLogging
+      ),
     });
     resource.node.addDependency(role);
 
@@ -150,7 +158,7 @@ export class WaiterStateMachine extends Construct {
   private renderLoggingConfiguration(
     role: Role,
     logOptions?: LogOptions,
-    disableLogging?: boolean,
+    disableLogging?: boolean
   ): CfnStateMachine.LoggingConfigurationProperty | undefined {
     if (disableLogging) return undefined;
 
@@ -158,42 +166,48 @@ export class WaiterStateMachine extends Construct {
     // CreateLogDelivery and DescribeLogGroups, don't support Resource types defined by Amazon
     // CloudWatch Logs.
     // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: [
-        'logs:CreateLogDelivery',
-        'logs:CreateLogStream',
-        'logs:GetLogDelivery',
-        'logs:UpdateLogDelivery',
-        'logs:DeleteLogDelivery',
-        'logs:ListLogDeliveries',
-        'logs:PutLogEvents',
-        'logs:PutResourcePolicy',
-        'logs:DescribeResourcePolicies',
-        'logs:DescribeLogGroups',
-      ],
-      resources: ['*'],
-    }));
+    role.addToPrincipalPolicy(
+      new PolicyStatement({
+        actions: [
+          'logs:CreateLogDelivery',
+          'logs:CreateLogStream',
+          'logs:GetLogDelivery',
+          'logs:UpdateLogDelivery',
+          'logs:DeleteLogDelivery',
+          'logs:ListLogDeliveries',
+          'logs:PutLogEvents',
+          'logs:PutResourcePolicy',
+          'logs:DescribeResourcePolicies',
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      })
+    );
 
-    const logGroup = logOptions?.destination ?? new LogGroup(this, 'LogGroup', {
-      // Log group name should start with `/aws/vendedlogs/` to not exceed Cloudwatch Logs Resource Policy
-      // size limit.
-      // https://docs.aws.amazon.com/step-functions/latest/dg/bp-cwl.html
-      //
-      // By using the auto-generated name of the Lambda created in the `Provider` that calls this
-      // `WaiterStateMachine` construct, even if the `Provider` (or its parent) is deleted and then
-      // created again, the log group name will not duplicate previously created one with removal
-      // policy `RETAIN`. This is because that the Lambda will be re-created again with auto-generated name.
-      // The `node.addr` is also used to prevent duplicate names no matter how many times this construct
-      // is created in the stack. It will not duplicate if called on other stacks.
-      logGroupName: `/aws/vendedlogs/states/waiter-state-machine-${this.isCompleteHandler.functionName}-${this.node.addr}`,
-    });
+    const logGroup =
+      logOptions?.destination ??
+      new LogGroup(this, 'LogGroup', {
+        // Log group name should start with `/aws/vendedlogs/` to not exceed Cloudwatch Logs Resource Policy
+        // size limit.
+        // https://docs.aws.amazon.com/step-functions/latest/dg/bp-cwl.html
+        //
+        // By using the auto-generated name of the Lambda created in the `Provider` that calls this
+        // `WaiterStateMachine` construct, even if the `Provider` (or its parent) is deleted and then
+        // created again, the log group name will not duplicate previously created one with removal
+        // policy `RETAIN`. This is because that the Lambda will be re-created again with auto-generated name.
+        // The `node.addr` is also used to prevent duplicate names no matter how many times this construct
+        // is created in the stack. It will not duplicate if called on other stacks.
+        logGroupName: `/aws/vendedlogs/states/waiter-state-machine-${this.isCompleteHandler.functionName}-${this.node.addr}`,
+      });
 
     return {
-      destinations: [{
-        cloudWatchLogsLogGroup: {
-          logGroupArn: logGroup.logGroupArn,
+      destinations: [
+        {
+          cloudWatchLogsLogGroup: {
+            logGroupArn: logGroup.logGroupArn,
+          },
         },
-      }],
+      ],
       includeExecutionData: logOptions?.includeExecutionData ?? false,
       level: logOptions?.level ?? LogLevel.ERROR,
     };

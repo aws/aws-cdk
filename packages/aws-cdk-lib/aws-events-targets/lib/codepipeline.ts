@@ -22,15 +22,17 @@ export interface CodePipelineTargetOptions extends TargetBaseProps {
 export class CodePipeline implements events.IRuleTarget {
   constructor(
     private readonly pipeline: codepipeline.IPipeline,
-    private readonly options: CodePipelineTargetOptions = {}) {
-  }
+    private readonly options: CodePipelineTargetOptions = {}
+  ) {}
 
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = this.options.eventRole || singletonEventRole(this.pipeline);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.pipeline.pipelineArn],
-      actions: ['codepipeline:StartPipelineExecution'],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        resources: [this.pipeline.pipelineArn],
+        actions: ['codepipeline:StartPipelineExecution'],
+      })
+    );
 
     return {
       ...bindBaseTargetConfig(this.options),

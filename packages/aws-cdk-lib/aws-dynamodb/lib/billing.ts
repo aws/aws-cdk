@@ -56,7 +56,7 @@ export abstract class Billing {
       public _renderWriteCapacity() {
         return props?.maxWriteRequestUnits;
       }
-    }) (BillingMode.PAY_PER_REQUEST);
+    })(BillingMode.PAY_PER_REQUEST);
   }
 
   /**
@@ -73,10 +73,10 @@ export abstract class Billing {
       public _renderWriteCapacity() {
         return props.writeCapacity._renderWriteCapacity();
       }
-    }) (BillingMode.PROVISIONED);
+    })(BillingMode.PROVISIONED);
   }
 
-  private constructor (public readonly mode: BillingMode) {}
+  private constructor(public readonly mode: BillingMode) {}
 
   /**
    * @internal

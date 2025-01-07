@@ -36,35 +36,35 @@ export class FilterRule {
   /**
    * Not equals comparison operator
    */
-  public static notEquals(elem: string): {[key:string]: string[]}[] {
+  public static notEquals(elem: string): { [key: string]: string[] }[] {
     return [{ 'anything-but': [elem] }];
   }
 
   /**
    * Numeric range comparison operator
    */
-  public static between(first: number, second: number): {[key:string]: any[]}[] {
+  public static between(first: number, second: number): { [key: string]: any[] }[] {
     return [{ numeric: ['>', first, '<=', second] }];
   }
 
   /**
    * Exists comparison operator
    */
-  public static exists(): {[key:string]: boolean}[] {
+  public static exists(): { [key: string]: boolean }[] {
     return [{ exists: true }];
   }
 
   /**
    * Not exists comparison operator
    */
-  public static notExists(): {[key:string]: boolean}[] {
+  public static notExists(): { [key: string]: boolean }[] {
     return [{ exists: false }];
   }
 
   /**
    * Begins with comparison operator
    */
-  public static beginsWith(elem: string): {[key:string]: string}[] {
+  public static beginsWith(elem: string): { [key: string]: string }[] {
     return [{ prefix: elem }];
   }
 }
@@ -76,7 +76,7 @@ export class FilterCriteria {
   /**
    * Filter for event source
    */
-  public static filter(filter: {[key:string]: any}): {[key:string]: any} {
+  public static filter(filter: { [key: string]: any }): { [key: string]: any } {
     return { pattern: JSON.stringify(filter) };
   }
 }

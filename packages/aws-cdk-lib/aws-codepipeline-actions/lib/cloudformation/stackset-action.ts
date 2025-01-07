@@ -1,6 +1,12 @@
 import { Construct } from 'constructs';
 import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
-import { CommonCloudFormationStackSetOptions, StackInstances, StackSetDeploymentModel, StackSetParameters, StackSetTemplate } from './stackset-types';
+import {
+  CommonCloudFormationStackSetOptions,
+  StackInstances,
+  StackSetDeploymentModel,
+  StackSetParameters,
+  StackSetTemplate,
+} from './stackset-types';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as cdk from '../../../core';
 import { Action } from '../action';
@@ -9,7 +15,9 @@ import { validatePercentage } from '../common';
 /**
  * Properties for the CloudFormationDeployStackSetAction
  */
-export interface CloudFormationDeployStackSetActionProps extends codepipeline.CommonAwsActionProps, CommonCloudFormationStackSetOptions {
+export interface CloudFormationDeployStackSetActionProps
+  extends codepipeline.CommonAwsActionProps,
+    CommonCloudFormationStackSetOptions {
   /**
    * The name to associate with the stack set. This name must be unique in the Region where it is created.
    *
@@ -126,9 +134,9 @@ export class CloudFormationDeployStackSetAction extends Action {
         maxOutputs: 0,
       },
       inputs: [
-        ...props.template._artifactsReferenced ?? [],
-        ...props.parameters?._artifactsReferenced ?? [],
-        ...props.stackInstances?._artifactsReferenced ?? [],
+        ...(props.template._artifactsReferenced ?? []),
+        ...(props.parameters?._artifactsReferenced ?? []),
+        ...(props.stackInstances?._artifactsReferenced ?? []),
       ],
     });
 
@@ -139,7 +147,11 @@ export class CloudFormationDeployStackSetAction extends Action {
     validatePercentage('maxAccountConcurrencyPercentage', props.maxAccountConcurrencyPercentage);
   }
 
-  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  protected bound(
+    scope: Construct,
+    _stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
     singletonPolicy.grantCreateUpdateStackSet(this.props);
 

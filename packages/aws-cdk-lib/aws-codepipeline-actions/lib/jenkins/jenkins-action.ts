@@ -65,9 +65,10 @@ export class JenkinsAction extends Action {
   constructor(props: JenkinsActionProps) {
     super({
       ...props,
-      category: props.type === JenkinsActionType.BUILD
-        ? codepipeline.ActionCategory.BUILD
-        : codepipeline.ActionCategory.TEST,
+      category:
+        props.type === JenkinsActionType.BUILD
+          ? codepipeline.ActionCategory.BUILD
+          : codepipeline.ActionCategory.TEST,
       provider: props.jenkinsProvider.providerName,
       owner: 'Custom',
       artifactBounds: jenkinsArtifactsBounds,
@@ -77,8 +78,11 @@ export class JenkinsAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    _options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     if (this.actionProperties.category === codepipeline.ActionCategory.BUILD) {
       this.props.jenkinsProvider._registerBuildProvider();
     } else {

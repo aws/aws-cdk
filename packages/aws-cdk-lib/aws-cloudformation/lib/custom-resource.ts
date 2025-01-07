@@ -8,7 +8,7 @@ import * as core from '../../core';
  *
  * @deprecated this type has been deprecated in favor of using a key-value type directly
  */
-export type Properties = {[key: string]: any};
+export type Properties = { [key: string]: any };
 
 /**
  * Configuration options for custom resource providers.
@@ -62,18 +62,22 @@ export class CustomResourceProvider implements ICustomResourceProvider {
    * Use AWS Lambda as a provider.
    * @deprecated use `fromLambda`
    */
-  public static lambda(handler: lambda.IFunction) { return this.fromLambda(handler); }
+  public static lambda(handler: lambda.IFunction) {
+    return this.fromLambda(handler);
+  }
 
   /**
    * Use an SNS topic as the provider.
    * @deprecated use `fromTopic`
    */
-  public static topic(topic: sns.ITopic) { return this.fromTopic(topic); }
+  public static topic(topic: sns.ITopic) {
+    return this.fromTopic(topic);
+  }
 
   /**
    * @param serviceToken the ServiceToken which contains the ARN for this provider.
    */
-  private constructor(public readonly serviceToken: string) { }
+  private constructor(public readonly serviceToken: string) {}
 
   public bind(_scope: Construct): CustomResourceProviderConfig {
     return { serviceToken: this.serviceToken };

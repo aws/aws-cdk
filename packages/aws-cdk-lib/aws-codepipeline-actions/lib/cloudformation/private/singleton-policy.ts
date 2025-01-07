@@ -33,7 +33,11 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     this.grantPrincipal = role;
   }
 
-  public grantExecuteChangeSet(props: { stackName: string; changeSetName: string; region?: string }): void {
+  public grantExecuteChangeSet(props: {
+    stackName: string;
+    changeSetName: string;
+    region?: string;
+  }): void {
     this.statementFor({
       actions: [
         'cloudformation:DescribeStacks',
@@ -41,11 +45,15 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
         'cloudformation:DescribeChangeSet',
         'cloudformation:ExecuteChangeSet',
       ],
-      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
+      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
     }).addResources(this.stackArnFromProps(props));
   }
 
-  public grantCreateReplaceChangeSet(props: { stackName: string; changeSetName: string; region?: string }): void {
+  public grantCreateReplaceChangeSet(props: {
+    stackName: string;
+    changeSetName: string;
+    region?: string;
+  }): void {
     this.statementFor({
       actions: [
         'cloudformation:CreateChangeSet',
@@ -57,7 +65,11 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     }).addResources(this.stackArnFromProps(props));
   }
 
-  public grantCreateUpdateStack(props: { stackName: string; replaceOnFailure?: boolean; region?: string }): void {
+  public grantCreateUpdateStack(props: {
+    stackName: string;
+    replaceOnFailure?: boolean;
+    region?: string;
+  }): void {
     const actions = [
       'cloudformation:DescribeStack*',
       'cloudformation:CreateStack',
@@ -87,15 +99,14 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
 
   public grantDeleteStack(props: { stackName: string; region?: string }): void {
     this.statementFor({
-      actions: [
-        'cloudformation:DescribeStack*',
-        'cloudformation:DeleteStack',
-      ],
+      actions: ['cloudformation:DescribeStack*', 'cloudformation:DeleteStack'],
     }).addResources(this.stackArnFromProps(props));
   }
 
   public grantPassRole(role: iam.IRole | string): void {
-    this.statementFor({ actions: ['iam:PassRole'] }).addResources(typeof role === 'string' ? role : role.roleArn);
+    this.statementFor({ actions: ['iam:PassRole'] }).addResources(
+      typeof role === 'string' ? role : role.roleArn
+    );
   }
 
   private statementFor(template: StatementTemplate): iam.PolicyStatement {
@@ -115,7 +126,9 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
       return `${actions}\x1D${conditions}`;
 
       function formatConditions(cond?: StatementCondition): string {
-        if (cond == null) { return ''; }
+        if (cond == null) {
+          return '';
+        }
         let result = '';
         for (const op of Object.keys(cond).sort()) {
           result += `${op}\x1E`;
@@ -156,12 +169,14 @@ export interface StatementTemplate {
 
 export type StatementCondition = { [op: string]: { [attribute: string]: string } };
 
-export function parseCapabilities(capabilities: cdk.CfnCapabilities[] | undefined): string | undefined {
+export function parseCapabilities(
+  capabilities: cdk.CfnCapabilities[] | undefined
+): string | undefined {
   if (capabilities === undefined) {
     return undefined;
   } else if (capabilities.length === 1) {
     const capability = capabilities.toString();
-    return (capability === '') ? undefined : capability;
+    return capability === '' ? undefined : capability;
   } else if (capabilities.length > 1) {
     return capabilities.join(',');
   }

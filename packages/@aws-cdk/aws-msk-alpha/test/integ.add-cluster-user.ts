@@ -26,9 +26,15 @@ const integTest = new IntegTest(app, 'ScramSecretIntegTest', {
 const scramSecrets = integTest.assertions.awsApiCall('Kafka', 'listScramSecrets', {
   ClusterArn: cluster.clusterArn,
 });
-scramSecrets.expect(ExpectedResult.objectLike({
-  SecretArnList: [
-    Match.stringLikeRegexp(`arn:aws:secretsmanager:${stack.region}:${stack.account}:secret:AmazonMSK_integ-test_integ-user-1-.*`),
-    Match.stringLikeRegexp(`arn:aws:secretsmanager:${stack.region}:${stack.account}:secret:AmazonMSK_integ-test_integ-user-2-.*`),
-  ],
-}));
+scramSecrets.expect(
+  ExpectedResult.objectLike({
+    SecretArnList: [
+      Match.stringLikeRegexp(
+        `arn:aws:secretsmanager:${stack.region}:${stack.account}:secret:AmazonMSK_integ-test_integ-user-1-.*`
+      ),
+      Match.stringLikeRegexp(
+        `arn:aws:secretsmanager:${stack.region}:${stack.account}:secret:AmazonMSK_integ-test_integ-user-2-.*`
+      ),
+    ],
+  })
+);

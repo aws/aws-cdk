@@ -93,7 +93,9 @@ export abstract class TopicBase extends Resource implements ITopic {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
-    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+    this.node.addValidation({
+      validate: () => this.policy?.document.validateForResourcePolicy() ?? [],
+    });
   }
 
   /**
@@ -111,7 +113,9 @@ export abstract class TopicBase extends Resource implements ITopic {
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.
     if (scope.node.tryFindChild(id)) {
-      throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
+      throw new Error(
+        `A subscription with id "${id}" already exists under the scope ${scope.node.path}`
+      );
     }
 
     const subscription = new Subscription(scope, id, {
@@ -197,7 +201,9 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Represents a notification target
    * That allows SNS topic to associate with this rule target.
    */
-  public bindAsNotificationRuleTarget(_scope: constructs.Construct): notifications.NotificationRuleTargetConfig {
+  public bindAsNotificationRuleTarget(
+    _scope: constructs.Construct
+  ): notifications.NotificationRuleTargetConfig {
     // SNS topic need to grant codestar-notifications service to publish
     // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
     this.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
@@ -214,14 +220,15 @@ export abstract class TopicBase extends Resource implements ITopic {
     // for previous subscriptions that match our regex pattern
     for (const source of scope.node.findAll()) {
       const m = re.exec(source.node.id); // Use regex to find a match
-      if (m !== null) { // if we found a match
+      if (m !== null) {
+        // if we found a match
         const matchSuffix = parseInt(m[1], 10); // get the suffix for that match (as integer)
-        if (matchSuffix >= nextSuffix) { // check if the match suffix is larger or equal to currently proposed suffix
+        if (matchSuffix >= nextSuffix) {
+          // check if the match suffix is larger or equal to currently proposed suffix
           nextSuffix = matchSuffix + 1; // increment the suffix
         }
       }
     }
     return `TokenSubscription:${nextSuffix}`;
   }
-
 }

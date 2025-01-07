@@ -162,12 +162,16 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
     // Use a Service Linked Role
     // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
-    this.scalingRole = iam.Role.fromRoleArn(this, 'ScalingRole', this.stack.formatArn({
-      service: 'iam',
-      region: '',
-      resource: 'role/aws-service-role/lambda.application-autoscaling.amazonaws.com',
-      resourceName: 'AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency',
-    }));
+    this.scalingRole = iam.Role.fromRoleArn(
+      this,
+      'ScalingRole',
+      this.stack.formatArn({
+        service: 'iam',
+        region: '',
+        resource: 'role/aws-service-role/lambda.application-autoscaling.amazonaws.com',
+        resourceName: 'AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency',
+      })
+    );
 
     this.functionArn = this.getResourceArnAttribute(alias.ref, {
       service: 'lambda',
@@ -178,7 +182,12 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
     this.qualifier = extractQualifierFromArn(alias.ref);
 
-    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+    if (
+      props.onFailure ||
+      props.onSuccess ||
+      props.maxEventAge ||
+      props.retryAttempts !== undefined
+    ) {
       this.configureAsyncInvoke({
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,
@@ -225,14 +234,14 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     if (this.scalableAlias) {
       throw new Error('AutoScaling already enabled for this alias');
     }
-    return this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
+    return (this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
       minCapacity: options.minCapacity ?? 1,
       maxCapacity: options.maxCapacity,
       resourceId: `function:${this.functionName}`,
       dimension: 'lambda:function:ProvisionedConcurrency',
       serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
       role: this.scalingRole,
-    });
+    }));
   }
 
   /**
@@ -246,7 +255,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.validateAdditionalWeights(props.additionalVersions);
 
     return {
-      additionalVersionWeights: props.additionalVersions.map(vw => {
+      additionalVersionWeights: props.additionalVersions.map((vw) => {
         return {
           functionVersion: vw.version.version,
           functionWeight: vw.weight,
@@ -261,10 +270,14 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    * We validate that they are positive and add up to something <= 1.
    */
   private validateAdditionalWeights(weights: VersionWeight[]) {
-    const total = weights.map(w => {
-      if (w.weight < 0 || w.weight > 1) { throw new Error(`Additional version weight must be between 0 and 1, got: ${w.weight}`); }
-      return w.weight;
-    }).reduce((a, x) => a + x);
+    const total = weights
+      .map((w) => {
+        if (w.weight < 0 || w.weight > 1) {
+          throw new Error(`Additional version weight must be between 0 and 1, got: ${w.weight}`);
+        }
+        return w.weight;
+      })
+      .reduce((a, x) => a + x);
 
     if (total > 1) {
       throw new Error(`Sum of additional version weights must not exceed 1, got: ${total}`);
@@ -276,7 +289,9 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    *
    * Member must have value greater than or equal to 1
    */
-  private determineProvisionedConcurrency(props: AliasProps): CfnAlias.ProvisionedConcurrencyConfigurationProperty | undefined {
+  private determineProvisionedConcurrency(
+    props: AliasProps
+  ): CfnAlias.ProvisionedConcurrencyConfigurationProperty | undefined {
     if (!props.provisionedConcurrentExecutions) {
       return undefined;
     }

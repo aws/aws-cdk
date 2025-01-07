@@ -8,8 +8,7 @@ export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
    *
    * @param functionArn The Lambda Function to load balance to
    */
-  constructor(private readonly fn: lambda.IFunction) {
-  }
+  constructor(private readonly fn: lambda.IFunction) {}
 
   /**
    * Register this instance target with a load balancer
@@ -17,8 +16,12 @@ export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    const grant = this.fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+  public attachToApplicationTargetGroup(
+    targetGroup: elbv2.IApplicationTargetGroup
+  ): elbv2.LoadBalancerTargetProps {
+    const grant = this.fn.grantInvoke(
+      new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')
+    );
     grant.applyBefore(targetGroup);
     return this.attach(targetGroup);
   }
@@ -29,8 +32,12 @@ export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    const grant = this.fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+  public attachToNetworkTargetGroup(
+    targetGroup: elbv2.INetworkTargetGroup
+  ): elbv2.LoadBalancerTargetProps {
+    const grant = this.fn.grantInvoke(
+      new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')
+    );
     grant.applyBefore(targetGroup);
     return this.attach(targetGroup);
   }

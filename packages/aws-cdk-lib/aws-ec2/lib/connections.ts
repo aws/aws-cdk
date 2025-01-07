@@ -126,11 +126,13 @@ export class Connections implements IConnectable {
    * Allow connections to the peer on the given port
    */
   public allowTo(other: IConnectable, portRange: Port, description?: string) {
-    if (this.skip) { return; }
+    if (this.skip) {
+      return;
+    }
 
     const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
-    this._securityGroups.forEachAndForever(securityGroup => {
-      other.connections._securityGroupRules.forEachAndForever(rule => {
+    this._securityGroups.forEachAndForever((securityGroup) => {
+      other.connections._securityGroupRules.forEachAndForever((rule) => {
         securityGroup.addEgressRule(rule, portRange, description, remoteRule);
       });
     });
@@ -149,11 +151,13 @@ export class Connections implements IConnectable {
    * Allow connections from the peer on the given port
    */
   public allowFrom(other: IConnectable, portRange: Port, description?: string) {
-    if (this.skip) { return; }
+    if (this.skip) {
+      return;
+    }
 
     const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
-    this._securityGroups.forEachAndForever(securityGroup => {
-      other.connections._securityGroupRules.forEachAndForever(rule => {
+    this._securityGroups.forEachAndForever((securityGroup) => {
+      other.connections._securityGroupRules.forEachAndForever((rule) => {
         securityGroup.addIngressRule(rule, portRange, description, remoteRule);
       });
     });
@@ -172,8 +176,8 @@ export class Connections implements IConnectable {
    * Allow hosts inside the security group to connect to each other on the given port
    */
   public allowInternally(portRange: Port, description?: string) {
-    this._securityGroups.forEachAndForever(securityGroup => {
-      this._securityGroupRules.forEachAndForever(rule => {
+    this._securityGroups.forEachAndForever((securityGroup) => {
+      this._securityGroupRules.forEachAndForever((rule) => {
         securityGroup.addIngressRule(rule, portRange, description);
         securityGroup.addEgressRule(rule, portRange, description);
       });
@@ -211,7 +215,9 @@ export class Connections implements IConnectable {
    */
   public allowDefaultPortInternally(description?: string) {
     if (!this.defaultPort) {
-      throw new Error('Cannot call allowDefaultPortInternally(): this resource has no default port');
+      throw new Error(
+        'Cannot call allowDefaultPortInternally(): this resource has no default port'
+      );
     }
     this.allowInternally(this.defaultPort, description);
   }
@@ -221,7 +227,9 @@ export class Connections implements IConnectable {
    */
   public allowDefaultPortFromAnyIpv4(description?: string) {
     if (!this.defaultPort) {
-      throw new Error('Cannot call allowDefaultPortFromAnyIpv4(): this resource has no default port');
+      throw new Error(
+        'Cannot call allowDefaultPortFromAnyIpv4(): this resource has no default port'
+      );
     }
     this.allowFromAnyIpv4(this.defaultPort, description);
   }

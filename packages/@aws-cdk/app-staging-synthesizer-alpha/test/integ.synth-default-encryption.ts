@@ -17,7 +17,9 @@ const stackDefaultEncryption = new Stack(app, 'synthesize-default-encryption', {
   }),
 });
 
-const defaultStagingStack = app.node.tryFindChild(`StagingStack-${APP_ID_MAX}-ACCOUNT-REGION`) as Stack;
+const defaultStagingStack = app.node.tryFindChild(
+  `StagingStack-${APP_ID_MAX}-ACCOUNT-REGION`
+) as Stack;
 if (!defaultStagingStack) {
   throw new Error('Default Staging Stack not found.');
 }

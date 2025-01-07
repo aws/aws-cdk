@@ -4,7 +4,12 @@ import { IgnoreStrategy } from './ignore';
 import { CopyOptions, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
 
-export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
+export function copyDirectory(
+  srcDir: string,
+  destDir: string,
+  options: CopyOptions = {},
+  rootDir?: string
+) {
   const follow = options.follow ?? SymlinkFollowMode.EXTERNAL;
 
   rootDir = rootDir || srcDir;
@@ -25,9 +30,10 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
 
     const destFilePath = path.join(destDir, file);
 
-    let stat: fs.Stats | undefined = follow === SymlinkFollowMode.ALWAYS
-      ? fs.statSync(sourceFilePath)
-      : fs.lstatSync(sourceFilePath);
+    let stat: fs.Stats | undefined =
+      follow === SymlinkFollowMode.ALWAYS
+        ? fs.statSync(sourceFilePath)
+        : fs.lstatSync(sourceFilePath);
 
     if (stat && stat.isSymbolicLink()) {
       const target = fs.readlinkSync(sourceFilePath);

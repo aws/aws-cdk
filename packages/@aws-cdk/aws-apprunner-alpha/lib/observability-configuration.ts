@@ -74,12 +74,18 @@ export interface IObservabilityConfiguration extends cdk.IResource {
  *
  * @resource AWS::AppRunner::ObservabilityConfiguration
  */
-export class ObservabilityConfiguration extends cdk.Resource implements IObservabilityConfiguration {
+export class ObservabilityConfiguration
+  extends cdk.Resource
+  implements IObservabilityConfiguration
+{
   /**
    * Imports an App Runner Observability Configuration from attributes.
    */
-  public static fromObservabilityConfigurationAttributes(scope: Construct, id: string,
-    attrs: ObservabilityConfigurationAttributes): IObservabilityConfiguration {
+  public static fromObservabilityConfigurationAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ObservabilityConfigurationAttributes
+  ): IObservabilityConfiguration {
     const observabilityConfigurationName = attrs.observabilityConfigurationName;
     const observabilityConfigurationRevision = attrs.observabilityConfigurationRevision;
 
@@ -99,7 +105,11 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
   /**
    * Imports an App Runner Observability Configuration from its ARN
    */
-  public static fromArn(scope: Construct, id: string, observabilityConfigurationArn: string): IObservabilityConfiguration {
+  public static fromArn(
+    scope: Construct,
+    id: string,
+    observabilityConfigurationArn: string
+  ): IObservabilityConfiguration {
     const resourceParts = cdk.Fn.split('/', observabilityConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
@@ -141,17 +151,22 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
       physicalName: props.observabilityConfigurationName,
     });
 
-    if (props.observabilityConfigurationName !== undefined && !cdk.Token.isUnresolved(props.observabilityConfigurationName)) {
-
-      if (props.observabilityConfigurationName.length < 4 || props.observabilityConfigurationName.length > 32) {
+    if (
+      props.observabilityConfigurationName !== undefined &&
+      !cdk.Token.isUnresolved(props.observabilityConfigurationName)
+    ) {
+      if (
+        props.observabilityConfigurationName.length < 4 ||
+        props.observabilityConfigurationName.length > 32
+      ) {
         throw new Error(
-          `\`observabilityConfigurationName\` must be between 4 and 32 characters, got: ${props.observabilityConfigurationName.length} characters.`,
+          `\`observabilityConfigurationName\` must be between 4 and 32 characters, got: ${props.observabilityConfigurationName.length} characters.`
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.observabilityConfigurationName)) {
         throw new Error(
-          `\`observabilityConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.observabilityConfigurationName}.`,
+          `\`observabilityConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.observabilityConfigurationName}.`
         );
       }
     }

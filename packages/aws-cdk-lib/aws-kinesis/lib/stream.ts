@@ -5,7 +5,20 @@ import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token } from '../../core';
+import {
+  ArnFormat,
+  Aws,
+  CfnCondition,
+  Duration,
+  Fn,
+  IResolvable,
+  IResource,
+  RemovalPolicy,
+  Resource,
+  ResourceProps,
+  Stack,
+  Token,
+} from '../../core';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -18,11 +31,7 @@ const READ_OPERATIONS = [
   'kinesis:DescribeStreamConsumer',
 ];
 
-const WRITE_OPERATIONS = [
-  'kinesis:ListShards',
-  'kinesis:PutRecord',
-  'kinesis:PutRecords',
-];
+const WRITE_OPERATIONS = ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'];
 
 /**
  * A Kinesis Stream
@@ -351,7 +360,9 @@ abstract class StreamBase extends Resource implements IStream {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
-    this.node.addValidation({ validate: () => this.resourcePolicy?.document.validateForResourcePolicy() ?? [] });
+    this.node.addValidation({
+      validate: () => this.resourcePolicy?.document.validateForResourcePolicy() ?? [],
+    });
   }
 
   /**
@@ -412,7 +423,10 @@ abstract class StreamBase extends Resource implements IStream {
    * encrypt/decrypt will also be granted.
    */
   public grantReadWrite(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS])));
+    const ret = this.grant(
+      grantee,
+      ...Array.from(new Set([...READ_OPERATIONS, ...WRITE_OPERATIONS]))
+    );
     this.encryptionKey?.grantEncryptDecrypt(grantee);
 
     return ret;
@@ -471,7 +485,10 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricGetRecordsIteratorAgeMilliseconds(props?: cloudwatch.MetricOptions) {
-    return this.metricFromCannedFunction(KinesisMetrics.getRecordsIteratorAgeMillisecondsMaximum, props);
+    return this.metricFromCannedFunction(
+      KinesisMetrics.getRecordsIteratorAgeMillisecondsMaximum,
+      props
+    );
   }
 
   /**
@@ -668,7 +685,10 @@ abstract class StreamBase extends Resource implements IStream {
    *
    */
   public metricReadProvisionedThroughputExceeded(props?: cloudwatch.MetricOptions) {
-    return this.metricFromCannedFunction(KinesisMetrics.readProvisionedThroughputExceededAverage, props);
+    return this.metricFromCannedFunction(
+      KinesisMetrics.readProvisionedThroughputExceededAverage,
+      props
+    );
   }
 
   /**
@@ -686,19 +706,22 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricWriteProvisionedThroughputExceeded(props?: cloudwatch.MetricOptions) {
-    return this.metricFromCannedFunction(KinesisMetrics.writeProvisionedThroughputExceededAverage, props);
+    return this.metricFromCannedFunction(
+      KinesisMetrics.writeProvisionedThroughputExceededAverage,
+      props
+    );
   }
 
   // create metrics based on generated KinesisMetrics static methods
   private metricFromCannedFunction(
     createCannedProps: (dimensions: { StreamName: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...createCannedProps({ StreamName: this.streamName }),
       ...props,
     }).attachTo(this);
   }
-
 }
 
 /**
@@ -768,7 +791,6 @@ export interface StreamProps {
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
 export class Stream extends StreamBase {
-
   /**
    * Import an existing Kinesis Stream provided an ARN
    *
@@ -787,10 +809,17 @@ export class Stream extends StreamBase {
    * @param id The construct's name.
    * @param attrs Stream import properties
    */
-  public static fromStreamAttributes(scope: Construct, id: string, attrs: StreamAttributes): IStream {
+  public static fromStreamAttributes(
+    scope: Construct,
+    id: string,
+    attrs: StreamAttributes
+  ): IStream {
     class Import extends StreamBase {
       public readonly streamArn = attrs.streamArn;
-      public readonly streamName = Stack.of(scope).splitArn(attrs.streamArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+      public readonly streamName = Stack.of(scope).splitArn(
+        attrs.streamArn,
+        ArnFormat.SLASH_RESOURCE_NAME
+      ).resourceName!;
       public readonly encryptionKey = attrs.encryptionKey;
 
       protected readonly autoCreatePolicy = false;
@@ -818,16 +847,23 @@ export class Stream extends StreamBase {
     const streamMode = props.streamMode;
 
     if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
-      throw new Error(`streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`);
+      throw new Error(
+        `streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`
+      );
     }
-    if ((streamMode === StreamMode.PROVISIONED || streamMode === undefined) && shardCount === undefined) {
+    if (
+      (streamMode === StreamMode.PROVISIONED || streamMode === undefined) &&
+      shardCount === undefined
+    ) {
       shardCount = 1;
     }
 
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
       if (retentionPeriodHours < 24 || retentionPeriodHours > 8760) {
-        throw new Error(`retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`);
+        throw new Error(
+          `retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`
+        );
       }
     }
 
@@ -840,8 +876,8 @@ export class Stream extends StreamBase {
       streamEncryption,
       ...(props.streamMode !== undefined
         ? {
-          streamModeDetails: { streamMode: props.streamMode },
-        }
+            streamModeDetails: { streamMode: props.streamMode },
+          }
         : undefined),
     });
     this.stream.applyRemovalPolicy(props.removalPolicy);
@@ -864,10 +900,8 @@ export class Stream extends StreamBase {
     streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable;
     encryptionKey?: kms.IKey;
   } {
-
     // if encryption properties are not set, default to KMS in regions where KMS is available
     if (!props.encryption && !props.encryptionKey) {
-
       const conditionName = 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions';
       const existing = Stack.of(this).node.tryFindChild(conditionName);
 
@@ -876,25 +910,29 @@ export class Stream extends StreamBase {
         new CfnCondition(Stack.of(this), conditionName, {
           expression: Fn.conditionOr(
             Fn.conditionEquals(Aws.REGION, 'cn-north-1'),
-            Fn.conditionEquals(Aws.REGION, 'cn-northwest-1'),
+            Fn.conditionEquals(Aws.REGION, 'cn-northwest-1')
           ),
         });
       }
 
       return {
-        streamEncryption: Fn.conditionIf(conditionName,
-          Aws.NO_VALUE,
-          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis' }),
+        streamEncryption: Fn.conditionIf(conditionName, Aws.NO_VALUE, {
+          EncryptionType: 'KMS',
+          KeyId: 'alias/aws/kinesis',
+        }),
       };
     }
 
     // default based on whether encryption key is specified
-    const encryptionType = props.encryption ??
+    const encryptionType =
+      props.encryption ??
       (props.encryptionKey ? StreamEncryption.KMS : StreamEncryption.UNENCRYPTED);
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+      throw new Error(
+        `encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`
+      );
     }
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
@@ -907,9 +945,11 @@ export class Stream extends StreamBase {
     }
 
     if (encryptionType === StreamEncryption.KMS) {
-      const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`,
-      });
+      const encryptionKey =
+        props.encryptionKey ||
+        new kms.Key(this, 'Key', {
+          description: `Created by ${this.node.path}`,
+        });
 
       const streamEncryption: CfnStream.StreamEncryptionProperty = {
         encryptionType: 'KMS',

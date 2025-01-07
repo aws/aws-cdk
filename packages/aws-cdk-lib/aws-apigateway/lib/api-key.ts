@@ -144,7 +144,6 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
  * for Method resources that require an Api Key.
  */
 export class ApiKey extends ApiKeyBase {
-
   /**
    * Import an ApiKey by its Id
    */
@@ -166,7 +165,7 @@ export class ApiKey extends ApiKeyBase {
   public readonly keyId: string;
   public readonly keyArn: string;
 
-  constructor(scope: Construct, id: string, props: ApiKeyProps = { }) {
+  constructor(scope: Construct, id: string, props: ApiKeyProps = {}) {
     super(scope, id, {
       physicalName: props.apiKeyName,
     });
@@ -191,7 +190,10 @@ export class ApiKey extends ApiKeyBase {
     });
   }
 
-  private renderStageKeys(resources?: IRestApi[], stages?: IStage[]): CfnApiKey.StageKeyProperty[] | undefined {
+  private renderStageKeys(
+    resources?: IRestApi[],
+    stages?: IStage[]
+  ): CfnApiKey.StageKeyProperty[] | undefined {
     if (!resources && !stages) {
       return undefined;
     }
@@ -202,18 +204,22 @@ export class ApiKey extends ApiKeyBase {
 
     return resources
       ? resources.map((resource: IRestApi) => {
-        const restApi = resource;
-        if (!restApi.deploymentStage) {
-          throw new Error('Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
-          'Either set the RestApi.deploymentStage or create an ApiKey from a Stage');
-        }
-        const restApiId = restApi.restApiId;
-        const stageName = restApi.deploymentStage!.stageName.toString();
-        return { restApiId, stageName };
-      })
-      : stages ? stages.map((stage => {
-        return { restApiId: stage.restApi.restApiId, stageName: stage.stageName };
-      })) : undefined;
+          const restApi = resource;
+          if (!restApi.deploymentStage) {
+            throw new Error(
+              'Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n' +
+                'Either set the RestApi.deploymentStage or create an ApiKey from a Stage'
+            );
+          }
+          const restApiId = restApi.restApiId;
+          const stageName = restApi.deploymentStage!.stageName.toString();
+          return { restApiId, stageName };
+        })
+      : stages
+        ? stages.map((stage) => {
+            return { restApiId: stage.restApi.restApiId, stageName: stage.stageName };
+          })
+        : undefined;
   }
 }
 
@@ -249,7 +255,7 @@ export class RateLimitedApiKey extends ApiKeyBase {
   public readonly keyId: string;
   public readonly keyArn: string;
 
-  constructor(scope: Construct, id: string, props: RateLimitedApiKeyProps = { }) {
+  constructor(scope: Construct, id: string, props: RateLimitedApiKeyProps = {}) {
     super(scope, id, {
       physicalName: props.apiKeyName,
     });
@@ -270,9 +276,7 @@ export class RateLimitedApiKey extends ApiKeyBase {
   }
 }
 
-const readPermissions = [
-  'apigateway:GET',
-];
+const readPermissions = ['apigateway:GET'];
 
 const writePermissions = [
   'apigateway:POST',

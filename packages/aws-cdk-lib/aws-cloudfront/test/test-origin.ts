@@ -14,9 +14,7 @@ export class TestOrigin extends OriginBase {
   constructor(domainName: string, props: OriginProps = {}) {
     super(domainName, props);
   }
-  protected renderCustomOriginConfig():
-  | CfnDistribution.CustomOriginConfigProperty
-  | undefined {
+  protected renderCustomOriginConfig(): CfnDistribution.CustomOriginConfigProperty | undefined {
     return { originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY };
   }
 }
@@ -24,7 +22,7 @@ export class TestOrigin extends OriginBase {
 export class TestOriginGroup implements IOrigin {
   constructor(
     private readonly primaryDomainName: string,
-    private readonly secondaryDomainName: string,
+    private readonly secondaryDomainName: string
   ) {}
   /* eslint-disable @cdklabs/no-core-construct */
   public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {
@@ -54,11 +52,10 @@ export function defaultOriginGroup(): IOrigin {
 export function defaultOriginWithOriginAccessControl(
   domainName?: string,
   originId?: string,
-  originAccessControlId?: string,
+  originAccessControlId?: string
 ): IOrigin {
   return new TestOrigin(domainName ?? 'www.example.com', {
     originId,
-    originAccessControlId:
-      originAccessControlId ?? 'test-origin-access-control-id',
+    originAccessControlId: originAccessControlId ?? 'test-origin-access-control-id',
   });
 }

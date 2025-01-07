@@ -8,9 +8,12 @@ import * as route53 from '../../aws-route53';
  * domain name defined through the `RestApiProps.domainName` prop.
  */
 export class ApiGatewayDomain implements route53.IAliasRecordTarget {
-  constructor(private readonly domainName: apig.IDomainName) { }
+  constructor(private readonly domainName: apig.IDomainName) {}
 
-  public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
+  public bind(
+    _record: route53.IRecordSet,
+    _zone?: route53.IHostedZone
+  ): route53.AliasRecordTargetConfig {
     return {
       dnsName: this.domainName.domainNameAliasDomainName,
       hostedZoneId: this.domainName.domainNameAliasHostedZoneId,

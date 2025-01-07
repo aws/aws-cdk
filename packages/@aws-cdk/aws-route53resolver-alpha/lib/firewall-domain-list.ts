@@ -46,7 +46,9 @@ export abstract class FirewallDomains {
   public static fromList(list: string[]): FirewallDomains {
     for (const domain of list) {
       if (!/^([\w-.]{1,255}|\*[\w-.]{1,254})$/.test(domain)) {
-        throw new Error(`Invalid domain: ${domain}. Domain can optionally start with *. Max length of 255. Valid characters: A-Z, a-z, 0-9, _, -, .`);
+        throw new Error(
+          `Invalid domain: ${domain}. Domain can optionally start with *. Max length of 255. Valid characters: A-Z, a-z, 0-9, _, -, .`
+        );
       }
     }
 
@@ -99,7 +101,9 @@ export abstract class FirewallDomains {
     // cdk-assets will correctly set the content type for the S3 object
     // if the file has the correct extension
     if (path.extname(assetPath) !== '.txt') {
-      throw new Error(`FirewallDomains.fromAsset() expects a file with the .txt extension, got ${assetPath}`);
+      throw new Error(
+        `FirewallDomains.fromAsset() expects a file with the .txt extension, got ${assetPath}`
+      );
     }
 
     return {
@@ -113,7 +117,6 @@ export abstract class FirewallDomains {
         return { domainFileUrl: asset.s3ObjectUrl };
       },
     };
-
   }
 
   /** Binds the domains to a domain list */
@@ -148,7 +151,11 @@ export class FirewallDomainList extends Resource implements IFirewallDomainList 
   /**
    * Import an existing Firewall Rule Group
    */
-  public static fromFirewallDomainListId(scope: Construct, id: string, firewallDomainListId: string): IFirewallDomainList {
+  public static fromFirewallDomainListId(
+    scope: Construct,
+    id: string,
+    firewallDomainListId: string
+  ): IFirewallDomainList {
     class Import extends Resource implements IFirewallDomainList {
       public readonly firewallDomainListId = firewallDomainListId;
     }
@@ -211,7 +218,9 @@ export class FirewallDomainList extends Resource implements IFirewallDomainList 
     super(scope, id);
 
     if (props.name && !Token.isUnresolved(props.name) && !/^[\w-.]{1,128}$/.test(props.name)) {
-      throw new Error(`Invalid domain list name: ${props.name}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`);
+      throw new Error(
+        `Invalid domain list name: ${props.name}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`
+      );
     }
 
     const domainsConfig = props.domains.bind(this);

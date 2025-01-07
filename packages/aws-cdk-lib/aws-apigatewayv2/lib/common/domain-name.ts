@@ -154,7 +154,11 @@ export class DomainName extends Resource implements IDomainName {
   /**
    * Import from attributes
    */
-  public static fromDomainNameAttributes(scope: Construct, id: string, attrs: DomainNameAttributes): IDomainName {
+  public static fromDomainNameAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DomainNameAttributes
+  ): IDomainName {
     class Import extends Resource implements IDomainName {
       public readonly regionalDomainName = attrs.regionalDomainName;
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
@@ -196,7 +200,9 @@ export class DomainName extends Resource implements IDomainName {
     }
   }
 
-  private configureMTLS(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
+  private configureMTLS(
+    mtlsConfig?: MTLSConfig
+  ): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
     if (!mtlsConfig) return undefined;
     return {
       truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
@@ -208,7 +214,7 @@ export class DomainName extends Resource implements IDomainName {
    * Adds an endpoint to a domain name.
    * @param options domain name endpoint properties to be set
    */
-  public addEndpoint(options: EndpointOptions) : void {
+  public addEndpoint(options: EndpointOptions): void {
     const domainNameConfig: CfnDomainName.DomainNameConfigurationProperty = {
       certificateArn: options.certificate.certificateArn,
       certificateName: options.certificateName,
@@ -222,7 +228,7 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   // validates that the new domain name configuration has a unique endpoint
-  private validateEndpointType(endpointType: string | undefined) : void {
+  private validateEndpointType(endpointType: string | undefined): void {
     for (let config of this.domainNameConfigurations) {
       if (endpointType && endpointType == config.endpointType) {
         throw new Error(`an endpoint with type ${endpointType} already exists`);

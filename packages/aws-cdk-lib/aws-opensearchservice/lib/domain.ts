@@ -456,7 +456,7 @@ export interface DomainProps {
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createupdatedomains.html#createdomain-configure-advanced-options
    * @default - no advanced options are specified
    */
-  readonly advancedOptions?: { [key: string]: (string) };
+  readonly advancedOptions?: { [key: string]: string };
 
   /**
    * Configures Amazon OpenSearch Service to use Amazon Cognito authentication for OpenSearch Dashboards.
@@ -932,12 +932,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grant(identity, perms.ES_READ_ACTIONS, this.domainArn, `${this.domainArn}/*`);
   }
 
   /**
@@ -947,12 +942,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grant(identity, perms.ES_WRITE_ACTIONS, this.domainArn, `${this.domainArn}/*`);
   }
 
   /**
@@ -962,12 +952,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grant(identity, perms.ES_READ_WRITE_ACTIONS, this.domainArn, `${this.domainArn}/*`);
   }
 
   /**
@@ -982,7 +967,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       identity,
       perms.ES_READ_ACTIONS,
       `${this.domainArn}/${index}`,
-      `${this.domainArn}/${index}/*`,
+      `${this.domainArn}/${index}/*`
     );
   }
 
@@ -998,7 +983,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       identity,
       perms.ES_WRITE_ACTIONS,
       `${this.domainArn}/${index}`,
-      `${this.domainArn}/${index}/*`,
+      `${this.domainArn}/${index}/*`
     );
   }
 
@@ -1014,7 +999,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       identity,
       perms.ES_READ_WRITE_ACTIONS,
       `${this.domainArn}/${index}`,
-      `${this.domainArn}/${index}/*`,
+      `${this.domainArn}/${index}/*`
     );
   }
 
@@ -1026,11 +1011,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantPathRead(path: string, identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_ACTIONS,
-      `${this.domainArn}/${path}`,
-    );
+    return this.grant(identity, perms.ES_READ_ACTIONS, `${this.domainArn}/${path}`);
   }
 
   /**
@@ -1041,11 +1022,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantPathWrite(path: string, identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_WRITE_ACTIONS,
-      `${this.domainArn}/${path}`,
-    );
+    return this.grant(identity, perms.ES_WRITE_ACTIONS, `${this.domainArn}/${path}`);
   }
 
   /**
@@ -1056,11 +1033,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantPathReadWrite(path: string, identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_WRITE_ACTIONS,
-      `${this.domainArn}/${path}`,
-    );
+    return this.grant(identity, perms.ES_READ_WRITE_ACTIONS, `${this.domainArn}/${path}`);
   }
 
   /**
@@ -1299,11 +1272,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @param id The construct's name.
    * @param domainEndpoint The domain's endpoint.
    */
-  public static fromDomainEndpoint(
-    scope: Construct,
-    id: string,
-    domainEndpoint: string,
-  ): IDomain {
+  public static fromDomainEndpoint(scope: Construct, id: string, domainEndpoint: string): IDomain {
     const stack = cdk.Stack.of(scope);
     const domainName = extractNameFromEndpoint(domainEndpoint);
     const domainArn = stack.formatArn({
@@ -1325,19 +1294,26 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @param id The construct's name.
    * @param attrs A `DomainAttributes` object.
    */
-  public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
+  public static fromDomainAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DomainAttributes
+  ): IDomain {
     const { domainArn, domainEndpoint } = attrs;
-    const domainName = cdk.Stack.of(scope).splitArn(domainArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName
-      ?? extractNameFromEndpoint(domainEndpoint);
+    const domainName =
+      cdk.Stack.of(scope).splitArn(domainArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName ??
+      extractNameFromEndpoint(domainEndpoint);
 
-    return new class extends DomainBase {
+    return new (class extends DomainBase {
       public readonly domainArn = domainArn;
       public readonly domainName = domainName;
       public readonly domainId = domainName;
       public readonly domainEndpoint = domainEndpoint.replace(/^https?:\/\//, '');
 
-      constructor() { super(scope, id); }
-    };
+      constructor() {
+        super(scope, id);
+      }
+    })();
   }
 
   public readonly domainArn: string;
@@ -1394,40 +1370,53 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const defaultInstanceType = 'r5.large.search';
     const warmDefaultInstanceType = 'ultrawarm1.medium.search';
 
-    const dedicatedMasterType = initializeInstanceType(defaultInstanceType, props.capacity?.masterNodeInstanceType);
+    const dedicatedMasterType = initializeInstanceType(
+      defaultInstanceType,
+      props.capacity?.masterNodeInstanceType
+    );
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
-    const dedicatedMasterEnabled = cdk.Token.isUnresolved(dedicatedMasterCount) ? true : dedicatedMasterCount > 0;
+    const dedicatedMasterEnabled = cdk.Token.isUnresolved(dedicatedMasterCount)
+      ? true
+      : dedicatedMasterCount > 0;
 
-    const instanceType = initializeInstanceType(defaultInstanceType, props.capacity?.dataNodeInstanceType);
+    const instanceType = initializeInstanceType(
+      defaultInstanceType,
+      props.capacity?.dataNodeInstanceType
+    );
     const instanceCount = props.capacity?.dataNodes ?? 1;
 
-    const warmType = initializeInstanceType(warmDefaultInstanceType, props.capacity?.warmInstanceType);
+    const warmType = initializeInstanceType(
+      warmDefaultInstanceType,
+      props.capacity?.warmInstanceType
+    );
     const warmCount = props.capacity?.warmNodes ?? 0;
     const warmEnabled = cdk.Token.isUnresolved(warmCount) ? true : warmCount > 0;
 
-    const availabilityZoneCount =
-      props.zoneAwareness?.availabilityZoneCount ?? 2;
+    const availabilityZoneCount = props.zoneAwareness?.availabilityZoneCount ?? 2;
 
     if (![2, 3].includes(availabilityZoneCount)) {
       throw new Error('Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3');
     }
 
     const zoneAwarenessEnabled =
-      props.zoneAwareness?.enabled ??
-      props.zoneAwareness?.availabilityZoneCount != null;
+      props.zoneAwareness?.enabled ?? props.zoneAwareness?.availabilityZoneCount != null;
 
     let securityGroups: ec2.ISecurityGroup[] | undefined;
     let subnets: ec2.ISubnet[] | undefined;
 
     let skipZoneAwarenessCheck: boolean = false;
     if (props.vpc) {
-      const subnetSelections = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
+      const subnetSelections = props.vpcSubnets ?? [
+        { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      ];
       subnets = selectSubnets(props.vpc, subnetSelections);
       skipZoneAwarenessCheck = zoneAwarenessCheckShouldBeSkipped(props.vpc, subnetSelections);
-      securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
-        vpc: props.vpc,
-        description: `Security group for domain ${this.node.id}`,
-      })];
+      securityGroups = props.securityGroups ?? [
+        new ec2.SecurityGroup(this, 'SecurityGroup', {
+          vpc: props.vpc,
+          description: `Security group for domain ${this.node.id}`,
+        }),
+      ];
       if (props.enforceHttps) {
         this._connections = new ec2.Connections({ securityGroups, defaultPort: ec2.Port.tcp(443) });
       } else {
@@ -1436,15 +1425,22 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     // If VPC options are supplied ensure that the number of subnets matches the number AZ (only if the vpc is not imported from another stack)
-    if (subnets &&
+    if (
+      subnets &&
       zoneAwarenessEnabled &&
       !skipZoneAwarenessCheck &&
       new Set(subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount
     ) {
-      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
+      throw new Error(
+        'When providing vpc options you need to provide a subnet for each AZ you are using'
+      );
     }
 
-    if ([dedicatedMasterType, instanceType, warmType].some(t => (!cdk.Token.isUnresolved(t) && !t.endsWith('.search')))) {
+    if (
+      [dedicatedMasterType, instanceType, warmType].some(
+        (t) => !cdk.Token.isUnresolved(t) && !t.endsWith('.search')
+      )
+    ) {
       throw new Error('Master, data and UltraWarm node instance types must end with ".search".');
     }
 
@@ -1477,11 +1473,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const masterUserNameProps = props.fineGrainedAccessControl?.masterUserName;
     // If basic auth is enabled set the user name to admin if no other user info is supplied.
     const masterUserName = unsignedBasicAuthEnabled
-      ? (masterUserArn == null ? (masterUserNameProps ?? 'admin') : undefined)
+      ? masterUserArn == null
+        ? (masterUserNameProps ?? 'admin')
+        : undefined
       : masterUserNameProps;
 
     if (masterUserArn != null && masterUserName != null) {
-      throw new Error('Invalid fine grained access control settings. Only provide one of master user ARN or master user name. Not both.');
+      throw new Error(
+        'Invalid fine grained access control settings. Only provide one of master user ARN or master user name. Not both.'
+      );
     }
 
     const advancedSecurityEnabled = (masterUserArn ?? masterUserName) != null;
@@ -1496,15 +1496,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           generateStringKey: 'password',
           excludeCharacters: "{}'\\*[]()`",
         },
-      })
-        .secretValueFromJson('password');
+      }).secretValueFromJson('password');
     };
-    this.masterUserPassword = internalUserDatabaseEnabled ?
-      (masterUserPasswordProp ?? createMasterUserPassword())
+    this.masterUserPassword = internalUserDatabaseEnabled
+      ? (masterUserPasswordProp ?? createMasterUserPassword())
       : undefined;
 
     const encryptionAtRestEnabled =
-      props.encryptionAtRest?.enabled ?? (props.encryptionAtRest?.kmsKey != null || unsignedBasicAuthEnabled);
+      props.encryptionAtRest?.enabled ??
+      (props.encryptionAtRest?.kmsKey != null || unsignedBasicAuthEnabled);
     const nodeToNodeEncryptionEnabled = props.nodeToNodeEncryption ?? unsignedBasicAuthEnabled;
     const volumeSize = props.ebs?.volumeSize ?? 10;
     const volumeType = props.ebs?.volumeType ?? ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
@@ -1513,64 +1513,77 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
-    };
+    }
 
     function isSomeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(isInstanceType);
-    };
+    }
 
     function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
-      return instanceTypes.some(t => instanceType.startsWith(t));
-    };
+      return instanceTypes.some((t) => instanceType.startsWith(t));
+    }
 
     // Validate feature support for the given Elasticsearch/OpenSearch version, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/features-by-version.html
     const { versionNum: versionNum, isElasticsearchVersion } = parseVersion(props.version);
     if (isElasticsearchVersion) {
-
       if (
         versionNum <= 7.7 &&
-        ![
-          1.5, 2.3, 5.1, 5.3, 5.5, 5.6, 6.0,
-          6.2, 6.3, 6.4, 6.5, 6.7, 6.8, 7.1, 7.4,
-          7.7,
-        ].includes(versionNum)
+        ![1.5, 2.3, 5.1, 5.3, 5.5, 5.6, 6.0, 6.2, 6.3, 6.4, 6.5, 6.7, 6.8, 7.1, 7.4, 7.7].includes(
+          versionNum
+        )
       ) {
         throw new Error(`Unknown Elasticsearch version: ${versionNum}`);
       }
 
       if (versionNum < 5.1) {
         if (props.logging?.appLogEnabled) {
-          throw new Error('Error logs publishing requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.');
+          throw new Error(
+            'Error logs publishing requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.'
+          );
         }
         if (props.encryptionAtRest?.enabled) {
-          throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.');
+          throw new Error(
+            'Encryption of data at rest requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.'
+          );
         }
         if (props.cognitoDashboardsAuth != null) {
-          throw new Error('Cognito authentication for OpenSearch Dashboards requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.');
+          throw new Error(
+            'Cognito authentication for OpenSearch Dashboards requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.'
+          );
         }
         if (isSomeInstanceType('c5', 'i3', 'm5', 'r5')) {
-          throw new Error('C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.');
+          throw new Error(
+            'C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.'
+          );
         }
       }
 
       if (versionNum < 6.0) {
         if (props.nodeToNodeEncryption) {
-          throw new Error('Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later.');
+          throw new Error(
+            'Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later.'
+          );
         }
       }
 
       if (versionNum < 6.7) {
         if (unsignedBasicAuthEnabled) {
-          throw new Error('Using unsigned basic auth requires Elasticsearch version 6.7 or later or OpenSearch version 1.0 or later.');
+          throw new Error(
+            'Using unsigned basic auth requires Elasticsearch version 6.7 or later or OpenSearch version 1.0 or later.'
+          );
         }
         if (advancedSecurityEnabled) {
-          throw new Error('Fine-grained access control requires Elasticsearch version 6.7 or later or OpenSearch version 1.0 or later.');
+          throw new Error(
+            'Fine-grained access control requires Elasticsearch version 6.7 or later or OpenSearch version 1.0 or later.'
+          );
         }
       }
 
       if (versionNum < 6.8 && warmEnabled) {
-        throw new Error('UltraWarm requires Elasticsearch version 6.8 or later or OpenSearch version 1.0 or later.');
+        throw new Error(
+          'UltraWarm requires Elasticsearch version 6.8 or later or OpenSearch version 1.0 or later.'
+        );
       }
     }
 
@@ -1583,66 +1596,71 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       ec2.InstanceClass.R7GD,
     ];
 
-    const supportInstanceStorageInstanceType = [
-      ec2.InstanceClass.R3,
-      ...unSupportEbsInstanceType,
-    ];
+    const supportInstanceStorageInstanceType = [ec2.InstanceClass.R3, ...unSupportEbsInstanceType];
 
-    const unSupportEncryptionAtRestInstanceType=[
+    const unSupportEncryptionAtRestInstanceType = [
       ec2.InstanceClass.M3,
       ec2.InstanceClass.R3,
       ec2.InstanceClass.T2,
     ];
 
-    const unSupportUltraWarmInstanceType=[
-      ec2.InstanceClass.T2,
-      ec2.InstanceClass.T3,
-    ];
+    const unSupportUltraWarmInstanceType = [ec2.InstanceClass.T2, ec2.InstanceClass.T3];
 
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
     if (isSomeInstanceType(...unSupportEbsInstanceType) && ebsEnabled) {
-      throw new Error(`${formatInstanceTypesList(unSupportEbsInstanceType, 'and')} instance types do not support EBS storage volumes.`);
+      throw new Error(
+        `${formatInstanceTypesList(unSupportEbsInstanceType, 'and')} instance types do not support EBS storage volumes.`
+      );
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
-      throw new Error(`${formatInstanceTypesList(unSupportEncryptionAtRestInstanceType, 'and')} instance types do not support encryption of data at rest.`);
+      throw new Error(
+        `${formatInstanceTypesList(unSupportEncryptionAtRestInstanceType, 'and')} instance types do not support encryption of data at rest.`
+      );
     }
 
     if (isInstanceType('t2.micro') && !(isElasticsearchVersion && versionNum <= 2.3)) {
-      throw new Error('The t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3.');
+      throw new Error(
+        'The t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3.'
+      );
     }
 
     if (isSomeInstanceType('t2', 't3') && warmEnabled) {
-      throw new Error(`${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`);
+      throw new Error(
+        `${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`
+      );
     }
 
     // Only R3, I3, R6GD, I4G, I4I, IM4GN and R7GD support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
     if (!ebsEnabled && !isEveryDatanodeInstanceType(...supportInstanceStorageInstanceType)) {
-      throw new Error(`EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`);
+      throw new Error(
+        `EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`
+      );
     }
 
     // Only for a valid ebs volume configuration, per
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-ebsoptions.html
     if (ebsEnabled) {
       // Check if iops or throughput if general purpose is configured
-      if (volumeType == ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD || volumeType == ec2.EbsDeviceVolumeType.STANDARD) {
+      if (
+        volumeType == ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD ||
+        volumeType == ec2.EbsDeviceVolumeType.STANDARD
+      ) {
         if (props.ebs?.iops !== undefined || props.ebs?.throughput !== undefined) {
-          throw new Error('General Purpose EBS volumes can not be used with Iops or Throughput configuration');
+          throw new Error(
+            'General Purpose EBS volumes can not be used with Iops or Throughput configuration'
+          );
         }
       }
 
       if (
         volumeType &&
-        [
-          ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-        ].includes(volumeType) &&
+        [ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD].includes(volumeType) &&
         !props.ebs?.iops
       ) {
-        throw new Error(
-          '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`.',
-        );
+        throw new Error('`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`.');
       }
       if (props.ebs?.iops) {
         if (
@@ -1653,7 +1671,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           ].includes(volumeType)
         ) {
           throw new Error(
-            '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
+            '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.'
           );
         }
         // Enforce minimum & maximum IOPS:
@@ -1674,17 +1692,21 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         maximumRatios[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = 50;
         maximumRatios[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = 500;
         const maximumRatio = maximumRatios[volumeType];
-        if (props.ebs?.volumeSize && (props.ebs?.iops > maximumRatio * props.ebs?.volumeSize)) {
-          throw new Error(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`);
+        if (props.ebs?.volumeSize && props.ebs?.iops > maximumRatio * props.ebs?.volumeSize) {
+          throw new Error(
+            `\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`
+          );
         }
 
         const maximumThroughputRatios: { [key: string]: number } = {};
         maximumThroughputRatios[ec2.EbsDeviceVolumeType.GP3] = 0.25;
         const maximumThroughputRatio = maximumThroughputRatios[volumeType];
         if (props.ebs?.throughput && props.ebs?.iops) {
-          const iopsRatio = (props.ebs?.throughput / props.ebs?.iops);
+          const iopsRatio = props.ebs?.throughput / props.ebs?.iops;
           if (iopsRatio > maximumThroughputRatio) {
-            throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops.`);
+            throw new Error(
+              `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops.`
+            );
           }
         }
       }
@@ -1693,14 +1715,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         const throughputRange = { Min: 125, Max: 1000 };
         const { Min, Max } = throughputRange;
         if (volumeType != ec2.EbsDeviceVolumeType.GP3) {
-          throw new Error(
-            '`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`',
-          );
+          throw new Error('`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`');
         }
         if (props.ebs?.throughput < Min || props.ebs?.throughput > Max) {
-          throw new Error(
-            `throughput property takes a minimum of ${Min} and a maximum of ${Max}.`,
-          );
+          throw new Error(`throughput property takes a minimum of ${Min} and a maximum of ${Max}.`);
         }
       }
     }
@@ -1709,10 +1727,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // and enforced HTTPS.
     if (advancedSecurityEnabled) {
       if (!nodeToNodeEncryptionEnabled) {
-        throw new Error('Node-to-node encryption is required when fine-grained access control is enabled.');
+        throw new Error(
+          'Node-to-node encryption is required when fine-grained access control is enabled.'
+        );
       }
       if (!encryptionAtRestEnabled) {
-        throw new Error('Encryption-at-rest is required when fine-grained access control is enabled.');
+        throw new Error(
+          'Encryption-at-rest is required when fine-grained access control is enabled.'
+        );
       }
       if (!enforceHttps) {
         throw new Error('Enforce HTTPS is required when fine-grained access control is enabled.');
@@ -1722,7 +1744,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Validate fine grained access control enabled for audit logs, per
     // https://aws.amazon.com/about-aws/whats-new/2020/09/elasticsearch-audit-logs-now-available-on-amazon-elasticsearch-service/
     if (props.logging?.auditLogEnabled && !advancedSecurityEnabled) {
-      throw new Error('Fine-grained access control is required when audit logs publishing is enabled.');
+      throw new Error(
+        'Fine-grained access control is required when audit logs publishing is enabled.'
+      );
     }
 
     // Validate UltraWarm requirement for dedicated master nodes, per
@@ -1749,7 +1773,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const logPublishing: Record<string, any> = {};
 
     if (props.logging?.slowSearchLogEnabled) {
-      this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
+      this.slowSearchLogGroup =
+        props.logging.slowSearchLogGroup ??
         new logs.LogGroup(this, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
@@ -1763,10 +1788,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.SEARCH_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.slowIndexLogEnabled) {
-      this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
+      this.slowIndexLogGroup =
+        props.logging.slowIndexLogGroup ??
         new logs.LogGroup(this, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
@@ -1780,10 +1806,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.INDEX_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.appLogEnabled) {
-      this.appLogGroup = props.logging.appLogGroup ??
+      this.appLogGroup =
+        props.logging.appLogGroup ??
         new logs.LogGroup(this, 'AppLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
@@ -1797,10 +1824,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.ES_APPLICATION_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.auditLogEnabled) {
-      this.auditLogGroup = props.logging.auditLogGroup ??
+      this.auditLogGroup =
+        props.logging.auditLogGroup ??
         new logs.LogGroup(this, 'AuditLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
@@ -1814,7 +1842,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.AUDIT_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
     if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
@@ -1827,11 +1855,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
       // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
       // https://github.com/aws/aws-cdk/issues/5343
-      logGroupResourcePolicy = new LogGroupResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
-        // create a cloudwatch logs resource policy name that is unique to this domain instance
-        policyName: `ESLogPolicy${this.node.addr}`,
-        policyStatements: [logPolicyStatement],
-      });
+      logGroupResourcePolicy = new LogGroupResourcePolicy(
+        this,
+        `ESLogGroupPolicy${this.node.addr}`,
+        {
+          // create a cloudwatch logs resource policy name that is unique to this domain instance
+          policyName: `ESLogPolicy${this.node.addr}`,
+          policyStatements: [logPolicyStatement],
+        }
+      );
     }
 
     let customEndpointCertificate: acm.ICertificate | undefined;
@@ -1841,7 +1873,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       } else {
         customEndpointCertificate = new acm.Certificate(this, 'CustomEndpointCertificate', {
           domainName: props.customEndpoint.domainName,
-          validation: props.customEndpoint.hostedZone ? acm.CertificateValidation.fromDns(props.customEndpoint.hostedZone) : undefined,
+          validation: props.customEndpoint.hostedZone
+            ? acm.CertificateValidation.fromDns(props.customEndpoint.hostedZone)
+            : undefined,
         });
       }
     }
@@ -1857,18 +1891,22 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('T3 instance type does not support Multi-AZ with standby feature.');
     }
 
-    const offPeakWindowEnabled = props.offPeakWindowEnabled ?? props.offPeakWindowStart !== undefined;
+    const offPeakWindowEnabled =
+      props.offPeakWindowEnabled ?? props.offPeakWindowStart !== undefined;
     if (offPeakWindowEnabled) {
       this.validateWindowStartTime(props.offPeakWindowStart);
     }
 
-    const samlAuthenticationEnabled = props.fineGrainedAccessControl?.samlAuthenticationEnabled ??
+    const samlAuthenticationEnabled =
+      props.fineGrainedAccessControl?.samlAuthenticationEnabled ??
       props.fineGrainedAccessControl?.samlAuthenticationOptions !== undefined;
     if (samlAuthenticationEnabled) {
       if (!advancedSecurityEnabled) {
         throw new Error('SAML authentication requires fine-grained access control to be enabled.');
       }
-      this.validateSamlAuthenticationOptions(props.fineGrainedAccessControl?.samlAuthenticationOptions);
+      this.validateSamlAuthenticationOptions(
+        props.fineGrainedAccessControl?.samlAuthenticationOptions
+      );
     }
 
     // Create the domain
@@ -1876,32 +1914,23 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       domainName: this.physicalName,
       engineVersion: props.version.version,
       clusterConfig: {
-        coldStorageOptions: props.coldStorageEnabled !== undefined ? {
-          enabled: props.coldStorageEnabled,
-        } : undefined,
+        coldStorageOptions:
+          props.coldStorageEnabled !== undefined
+            ? {
+                enabled: props.coldStorageEnabled,
+              }
+            : undefined,
         dedicatedMasterEnabled,
-        dedicatedMasterCount: dedicatedMasterEnabled
-          ? dedicatedMasterCount
-          : undefined,
-        dedicatedMasterType: dedicatedMasterEnabled
-          ? dedicatedMasterType
-          : undefined,
+        dedicatedMasterCount: dedicatedMasterEnabled ? dedicatedMasterCount : undefined,
+        dedicatedMasterType: dedicatedMasterEnabled ? dedicatedMasterType : undefined,
         instanceCount,
         instanceType,
         multiAzWithStandbyEnabled,
-        warmEnabled: warmEnabled
-          ? warmEnabled
-          : undefined,
-        warmCount: warmEnabled
-          ? warmCount
-          : undefined,
-        warmType: warmEnabled
-          ? warmType
-          : undefined,
+        warmEnabled: warmEnabled ? warmEnabled : undefined,
+        warmCount: warmEnabled ? warmCount : undefined,
+        warmType: warmEnabled ? warmType : undefined,
         zoneAwarenessEnabled,
-        zoneAwarenessConfig: zoneAwarenessEnabled
-          ? { availabilityZoneCount }
-          : undefined,
+        zoneAwarenessConfig: zoneAwarenessEnabled ? { availabilityZoneCount } : undefined,
       },
       ebsOptions: {
         ebsEnabled,
@@ -1912,18 +1941,18 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
-        kmsKeyId: encryptionAtRestEnabled
-          ? props.encryptionAtRest?.kmsKey?.keyId
-          : undefined,
+        kmsKeyId: encryptionAtRestEnabled ? props.encryptionAtRest?.kmsKey?.keyId : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
       logPublishingOptions: logPublishing,
-      cognitoOptions: props.cognitoDashboardsAuth ? {
-        enabled: true,
-        identityPoolId: props.cognitoDashboardsAuth?.identityPoolId,
-        roleArn: props.cognitoDashboardsAuth?.role.roleArn,
-        userPoolId: props.cognitoDashboardsAuth?.userPoolId,
-      } : undefined,
+      cognitoOptions: props.cognitoDashboardsAuth
+        ? {
+            enabled: true,
+            identityPoolId: props.cognitoDashboardsAuth?.identityPoolId,
+            roleArn: props.cognitoDashboardsAuth?.role.roleArn,
+            userPoolId: props.cognitoDashboardsAuth?.userPoolId,
+          }
+        : undefined,
       vpcOptions: cfnVpcOptions,
       snapshotOptions: props.automatedSnapshotStartHour
         ? { automatedSnapshotStartHour: props.automatedSnapshotStartHour }
@@ -1931,48 +1960,66 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       domainEndpointOptions: {
         enforceHttps,
         tlsSecurityPolicy: props.tlsSecurityPolicy ?? TLSSecurityPolicy.TLS_1_0,
-        ...props.customEndpoint && {
+        ...(props.customEndpoint && {
           customEndpointEnabled: true,
           customEndpoint: props.customEndpoint.domainName,
           customEndpointCertificateArn: customEndpointCertificate!.certificateArn,
-        },
+        }),
       },
       advancedSecurityOptions: advancedSecurityEnabled
         ? {
-          enabled: true,
-          internalUserDatabaseEnabled,
-          masterUserOptions: {
-            masterUserArn: masterUserArn,
-            masterUserName: masterUserName,
-            masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
-          },
-          samlOptions: samlAuthenticationEnabled ? {
             enabled: true,
-            idp: props.fineGrainedAccessControl && props.fineGrainedAccessControl.samlAuthenticationOptions ? {
-              entityId: props.fineGrainedAccessControl.samlAuthenticationOptions.idpEntityId,
-              metadataContent: props.fineGrainedAccessControl.samlAuthenticationOptions.idpMetadataContent,
-            } : undefined,
-            masterUserName: props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterUserName,
-            masterBackendRole: props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterBackendRole,
-            rolesKey: props.fineGrainedAccessControl?.samlAuthenticationOptions?.rolesKey ?? 'roles',
-            subjectKey: props.fineGrainedAccessControl?.samlAuthenticationOptions?.subjectKey,
-            sessionTimeoutMinutes: props.fineGrainedAccessControl?.samlAuthenticationOptions?.sessionTimeoutMinutes ?? 60,
-          } : undefined,
-        }
+            internalUserDatabaseEnabled,
+            masterUserOptions: {
+              masterUserArn: masterUserArn,
+              masterUserName: masterUserName,
+              masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
+            },
+            samlOptions: samlAuthenticationEnabled
+              ? {
+                  enabled: true,
+                  idp:
+                    props.fineGrainedAccessControl &&
+                    props.fineGrainedAccessControl.samlAuthenticationOptions
+                      ? {
+                          entityId:
+                            props.fineGrainedAccessControl.samlAuthenticationOptions.idpEntityId,
+                          metadataContent:
+                            props.fineGrainedAccessControl.samlAuthenticationOptions
+                              .idpMetadataContent,
+                        }
+                      : undefined,
+                  masterUserName:
+                    props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterUserName,
+                  masterBackendRole:
+                    props.fineGrainedAccessControl?.samlAuthenticationOptions?.masterBackendRole,
+                  rolesKey:
+                    props.fineGrainedAccessControl?.samlAuthenticationOptions?.rolesKey ?? 'roles',
+                  subjectKey: props.fineGrainedAccessControl?.samlAuthenticationOptions?.subjectKey,
+                  sessionTimeoutMinutes:
+                    props.fineGrainedAccessControl?.samlAuthenticationOptions
+                      ?.sessionTimeoutMinutes ?? 60,
+                }
+              : undefined,
+          }
         : undefined,
       advancedOptions: props.advancedOptions,
-      offPeakWindowOptions: offPeakWindowEnabled ? {
-        enabled: offPeakWindowEnabled,
-        offPeakWindow: {
-          windowStartTime: props.offPeakWindowStart ?? {
-            hours: 22,
-            minutes: 0,
-          },
-        },
-      } : undefined,
-      softwareUpdateOptions: props.enableAutoSoftwareUpdate ? {
-        autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
-      } : undefined,
+      offPeakWindowOptions: offPeakWindowEnabled
+        ? {
+            enabled: offPeakWindowEnabled,
+            offPeakWindow: {
+              windowStartTime: props.offPeakWindowStart ?? {
+                hours: 22,
+                minutes: 0,
+              },
+            },
+          }
+        : undefined,
+      softwareUpdateOptions: props.enableAutoSoftwareUpdate
+        ? {
+            autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
+          }
+        : undefined,
       ipAddressType: props.ipAddressType,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
@@ -1984,19 +2031,27 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       };
     }
 
-    if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
+    if (logGroupResourcePolicy) {
+      this.domain.node.addDependency(logGroupResourcePolicy);
+    }
 
     if (props.domainName) {
       if (!cdk.Token.isUnresolved(props.domainName)) {
         // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname
         if (!props.domainName.match(/^[a-z0-9\-]+$/)) {
-          throw new Error(`Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`);
+          throw new Error(
+            `Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`
+          );
         }
         if (props.domainName.length < 3 || props.domainName.length > 28) {
-          throw new Error(`Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`);
+          throw new Error(
+            `Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`
+          );
         }
         if (props.domainName[0] < 'a' || props.domainName[0] > 'z') {
-          throw new Error(`Invalid domainName '${props.domainName}'. It must start with a lowercase letter`);
+          throw new Error(
+            `Invalid domainName '${props.domainName}'. It must start with a lowercase letter`
+          );
         }
       }
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
@@ -2041,7 +2096,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error(`Hours must be a value between 0 and 23, but got ${windowStartTime.hours}.`);
     }
     if (windowStartTime.minutes < 0 || windowStartTime.minutes > 59) {
-      throw new Error(`Minutes must be a value between 0 and 59, but got ${windowStartTime.minutes}.`);
+      throw new Error(
+        `Minutes must be a value between 0 and 59, but got ${windowStartTime.minutes}.`
+      );
     }
   }
 
@@ -2051,31 +2108,52 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   private validateSamlAuthenticationOptions(samlAuthenticationOptions?: SAMLOptionsProperty) {
     if (!samlAuthenticationOptions) {
-      throw new Error('You need to specify at least an Entity ID and Metadata content for the SAML configuration');
+      throw new Error(
+        'You need to specify at least an Entity ID and Metadata content for the SAML configuration'
+      );
     }
-    if (samlAuthenticationOptions.idpEntityId.length < 8 || samlAuthenticationOptions.idpEntityId.length > 512) {
-      throw new Error(`SAML identity provider entity ID must be between 8 and 512 characters long, received ${samlAuthenticationOptions.idpEntityId.length}.`);
+    if (
+      samlAuthenticationOptions.idpEntityId.length < 8 ||
+      samlAuthenticationOptions.idpEntityId.length > 512
+    ) {
+      throw new Error(
+        `SAML identity provider entity ID must be between 8 and 512 characters long, received ${samlAuthenticationOptions.idpEntityId.length}.`
+      );
     }
-    if (samlAuthenticationOptions.idpMetadataContent.length < 1 || samlAuthenticationOptions.idpMetadataContent.length > 1048576) {
-      throw new Error(`SAML identity provider metadata content must be between 1 and 1048576 characters long, received ${samlAuthenticationOptions.idpMetadataContent.length}.`);
+    if (
+      samlAuthenticationOptions.idpMetadataContent.length < 1 ||
+      samlAuthenticationOptions.idpMetadataContent.length > 1048576
+    ) {
+      throw new Error(
+        `SAML identity provider metadata content must be between 1 and 1048576 characters long, received ${samlAuthenticationOptions.idpMetadataContent.length}.`
+      );
     }
     if (
       samlAuthenticationOptions.masterUserName &&
-      (samlAuthenticationOptions.masterUserName.length < 1 || samlAuthenticationOptions.masterUserName.length > 64)
+      (samlAuthenticationOptions.masterUserName.length < 1 ||
+        samlAuthenticationOptions.masterUserName.length > 64)
     ) {
-      throw new Error(`SAML master username must be between 1 and 64 characters long, received ${samlAuthenticationOptions.masterUserName.length}.`);
+      throw new Error(
+        `SAML master username must be between 1 and 64 characters long, received ${samlAuthenticationOptions.masterUserName.length}.`
+      );
     }
     if (
       samlAuthenticationOptions.masterBackendRole &&
-      (samlAuthenticationOptions.masterBackendRole.length < 1 || samlAuthenticationOptions.masterBackendRole.length > 256)
+      (samlAuthenticationOptions.masterBackendRole.length < 1 ||
+        samlAuthenticationOptions.masterBackendRole.length > 256)
     ) {
-      throw new Error(`SAML backend role must be between 1 and 256 characters long, received ${samlAuthenticationOptions.masterBackendRole.length}.`);
+      throw new Error(
+        `SAML backend role must be between 1 and 256 characters long, received ${samlAuthenticationOptions.masterBackendRole.length}.`
+      );
     }
     if (
       samlAuthenticationOptions.sessionTimeoutMinutes &&
-      (samlAuthenticationOptions.sessionTimeoutMinutes < 1 || samlAuthenticationOptions.sessionTimeoutMinutes > 1440)
+      (samlAuthenticationOptions.sessionTimeoutMinutes < 1 ||
+        samlAuthenticationOptions.sessionTimeoutMinutes > 1440)
     ) {
-      throw new Error(`SAML session timeout must be a value between 1 and 1440, received ${samlAuthenticationOptions.sessionTimeoutMinutes}.`);
+      throw new Error(
+        `SAML session timeout must be a value between 1 and 1440, received ${samlAuthenticationOptions.sessionTimeoutMinutes}.`
+      );
     }
   }
 
@@ -2085,7 +2163,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new Error("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+      throw new Error(
+        "Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC"
+      );
     }
     return this._connections;
   }
@@ -2110,11 +2190,13 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           // while not strictly documented for updates as well, it stands to reason that an update
           // operation might require these in case the cluster uses a kms key.
           // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
-          this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-            actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-            resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
-            effect: iam.Effect.ALLOW,
-          }));
+          this.accessPolicy.grantPrincipal.addToPrincipalPolicy(
+            new iam.PolicyStatement({
+              actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
+              resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
+              effect: iam.Effect.ALLOW,
+            })
+          );
         }
       } else {
         this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
@@ -2149,7 +2231,10 @@ function extractNameFromEndpoint(domainEndpoint: string) {
  *
  * @param version The engine version object
  */
-function parseVersion(version: EngineVersion): { versionNum: number; isElasticsearchVersion: boolean } {
+function parseVersion(version: EngineVersion): {
+  versionNum: number;
+  isElasticsearchVersion: boolean;
+} {
   const elasticsearchPrefix = 'Elasticsearch_';
   const openSearchPrefix = 'OpenSearch_';
   const isElasticsearchVersion = version.version.startsWith(elasticsearchPrefix);
@@ -2159,7 +2244,9 @@ function parseVersion(version: EngineVersion): { versionNum: number; isElasticse
   const firstDot = versionStr.indexOf('.');
 
   if (firstDot < 1) {
-    throw new Error(`Invalid engine version: ${versionStr}. Version string needs to start with major and minor version (x.y).`);
+    throw new Error(
+      `Invalid engine version: ${versionStr}. Version string needs to start with major and minor version (x.y).`
+    );
   }
 
   const secondDot = versionStr.indexOf('.', firstDot + 1);
@@ -2171,7 +2258,9 @@ function parseVersion(version: EngineVersion): { versionNum: number; isElasticse
       return { versionNum: parseFloat(versionStr.substring(0, secondDot)), isElasticsearchVersion };
     }
   } catch {
-    throw new Error(`Invalid engine version: ${versionStr}. Version string needs to start with major and minor version (x.y).`);
+    throw new Error(
+      `Invalid engine version: ${versionStr}. Version string needs to start with major and minor version (x.y).`
+    );
   }
 }
 
@@ -2190,11 +2279,14 @@ function selectSubnets(vpc: ec2.IVpc, vpcSubnets: ec2.SubnetSelection[]): ec2.IS
  * @param vpcSubnets The vpc subnets that should be checked
  * @returns true if there are pending lookups for the subnets
  */
-function zoneAwarenessCheckShouldBeSkipped(vpc: ec2.IVpc, vpcSubnets: ec2.SubnetSelection[]): boolean {
+function zoneAwarenessCheckShouldBeSkipped(
+  vpc: ec2.IVpc,
+  vpcSubnets: ec2.SubnetSelection[]
+): boolean {
   for (const selection of vpcSubnets) {
     if (vpc.selectSubnets(selection).isPendingLookup) {
       return true;
-    };
+    }
   }
   return false;
 }
@@ -2222,5 +2314,8 @@ function initializeInstanceType(defaultInstanceType: string, instanceType?: stri
  * @returns Formatted instance types list for error messages
  */
 function formatInstanceTypesList(instanceTypes: string[], conjunction: string): string {
-  return instanceTypes.map((type) => type.toUpperCase()).join(', ').replace(/, ([^,]*)$/, ` ${conjunction} $1`);
+  return instanceTypes
+    .map((type) => type.toUpperCase())
+    .join(', ')
+    .replace(/, ([^,]*)$/, ` ${conjunction} $1`);
 }

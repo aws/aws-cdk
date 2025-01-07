@@ -96,12 +96,14 @@ export class DatabaseSecret extends secretsmanager.Secret {
     });
 
     if (props.replaceOnPasswordCriteriaChanges) {
-      const hash = md5hash(JSON.stringify({
-        // Use here the options that influence the password generation.
-        // If at some point we add other password customization options
-        // they sould be added here below (e.g. `passwordLength`).
-        excludeCharacters,
-      }));
+      const hash = md5hash(
+        JSON.stringify({
+          // Use here the options that influence the password generation.
+          // If at some point we add other password customization options
+          // they sould be added here below (e.g. `passwordLength`).
+          excludeCharacters,
+        })
+      );
       const logicalId = `${Names.uniqueId(this)}${hash}`;
 
       const secret = this.node.defaultChild as secretsmanager.CfnSecret;

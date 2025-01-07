@@ -35,7 +35,7 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
    */
   public _toCloudFormation(): object {
     if (!this.expression) {
-      return { };
+      return {};
     }
 
     return {

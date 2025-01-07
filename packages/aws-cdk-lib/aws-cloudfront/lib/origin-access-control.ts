@@ -60,12 +60,12 @@ export enum AccessLevel {
 /**
  * Properties for creating a S3 Origin Access Control resource.
  */
-export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps { }
+export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps {}
 
 /**
  * Properties for creating a Lambda Function URL Origin Access Control resource.
  */
-export interface FunctionUrlOriginAccessControlProps extends OriginAccessControlBaseProps { }
+export interface FunctionUrlOriginAccessControlProps extends OriginAccessControlBaseProps {}
 
 /**
  * Origin types supported by Origin Access Control.
@@ -135,7 +135,10 @@ export class Signing {
    * Sign only if the viewer request doesn't contain the Authorization header
    * using the AWS Signature Version 4 signing protocol.
    */
-  public static readonly SIGV4_NO_OVERRIDE = new Signing(SigningProtocol.SIGV4, SigningBehavior.NO_OVERRIDE);
+  public static readonly SIGV4_NO_OVERRIDE = new Signing(
+    SigningProtocol.SIGV4,
+    SigningBehavior.NO_OVERRIDE
+  );
 
   /**
    * Do not sign any origin requests.
@@ -179,7 +182,11 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
   /**
    * Imports an S3 origin access control from its id.
    */
-  public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
+  public static fromOriginAccessControlId(
+    scope: Construct,
+    id: string,
+    originAccessControlId: string
+  ): IOriginAccessControl {
     class Import extends Resource implements IOriginAccessControl {
       public readonly originAccessControlId = originAccessControlId;
       public readonly originAccessControlOriginType = OriginAccessControlOriginType.S3;
@@ -199,9 +206,11 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {
         description: props.description,
-        name: props.originAccessControlName ?? Names.uniqueResourceName(this, {
-          maxLength: 64,
-        }),
+        name:
+          props.originAccessControlName ??
+          Names.uniqueResourceName(this, {
+            maxLength: 64,
+          }),
         signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
         signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
         originAccessControlOriginType: OriginAccessControlOriginType.S3,
@@ -221,7 +230,11 @@ export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
   /**
    * Imports a Lambda Function URL origin access control from its id.
    */
-  public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
+  public static fromOriginAccessControlId(
+    scope: Construct,
+    id: string,
+    originAccessControlId: string
+  ): IOriginAccessControl {
     class Import extends Resource implements IOriginAccessControl {
       public readonly originAccessControlId = originAccessControlId;
       public readonly originAccessControlOriginType = OriginAccessControlOriginType.LAMBDA;

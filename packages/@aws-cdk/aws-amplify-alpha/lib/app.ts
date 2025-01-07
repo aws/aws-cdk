@@ -227,11 +227,14 @@ export class App extends Resource implements IApp, iam.IGrantable {
 
     this.customRules = props.customRules || [];
     this.environmentVariables = props.environmentVariables || {};
-    this.autoBranchEnvironmentVariables = props.autoBranchCreation && props.autoBranchCreation.environmentVariables || {};
+    this.autoBranchEnvironmentVariables =
+      (props.autoBranchCreation && props.autoBranchCreation.environmentVariables) || {};
 
-    const role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
-    });
+    const role =
+      props.role ||
+      new iam.Role(this, 'Role', {
+        assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+      });
     this.grantPrincipal = role;
 
     const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
@@ -243,10 +246,14 @@ export class App extends Resource implements IApp, iam.IGrantable {
         basicAuthConfig: props.autoBranchCreation.basicAuth
           ? props.autoBranchCreation.basicAuth.bind(this, 'BranchBasicAuth')
           : { enableBasicAuth: false },
-        buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
+        buildSpec:
+          props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild ?? true,
-        environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables) }, { omitEmptyArray: true }), // eslint-disable-line max-len
+        environmentVariables: Lazy.any(
+          { produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables) },
+          { omitEmptyArray: true }
+        ), // eslint-disable-line max-len
         enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview ?? true,
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,
@@ -259,12 +266,17 @@ export class App extends Resource implements IApp, iam.IGrantable {
       cacheConfig: props.cacheConfigType ? { type: props.cacheConfigType } : undefined,
       customRules: Lazy.any({ produce: () => this.customRules }, { omitEmptyArray: true }),
       description: props.description,
-      environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
+      environmentVariables: Lazy.any(
+        { produce: () => renderEnvironmentVariables(this.environmentVariables) },
+        { omitEmptyArray: true }
+      ),
       iamServiceRole: role.roleArn,
       name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
-      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
+      customHeaders: props.customResponseHeaders
+        ? renderCustomResponseHeaders(props.customResponseHeaders)
+        : undefined,
       platform: props.platform || Platform.WEB,
     });
 
@@ -531,9 +543,7 @@ export interface CustomResponseHeader {
 }
 
 function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): string {
-  const yaml = [
-    'customHeaders:',
-  ];
+  const yaml = ['customHeaders:'];
 
   for (const customHeader of customHeaders) {
     yaml.push(`  - pattern: "${customHeader.pattern}"`);

@@ -2,7 +2,18 @@ import { randomUUID } from 'crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { DynamicInput, EnrichmentParametersConfig, IEnrichment, IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '../lib';
+import {
+  DynamicInput,
+  EnrichmentParametersConfig,
+  IEnrichment,
+  IPipe,
+  ISource,
+  ITarget,
+  InputTransformation,
+  Pipe,
+  SourceConfig,
+  TargetConfig,
+} from '../lib';
 import { name } from '../package.json';
 
 const app = new cdk.App();
@@ -10,7 +21,8 @@ const stack = new cdk.Stack(app, 'aws-cdk-pipes');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
-const enrichmentHandlerCode = 'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-${record.name}-${record.static}` }) ) };';
+const enrichmentHandlerCode =
+  'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-${record.name}-${record.static}` }) ) };';
 const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', {
   code: Code.fromInline(enrichmentHandlerCode),
   handler: 'index.handler',
@@ -21,7 +33,9 @@ const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', 
 // be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha and
 // SqsTarget from @aws-cdk/aws-pipes-targets-alpha
 if (!name.endsWith('-alpha')) {
-  throw new Error('aws-pipes has exited alpha, TestSource and TestTarget should now be replaced with SqsSource and SqsTarget');
+  throw new Error(
+    'aws-pipes has exited alpha, TestSource and TestTarget should now be replaced with SqsSource and SqsTarget'
+  );
 }
 
 class TestSource implements ISource {
@@ -100,13 +114,20 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: uniqueIdentifier,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
-  QueueUrl: targetQueue.queueUrl,
-})).expect(ExpectedResult.objectLike({
-  Messages: [{ Body: uniqueIdentifier + '-' + pipe.pipeName + '-static' }],
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(30),
-  interval: cdk.Duration.seconds(15),
-});
+putMessageOnQueue
+  .next(
+    test.assertions.awsApiCall('SQS', 'receiveMessage', {
+      QueueUrl: targetQueue.queueUrl,
+    })
+  )
+  .expect(
+    ExpectedResult.objectLike({
+      Messages: [{ Body: uniqueIdentifier + '-' + pipe.pipeName + '-static' }],
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.seconds(30),
+    interval: cdk.Duration.seconds(15),
+  });
 
 app.synth();

@@ -1,7 +1,15 @@
 import { IConstruct } from 'constructs';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
-import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions, StringConcat } from '../resolvable';
+import {
+  DefaultTokenResolver,
+  IPostProcessor,
+  IResolvable,
+  IResolveContext,
+  ITokenResolver,
+  ResolveChangeContextOptions,
+  StringConcat,
+} from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { ResolutionTypeHint } from '../type-hints';
 
@@ -104,11 +112,22 @@ export function resolve(obj: any, options: IResolveOptions): any {
       preparing: options.preparing,
       scope: options.scope as IConstruct,
       documentPath: newPrefix ?? [],
-      registerPostProcessor(pp) { postProcessor = pp; },
-      resolve(x: any, changeOptions?: ResolveChangeContextOptions) { return resolve(x, { ...options, ...changeOptions, prefix: newPrefix }); },
+      registerPostProcessor(pp) {
+        postProcessor = pp;
+      },
+      resolve(x: any, changeOptions?: ResolveChangeContextOptions) {
+        return resolve(x, { ...options, ...changeOptions, prefix: newPrefix });
+      },
     };
 
-    return [context, { postProcess(x) { return postProcessor ? postProcessor.postProcess(x, context) : x; } }];
+    return [
+      context,
+      {
+        postProcess(x) {
+          return postProcessor ? postProcessor.postProcess(x, context) : x;
+        },
+      },
+    ];
   }
 
   // protect against cyclic references by limiting depth.
@@ -123,7 +142,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // undefined
   //
 
-  if (typeof(obj) === 'undefined') {
+  if (typeof obj === 'undefined') {
     return undefined;
   }
 
@@ -139,24 +158,31 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // functions - not supported (only tokens are supported)
   //
 
-  if (typeof(obj) === 'function') {
-    throw new Error(`Trying to resolve a non-data object. Only token are supported for lazy evaluation. Path: ${pathName}. Object: ${obj}`);
+  if (typeof obj === 'function') {
+    throw new Error(
+      `Trying to resolve a non-data object. Only token are supported for lazy evaluation. Path: ${pathName}. Object: ${obj}`
+    );
   }
 
   //
   // string - potentially replace all stringified Tokens
   //
-  if (typeof(obj) === 'string') {
+  if (typeof obj === 'string') {
     // If this is a "list element" Token, it should never occur by itself in string context
     if (TokenString.forListToken(obj).test()) {
-      throw new Error('Found an encoded list token string in a scalar string context. Use \'Fn.select(0, list)\' (not \'list[0]\') to extract elements from token lists.');
+      throw new Error(
+        "Found an encoded list token string in a scalar string context. Use 'Fn.select(0, list)' (not 'list[0]') to extract elements from token lists."
+      );
     }
 
     // Otherwise look for a stringified Token in this object
     const str = TokenString.forString(obj);
     if (str.test()) {
       const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
-      return tagResolvedValue(options.resolver.resolveString(fragments, makeContext()[0]), ResolutionTypeHint.STRING);
+      return tagResolvedValue(
+        options.resolver.resolveString(fragments, makeContext()[0]),
+        ResolutionTypeHint.STRING
+      );
     }
     return obj;
   }
@@ -164,7 +190,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   //
   // number - potentially decode Tokenized number
   //
-  if (typeof(obj) === 'number') {
+  if (typeof obj === 'number') {
     return tagResolvedValue(resolveNumberToken(obj, makeContext()[0]), ResolutionTypeHint.NUMBER);
   }
 
@@ -172,7 +198,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // primitives - as-is
   //
 
-  if (typeof(obj) !== 'object' || obj instanceof Date) {
+  if (typeof obj !== 'object' || obj instanceof Date) {
     return obj;
   }
 
@@ -182,12 +208,15 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   if (Array.isArray(obj)) {
     if (containsListTokenElement(obj)) {
-      return tagResolvedValue(options.resolver.resolveList(obj, makeContext()[0]), ResolutionTypeHint.STRING_LIST);
+      return tagResolvedValue(
+        options.resolver.resolveList(obj, makeContext()[0]),
+        ResolutionTypeHint.STRING_LIST
+      );
     }
 
     const arr = obj
       .map((x, i) => makeContext(`${i}`)[0].resolve(x))
-      .filter(x => leaveEmpty || typeof(x) !== 'undefined');
+      .filter((x) => leaveEmpty || typeof x !== 'undefined');
 
     return arr;
   }
@@ -206,7 +235,10 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   if (unresolved(obj)) {
     const [context, postProcessor] = makeContext();
-    const ret = tagResolvedValue(options.resolver.resolveToken(obj, context, postProcessor), ResolutionTypeHint.STRING);
+    const ret = tagResolvedValue(
+      options.resolver.resolveToken(obj, context, postProcessor),
+      ResolutionTypeHint.STRING
+    );
     return ret;
   }
 
@@ -221,13 +253,13 @@ export function resolve(obj: any, options: IResolveOptions): any {
     throw new Error('Trying to resolve() a Construct at ' + pathName);
   }
 
-  const result: any = { };
+  const result: any = {};
   let intrinsicKeyCtr = 0;
   for (const key of Object.keys(obj)) {
     const value = makeContext(String(key))[0].resolve(obj[key]);
 
     // skip undefined
-    if (typeof(value) === 'undefined') {
+    if (typeof value === 'undefined') {
       if (leaveEmpty) {
         result[key] = undefined;
       }
@@ -241,12 +273,14 @@ export function resolve(obj: any, options: IResolveOptions): any {
     }
 
     const resolvedKey = makeContext()[0].resolve(key);
-    if (typeof(resolvedKey) === 'string') {
+    if (typeof resolvedKey === 'string') {
       result[resolvedKey] = value;
     } else {
       if (!options.allowIntrinsicKeys) {
         // eslint-disable-next-line max-len
-        throw new Error(`"${String(key)}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
+        throw new Error(
+          `"${String(key)}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`
+        );
       }
 
       // Can't represent this object in a JavaScript key position, but we can store it
@@ -305,7 +339,9 @@ function isConstruct(x: any): boolean {
 
 function resolveNumberToken(x: number, context: IResolveContext): any {
   const token = TokenMap.instance().lookupNumberToken(x);
-  if (token === undefined) { return x; }
+  if (token === undefined) {
+    return x;
+  }
   return context.resolve(token);
 }
 
@@ -317,7 +353,9 @@ function resolveNumberToken(x: number, context: IResolveContext): any {
  * These type hints are used for correct JSON-ification of intrinsic values.
  */
 function tagResolvedValue(value: any, typeHint: ResolutionTypeHint): any {
-  if (typeof value !== 'object' || value == null) { return value; }
+  if (typeof value !== 'object' || value == null) {
+    return value;
+  }
   Object.defineProperty(value, RESOLUTION_TYPEHINT_SYM, {
     value: typeHint,
     configurable: true,
@@ -334,6 +372,8 @@ function tagResolvedValue(value: any, typeHint: ResolutionTypeHint): any {
  * These type hints are used for correct JSON-ification of intrinsic values.
  */
 export function resolvedTypeHint(value: any): ResolutionTypeHint | undefined {
-  if (typeof value !== 'object' || value == null) { return undefined; }
+  if (typeof value !== 'object' || value == null) {
+    return undefined;
+  }
   return value[RESOLUTION_TYPEHINT_SYM];
 }

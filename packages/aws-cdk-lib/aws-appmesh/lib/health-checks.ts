@@ -51,12 +51,12 @@ export interface HttpHealthCheckOptions extends HealthCheckCommonOptions {
 /**
  * Properties used to define GRPC Based healthchecks.
  */
-export interface GrpcHealthCheckOptions extends HealthCheckCommonOptions { }
+export interface GrpcHealthCheckOptions extends HealthCheckCommonOptions {}
 
 /**
  * Properties used to define TCP Based healthchecks.
  */
-export interface TcpHealthCheckOptions extends HealthCheckCommonOptions { }
+export interface TcpHealthCheckOptions extends HealthCheckCommonOptions {}
 
 /**
  * All Properties for Health Checks for mesh endpoints
@@ -97,28 +97,54 @@ export abstract class HealthCheck {
    * Construct a HTTP health check
    */
   public static http(options: HttpHealthCheckOptions = {}): HealthCheck {
-    return new HealthCheckImpl(Protocol.HTTP, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout, options.path);
+    return new HealthCheckImpl(
+      Protocol.HTTP,
+      options.healthyThreshold,
+      options.unhealthyThreshold,
+      options.interval,
+      options.timeout,
+      options.path
+    );
   }
 
   /**
    * Construct a HTTP2 health check
    */
   public static http2(options: HttpHealthCheckOptions = {}): HealthCheck {
-    return new HealthCheckImpl(Protocol.HTTP2, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout, options.path);
+    return new HealthCheckImpl(
+      Protocol.HTTP2,
+      options.healthyThreshold,
+      options.unhealthyThreshold,
+      options.interval,
+      options.timeout,
+      options.path
+    );
   }
 
   /**
    * Construct a GRPC health check
    */
   public static grpc(options: GrpcHealthCheckOptions = {}): HealthCheck {
-    return new HealthCheckImpl(Protocol.GRPC, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout);
+    return new HealthCheckImpl(
+      Protocol.GRPC,
+      options.healthyThreshold,
+      options.unhealthyThreshold,
+      options.interval,
+      options.timeout
+    );
   }
 
   /**
    * Construct a TCP health check
    */
   public static tcp(options: TcpHealthCheckOptions = {}): HealthCheck {
-    return new HealthCheckImpl(Protocol.TCP, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout);
+    return new HealthCheckImpl(
+      Protocol.TCP,
+      options.healthyThreshold,
+      options.unhealthyThreshold,
+      options.interval,
+      options.timeout
+    );
   }
 
   /**
@@ -135,7 +161,8 @@ class HealthCheckImpl extends HealthCheck {
     private readonly unhealthyThreshold: number = 2,
     private readonly interval: cdk.Duration = cdk.Duration.seconds(5),
     private readonly timeout: cdk.Duration = cdk.Duration.seconds(2),
-    private readonly path?: string) {
+    private readonly path?: string
+  ) {
     super();
     if (healthyThreshold < 2 || healthyThreshold > 10) {
       throw new Error('healthyThreshold must be between 2 and 10');
@@ -181,5 +208,4 @@ class HealthCheckImpl extends HealthCheck {
       },
     };
   }
-
 }

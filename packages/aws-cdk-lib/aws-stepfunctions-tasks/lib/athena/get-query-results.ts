@@ -35,7 +35,6 @@ export interface AthenaGetQueryResultsProps extends sfn.TaskStateBaseProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
  */
 export class AthenaGetQueryResults extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -45,11 +44,18 @@ export class AthenaGetQueryResults extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: AthenaGetQueryResultsProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: AthenaGetQueryResultsProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(this.integrationPattern, AthenaGetQueryResults.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      AthenaGetQueryResults.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     const policyStatements = [
       new iam.PolicyStatement({
@@ -62,7 +68,7 @@ export class AthenaGetQueryResults extends sfn.TaskStateBase {
       new iam.PolicyStatement({
         actions: ['s3:GetObject'],
         resources: ['*'], // To stream query results successfully the IAM principal must have permissions to the Amazon S3 GetObject action for the Athena query results location https://docs.amazonaws.cn/en_us/athena/latest/APIReference/API_GetQueryResults.html
-      }),
+      })
     );
 
     this.taskPolicies = policyStatements;
@@ -83,4 +89,3 @@ export class AthenaGetQueryResults extends sfn.TaskStateBase {
     };
   }
 }
-

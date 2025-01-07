@@ -5,18 +5,19 @@ import { IntegTestCase } from './test-case';
 
 const emptyManifest: IntegManifest = {
   version: '',
-  testCases: { },
+  testCases: {},
 };
 
 export class IntegManifestSynthesizer {
-  constructor(private readonly testCases: IntegTestCase[], private readonly enableLookups?: boolean) {}
+  constructor(
+    private readonly testCases: IntegTestCase[],
+    private readonly enableLookups?: boolean
+  ) {}
 
   synthesize(session: ISynthesisSession) {
     const manifest: IntegManifest = {
       enableLookups: this.enableLookups,
-      ...this.testCases
-        .map(tc => tc.manifest)
-        .reduce(mergeManifests, emptyManifest),
+      ...this.testCases.map((tc) => tc.manifest).reduce(mergeManifests, emptyManifest),
     };
 
     const snapshotDir = session.assembly.outdir;

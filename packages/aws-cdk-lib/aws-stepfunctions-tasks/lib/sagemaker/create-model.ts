@@ -69,7 +69,10 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps {
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  */
-export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
+export class SageMakerCreateModel
+  extends sfn.TaskStateBase
+  implements iam.IGrantable, ec2.IConnectable
+{
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -90,15 +93,24 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
   private readonly subnets?: string[];
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: SageMakerCreateModelProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: SageMakerCreateModelProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, SageMakerCreateModel.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      SageMakerCreateModel.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     // add the security groups to the connections object
     if (props.vpc) {
       this.vpc = props.vpc;
-      this.subnets = props.subnetSelection ? this.vpc.selectSubnets(props.subnetSelection).subnetIds : this.vpc.selectSubnets().subnetIds;
+      this.subnets = props.subnetSelection
+        ? this.vpc.selectSubnets(props.subnetSelection).subnetIds
+        : this.vpc.selectSubnets().subnetIds;
     }
 
     this.role = this.props.role || this.createSagemakerRole();
@@ -133,7 +145,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
       ModelName: this.props.modelName,
       Tags: this.props.tags?.value,
       PrimaryContainer: this.props.primaryContainer.bind(this).parameters,
-      Containers: this.props.containers?.map(container => (container.bind(this))),
+      Containers: this.props.containers?.map((container) => container.bind(this)),
       ...this.renderVpcConfig(),
     };
   }
@@ -149,7 +161,9 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
             resource: 'model',
             // If the model name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.modelName) ? '*' : `${this.props.modelName.toLowerCase()}*`,
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.modelName)
+              ? '*'
+              : `${this.props.modelName.toLowerCase()}*`,
           }),
         ],
       }),
@@ -209,7 +223,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
             'ec2:DescribeSecurityGroups',
           ],
           resources: ['*'],
-        }),
+        })
       );
     }
     return role;
@@ -226,11 +240,13 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
     }
     return this.vpc
       ? {
-        VpcConfig: {
-          SecurityGroupIds: cdk.Lazy.list({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
-          Subnets: this.subnets,
-        },
-      }
+          VpcConfig: {
+            SecurityGroupIds: cdk.Lazy.list({
+              produce: () => this.securityGroups.map((sg) => sg.securityGroupId),
+            }),
+            Subnets: this.subnets,
+          },
+        }
       : {};
   }
 }

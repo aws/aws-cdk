@@ -1,5 +1,15 @@
 import { IConstruct } from 'constructs';
-import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization } from '../../../core';
+import {
+  captureStackTrace,
+  DefaultTokenResolver,
+  IPostProcessor,
+  IResolvable,
+  IResolveContext,
+  Lazy,
+  StringConcat,
+  Token,
+  Tokenization,
+} from '../../../core';
 import { IPolicy } from '../policy';
 
 export const MAX_POLICY_NAME_LEN = 128;
@@ -10,7 +20,7 @@ export function undefinedIfEmpty(f: () => string[]): string[] {
   return Lazy.list({
     produce: () => {
       const array = f();
-      return (array && array.length > 0) ? array : undefined;
+      return array && array.length > 0 ? array : undefined;
     },
   });
 }
@@ -55,11 +65,11 @@ export class AttachedPolicies {
    * If there is another policy attached with the same name, throws an exception.
    */
   public attach(policy: IPolicy) {
-    if (this.policies.find(p => p === policy)) {
+    if (this.policies.find((p) => p === policy)) {
       return; // already attached
     }
 
-    if (this.policies.find(p => p.policyName === policy.policyName)) {
+    if (this.policies.find((p) => p.policyName === policy.policyName)) {
       throw new Error(`A policy named "${policy.policyName}" is already attached`);
     }
 
@@ -72,14 +82,21 @@ export class AttachedPolicies {
  *
  * Does an in-place merge.
  */
-export function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
+export function mergePrincipal(
+  target: { [key: string]: string[] },
+  source: { [key: string]: string[] }
+) {
   // If one represents a literal string, the other one must be empty
   const sourceKeys = Object.keys(source);
   const targetKeys = Object.keys(target);
 
-  if ((LITERAL_STRING_KEY in source && targetKeys.some(k => k !== LITERAL_STRING_KEY)) ||
-    (LITERAL_STRING_KEY in target && sourceKeys.some(k => k !== LITERAL_STRING_KEY))) {
-    throw new Error(`Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
+  if (
+    (LITERAL_STRING_KEY in source && targetKeys.some((k) => k !== LITERAL_STRING_KEY)) ||
+    (LITERAL_STRING_KEY in target && sourceKeys.some((k) => k !== LITERAL_STRING_KEY))
+  ) {
+    throw new Error(
+      `Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`
+    );
   }
 
   for (const key of sourceKeys) {
@@ -123,8 +140,12 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
   }
 
   public postProcess(input: any, _context: IResolveContext) {
-    if (!Array.isArray(input)) { return input; }
-    if (input.length === 0) { return undefined; }
+    if (!Array.isArray(input)) {
+      return input;
+    }
+    if (input.length === 0) {
+      return undefined;
+    }
 
     const uniq: Record<string, any> = {};
     for (const el of input) {

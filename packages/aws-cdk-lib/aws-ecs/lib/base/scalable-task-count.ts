@@ -6,15 +6,12 @@ import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 /**
  * The properties of a scalable attribute representing task count.
  */
-export interface ScalableTaskCountProps extends appscaling.BaseScalableAttributeProps {
-
-}
+export interface ScalableTaskCountProps extends appscaling.BaseScalableAttributeProps {}
 
 /**
  * The scalable attribute representing task count.
  */
 export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
-
   /**
    * Constructs a new instance of the ScalableTaskCount class.
    */
@@ -68,8 +65,8 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    * Scales in or out to achieve a target Application Load Balancer request count per target.
    */
   public scaleOnRequestCount(id: string, props: RequestCountScalingProps) {
-    const resourceLabel = props.targetGroup.firstLoadBalancerFullName +
-       '/' + props.targetGroup.targetGroupFullName;
+    const resourceLabel =
+      props.targetGroup.firstLoadBalancerFullName + '/' + props.targetGroup.targetGroupFullName;
 
     return super.doScaleToTrackMetric(id, {
       predefinedMetric: appscaling.PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,

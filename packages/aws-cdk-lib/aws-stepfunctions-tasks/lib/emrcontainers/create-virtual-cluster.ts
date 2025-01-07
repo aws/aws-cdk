@@ -9,7 +9,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * Class for supported types of EMR Containers' Container Providers
  */
 enum ContainerProviderTypes {
-
   /**
    * Supported container provider type for a EKS Cluster
    */
@@ -20,7 +19,6 @@ enum ContainerProviderTypes {
  * Class that supports methods which return the EKS cluster name depending on input type.
  */
 export class EksClusterInput {
-
   /**
    * Specify an existing EKS Cluster as the name for this Cluster
    */
@@ -40,14 +38,13 @@ export class EksClusterInput {
    *
    * @param clusterName The name of the EKS Cluster
    */
-  private constructor(readonly clusterName: string) { }
+  private constructor(readonly clusterName: string) {}
 }
 
 /**
  * Properties to define a EMR Containers CreateVirtualCluster Task on an EKS cluster
  */
 export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
-
   /**
    * EKS Cluster or task input that contains the name of the cluster
    */
@@ -81,7 +78,6 @@ export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBas
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
  */
 export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -91,10 +87,17 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrContainersCreateVirtualClusterProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EmrContainersCreateVirtualClusterProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, EmrContainersCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      EmrContainersCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -104,9 +107,15 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('emr-containers', 'createVirtualCluster', this.integrationPattern),
+      Resource: integrationResourceArn(
+        'emr-containers',
+        'createVirtualCluster',
+        this.integrationPattern
+      ),
       Parameters: sfn.FieldUtils.renderObject({
-        Name: this.props.virtualClusterName ?? sfn.JsonPath.stringAt('States.Format(\'{}/{}\', $$.Execution.Name, $$.State.Name)'),
+        Name:
+          this.props.virtualClusterName ??
+          sfn.JsonPath.stringAt("States.Format('{}/{}', $$.Execution.Name, $$.State.Name)"),
         ContainerProvider: {
           Id: this.props.eksCluster.clusterName,
           Info: {
@@ -119,7 +128,7 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
         Tags: this.props.tags,
       }),
     };
-  };
+  }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
     return [

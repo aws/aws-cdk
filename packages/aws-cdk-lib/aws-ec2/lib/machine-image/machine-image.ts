@@ -1,8 +1,29 @@
 import { Construct } from 'constructs';
-import { AmazonLinux2022ImageSsmParameter, AmazonLinux2022ImageSsmParameterProps, AmazonLinux2022Kernel } from './amazon-linux-2022';
-import { AmazonLinux2023ImageSsmParameter, AmazonLinux2023ImageSsmParameterProps, AmazonLinux2023Kernel } from './amazon-linux-2023';
-import { AmazonLinux2ImageSsmParameter, AmazonLinux2ImageSsmParameterProps, AmazonLinux2Kernel } from './amazon-linux2';
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt, IMachineImage, MachineImageConfig, OperatingSystemType } from './common';
+import {
+  AmazonLinux2022ImageSsmParameter,
+  AmazonLinux2022ImageSsmParameterProps,
+  AmazonLinux2022Kernel,
+} from './amazon-linux-2022';
+import {
+  AmazonLinux2023ImageSsmParameter,
+  AmazonLinux2023ImageSsmParameterProps,
+  AmazonLinux2023Kernel,
+} from './amazon-linux-2023';
+import {
+  AmazonLinux2ImageSsmParameter,
+  AmazonLinux2ImageSsmParameterProps,
+  AmazonLinux2Kernel,
+} from './amazon-linux2';
+import {
+  AmazonLinuxCpuType,
+  AmazonLinuxEdition,
+  AmazonLinuxGeneration,
+  AmazonLinuxStorage,
+  AmazonLinuxVirt,
+  IMachineImage,
+  MachineImageConfig,
+  OperatingSystemType,
+} from './common';
 import { lookupImage } from './utils';
 import * as ssm from '../../../aws-ssm';
 import * as cxschema from '../../../cloud-assembly-schema';
@@ -53,7 +74,9 @@ export abstract class MachineImage {
    *
    * @deprecated - use latestAmazonLinux2023() instead
    */
-  public static latestAmazonLinux2022(props?: AmazonLinux2022ImageSsmParameterProps): IMachineImage {
+  public static latestAmazonLinux2022(
+    props?: AmazonLinux2022ImageSsmParameterProps
+  ): IMachineImage {
     return new AmazonLinux2022ImageSsmParameter({
       cachedInContext: false,
       ...props,
@@ -69,7 +92,9 @@ export abstract class MachineImage {
    * new version of the image becomes available. Do not store stateful information
    * on the instance if you are using this image.
    */
-  public static latestAmazonLinux2023(props?: AmazonLinux2023ImageSsmParameterProps): IMachineImage {
+  public static latestAmazonLinux2023(
+    props?: AmazonLinux2023ImageSsmParameterProps
+  ): IMachineImage {
     return new AmazonLinux2023ImageSsmParameter({
       cachedInContext: false,
       ...props,
@@ -111,7 +136,10 @@ export abstract class MachineImage {
    * specify the AMI ID for that region.
    * @param props Customize the image by supplying additional props
    */
-  public static genericLinux(amiMap: Record<string, string>, props?: GenericLinuxImageProps): IMachineImage {
+  public static genericLinux(
+    amiMap: Record<string, string>,
+    props?: GenericLinuxImageProps
+  ): IMachineImage {
     return new GenericLinuxImage(amiMap, props);
   }
 
@@ -122,7 +150,10 @@ export abstract class MachineImage {
    * specify the AMI ID for that region.
    * @param props Customize the image by supplying additional props
    */
-  public static genericWindows(amiMap: Record<string, string>, props?: GenericWindowsImageProps): IMachineImage {
+  public static genericWindows(
+    amiMap: Record<string, string>,
+    props?: GenericWindowsImageProps
+  ): IMachineImage {
     return new GenericWindowsImage(amiMap, props);
   }
 
@@ -139,7 +170,11 @@ export abstract class MachineImage {
    * @param userData optional user data for the given image
    * @deprecated Use `MachineImage.fromSsmParameter()` instead
    */
-  public static fromSSMParameter(parameterName: string, os: OperatingSystemType, userData?: UserData): IMachineImage {
+  public static fromSSMParameter(
+    parameterName: string,
+    os: OperatingSystemType,
+    userData?: UserData
+  ): IMachineImage {
     return new GenericSSMParameterImage(parameterName, os, userData);
   }
 
@@ -154,7 +189,10 @@ export abstract class MachineImage {
    * will have to remember to periodically invalidate the context to refresh
    * to the newest AMI ID.
    */
-  public static fromSsmParameter(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
+  public static fromSsmParameter(
+    parameterName: string,
+    options?: SsmParameterImageOptions
+  ): IMachineImage {
     return new GenericSsmParameterImage(parameterName, options);
   }
 
@@ -169,7 +207,10 @@ export abstract class MachineImage {
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html
    *
    */
-  public static resolveSsmParameterAtLaunch(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
+  public static resolveSsmParameterAtLaunch(
+    parameterName: string,
+    options?: SsmParameterImageOptions
+  ): IMachineImage {
     return new ResolveSsmParameterAtLaunchImage(parameterName, options);
   }
 
@@ -212,7 +253,11 @@ export class GenericSSMParameterImage implements IMachineImage {
    */
   public readonly parameterName: string;
 
-  constructor(parameterName: string, private readonly os: OperatingSystemType, private readonly userData?: UserData) {
+  constructor(
+    parameterName: string,
+    private readonly os: OperatingSystemType,
+    private readonly userData?: UserData
+  ) {
     this.parameterName = parameterName;
   }
 
@@ -220,11 +265,17 @@ export class GenericSSMParameterImage implements IMachineImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const ami = ssm.StringParameter.valueForTypedStringParameterV2(scope, this.parameterName, ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
+    const ami = ssm.StringParameter.valueForTypedStringParameterV2(
+      scope,
+      this.parameterName,
+      ssm.ParameterValueType.AWS_EC2_IMAGE_ID
+    );
     return {
       imageId: ami,
       osType: this.os,
-      userData: this.userData ?? (this.os === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+      userData:
+        this.userData ??
+        (this.os === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
     };
   }
 }
@@ -245,7 +296,10 @@ export class ResolveSsmParameterAtLaunchImage implements IMachineImage {
    */
   public readonly parameterName: string;
 
-  constructor(parameterName: string, private readonly props: SsmParameterImageOptions = {}) {
+  constructor(
+    parameterName: string,
+    private readonly props: SsmParameterImageOptions = {}
+  ) {
     this.parameterName = parameterName;
   }
 
@@ -258,7 +312,9 @@ export class ResolveSsmParameterAtLaunchImage implements IMachineImage {
     return {
       imageId: `resolve:ssm:${this.parameterName}${versionString}`,
       osType,
-      userData: this.props.userData ?? (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+      userData:
+        this.props.userData ??
+        (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
     };
   }
 }
@@ -321,8 +377,10 @@ export interface SsmParameterImageOptions {
  * The AMI ID is selected using the values published to the SSM parameter store.
  */
 class GenericSsmParameterImage implements IMachineImage {
-  constructor(private readonly parameterName: string, private readonly props: SsmParameterImageOptions = {}) {
-  }
+  constructor(
+    private readonly parameterName: string,
+    private readonly props: SsmParameterImageOptions = {}
+  ) {}
 
   /**
    * Return the image to use in the given context
@@ -334,7 +392,9 @@ class GenericSsmParameterImage implements IMachineImage {
     return {
       imageId,
       osType,
-      userData: this.props.userData ?? (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+      userData:
+        this.props.userData ??
+        (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
     };
   }
 }
@@ -365,24 +425,40 @@ export interface WindowsImageProps {
  */
 export class WindowsImage extends GenericSSMParameterImage {
   private static DEPRECATED_VERSION_NAME_MAP: Partial<Record<WindowsVersion, WindowsVersion>> = {
-    [WindowsVersion.WINDOWS_SERVER_2016_GERMAL_FULL_BASE]: WindowsVersion.WINDOWS_SERVER_2016_GERMAN_FULL_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE]: WindowsVersion.WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE,
-    [WindowsVersion.WINDOWS_SERVER_2016_PORTUGESE_PORTUGAL_FULL_BASE]: WindowsVersion.WINDOWS_SERVER_2016_PORTUGUESE_PORTUGAL_FULL_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_BRAZIL_64BIT_BASE]: WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_BRAZIL_64BIT_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2016_GERMAL_FULL_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2016_GERMAN_FULL_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE]:
+      WindowsVersion.WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE,
+    [WindowsVersion.WINDOWS_SERVER_2016_PORTUGESE_PORTUGAL_FULL_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2016_PORTUGUESE_PORTUGAL_FULL_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_BRAZIL_64BIT_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_BRAZIL_64BIT_BASE,
     [WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_PORTUGAL_64BIT_BASE]:
       WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2016_PORTUGESE_BRAZIL_FULL_BASE]: WindowsVersion.WINDOWS_SERVER_2016_PORTUGUESE_BRAZIL_FULL_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2012_SP2_PORTUGESE_BRAZIL_64BIT_BASE]: WindowsVersion.WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGESE_BRAZIL_64BIT_BASE]: WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGUESE_BRAZIL_64BIT_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_PORTUGESE_BRAZIL_64BIT_BASE]: WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_PORTUGUESE_BRAZIL_64BIT_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2008_SP2_PORTUGESE_BRAZIL_32BIT_BASE]: WindowsVersion.WINDOWS_SERVER_2008_SP2_PORTUGUESE_BRAZIL_32BIT_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGESE_PORTUGAL_64BIT_BASE]: WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2019_PORTUGESE_BRAZIL_FULL_BASE]: WindowsVersion.WINDOWS_SERVER_2019_PORTUGUESE_BRAZIL_FULL_BASE,
-    [WindowsVersion.WINDOWS_SERVER_2019_PORTUGESE_PORTUGAL_FULL_BASE]: WindowsVersion.WINDOWS_SERVER_2019_PORTUGUESE_PORTUGAL_FULL_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2016_PORTUGESE_BRAZIL_FULL_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2016_PORTUGUESE_BRAZIL_FULL_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2012_SP2_PORTUGESE_BRAZIL_64BIT_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGESE_BRAZIL_64BIT_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGUESE_BRAZIL_64BIT_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_PORTUGESE_BRAZIL_64BIT_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_PORTUGUESE_BRAZIL_64BIT_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2008_SP2_PORTUGESE_BRAZIL_32BIT_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2008_SP2_PORTUGUESE_BRAZIL_32BIT_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGESE_PORTUGAL_64BIT_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2019_PORTUGESE_BRAZIL_FULL_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2019_PORTUGUESE_BRAZIL_FULL_BASE,
+    [WindowsVersion.WINDOWS_SERVER_2019_PORTUGESE_PORTUGAL_FULL_BASE]:
+      WindowsVersion.WINDOWS_SERVER_2019_PORTUGUESE_PORTUGAL_FULL_BASE,
   };
   constructor(version: WindowsVersion, props: WindowsImageProps = {}) {
     const nonDeprecatedVersionName = WindowsImage.DEPRECATED_VERSION_NAME_MAP[version] ?? version;
-    super('/aws/service/ami-windows-latest/' + nonDeprecatedVersionName, OperatingSystemType.WINDOWS, props.userData);
+    super(
+      '/aws/service/ami-windows-latest/' + nonDeprecatedVersionName,
+      OperatingSystemType.WINDOWS,
+      props.userData
+    );
   }
 }
 
@@ -486,25 +562,33 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
       kernel = AmazonLinuxKernel.KERNEL5_X;
       if (props && props.storage) {
-        throw new Error('Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.');
+        throw new Error(
+          'Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.'
+        );
       }
       if (props && props.virtualization) {
-        throw new Error('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.');
+        throw new Error(
+          'Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.'
+        );
       }
     } else if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2023) {
       kernel = AmazonLinuxKernel.KERNEL6_1;
       if (props && props.storage) {
-        throw new Error('Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.');
+        throw new Error(
+          'Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.'
+        );
       }
       if (props && props.virtualization) {
-        throw new Error('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.');
+        throw new Error(
+          'Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.'
+        );
       }
     } else {
       virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
       storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
     }
 
-    const parts: Array<string|undefined> = [
+    const parts: Array<string | undefined> = [
       generation,
       'ami',
       edition !== AmazonLinuxEdition.STANDARD ? edition : undefined,
@@ -512,7 +596,7 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
       virtualization,
       cpu,
       storage,
-    ].filter(x => x !== undefined); // Get rid of undefineds
+    ].filter((x) => x !== undefined); // Get rid of undefineds
 
     return '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
   }
@@ -553,7 +637,6 @@ export enum AmazonLinuxKernel {
    * Kernel version 6.1
    */
   KERNEL6_1 = 'kernel-6.1',
-
 }
 
 /**
@@ -587,8 +670,10 @@ export interface GenericWindowsImageProps {
  * manually specify an AMI map.
  */
 export class GenericLinuxImage implements IMachineImage {
-  constructor(private readonly amiMap: { [region: string]: string }, private readonly props: GenericLinuxImageProps = {}) {
-  }
+  constructor(
+    private readonly amiMap: { [region: string]: string },
+    private readonly props: GenericLinuxImageProps = {}
+  ) {}
 
   public getImage(scope: Construct): MachineImageConfig {
     const userData = this.props.userData ?? UserData.forLinux();
@@ -624,8 +709,10 @@ export class GenericLinuxImage implements IMachineImage {
  * Allows you to create a generic Windows EC2 , manually specify an AMI map.
  */
 export class GenericWindowsImage implements IMachineImage {
-  constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericWindowsImageProps = {}) {
-  }
+  constructor(
+    private readonly amiMap: { [region: string]: string },
+    private readonly props: GenericWindowsImageProps = {}
+  ) {}
 
   public getImage(scope: Construct): MachineImageConfig {
     const userData = this.props.userData ?? UserData.forWindows();
@@ -668,17 +755,16 @@ export class GenericWindowsImage implements IMachineImage {
  * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
  */
 export class LookupMachineImage implements IMachineImage {
-  constructor(private readonly props: LookupMachineImageProps) {
-  }
+  constructor(private readonly props: LookupMachineImageProps) {}
 
   public getImage(scope: Construct): MachineImageConfig {
     // Need to know 'windows' or not before doing the query to return the right
     // osType for the dummy value, so might as well add it to the filter.
     const filters: Record<string, string[] | undefined> = {
-      'name': [this.props.name],
-      'state': ['available'],
+      name: [this.props.name],
+      state: ['available'],
       'image-type': ['machine'],
-      'platform': this.props.windows ? ['windows'] : undefined,
+      platform: this.props.windows ? ['windows'] : undefined,
     };
     Object.assign(filters, this.props.filters);
 
@@ -727,7 +813,7 @@ export interface LookupMachineImageProps {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeImages.html
    * @default - No additional filters
    */
-  readonly filters?: {[key: string]: string[]};
+  readonly filters?: { [key: string]: string[] };
 
   /**
    * Look for Windows images
@@ -743,4 +829,3 @@ export interface LookupMachineImageProps {
    */
   readonly userData?: UserData;
 }
-

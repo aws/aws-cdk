@@ -9,7 +9,9 @@ export function makeComparator<T, U>(keyFn: (x: T) => U[]) {
 
     for (let i = 0; i < len; i++) {
       const c = compare(keyA[i], keyB[i]);
-      if (c !== 0) { return c; }
+      if (c !== 0) {
+        return c;
+      }
     }
 
     // Arrays are the same up to the min length -- shorter array sorts first
@@ -18,8 +20,12 @@ export function makeComparator<T, U>(keyFn: (x: T) => U[]) {
 }
 
 function compare<T>(a: T, b: T) {
-  if (a < b) { return -1; }
-  if (b < a) { return 1; }
+  if (a < b) {
+    return -1;
+  }
+  if (b < a) {
+    return 1;
+  }
   return 0;
 }
 
@@ -28,12 +34,18 @@ export function dropIfEmpty<T>(xs: T[]): T[] | undefined {
 }
 
 export function deepRemoveUndefined(x: any): any {
-  if (typeof x === undefined || x === null) { return x; }
-  if (Array.isArray(x)) { return x.map(deepRemoveUndefined); }
+  if (typeof x === undefined || x === null) {
+    return x;
+  }
+  if (Array.isArray(x)) {
+    return x.map(deepRemoveUndefined);
+  }
   if (typeof x === 'object') {
     for (const [key, value] of Object.entries(x)) {
       x[key] = deepRemoveUndefined(value);
-      if (x[key] === undefined) { delete x[key]; }
+      if (x[key] === undefined) {
+        delete x[key];
+      }
     }
     return x;
   }

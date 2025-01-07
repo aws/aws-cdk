@@ -1,5 +1,11 @@
 import { Construct } from 'constructs';
-import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible, isExternalCompatible } from './task-definition';
+import {
+  Compatibility,
+  NetworkMode,
+  isEc2Compatible,
+  isFargateCompatible,
+  isExternalCompatible,
+} from './task-definition';
 import { IRole } from '../../../aws-iam';
 import { Resource } from '../../../core';
 import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
@@ -48,7 +54,10 @@ export interface ImportedTaskDefinitionProps {
 /**
  * Task definition reference of an imported task
  */
-export class ImportedTaskDefinition extends Resource implements IEc2TaskDefinition, IFargateTaskDefinition {
+export class ImportedTaskDefinition
+  extends Resource
+  implements IEc2TaskDefinition, IFargateTaskDefinition
+{
   /**
    * What launch types this task definition should be compatible with.
    */
@@ -86,8 +95,10 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get networkMode(): NetworkMode {
     if (this._networkMode == undefined) {
-      throw new Error('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
-        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+      throw new Error(
+        'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+          "Add the 'networkMode' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+      );
     } else {
       return this._networkMode;
     }
@@ -95,8 +106,10 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get taskRole(): IRole {
     if (this._taskRole == undefined) {
-      throw new Error('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+      throw new Error(
+        'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+          "Add the 'taskRole' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition"
+      );
     } else {
       return this._taskRole;
     }

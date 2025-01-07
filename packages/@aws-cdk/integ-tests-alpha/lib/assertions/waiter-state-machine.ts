@@ -81,10 +81,16 @@ export class WaiterStateMachine extends Construct {
     super(scope, id);
     const interval = props.interval || Duration.seconds(5);
     const totalTimeout = props.totalTimeout || Duration.minutes(30);
-    const maxAttempts = calculateMaxRetries(totalTimeout.toSeconds(), interval.toSeconds(), props.backoffRate ?? 1);
+    const maxAttempts = calculateMaxRetries(
+      totalTimeout.toSeconds(),
+      interval.toSeconds(),
+      props.backoffRate ?? 1
+    );
 
     if (Math.round(maxAttempts) !== maxAttempts) {
-      throw new Error(`Cannot determine retry count since totalTimeout=${totalTimeout.toSeconds()}s is not integrally dividable by queryInterval=${interval.toSeconds()}s`);
+      throw new Error(
+        `Cannot determine retry count since totalTimeout=${totalTimeout.toSeconds()}s is not integrally dividable by queryInterval=${interval.toSeconds()}s`
+      );
     }
 
     this.isCompleteProvider = new AssertionsProvider(this, 'IsCompleteProvider', {
@@ -102,21 +108,26 @@ export class WaiterStateMachine extends Construct {
       properties: {
         AssumeRolePolicyDocument: {
           Version: '2012-10-17',
-          Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'states.amazonaws.com' } }],
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'states.amazonaws.com' },
+            },
+          ],
         },
         Policies: [
           {
             PolicyName: 'InlineInvokeFunctions',
             PolicyDocument: {
               Version: '2012-10-17',
-              Statement: [{
-                Action: 'lambda:InvokeFunction',
-                Effect: 'Allow',
-                Resource: [
-                  this.isCompleteProvider.serviceToken,
-                  timeoutProvider.serviceToken,
-                ],
-              }],
+              Statement: [
+                {
+                  Action: 'lambda:InvokeFunction',
+                  Effect: 'Allow',
+                  Resource: [this.isCompleteProvider.serviceToken, timeoutProvider.serviceToken],
+                },
+              ],
             },
           },
         ],
@@ -128,16 +139,20 @@ export class WaiterStateMachine extends Construct {
       States: {
         'framework-isComplete-task': {
           End: true,
-          Retry: [{
-            ErrorEquals: ['States.ALL'],
-            IntervalSeconds: interval.toSeconds(),
-            MaxAttempts: maxAttempts,
-            BackoffRate: props.backoffRate ?? 1,
-          }],
-          Catch: [{
-            ErrorEquals: ['States.ALL'],
-            Next: 'framework-onTimeout-task',
-          }],
+          Retry: [
+            {
+              ErrorEquals: ['States.ALL'],
+              IntervalSeconds: interval.toSeconds(),
+              MaxAttempts: maxAttempts,
+              BackoffRate: props.backoffRate ?? 1,
+            },
+          ],
+          Catch: [
+            {
+              ErrorEquals: ['States.ALL'],
+              Next: 'framework-onTimeout-task',
+            },
+          ],
           Type: 'Task',
           Resource: this.isCompleteProvider.serviceToken,
         },
@@ -177,8 +192,8 @@ function calculateMaxRetries(maxSeconds: number, intervalSeconds: number, backof
   let nextInterval = intervalSeconds;
   let i = 0;
   while (i < maxSeconds) {
-    nextInterval = nextInterval+nextInterval*backoff;
-    i+=nextInterval;
+    nextInterval = nextInterval + nextInterval * backoff;
+    i += nextInterval;
     if (i >= maxSeconds) break;
     retries++;
   }

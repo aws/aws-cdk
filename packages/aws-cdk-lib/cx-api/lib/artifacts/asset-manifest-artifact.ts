@@ -70,10 +70,9 @@ export class AssetManifestArtifact extends CloudArtifact {
       return this._contents;
     }
 
-    const contents = this._contents = JSON.parse(fs.readFileSync(this.file, 'utf-8'));
+    const contents = (this._contents = JSON.parse(fs.readFileSync(this.file, 'utf-8')));
     return contents;
   }
-
 }
 
 /**

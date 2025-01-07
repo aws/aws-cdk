@@ -10,9 +10,7 @@ import * as cdk from '../../core';
 /**
  * Properties for defining a LazyRole
  */
-export interface LazyRoleProps extends RoleProps {
-
-}
+export interface LazyRoleProps extends RoleProps {}
 
 /**
  * An IAM role that only gets attached to the construct tree once it gets used, not before
@@ -35,7 +33,11 @@ export class LazyRole extends cdk.Resource implements IRole {
   private readonly policies = new Array<Policy>();
   private readonly managedPolicies = new Array<IManagedPolicy>();
 
-  constructor(scope: Construct, id: string, private readonly props: LazyRoleProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: LazyRoleProps
+  ) {
     super(scope, id);
   }
 

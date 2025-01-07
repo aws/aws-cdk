@@ -61,6 +61,8 @@ export class EqualsAssertion extends Construct {
 
     new CfnOutput(this, 'AssertionResults', {
       value: this.result,
-    }).overrideLogicalId(`AssertionResults${id}${md5hash({ actual: props.actual.result, expected: props.expected.result })}`);
+    }).overrideLogicalId(
+      `AssertionResults${id}${md5hash({ actual: props.actual.result, expected: props.expected.result })}`
+    );
   }
 }

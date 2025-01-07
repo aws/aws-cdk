@@ -59,14 +59,17 @@ export interface SubnetGroupProps {
  * @resource AWS::Neptune::DBSubnetGroup
  */
 export class SubnetGroup extends Resource implements ISubnetGroup {
-
   /**
    * Imports an existing subnet group by name.
    */
-  public static fromSubnetGroupName(scope: Construct, id: string, subnetGroupName: string): ISubnetGroup {
-    return new class extends Resource implements ISubnetGroup {
+  public static fromSubnetGroupName(
+    scope: Construct,
+    id: string,
+    subnetGroupName: string
+  ): ISubnetGroup {
+    return new (class extends Resource implements ISubnetGroup {
       public readonly subnetGroupName = subnetGroupName;
-    }(scope, id);
+    })(scope, id);
   }
 
   public readonly subnetGroupName: string;
@@ -74,7 +77,9 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
   constructor(scope: Construct, id: string, props: SubnetGroupProps) {
     super(scope, id);
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
+    const { subnetIds } = props.vpc.selectSubnets(
+      props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }
+    );
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Resource', {
       dbSubnetGroupDescription: props.description || 'Subnet group for Neptune',

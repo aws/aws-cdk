@@ -12,9 +12,8 @@ export class SetTimerAction implements iotevents.IAction {
    */
   constructor(
     private readonly timerName: string,
-    private readonly timerDuration: TimerDuration,
-  ) {
-  }
+    private readonly timerDuration: TimerDuration
+  ) {}
 
   /**
    * @internal

@@ -281,7 +281,6 @@ export enum RedrivePermission {
  * A new Amazon SQS queue
  */
 export class Queue extends QueueBase {
-
   /**
    * Import an existing SQS queue provided an ARN
    *
@@ -300,7 +299,9 @@ export class Queue extends QueueBase {
     const stack = Stack.of(scope);
     const parsedArn = stack.splitArn(attrs.queueArn, ArnFormat.NO_RESOURCE_NAME);
     const queueName = attrs.queueName || parsedArn.resource;
-    const queueUrl = attrs.queueUrl || `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
+    const queueUrl =
+      attrs.queueUrl ||
+      `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
 
     class Import extends QueueBase {
       public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
@@ -310,9 +311,7 @@ export class Queue extends QueueBase {
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
       public readonly fifo: boolean = this.determineFifo();
-      public readonly encryptionType = attrs.keyArn
-        ? QueueEncryption.KMS
-        : undefined;
+      public readonly encryptionType = attrs.keyArn ? QueueEncryption.KMS : undefined;
 
       protected readonly autoCreatePolicy = false;
 
@@ -389,33 +388,45 @@ export class Queue extends QueueBase {
       const { redrivePermission, sourceQueues } = props.redriveAllowPolicy;
       if (redrivePermission === RedrivePermission.BY_QUEUE) {
         if (!sourceQueues || sourceQueues.length === 0) {
-          throw new Error('At least one source queue must be specified when RedrivePermission is set to \'byQueue\'');
+          throw new Error(
+            "At least one source queue must be specified when RedrivePermission is set to 'byQueue'"
+          );
         }
         if (sourceQueues && sourceQueues.length > 10) {
-          throw new Error('Up to 10 sourceQueues can be specified. Set RedrivePermission to \'allowAll\' to specify more');
+          throw new Error(
+            "Up to 10 sourceQueues can be specified. Set RedrivePermission to 'allowAll' to specify more"
+          );
         }
       } else if (redrivePermission && sourceQueues) {
-        throw new Error('sourceQueues cannot be configured when RedrivePermission is set to \'allowAll\' or \'denyAll\'');
+        throw new Error(
+          "sourceQueues cannot be configured when RedrivePermission is set to 'allowAll' or 'denyAll'"
+        );
       }
     }
 
     const redrivePolicy = props.deadLetterQueue
       ? {
-        deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
-        maxReceiveCount: props.deadLetterQueue.maxReceiveCount,
-      }
+          deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
+          maxReceiveCount: props.deadLetterQueue.maxReceiveCount,
+        }
       : undefined;
 
     // When `redriveAllowPolicy` is provided, `redrivePermission` defaults to allow all queues (`ALLOW_ALL`);
-    const redriveAllowPolicy = props.redriveAllowPolicy ? {
-      redrivePermission: props.redriveAllowPolicy.redrivePermission
-      // When `sourceQueues` is provided in `redriveAllowPolicy`, `redrivePermission` defaults to allow specified queues (`BY_QUEUE`);
-      // otherwise, it defaults to allow all queues (`ALLOW_ALL`).
-        ?? (props.redriveAllowPolicy.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL),
-      sourceQueueArns: props.redriveAllowPolicy.sourceQueues?.map(q => q.queueArn),
-    } : undefined;
+    const redriveAllowPolicy = props.redriveAllowPolicy
+      ? {
+          redrivePermission:
+            props.redriveAllowPolicy.redrivePermission ??
+            // When `sourceQueues` is provided in `redriveAllowPolicy`, `redrivePermission` defaults to allow specified queues (`BY_QUEUE`);
+            // otherwise, it defaults to allow all queues (`ALLOW_ALL`).
+            (props.redriveAllowPolicy.sourceQueues
+              ? RedrivePermission.BY_QUEUE
+              : RedrivePermission.ALLOW_ALL),
+          sourceQueueArns: props.redriveAllowPolicy.sourceQueues?.map((q) => q.queueArn),
+        }
+      : undefined;
 
-    const { encryptionMasterKey, encryptionProps, encryptionType } = _determineEncryptionProps.call(this);
+    const { encryptionMasterKey, encryptionProps, encryptionType } =
+      _determineEncryptionProps.call(this);
 
     const fifoProps = this.determineFifoProps(props);
     this.fifo = fifoProps.fifoQueue || false;
@@ -429,7 +440,8 @@ export class Queue extends QueueBase {
       delaySeconds: props.deliveryDelay && props.deliveryDelay.toSeconds(),
       maximumMessageSize: props.maxMessageSizeBytes,
       messageRetentionPeriod: props.retentionPeriod && props.retentionPeriod.toSeconds(),
-      receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
+      receiveMessageWaitTimeSeconds:
+        props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
     queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
@@ -452,15 +464,20 @@ export class Queue extends QueueBase {
       let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
-        throw new Error("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used");
+        throw new Error(
+          "'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used"
+        );
       }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
         if (encryption !== undefined) {
-          Annotations.of(this).addWarningV2('@aws-cdk/aws-sqs:queueEncryptionChangedToKMS', [
-            `encryption: Automatically changed to QueueEncryption.KMS, was: QueueEncryption.${Object.keys(QueueEncryption)[Object.values(QueueEncryption).indexOf(encryption)]}`,
-            'When encryptionMasterKey is provided, always set `encryption: QueueEncryption.KMS`',
-          ].join('\n'));
+          Annotations.of(this).addWarningV2(
+            '@aws-cdk/aws-sqs:queueEncryptionChangedToKMS',
+            [
+              `encryption: Automatically changed to QueueEncryption.KMS, was: QueueEncryption.${Object.keys(QueueEncryption)[Object.values(QueueEncryption).indexOf(encryption)]}`,
+              'When encryptionMasterKey is provided, always set `encryption: QueueEncryption.KMS`',
+            ].join('\n')
+          );
         }
 
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
@@ -490,9 +507,11 @@ export class Queue extends QueueBase {
       }
 
       if (encryption === QueueEncryption.KMS) {
-        const masterKey = props.encryptionMasterKey || new kms.Key(this, 'Key', {
-          description: `Created by ${this.node.path}`,
-        });
+        const masterKey =
+          props.encryptionMasterKey ||
+          new kms.Key(this, 'Key', {
+            description: `Created by ${this.node.path}`,
+          });
 
         return {
           encryptionType: encryption,
@@ -529,10 +548,23 @@ export class Queue extends QueueBase {
     // Check if any of the signals that we have say that this is a FIFO queue.
     let fifoQueue = props.fifo;
     const queueName = props.queueName;
-    if (typeof fifoQueue === 'undefined' && queueName && !Token.isUnresolved(queueName) && queueName.endsWith('.fifo')) { fifoQueue = true; }
-    if (typeof fifoQueue === 'undefined' && props.contentBasedDeduplication) { fifoQueue = true; }
-    if (typeof fifoQueue === 'undefined' && props.deduplicationScope) { fifoQueue = true; }
-    if (typeof fifoQueue === 'undefined' && props.fifoThroughputLimit) { fifoQueue = true; }
+    if (
+      typeof fifoQueue === 'undefined' &&
+      queueName &&
+      !Token.isUnresolved(queueName) &&
+      queueName.endsWith('.fifo')
+    ) {
+      fifoQueue = true;
+    }
+    if (typeof fifoQueue === 'undefined' && props.contentBasedDeduplication) {
+      fifoQueue = true;
+    }
+    if (typeof fifoQueue === 'undefined' && props.deduplicationScope) {
+      fifoQueue = true;
+    }
+    if (typeof fifoQueue === 'undefined' && props.fifoThroughputLimit) {
+      fifoQueue = true;
+    }
 
     // If we have a name, see that it agrees with the FIFO setting
     if (typeof queueName === 'string') {

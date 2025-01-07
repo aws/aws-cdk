@@ -50,7 +50,11 @@ export class ServerApplication extends Resource implements IServerApplication {
    * @param serverApplicationName the name of the application to import
    * @returns a Construct representing a reference to an existing Application
    */
-  public static fromServerApplicationName(scope: Construct, id: string, serverApplicationName: string): IServerApplication {
+  public static fromServerApplicationName(
+    scope: Construct,
+    id: string,
+    serverApplicationName: string
+  ): IServerApplication {
     class Import extends Resource implements IServerApplication {
       public readonly applicationArn = arnForApplication(Stack.of(scope), serverApplicationName);
       public readonly applicationName = serverApplicationName;
@@ -67,11 +71,17 @@ export class ServerApplication extends Resource implements IServerApplication {
    * @param serverApplicationArn the ARN of the application to import
    * @returns a Construct representing a reference to an existing Application
    */
-  public static fromServerApplicationArn(scope: Construct, id: string, serverApplicationArn: string): IServerApplication {
-    return new class extends Resource implements IServerApplication {
+  public static fromServerApplicationArn(
+    scope: Construct,
+    id: string,
+    serverApplicationArn: string
+  ): IServerApplication {
+    return new (class extends Resource implements IServerApplication {
       public applicationArn = serverApplicationArn;
-      public applicationName = Arn.split(serverApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ?? '<invalid arn>';
-    }(scope, id, { environmentFromArn: serverApplicationArn });
+      public applicationName =
+        Arn.split(serverApplicationArn, ArnFormat.COLON_RESOURCE_NAME).resourceName ??
+        '<invalid arn>';
+    })(scope, id, { environmentFromArn: serverApplicationArn });
   }
 
   public readonly applicationArn: string;
@@ -88,14 +98,16 @@ export class ServerApplication extends Resource implements IServerApplication {
     });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
-    this.applicationArn = this.getResourceArnAttribute(arnForApplication(Stack.of(scope), resource.ref), {
-      service: 'codedeploy',
-      resource: 'application',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
+    this.applicationArn = this.getResourceArnAttribute(
+      arnForApplication(Stack.of(scope), resource.ref),
+      {
+        service: 'codedeploy',
+        resource: 'application',
+        resourceName: this.physicalName,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      }
+    );
 
     this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }
-
 }

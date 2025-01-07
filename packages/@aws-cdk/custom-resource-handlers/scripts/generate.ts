@@ -74,10 +74,7 @@ async function minifyAndBundle(infile: string, outfile: string) {
     logLevel: 'error',
   });
 
-  const failures = [
-    ...result.errors,
-    ...ignoreWarnings(result),
-  ];
+  const failures = [...result.errors, ...ignoreWarnings(result)];
 
   if (failures.length > 0) {
     const messages = esbuild.formatMessagesSync(failures, {
@@ -87,7 +84,9 @@ async function minifyAndBundle(infile: string, outfile: string) {
     // eslint-disable-next-line no-console
     console.log(messages.join('\n'));
     // eslint-disable-next-line no-console
-    console.log(`${messages.length} errors. For false positives, put '// esbuild-disable <code> - <motivation>' on the line before`);
+    console.log(
+      `${messages.length} errors. For false positives, put '// esbuild-disable <code> - <motivation>' on the line before`
+    );
     process.exitCode = 1;
   }
 }

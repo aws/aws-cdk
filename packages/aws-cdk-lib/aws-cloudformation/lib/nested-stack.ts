@@ -64,11 +64,11 @@ export interface NestedStackProps {
  * @deprecated use core.NestedStack instead
  */
 export class NestedStack extends core.NestedStack {
-  constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
+  constructor(scope: Construct, id: string, props: NestedStackProps = {}) {
     super(scope, id, {
       parameters: props.parameters,
       timeout: props.timeout,
-      notificationArns: props.notifications?.map(n => n.topicArn),
+      notificationArns: props.notifications?.map((n) => n.topicArn),
     });
   }
 }

@@ -35,12 +35,12 @@ const integrationTest = new IntegTest(app, 'integrationtest-inspector-start-asse
 });
 
 // Verifies that the assessment run by the scheduler
-integrationTest.assertions.awsApiCall('Inspector', 'listAssessmentRuns', {
-  AssessmentTemplateArns: [assessmentTemplate.attrArn],
-}).assertAtPath(
-  'assessmentRunArns.0',
-  ExpectedResult.stringLikeRegexp(assessmentTemplate.attrArn),
-).waitForAssertions({
-  interval: cdk.Duration.seconds(30),
-  totalTimeout: cdk.Duration.minutes(10),
-});
+integrationTest.assertions
+  .awsApiCall('Inspector', 'listAssessmentRuns', {
+    AssessmentTemplateArns: [assessmentTemplate.attrArn],
+  })
+  .assertAtPath('assessmentRunArns.0', ExpectedResult.stringLikeRegexp(assessmentTemplate.attrArn))
+  .waitForAssertions({
+    interval: cdk.Duration.seconds(30),
+    totalTimeout: cdk.Duration.minutes(10),
+  });

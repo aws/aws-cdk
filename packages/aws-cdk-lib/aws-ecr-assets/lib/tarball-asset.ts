@@ -69,7 +69,9 @@ export class TarballImageAsset extends Construct implements IAsset {
     this.assetHash = stagedTarball.assetHash;
 
     const stage = Stage.of(this);
-    const relativePathInOutDir = stage ? path.relative(stage.assetOutdir, stagedTarball.absoluteStagedPath) : stagedTarball.absoluteStagedPath;
+    const relativePathInOutDir = stage
+      ? path.relative(stage.assetOutdir, stagedTarball.absoluteStagedPath)
+      : stagedTarball.absoluteStagedPath;
 
     const stack = Stack.of(this);
     const location = stack.synthesizer.addDockerImageAsset({
@@ -81,9 +83,12 @@ export class TarballImageAsset extends Construct implements IAsset {
       ],
     });
 
-    this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
+    this.repository = ecr.Repository.fromRepositoryName(
+      this,
+      'Repository',
+      location.repositoryName
+    );
     this.imageUri = location.imageUri;
     this.imageTag = location.imageTag ?? this.assetHash;
   }
 }
-

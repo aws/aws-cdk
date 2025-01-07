@@ -1,4 +1,3 @@
-
 import { DeployOptions } from './actions/deploy';
 import { DestroyOptions } from './actions/destroy';
 import { SynthOptions } from './actions/synth';
@@ -13,7 +12,10 @@ export interface ToolkitOptions {
 export class Toolkit {
   public constructor(_options: ToolkitOptions) {}
 
-  public async synth(_cx: ICloudAssemblySource, _options: SynthOptions): Promise<ICloudAssemblySource> {
+  public async synth(
+    _cx: ICloudAssemblySource,
+    _options: SynthOptions
+  ): Promise<ICloudAssemblySource> {
     throw new Error('Not implemented yet');
   }
 

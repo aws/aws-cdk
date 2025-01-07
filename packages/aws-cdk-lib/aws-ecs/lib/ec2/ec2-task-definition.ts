@@ -68,16 +68,12 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
 /**
  * The interface of a task definition run on an EC2 cluster.
  */
-export interface IEc2TaskDefinition extends ITaskDefinition {
-
-}
+export interface IEc2TaskDefinition extends ITaskDefinition {}
 
 /**
  * Attributes used to import an existing EC2 task definition
  */
-export interface Ec2TaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
-
-}
+export interface Ec2TaskDefinitionAttributes extends CommonTaskDefinitionAttributes {}
 
 /**
  * The details of a task definition run on an EC2 cluster.
@@ -88,7 +84,11 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
   /**
    * Imports a task definition from the specified task definition ARN.
    */
-  public static fromEc2TaskDefinitionArn(scope: Construct, id: string, ec2TaskDefinitionArn: string): IEc2TaskDefinition {
+  public static fromEc2TaskDefinitionArn(
+    scope: Construct,
+    id: string,
+    ec2TaskDefinitionArn: string
+  ): IEc2TaskDefinition {
     return new ImportedTaskDefinition(scope, id, {
       taskDefinitionArn: ec2TaskDefinitionArn,
     });
@@ -100,7 +100,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
   public static fromEc2TaskDefinitionAttributes(
     scope: Construct,
     id: string,
-    attrs: Ec2TaskDefinitionAttributes,
+    attrs: Ec2TaskDefinitionAttributes
   ): IEc2TaskDefinition {
     return new ImportedTaskDefinition(scope, id, {
       taskDefinitionArn: attrs.taskDefinitionArn,
@@ -120,14 +120,22 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     const validConstraints = new Set(['memberOf']);
 
     // Check if any of the placement constraints are not valid
-    const invalidConstraints = constraints?.filter(constraint => {
-      return constraint.toJson().some(constraintProperty => !validConstraints.has(constraintProperty.type));
-    }) ?? [];
+    const invalidConstraints =
+      constraints?.filter((constraint) => {
+        return constraint
+          .toJson()
+          .some((constraintProperty) => !validConstraints.has(constraintProperty.type));
+      }) ?? [];
 
     if (invalidConstraints.length > 0) {
-      const invalidConstraintTypes = invalidConstraints.map(
-        constraint => constraint.toJson().map(constraintProperty => constraintProperty.type)).flat();
-      throw new Error(`Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`);
+      const invalidConstraintTypes = invalidConstraints
+        .map((constraint) =>
+          constraint.toJson().map((constraintProperty) => constraintProperty.type)
+        )
+        .flat();
+      throw new Error(
+        `Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`
+      );
     }
   }
 

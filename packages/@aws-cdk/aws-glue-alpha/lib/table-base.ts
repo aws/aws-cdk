@@ -163,9 +163,11 @@ export interface TableBaseProps {
  * A Glue table.
  */
 export abstract class TableBase extends Resource implements ITable {
-
   public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
-    const tableName = Fn.select(1, Fn.split('/', Stack.of(scope).splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
+    const tableName = Fn.select(
+      1,
+      Fn.split('/', Stack.of(scope).splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!)
+    );
 
     return TableBase.fromTableAttributes(scope, id, {
       tableArn,
@@ -227,7 +229,7 @@ export abstract class TableBase extends Resource implements ITable {
   /**
    * The tables' properties associated with the table.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters
-  */
+   */
   protected readonly parameters: { [key: string]: string };
 
   /**
@@ -239,7 +241,8 @@ export abstract class TableBase extends Resource implements ITable {
 
   constructor(scope: Construct, id: string, props: TableBaseProps) {
     super(scope, id, {
-      physicalName: props.tableName ??
+      physicalName:
+        props.tableName ??
         Lazy.string({
           produce: () => Names.uniqueResourceName(this, {}).toLowerCase(),
         }),
@@ -276,33 +279,37 @@ export abstract class TableBase extends Resource implements ITable {
     this.validatePartitionIndex(index);
 
     const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
-    const partitionIndexCustomResource = new cr.AwsCustomResource(this, `partition-index-${indexName}`, {
-      onCreate: {
-        service: 'Glue',
-        action: 'createPartitionIndex',
-        parameters: {
-          DatabaseName: this.database.databaseName,
-          TableName: this.tableName,
-          PartitionIndex: {
-            IndexName: indexName,
-            Keys: index.keyNames,
+    const partitionIndexCustomResource = new cr.AwsCustomResource(
+      this,
+      `partition-index-${indexName}`,
+      {
+        onCreate: {
+          service: 'Glue',
+          action: 'createPartitionIndex',
+          parameters: {
+            DatabaseName: this.database.databaseName,
+            TableName: this.tableName,
+            PartitionIndex: {
+              IndexName: indexName,
+              Keys: index.keyNames,
+            },
           },
+          physicalResourceId: cr.PhysicalResourceId.of(indexName),
         },
-        physicalResourceId: cr.PhysicalResourceId.of(
-          indexName,
-        ),
-      },
-      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
-      // APIs are available in 2.1055.0
-      installLatestAwsSdk: false,
-    });
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+        }),
+        // APIs are available in 2.1055.0
+        installLatestAwsSdk: false,
+      }
+    );
     this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
 
     // Depend on previous partition index if possible, to avoid race condition
     if (numPartitions > 0) {
-      this.partitionIndexCustomResources[numPartitions-1].node.addDependency(partitionIndexCustomResource);
+      this.partitionIndexCustomResources[numPartitions - 1].node.addDependency(
+        partitionIndexCustomResource
+      );
     }
     this.partitionIndexCustomResources.push(partitionIndexCustomResource);
   }
@@ -316,15 +323,22 @@ export abstract class TableBase extends Resource implements ITable {
   }
 
   private validatePartitionIndex(index: PartitionIndex) {
-    if (index.indexName !== undefined && (index.indexName.length < 1 || index.indexName.length > 255)) {
-      throw new Error(`Index name must be between 1 and 255 characters, but got ${index.indexName.length}`);
+    if (
+      index.indexName !== undefined &&
+      (index.indexName.length < 1 || index.indexName.length > 255)
+    ) {
+      throw new Error(
+        `Index name must be between 1 and 255 characters, but got ${index.indexName.length}`
+      );
     }
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
       throw new Error('The table must have partition keys to create a partition index');
     }
-    const keyNames = this.partitionKeys.map(pk => pk.name);
-    if (!index.keyNames.every(k => keyNames.includes(k))) {
-      throw new Error(`All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`);
+    const keyNames = this.partitionKeys.map((pk) => pk.name);
+    if (!index.keyNames.every((k) => keyNames.includes(k))) {
+      throw new Error(
+        `All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`
+      );
     }
   }
 
@@ -346,11 +360,7 @@ export abstract class TableBase extends Resource implements ITable {
   public grantToUnderlyingResources(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
-      resourceArns: [
-        this.tableArn,
-        this.database.catalogArn,
-        this.database.databaseArn,
-      ],
+      resourceArns: [this.tableArn, this.database.catalogArn, this.database.databaseArn],
       actions,
     });
   }
@@ -362,9 +372,11 @@ function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
   }
   // Check there is at least one column and no duplicated column names or partition keys.
   const names = new Set<string>();
-  (columns.concat(partitionKeys || [])).forEach(column => {
+  columns.concat(partitionKeys || []).forEach((column) => {
     if (names.has(column.name)) {
-      throw new Error(`column names and partition keys must be unique, but \'${column.name}\' is duplicated`);
+      throw new Error(
+        `column names and partition keys must be unique, but \'${column.name}\' is duplicated`
+      );
     }
     names.add(column.name);
   });

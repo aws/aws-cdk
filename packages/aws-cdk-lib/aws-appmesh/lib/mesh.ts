@@ -192,9 +192,11 @@ export class Mesh extends MeshBase {
     const mesh = new CfnMesh(this, 'Resource', {
       meshName: this.physicalName,
       spec: {
-        egressFilter: props.egressFilter ? {
-          type: props.egressFilter,
-        } : undefined,
+        egressFilter: props.egressFilter
+          ? {
+              type: props.egressFilter,
+            }
+          : undefined,
         serviceDiscovery: props.serviceDiscovery,
       },
     });

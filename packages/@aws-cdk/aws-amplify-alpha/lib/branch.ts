@@ -16,7 +16,10 @@ import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables } from './utils';
-import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
+import {
+  AssetDeploymentIsCompleteFunction,
+  AssetDeploymentOnEventFunction,
+} from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
 
 /**
  * A branch
@@ -174,7 +177,10 @@ export class Branch extends Resource implements IBranch {
       description: props.description,
       enableAutoBuild: props.autoBuild ?? true,
       enablePullRequestPreview: props.pullRequestPreview ?? true,
-      environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
+      environmentVariables: Lazy.any(
+        { produce: () => renderEnvironmentVariables(this.environmentVariables) },
+        { omitEmptyArray: true }
+      ),
       pullRequestEnvironmentName: props.pullRequestEnvironmentName,
       stage: props.stage,
       enablePerformanceMode: props.performanceMode,
@@ -214,11 +220,11 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
    * Returns the singleton provider.
    */
   public static getOrCreate(scope: Construct) {
-    const providerId =
-      'com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider';
+    const providerId = 'com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider';
     const stack = Stack.of(scope);
     const group =
-      (stack.node.tryFindChild(providerId) as AmplifyAssetDeploymentProvider) ?? new AmplifyAssetDeploymentProvider(stack, providerId);
+      (stack.node.tryFindChild(providerId) as AmplifyAssetDeploymentProvider) ??
+      new AmplifyAssetDeploymentProvider(stack, providerId);
     return group.provider.serviceToken;
   }
 
@@ -228,30 +234,28 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
     super(scope, id);
 
     const onEvent = new AssetDeploymentOnEventFunction(this, 'amplify-asset-deployment-on-event');
-    onEvent.addToRolePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        's3:GetObject',
-        's3:GetSignedUrl',
-        'amplify:ListJobs',
-        'amplify:StartDeployment',
-      ],
-    }));
-
-    const isComplete = new AssetDeploymentIsCompleteFunction(this, 'amplify-asset-deployment-is-complete');
-    isComplete.addToRolePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['amplify:GetJob*'],
-    }));
-
-    this.provider = new Provider(
-      this,
-      'amplify-asset-deployment-handler-provider',
-      {
-        onEventHandler: onEvent,
-        isCompleteHandler: isComplete,
-        totalTimeout: Duration.minutes(5),
-      },
+    onEvent.addToRolePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['s3:GetObject', 's3:GetSignedUrl', 'amplify:ListJobs', 'amplify:StartDeployment'],
+      })
     );
+
+    const isComplete = new AssetDeploymentIsCompleteFunction(
+      this,
+      'amplify-asset-deployment-is-complete'
+    );
+    isComplete.addToRolePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['amplify:GetJob*'],
+      })
+    );
+
+    this.provider = new Provider(this, 'amplify-asset-deployment-handler-provider', {
+      onEventHandler: onEvent,
+      isCompleteHandler: isComplete,
+      totalTimeout: Duration.minutes(5),
+    });
   }
 }

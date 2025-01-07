@@ -75,32 +75,43 @@ export interface ResponseHeadersPolicyProps {
  * @resource AWS::CloudFront::ResponseHeadersPolicy
  */
 export class ResponseHeadersPolicy extends Resource implements IResponseHeadersPolicy {
-
   /** Use this managed policy to allow simple CORS requests from any origin. */
-  public static readonly CORS_ALLOW_ALL_ORIGINS = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('60669652-455b-4ae9-85a4-c4c02393f86c');
+  public static readonly CORS_ALLOW_ALL_ORIGINS =
+    ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('60669652-455b-4ae9-85a4-c4c02393f86c');
   /** Use this managed policy to allow CORS requests from any origin, including preflight requests. */
-  public static readonly CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('5cc3b908-e619-4b99-88e5-2cf7f45965bd');
+  public static readonly CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT =
+    ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('5cc3b908-e619-4b99-88e5-2cf7f45965bd');
   /** Use this managed policy to add a set of security headers to all responses that CloudFront sends to viewers. */
-  public static readonly SECURITY_HEADERS = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('67f7725c-6f97-4210-82d7-5512b31e9d03');
+  public static readonly SECURITY_HEADERS = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy(
+    '67f7725c-6f97-4210-82d7-5512b31e9d03'
+  );
   /** Use this managed policy to allow simple CORS requests from any origin and add a set of security headers to all responses that CloudFront sends to viewers. */
-  public static readonly CORS_ALLOW_ALL_ORIGINS_AND_SECURITY_HEADERS = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('e61eb60c-9c35-4d20-a928-2b84e02af89c');
+  public static readonly CORS_ALLOW_ALL_ORIGINS_AND_SECURITY_HEADERS =
+    ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('e61eb60c-9c35-4d20-a928-2b84e02af89c');
   /** Use this managed policy to allow CORS requests from any origin, including preflight requests, and add a set of security headers to all responses that CloudFront sends to viewers. */
-  public static readonly CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS = ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('eaab4381-ed33-4a86-88ca-d9558dc6cd63');
+  public static readonly CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS =
+    ResponseHeadersPolicy.fromManagedResponseHeadersPolicy('eaab4381-ed33-4a86-88ca-d9558dc6cd63');
 
   /**
    * Import an existing Response Headers Policy from its ID.
    */
-  public static fromResponseHeadersPolicyId(scope: Construct, id: string, responseHeadersPolicyId: string): IResponseHeadersPolicy {
+  public static fromResponseHeadersPolicyId(
+    scope: Construct,
+    id: string,
+    responseHeadersPolicyId: string
+  ): IResponseHeadersPolicy {
     class Import extends Resource implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = responseHeadersPolicyId;
     }
     return new Import(scope, id);
   }
 
-  private static fromManagedResponseHeadersPolicy(managedResponseHeadersPolicyId: string): IResponseHeadersPolicy {
-    return new class implements IResponseHeadersPolicy {
+  private static fromManagedResponseHeadersPolicy(
+    managedResponseHeadersPolicyId: string
+  ): IResponseHeadersPolicy {
+    return new (class implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = managedResponseHeadersPolicyId;
-    };
+    })();
   }
 
   public readonly responseHeadersPolicyId: string;
@@ -110,62 +121,93 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       physicalName: props.responseHeadersPolicyName,
     });
 
-    const responseHeadersPolicyName = props.responseHeadersPolicyName ?? Names.uniqueResourceName(this, {
-      maxLength: 128,
-    });
+    const responseHeadersPolicyName =
+      props.responseHeadersPolicyName ??
+      Names.uniqueResourceName(this, {
+        maxLength: 128,
+      });
 
     const resource = new CfnResponseHeadersPolicy(this, 'Resource', {
       responseHeadersPolicyConfig: {
         name: responseHeadersPolicyName,
         comment: props.comment,
         corsConfig: props.corsBehavior ? this._renderCorsConfig(props.corsBehavior) : undefined,
-        customHeadersConfig: props.customHeadersBehavior ? this._renderCustomHeadersConfig(props.customHeadersBehavior) : undefined,
-        securityHeadersConfig: props.securityHeadersBehavior ? this._renderSecurityHeadersConfig(props.securityHeadersBehavior) : undefined,
-        removeHeadersConfig: props.removeHeaders ? this._renderRemoveHeadersConfig(props.removeHeaders) : undefined,
-        serverTimingHeadersConfig: props.serverTimingSamplingRate ? this._renderServerTimingHeadersConfig(props.serverTimingSamplingRate) : undefined,
+        customHeadersConfig: props.customHeadersBehavior
+          ? this._renderCustomHeadersConfig(props.customHeadersBehavior)
+          : undefined,
+        securityHeadersConfig: props.securityHeadersBehavior
+          ? this._renderSecurityHeadersConfig(props.securityHeadersBehavior)
+          : undefined,
+        removeHeadersConfig: props.removeHeaders
+          ? this._renderRemoveHeadersConfig(props.removeHeaders)
+          : undefined,
+        serverTimingHeadersConfig: props.serverTimingSamplingRate
+          ? this._renderServerTimingHeadersConfig(props.serverTimingSamplingRate)
+          : undefined,
       },
     });
 
     this.responseHeadersPolicyId = resource.ref;
   }
 
-  private _renderCorsConfig(behavior: ResponseHeadersCorsBehavior): CfnResponseHeadersPolicy.CorsConfigProperty {
+  private _renderCorsConfig(
+    behavior: ResponseHeadersCorsBehavior
+  ): CfnResponseHeadersPolicy.CorsConfigProperty {
     return {
       accessControlAllowCredentials: behavior.accessControlAllowCredentials,
       accessControlAllowHeaders: { items: behavior.accessControlAllowHeaders },
       accessControlAllowMethods: { items: behavior.accessControlAllowMethods },
       accessControlAllowOrigins: { items: behavior.accessControlAllowOrigins },
-      accessControlExposeHeaders: behavior.accessControlExposeHeaders ? { items: behavior.accessControlExposeHeaders } : undefined,
-      accessControlMaxAgeSec: behavior.accessControlMaxAge ? behavior.accessControlMaxAge.toSeconds() : undefined,
+      accessControlExposeHeaders: behavior.accessControlExposeHeaders
+        ? { items: behavior.accessControlExposeHeaders }
+        : undefined,
+      accessControlMaxAgeSec: behavior.accessControlMaxAge
+        ? behavior.accessControlMaxAge.toSeconds()
+        : undefined,
       originOverride: behavior.originOverride,
     };
   }
 
-  private _renderCustomHeadersConfig(behavior: ResponseCustomHeadersBehavior): CfnResponseHeadersPolicy.CustomHeadersConfigProperty {
+  private _renderCustomHeadersConfig(
+    behavior: ResponseCustomHeadersBehavior
+  ): CfnResponseHeadersPolicy.CustomHeadersConfigProperty {
     return {
       items: behavior.customHeaders,
     };
   }
 
-  private _renderSecurityHeadersConfig(behavior: ResponseSecurityHeadersBehavior): CfnResponseHeadersPolicy.SecurityHeadersConfigProperty {
+  private _renderSecurityHeadersConfig(
+    behavior: ResponseSecurityHeadersBehavior
+  ): CfnResponseHeadersPolicy.SecurityHeadersConfigProperty {
     return {
       contentSecurityPolicy: behavior.contentSecurityPolicy,
       contentTypeOptions: behavior.contentTypeOptions,
       frameOptions: behavior.frameOptions,
       referrerPolicy: behavior.referrerPolicy,
-      strictTransportSecurity: behavior.strictTransportSecurity ? {
-        ...behavior.strictTransportSecurity,
-        accessControlMaxAgeSec: behavior.strictTransportSecurity.accessControlMaxAge.toSeconds(),
-      }: undefined,
+      strictTransportSecurity: behavior.strictTransportSecurity
+        ? {
+            ...behavior.strictTransportSecurity,
+            accessControlMaxAgeSec:
+              behavior.strictTransportSecurity.accessControlMaxAge.toSeconds(),
+          }
+        : undefined,
       xssProtection: behavior.xssProtection,
     };
   }
 
-  private _renderRemoveHeadersConfig(headers: string[]): CfnResponseHeadersPolicy.RemoveHeadersConfigProperty {
-    const readonlyHeaders = ['content-encoding', 'content-length', 'transfer-encoding', 'warning', 'via'];
+  private _renderRemoveHeadersConfig(
+    headers: string[]
+  ): CfnResponseHeadersPolicy.RemoveHeadersConfigProperty {
+    const readonlyHeaders = [
+      'content-encoding',
+      'content-length',
+      'transfer-encoding',
+      'warning',
+      'via',
+    ];
 
     return {
-      items: headers.map(header => {
+      items: headers.map((header) => {
         if (!Token.isUnresolved(header) && readonlyHeaders.includes(header.toLowerCase())) {
           throw new Error(`Cannot remove read-only header ${header}`);
         }
@@ -174,14 +216,20 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     };
   }
 
-  private _renderServerTimingHeadersConfig(samplingRate: number): CfnResponseHeadersPolicy.ServerTimingHeadersConfigProperty {
+  private _renderServerTimingHeadersConfig(
+    samplingRate: number
+  ): CfnResponseHeadersPolicy.ServerTimingHeadersConfigProperty {
     if (!Token.isUnresolved(samplingRate)) {
-      if ((samplingRate < 0 || samplingRate > 100)) {
-        throw new Error(`Sampling rate must be between 0 and 100 (inclusive), received ${samplingRate}`);
+      if (samplingRate < 0 || samplingRate > 100) {
+        throw new Error(
+          `Sampling rate must be between 0 and 100 (inclusive), received ${samplingRate}`
+        );
       }
 
       if (!hasMaxDecimalPlaces(samplingRate, 4)) {
-        throw new Error(`Sampling rate can have up to four decimal places, received ${samplingRate}`);
+        throw new Error(
+          `Sampling rate can have up to four decimal places, received ${samplingRate}`
+        );
       }
     }
 

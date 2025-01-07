@@ -1,7 +1,14 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
-import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
+import {
+  BaseService,
+  BaseServiceOptions,
+  DeploymentControllerType,
+  IBaseService,
+  IService,
+  LaunchType,
+} from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -63,9 +70,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
 /**
  * The interface for a service using the Fargate launch type on an ECS cluster.
  */
-export interface IFargateService extends IService {
-
-}
+export interface IFargateService extends IService {}
 
 /**
  * The properties to import from the service using the Fargate launch type.
@@ -97,11 +102,14 @@ export interface FargateServiceAttributes {
  * @resource AWS::ECS::Service
  */
 export class FargateService extends BaseService implements IFargateService {
-
   /**
    * Imports from the specified service ARN.
    */
-  public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
+  public static fromFargateServiceArn(
+    scope: Construct,
+    id: string,
+    fargateServiceArn: string
+  ): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, fargateServiceArn);
@@ -112,7 +120,11 @@ export class FargateService extends BaseService implements IFargateService {
   /**
    * Imports from the specified service attributes.
    */
-  public static fromFargateServiceAttributes(scope: Construct, id: string, attrs: FargateServiceAttributes): IBaseService {
+  public static fromFargateServiceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: FargateServiceAttributes
+  ): IBaseService {
     return fromServiceAttributes(scope, id, attrs);
   }
 
@@ -135,27 +147,41 @@ export class FargateService extends BaseService implements IFargateService {
       FargatePlatformVersion.VERSION1_2,
       FargatePlatformVersion.VERSION1_3,
     ];
-    const isUnsupportedPlatformVersion = props.platformVersion && unsupportedPlatformVersions.includes(props.platformVersion);
+    const isUnsupportedPlatformVersion =
+      props.platformVersion && unsupportedPlatformVersions.includes(props.platformVersion);
 
     if (props.taskDefinition.ephemeralStorageGiB && isUnsupportedPlatformVersion) {
-      throw new Error(`The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`);
+      throw new Error(
+        `The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`
+      );
     }
 
     if (props.taskDefinition.pidMode && isUnsupportedPlatformVersion) {
-      throw new Error(`The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`);
+      throw new Error(
+        `The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`
+      );
     }
 
-    super(scope, id, {
-      ...props,
-      desiredCount: props.desiredCount,
-      launchType: LaunchType.FARGATE,
-      capacityProviderStrategies: props.capacityProviderStrategies,
-      enableECSManagedTags: props.enableECSManagedTags,
-    }, {
-      cluster: props.cluster.clusterName,
-      taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
-      platformVersion: props.platformVersion,
-    }, props.taskDefinition);
+    super(
+      scope,
+      id,
+      {
+        ...props,
+        desiredCount: props.desiredCount,
+        launchType: LaunchType.FARGATE,
+        capacityProviderStrategies: props.capacityProviderStrategies,
+        enableECSManagedTags: props.enableECSManagedTags,
+      },
+      {
+        cluster: props.cluster.clusterName,
+        taskDefinition:
+          props.deploymentController?.type === DeploymentControllerType.EXTERNAL
+            ? undefined
+            : props.taskDefinition.taskDefinitionArn,
+        platformVersion: props.platformVersion,
+      },
+      props.taskDefinition
+    );
 
     let securityGroups;
     if (props.securityGroup !== undefined) {
@@ -164,19 +190,32 @@ export class FargateService extends BaseService implements IFargateService {
       securityGroups = props.securityGroups;
     }
 
-    if (!props.deploymentController ||
-      (props.deploymentController.type !== DeploymentControllerType.EXTERNAL)) {
-      this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+    if (
+      !props.deploymentController ||
+      props.deploymentController.type !== DeploymentControllerType.EXTERNAL
+    ) {
+      this.configureAwsVpcNetworkingWithSecurityGroups(
+        props.cluster.vpc,
+        props.assignPublicIp,
+        props.vpcSubnets,
+        securityGroups
+      );
     }
 
     this.node.addValidation({
-      validate: () => this.taskDefinition.referencesSecretJsonField && isUnsupportedPlatformVersion
-        ? [`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`]
-        : [],
+      validate: () =>
+        this.taskDefinition.referencesSecretJsonField && isUnsupportedPlatformVersion
+          ? [
+              `The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`,
+            ]
+          : [],
     });
 
     this.node.addValidation({
-      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+      validate: () =>
+        !this.taskDefinition.defaultContainer
+          ? ['A TaskDefinition must have at least one essential container']
+          : [],
     });
   }
 }

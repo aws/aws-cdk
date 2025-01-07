@@ -24,7 +24,6 @@ export type TestSuiteType = 'test-suite' | 'legacy-test-suite';
  * directory. For legacy test cases use LegacyIntegTestCases
  */
 export class IntegTestSuite {
-
   /**
    * Loads integ tests from a snapshot directory
    */
@@ -33,7 +32,7 @@ export class IntegTestSuite {
     return new IntegTestSuite(
       reader.tests.enableLookups,
       reader.tests.testCases,
-      reader.tests.synthContext,
+      reader.tests.synthContext
     );
   }
 
@@ -42,7 +41,7 @@ export class IntegTestSuite {
   constructor(
     public readonly enableLookups: boolean,
     public readonly testSuite: TestSuite,
-    public readonly synthContext?: { [name: string]: string },
+    public readonly synthContext?: { [name: string]: string }
   ) {}
 
   /**
@@ -50,7 +49,7 @@ export class IntegTestSuite {
    */
   public getStacksWithoutUpdateWorkflow(): string[] {
     return Object.values(this.testSuite)
-      .filter(testCase => !(testCase.stackUpdateWorkflow ?? true))
+      .filter((testCase) => !(testCase.stackUpdateWorkflow ?? true))
       .flatMap((testCase: TestCase) => testCase.stacks);
   }
 
@@ -77,7 +76,7 @@ export class IntegTestSuite {
    * Get a list of stacks in the test suite
    */
   public get stacks(): string[] {
-    return Object.values(this.testSuite).flatMap(testCase => testCase.stacks);
+    return Object.values(this.testSuite).flatMap((testCase) => testCase.stacks);
   }
 }
 
@@ -114,7 +113,6 @@ export interface LegacyTestCaseConfig {
  * test cases, i.e. tests without a `integ.json`.
  */
 export class LegacyIntegTestSuite extends IntegTestSuite {
-
   /**
    * Returns the single test stack to use.
    *
@@ -137,14 +135,18 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
     if (pragma.length > 0) {
       tests.stacks.push(...pragma);
     } else {
-      const stacks = (config.cdk.list({
-        ...config.listOptions,
-      })).split('\n');
+      const stacks = config.cdk
+        .list({
+          ...config.listOptions,
+        })
+        .split('\n');
       if (stacks.length !== 1) {
-        throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
-          '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
-          `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
-          `  Available stacks: ${stacks.join(' ')} (wildcards are also supported)\n`);
+        throw new Error(
+          '"cdk-integ" can only operate on apps with a single stack.\n\n' +
+            '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
+            `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
+            `  Available stacks: ${stacks.join(' ')} (wildcards are also supported)\n`
+        );
       }
       if (stacks.length === 1 && stacks[0] === '') {
         throw new Error(`No stack found for test ${config.testName}`);
@@ -157,7 +159,7 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
       {
         [config.testName]: tests,
       },
-      LegacyIntegTestSuite.getPragmaContext(config.integSourceFilePath),
+      LegacyIntegTestSuite.getPragmaContext(config.integSourceFilePath)
     );
   }
 
@@ -166,12 +168,16 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
 
     // apply context from set-context pragma
     // usage: pragma:set-context:key=value
-    const ctxPragmas = (this.pragmas(integSourceFilePath)).filter(p => p.startsWith(SET_CONTEXT_PRAGMA_PREFIX));
+    const ctxPragmas = this.pragmas(integSourceFilePath).filter((p) =>
+      p.startsWith(SET_CONTEXT_PRAGMA_PREFIX)
+    );
     for (const p of ctxPragmas) {
       const instruction = p.substring(SET_CONTEXT_PRAGMA_PREFIX.length);
       const [key, value] = instruction.split('=');
       if (key == null || value == null) {
-        throw new Error(`invalid "set-context" pragma syntax. example: "pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true" got: ${p}`);
+        throw new Error(
+          `invalid "set-context" pragma syntax. example: "pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true" got: ${p}`
+        );
       }
 
       ctxPragmaContext[key] = value;
@@ -191,7 +197,7 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
    *    /// !cdk-integ <stack-name>
    */
   private static readStackPragma(integSourceFilePath: string): string[] {
-    return (this.readIntegPragma(integSourceFilePath)).filter(p => !p.startsWith(PRAGMA_PREFIX));
+    return this.readIntegPragma(integSourceFilePath).filter((p) => !p.startsWith(PRAGMA_PREFIX));
   }
 
   /**
@@ -206,14 +212,16 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
    */
   private static readIntegPragma(integSourceFilePath: string): string[] {
     const source = fs.readFileSync(integSourceFilePath, { encoding: 'utf-8' });
-    const pragmaLine = source.split('\n').find(x => x.startsWith(CDK_INTEG_STACK_PRAGMA + ' '));
+    const pragmaLine = source.split('\n').find((x) => x.startsWith(CDK_INTEG_STACK_PRAGMA + ' '));
     if (!pragmaLine) {
       return [];
     }
 
     const args = pragmaLine.substring(CDK_INTEG_STACK_PRAGMA.length).trim().split(' ');
     if (args.length === 0) {
-      throw new Error(`Invalid syntax for cdk-integ pragma. Usage: "${CDK_INTEG_STACK_PRAGMA} [STACK] [pragma:PRAGMA] [...]"`);
+      throw new Error(
+        `Invalid syntax for cdk-integ pragma. Usage: "${CDK_INTEG_STACK_PRAGMA} [STACK] [pragma:PRAGMA] [...]"`
+      );
     }
     return args;
   }
@@ -227,7 +235,7 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
    * string are considered to be stack names.
    */
   private static pragmas(integSourceFilePath: string): string[] {
-    return (this.readIntegPragma(integSourceFilePath)).filter(p => p.startsWith(PRAGMA_PREFIX));
+    return this.readIntegPragma(integSourceFilePath).filter((p) => p.startsWith(PRAGMA_PREFIX));
   }
 
   public readonly type: TestSuiteType = 'legacy-test-suite';
@@ -235,7 +243,7 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
   constructor(
     public readonly enableLookups: boolean,
     public readonly testSuite: TestSuite,
-    public readonly synthContext?: { [name: string]: string },
+    public readonly synthContext?: { [name: string]: string }
   ) {
     super(enableLookups, testSuite);
   }
@@ -250,6 +258,9 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
       synthContext: context,
       enableLookups: this.enableLookups,
     };
-    Manifest.saveIntegManifest(manifest, osPath.join(directory, IntegManifestReader.DEFAULT_FILENAME));
+    Manifest.saveIntegManifest(
+      manifest,
+      osPath.join(directory, IntegManifestReader.DEFAULT_FILENAME)
+    );
   }
 }

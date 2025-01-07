@@ -1,4 +1,3 @@
-
 import { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
@@ -15,7 +14,20 @@ import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
+import {
+  Annotations,
+  AspectPriority,
+  Aspects,
+  Duration,
+  FeatureFlags,
+  Fn,
+  IResource,
+  Lazy,
+  Resource,
+  Stack,
+  Tags,
+  Token,
+} from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import * as cxapi from '../../cx-api';
 
@@ -75,7 +87,6 @@ export interface IInstance extends IResource, IConnectable, iam.IGrantable {
  * Properties of an EC2 Instance
  */
 export interface InstanceProps {
-
   /**
    * Name of SSH keypair to grant access to instance
    *
@@ -402,7 +413,6 @@ export interface InstanceProps {
  * This represents a single EC2 instance
  */
 export class Instance extends Resource implements IInstance {
-
   /**
    * The type of OS the instance is running.
    */
@@ -464,16 +474,18 @@ export class Instance extends Resource implements IInstance {
     super(scope, id);
 
     if (props.initOptions && !props.init) {
-      throw new Error('Setting \'initOptions\' requires that \'init\' is also set');
+      throw new Error("Setting 'initOptions' requires that 'init' is also set");
     }
 
     if (props.keyName && props.keyPair) {
-      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new Error("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
     }
 
     // if credit specification is set, then the instance type must be burstable
     if (props.creditSpecification && !props.instanceType.isBurstable()) {
-      throw new Error(`creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`);
+      throw new Error(
+        `creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`
+      );
     }
 
     if (props.securityGroup) {
@@ -498,9 +510,11 @@ export class Instance extends Resource implements IInstance {
       this.role = props.instanceProfile.role;
       iamInstanceProfile = props.instanceProfile.instanceProfileName;
     } else {
-      this.role = props.role || new iam.Role(this, 'InstanceRole', {
-        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-      });
+      this.role =
+        props.role ||
+        new iam.Role(this, 'InstanceRole', {
+          assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        });
 
       const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
         roles: [this.role.roleName],
@@ -511,29 +525,37 @@ export class Instance extends Resource implements IInstance {
     this.grantPrincipal = this.role;
 
     if (props.ssmSessionPermissions) {
-      this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
+      this.role.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')
+      );
     }
 
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
     this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+    const securityGroupsToken = Lazy.list({
+      produce: () => this.securityGroups.map((sg) => sg.securityGroupId),
+    });
 
     const { subnets, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     let subnet;
     if (props.availabilityZone) {
-      const selected = subnets.filter(sn => sn.availabilityZone === props.availabilityZone);
+      const selected = subnets.filter((sn) => sn.availabilityZone === props.availabilityZone);
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        Annotations.of(this).addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
+        Annotations.of(this).addError(
+          `Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`
+        );
       }
     } else {
       if (subnets.length > 0) {
         subnet = subnets[0];
       } else {
-        Annotations.of(this).addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+        Annotations.of(this).addError(
+          `Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`
+        );
       }
     }
     if (!subnet) {
@@ -546,21 +568,27 @@ export class Instance extends Resource implements IInstance {
     }
 
     // network interfaces array is set to configure the primary network interface if associatePublicIpAddress is true or false
-    const networkInterfaces = props.associatePublicIpAddress !== undefined
-      ? [{
-        deviceIndex: '0',
-        associatePublicIpAddress: props.associatePublicIpAddress,
-        subnetId: subnet.subnetId,
-        groupSet: securityGroupsToken,
-        privateIpAddress: props.privateIpAddress,
-      }] : undefined;
+    const networkInterfaces =
+      props.associatePublicIpAddress !== undefined
+        ? [
+            {
+              deviceIndex: '0',
+              associatePublicIpAddress: props.associatePublicIpAddress,
+              subnetId: subnet.subnetId,
+              groupSet: securityGroupsToken,
+              privateIpAddress: props.privateIpAddress,
+            },
+          ]
+        : undefined;
 
     if (props.keyPair && !props.keyPair._isOsCompatible(imageConfig.osType)) {
       throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
     }
 
     if (props.enclaveEnabled && props.hibernationEnabled) {
-      throw new Error('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
+      throw new Error(
+        "You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance"
+      );
     }
 
     if (
@@ -568,13 +596,13 @@ export class Instance extends Resource implements IInstance {
       !Token.isUnresolved(props.ipv6AddressCount) &&
       (props.ipv6AddressCount < 0 || !Number.isInteger(props.ipv6AddressCount))
     ) {
-      throw new Error(`\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`);
+      throw new Error(
+        `\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`
+      );
     }
 
-    if (
-      props.ipv6AddressCount !== undefined &&
-      props.associatePublicIpAddress !== undefined) {
-      throw new Error('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'');
+    if (props.ipv6AddressCount !== undefined && props.associatePublicIpAddress !== undefined) {
+      throw new Error("You can't set both 'ipv6AddressCount' and 'associatePublicIpAddress'");
     }
 
     // if network interfaces array is configured then subnetId, securityGroupIds,
@@ -591,29 +619,42 @@ export class Instance extends Resource implements IInstance {
       userData: userDataToken,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
-      blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
+      blockDeviceMappings:
+        props.blockDevices !== undefined
+          ? instanceBlockDeviceMappings(this, props.blockDevices)
+          : undefined,
       privateIpAddress: networkInterfaces ? undefined : props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
-      creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
+      creditSpecification: props.creditSpecification
+        ? { cpuCredits: props.creditSpecification }
+        : undefined,
       ebsOptimized: props.ebsOptimized,
       disableApiTermination: props.disableApiTermination,
       instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
       placementGroupName: props.placementGroup?.placementGroupName,
-      enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
-      hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
+      enclaveOptions:
+        props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
+      hibernationOptions:
+        props.hibernationEnabled !== undefined
+          ? { configured: props.hibernationEnabled }
+          : undefined,
       ipv6AddressCount: props.ipv6AddressCount,
     });
     this.instance.node.addDependency(this.role);
 
     // if associatePublicIpAddress is true, then there must be a dependency on internet connectivity
     if (props.associatePublicIpAddress !== undefined && props.associatePublicIpAddress) {
-      const internetConnected = props.vpc.selectSubnets(props.vpcSubnets).internetConnectivityEstablished;
+      const internetConnected = props.vpc.selectSubnets(
+        props.vpcSubnets
+      ).internetConnectivityEstablished;
       this.instance.node.addDependency(internetConnected);
     }
 
     if (!hasPublic && props.associatePublicIpAddress) {
-      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+      throw new Error(
+        "To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })"
+      );
     }
 
     this.osType = imageConfig.osType;
@@ -651,25 +692,33 @@ export class Instance extends Resource implements IInstance {
     // try to naively resolve. We need a recursion breaker in this.
     const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
     let recursing = false;
-    this.instance.overrideLogicalId(Lazy.uncachedString({
-      produce: (context) => {
-        if (recursing) { return originalLogicalId; }
-        if (!(props.userDataCausesReplacement ?? props.initOptions)) { return originalLogicalId; }
+    this.instance.overrideLogicalId(
+      Lazy.uncachedString({
+        produce: (context) => {
+          if (recursing) {
+            return originalLogicalId;
+          }
+          if (!(props.userDataCausesReplacement ?? props.initOptions)) {
+            return originalLogicalId;
+          }
 
-        const fragments = new Array<string>();
-        recursing = true;
-        try {
-          fragments.push(JSON.stringify(context.resolve(this.userData.render())));
-        } finally {
-          recursing = false;
-        }
-        const digest = md5hash(fragments.join('')).slice(0, 16);
-        return `${originalLogicalId}${digest}`;
-      },
-    }));
+          const fragments = new Array<string>();
+          recursing = true;
+          try {
+            fragments.push(JSON.stringify(context.resolve(this.userData.render())));
+          } finally {
+            recursing = false;
+          }
+          const digest = md5hash(fragments.join('')).slice(0, 16);
+          return `${originalLogicalId}${digest}`;
+        },
+      })
+    );
 
     if (props.requireImdsv2) {
-      Aspects.of(this).add(new InstanceRequireImdsv2Aspect(), { priority: AspectPriority.MUTATING });
+      Aspects.of(this).add(new InstanceRequireImdsv2Aspect(), {
+        priority: AspectPriority.MUTATING,
+      });
     }
   }
 
@@ -706,7 +755,10 @@ export class Instance extends Resource implements IInstance {
    * - Add commands to the instance UserData to run `cfn-init` and `cfn-signal`.
    * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
-  public applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
+  public applyCloudFormationInit(
+    init: CloudFormationInit,
+    options: ApplyCloudFormationInitOptions = {}
+  ) {
     init.attach(this.instance, {
       platform: this.osType,
       instanceRole: this.role,
@@ -737,7 +789,10 @@ export class Instance extends Resource implements IInstance {
       ...this.instance.cfnOptions.creationPolicy,
       resourceSignal: {
         count: (oldResourceSignal?.count ?? 0) + 1,
-        timeout: (oldResourceSignal?.timeout ? Duration.parse(oldResourceSignal?.timeout).plus(timeout) : timeout).toIsoString(),
+        timeout: (oldResourceSignal?.timeout
+          ? Duration.parse(oldResourceSignal?.timeout).plus(timeout)
+          : timeout
+        ).toIsoString(),
       },
     };
   }

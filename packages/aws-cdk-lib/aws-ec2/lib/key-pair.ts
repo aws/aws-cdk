@@ -131,7 +131,11 @@ export class KeyPair extends Resource implements IKeyPair {
   /**
    * Imports a key pair with a name and optional type.
    */
-  public static fromKeyPairAttributes(scope: Construct, id: string, attrs: KeyPairAttributes): IKeyPair {
+  public static fromKeyPairAttributes(
+    scope: Construct,
+    id: string,
+    attrs: KeyPairAttributes
+  ): IKeyPair {
     class Import extends Resource implements IKeyPair {
       public readonly keyPairName: string;
       public readonly type?: KeyPairType;
@@ -198,13 +202,15 @@ export class KeyPair extends Resource implements IKeyPair {
   constructor(scope: Construct, id: string, props?: KeyPairProps) {
     super(scope, id, {
       ...props,
-      physicalName: props?.keyPairName ?? Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 255 }),
-      }),
+      physicalName:
+        props?.keyPairName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 255 }),
+        }),
     });
 
     if (props?.publicKeyMaterial && props?.type) {
-      throw new Error('Cannot specify \'type\' for keys with imported material');
+      throw new Error("Cannot specify 'type' for keys with imported material");
     }
 
     this._isImport = !!props?.publicKeyMaterial;
@@ -241,16 +247,22 @@ export class KeyPair extends Resource implements IKeyPair {
    */
   public get privateKey(): IStringParameter {
     if (this._isImport) {
-      throw new Error('An SSM parameter with private key material is not created for imported keys');
+      throw new Error(
+        'An SSM parameter with private key material is not created for imported keys'
+      );
     }
     if (!this._privateKeySsm) {
       // This parameter is created by the underlying CloudFormation resource with a defined
       // naming structure. The resource does not return a reference to it directly so it must
       // be imported.
-      this._privateKeySsm = StringParameter.fromSecureStringParameterAttributes(this, 'PrivateKeyParameter', {
-        parameterName: `/ec2/keypair/${this.keyPairId}`,
-        simpleName: false,
-      });
+      this._privateKeySsm = StringParameter.fromSecureStringParameterAttributes(
+        this,
+        'PrivateKeyParameter',
+        {
+          parameterName: `/ec2/keypair/${this.keyPairId}`,
+          simpleName: false,
+        }
+      );
     }
     return this._privateKeySsm;
   }

@@ -127,16 +127,18 @@ export class CodeStarConnectionsSourceAction extends Action {
     };
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  protected bound(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-update-role-new-services
-    options.role.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'codestar-connections:UseConnection',
-      ],
-      resources: [
-        this.props.connectionArn,
-      ],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['codestar-connections:UseConnection'],
+        resources: [this.props.connectionArn],
+      })
+    );
 
     // the action needs to write the output to the pipeline bucket
     options.bucket.grantReadWrite(options.role);
@@ -146,8 +148,10 @@ export class CodeStarConnectionsSourceAction extends Action {
     // save the connectionArn in the Artifact instance
     // to be read by the CodeBuildAction later
     if (this.props.codeBuildCloneOutput === true) {
-      this.props.output.setMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY,
-        this.props.connectionArn);
+      this.props.output.setMetadata(
+        CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY,
+        this.props.connectionArn
+      );
     }
 
     return {
@@ -155,9 +159,8 @@ export class CodeStarConnectionsSourceAction extends Action {
         ConnectionArn: this.props.connectionArn,
         FullRepositoryId: `${this.props.owner}/${this.props.repo}`,
         BranchName: this.props.branch ?? 'master',
-        OutputArtifactFormat: this.props.codeBuildCloneOutput === true
-          ? 'CODEBUILD_CLONE_REF'
-          : undefined,
+        OutputArtifactFormat:
+          this.props.codeBuildCloneOutput === true ? 'CODEBUILD_CLONE_REF' : undefined,
         DetectChanges: this.props.triggerOnPush,
       },
     };

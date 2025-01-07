@@ -1,18 +1,18 @@
 import { Change, DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
 
-export function template(resources: {[key: string]: any}) {
+export function template(resources: { [key: string]: any }) {
   return { Resources: resources };
 }
 
-export function resource(type: string, properties: {[key: string]: any}) {
+export function resource(type: string, properties: { [key: string]: any }) {
   return { Type: type, Properties: properties };
 }
 
-export function role(properties: {[key: string]: any}) {
+export function role(properties: { [key: string]: any }) {
   return resource('AWS::IAM::Role', properties);
 }
 
-export function policy(properties: {[key: string]: any}) {
+export function policy(properties: { [key: string]: any }) {
   return resource('AWS::IAM::Policy', properties);
 }
 
@@ -25,54 +25,41 @@ export function poldoc(...statements: any[]) {
 
 export function largeSsoPermissionSet() {
   return template({
-    MySsoPermissionSet: resource(
-      'AWS::SSO::PermissionSet',
-      {
-        CustomerManagedPolicyReferences: [
+    MySsoPermissionSet: resource('AWS::SSO::PermissionSet', {
+      CustomerManagedPolicyReferences: [
+        {
+          Name: 'arn:aws:iam::aws:role/Silly',
+          Path: '/my',
+        },
+        {
+          Name: 'LIFE',
+        },
+      ],
+      InlinePolicy: {
+        Version: '2012-10-17',
+        Statement: [
           {
-            Name: 'arn:aws:iam::aws:role/Silly',
-            Path: '/my',
-          },
-          {
-            Name: 'LIFE',
+            Sid: 'VisualEditor0',
+            Effect: 'Allow',
+            Action: 'iam:CreateServiceLinkedRole',
+            Resource: ['*'],
           },
         ],
-        InlinePolicy: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Sid: 'VisualEditor0',
-              Effect: 'Allow',
-              Action: 'iam:CreateServiceLinkedRole',
-              Resource: [
-                '*',
-              ],
-            },
-          ],
-        },
-        InstanceArn: 'arn:aws:sso:::instance/ssoins-1111111111111111',
-        ManagedPolicies: {
-          'Fn::If': [
-            'SomeCondition',
-            ['then-managed-policy-arn'],
-            ['else-managed-policy-arn'],
-          ],
-        },
-        Name: 'PleaseWork',
-        PermissionsBoundary: {
-          CustomerManagedPolicyReference: {
-            Name: 'why',
-            Path: {
-              'Fn::If': [
-                'SomeCondition',
-                '/how',
-                '/work',
-              ],
-            },
+      },
+      InstanceArn: 'arn:aws:sso:::instance/ssoins-1111111111111111',
+      ManagedPolicies: {
+        'Fn::If': ['SomeCondition', ['then-managed-policy-arn'], ['else-managed-policy-arn']],
+      },
+      Name: 'PleaseWork',
+      PermissionsBoundary: {
+        CustomerManagedPolicyReference: {
+          Name: 'why',
+          Path: {
+            'Fn::If': ['SomeCondition', '/how', '/work'],
           },
         },
       },
-    ),
+    }),
   });
 }
 export const ssmParam = {
@@ -106,9 +93,7 @@ export const ssmParamFromChangeset: Change = {
     PhysicalResourceId: 'mySsmParameterFromStack',
     ResourceType: 'AWS::SSM::Parameter',
     Replacement: 'False',
-    Scope: [
-      'Properties',
-    ],
+    Scope: ['Properties'],
     Details: [
       {
         Target: {
@@ -124,12 +109,17 @@ export const ssmParamFromChangeset: Change = {
         ChangeSource: 'DirectModification',
       },
     ],
-    BeforeContext: '{"Properties":{"Value":"changedddd","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport/mySsmParameter/Resource"}}',
-    AfterContext: '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport/mySsmParameter/Resource"}}',
+    BeforeContext:
+      '{"Properties":{"Value":"changedddd","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport/mySsmParameter/Resource"}}',
+    AfterContext:
+      '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport/mySsmParameter/Resource"}}',
   },
 };
 
-export function queueFromChangeset(args: { beforeContextWaitTime?: string; afterContextWaitTime?: string } ): Change {
+export function queueFromChangeset(args: {
+  beforeContextWaitTime?: string;
+  afterContextWaitTime?: string;
+}): Change {
   return {
     Type: 'Resource',
     ResourceChange: {
@@ -139,9 +129,7 @@ export function queueFromChangeset(args: { beforeContextWaitTime?: string; after
       PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValuechangedddd',
       ResourceType: 'AWS::SQS::Queue',
       Replacement: 'True',
-      Scope: [
-        'Properties',
-      ],
+      Scope: ['Properties'],
       Details: [
         {
           Target: {
@@ -177,13 +165,12 @@ export function queueFromChangeset(args: { beforeContextWaitTime?: string; after
 }
 
 export const changeSet: DescribeChangeSetOutput = {
-  Changes: [
-    queueFromChangeset({}),
-    ssmParamFromChangeset,
-  ],
+  Changes: [queueFromChangeset({}), ssmParamFromChangeset],
   ChangeSetName: 'newesteverr2223',
-  ChangeSetId: 'arn:aws:cloudformation:us-east-1:012345678901:changeSet/newesteverr2223/3cb73e2d-d1c4-4331-9255-c978e496b6d1',
-  StackId: 'arn:aws:cloudformation:us-east-1:012345678901:stack/cdkbugreport/af695110-1570-11ef-a065-0eb1173d997f',
+  ChangeSetId:
+    'arn:aws:cloudformation:us-east-1:012345678901:changeSet/newesteverr2223/3cb73e2d-d1c4-4331-9255-c978e496b6d1',
+  StackId:
+    'arn:aws:cloudformation:us-east-1:012345678901:stack/cdkbugreport/af695110-1570-11ef-a065-0eb1173d997f',
   StackName: 'cdkbugreport',
   Parameters: [
     {
@@ -225,10 +212,7 @@ beforeContext.Properties.QueueName = undefined;
 copyOfQueueChange.ResourceChange.BeforeContext = beforeContext;
 
 export const changeSetWithPartiallyFilledChanges: DescribeChangeSetOutput = {
-  Changes: [
-    copyOfssmChange,
-    copyOfQueueChange,
-  ],
+  Changes: [copyOfssmChange, copyOfQueueChange],
 };
 
 export const changeSetWithUndefinedDetails: DescribeChangeSetOutput = {
@@ -242,9 +226,7 @@ export const changeSetWithUndefinedDetails: DescribeChangeSetOutput = {
         PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValuechangedddd',
         ResourceType: undefined,
         Replacement: 'True',
-        Scope: [
-          'Properties',
-        ],
+        Scope: ['Properties'],
         Details: undefined,
       },
     },
@@ -262,9 +244,7 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
         PhysicalResourceId: 'cdkbu-MyRol-6q4vdfo8rIJG',
         ResourceType: 'AWS::IAM::Policy',
         Replacement: 'False',
-        Scope: [
-          'Properties',
-        ],
+        Scope: ['Properties'],
         Details: [
           {
             Target: {
@@ -272,8 +252,10 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
               Name: 'PolicyDocument',
               RequiresRecreation: 'Never',
               Path: '/Properties/PolicyDocument',
-              BeforeValue: '{"Version":"2012-10-17","Statement":[{"Action":["sqs:DeleteMessage","sqs:GetQueueAttributes","sqs:ReceiveMessage","sqs:SendMessage"],"Resource":"arn:aws:sqs:us-east-1:012345678901:sdflkja","Effect":"Allow"}]}',
-              AfterValue: '{"Version":"2012-10-17","Statement":[{"Action":["sqs:DeleteMessage","sqs:GetQueueAttributes","sqs:ReceiveMessage","sqs:SendMessage"],"Resource":"arn:aws:sqs:us-east-1:012345678901:newAndDifferent","Effect":"Allow"}]}',
+              BeforeValue:
+                '{"Version":"2012-10-17","Statement":[{"Action":["sqs:DeleteMessage","sqs:GetQueueAttributes","sqs:ReceiveMessage","sqs:SendMessage"],"Resource":"arn:aws:sqs:us-east-1:012345678901:sdflkja","Effect":"Allow"}]}',
+              AfterValue:
+                '{"Version":"2012-10-17","Statement":[{"Action":["sqs:DeleteMessage","sqs:GetQueueAttributes","sqs:ReceiveMessage","sqs:SendMessage"],"Resource":"arn:aws:sqs:us-east-1:012345678901:newAndDifferent","Effect":"Allow"}]}',
               AttributeChangeType: 'Modify',
             },
             Evaluation: 'Static',
@@ -307,8 +289,10 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
             CausingEntity: 'MyRole',
           },
         ],
-        BeforeContext: '{"Properties":{"PolicyDocument":{"Version":"2012-10-17","Statement":[{"Action":["sqs:DeleteMessage","sqs:GetQueueAttributes","sqs:ReceiveMessage","sqs:SendMessage"],"Resource":"arn:aws:sqs:us-east-1:012345678901:sdflkja","Effect":"Allow"}]},"Roles":["sdflkja"],"PolicyName":"MyRoleDefaultPolicy"},"Metadata":{"aws:cdk:path":"cdkbugreport2/MyRole/DefaultPolicy/Resource"}}',
-        AfterContext: '{"Properties":{"PolicyDocument":{"Version":"2012-10-17","Statement":[{"Action":["sqs:DeleteMessage","sqs:GetQueueAttributes","sqs:ReceiveMessage","sqs:SendMessage"],"Resource":"arn:aws:sqs:us-east-1:012345678901:newAndDifferent","Effect":"Allow"}]},"Roles":["{{changeSet:KNOWN_AFTER_APPLY}}"],"PolicyName":"MyRoleDefaultPolicy"},"Metadata":{"aws:cdk:path":"cdkbugreport2/MyRole/DefaultPolicy/Resource"}}',
+        BeforeContext:
+          '{"Properties":{"PolicyDocument":{"Version":"2012-10-17","Statement":[{"Action":["sqs:DeleteMessage","sqs:GetQueueAttributes","sqs:ReceiveMessage","sqs:SendMessage"],"Resource":"arn:aws:sqs:us-east-1:012345678901:sdflkja","Effect":"Allow"}]},"Roles":["sdflkja"],"PolicyName":"MyRoleDefaultPolicy"},"Metadata":{"aws:cdk:path":"cdkbugreport2/MyRole/DefaultPolicy/Resource"}}',
+        AfterContext:
+          '{"Properties":{"PolicyDocument":{"Version":"2012-10-17","Statement":[{"Action":["sqs:DeleteMessage","sqs:GetQueueAttributes","sqs:ReceiveMessage","sqs:SendMessage"],"Resource":"arn:aws:sqs:us-east-1:012345678901:newAndDifferent","Effect":"Allow"}]},"Roles":["{{changeSet:KNOWN_AFTER_APPLY}}"],"PolicyName":"MyRoleDefaultPolicy"},"Metadata":{"aws:cdk:path":"cdkbugreport2/MyRole/DefaultPolicy/Resource"}}',
       },
     },
     {
@@ -320,9 +304,7 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
         PhysicalResourceId: 'sdflkja',
         ResourceType: 'AWS::IAM::Role',
         Replacement: 'True',
-        Scope: [
-          'Properties',
-        ],
+        Scope: ['Properties'],
         Details: [
           {
             Target: {
@@ -338,8 +320,10 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
             ChangeSource: 'DirectModification',
           },
         ],
-        BeforeContext: '{"Properties":{"RoleName":"sdflkja","Description":"This is a custom role for my Lambda function","AssumeRolePolicyDocument":{"Version":"2012-10-17","Statement":[{"Action":"sts:AssumeRole","Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"}}]}},"Metadata":{"aws:cdk:path":"cdkbugreport2/MyRole/Resource"}}',
-        AfterContext: '{"Properties":{"RoleName":"newAndDifferent","Description":"This is a custom role for my Lambda function","AssumeRolePolicyDocument":{"Version":"2012-10-17","Statement":[{"Action":"sts:AssumeRole","Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"}}]}},"Metadata":{"aws:cdk:path":"cdkbugreport2/MyRole/Resource"}}',
+        BeforeContext:
+          '{"Properties":{"RoleName":"sdflkja","Description":"This is a custom role for my Lambda function","AssumeRolePolicyDocument":{"Version":"2012-10-17","Statement":[{"Action":"sts:AssumeRole","Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"}}]}},"Metadata":{"aws:cdk:path":"cdkbugreport2/MyRole/Resource"}}',
+        AfterContext:
+          '{"Properties":{"RoleName":"newAndDifferent","Description":"This is a custom role for my Lambda function","AssumeRolePolicyDocument":{"Version":"2012-10-17","Statement":[{"Action":"sts:AssumeRole","Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"}}]}},"Metadata":{"aws:cdk:path":"cdkbugreport2/MyRole/Resource"}}',
       },
     },
     {
@@ -351,9 +335,7 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
         PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValuesdflkja',
         ResourceType: 'AWS::SQS::Queue',
         Replacement: 'True',
-        Scope: [
-          'Properties',
-        ],
+        Scope: ['Properties'],
         Details: [
           {
             Target: {
@@ -369,8 +351,10 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
             ChangeSource: 'DirectModification',
           },
         ],
-        BeforeContext: '{"Properties":{"QueueName":"newValuesdflkja","ReceiveMessageWaitTimeSeconds":"20"},"Metadata":{"aws:cdk:path":"cdkbugreport2/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}',
-        AfterContext: '{"Properties":{"QueueName":"newValuenewAndDifferent","ReceiveMessageWaitTimeSeconds":"20"},"Metadata":{"aws:cdk:path":"cdkbugreport2/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}',
+        BeforeContext:
+          '{"Properties":{"QueueName":"newValuesdflkja","ReceiveMessageWaitTimeSeconds":"20"},"Metadata":{"aws:cdk:path":"cdkbugreport2/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}',
+        AfterContext:
+          '{"Properties":{"QueueName":"newValuenewAndDifferent","ReceiveMessageWaitTimeSeconds":"20"},"Metadata":{"aws:cdk:path":"cdkbugreport2/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}',
       },
     },
     {
@@ -381,9 +365,7 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
         PhysicalResourceId: 'mySsmParameterFromStack',
         ResourceType: 'AWS::SSM::Parameter',
         Replacement: 'False',
-        Scope: [
-          'Properties',
-        ],
+        Scope: ['Properties'],
         Details: [
           {
             Target: {
@@ -399,14 +381,18 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
             ChangeSource: 'DirectModification',
           },
         ],
-        BeforeContext: '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport2/mySsmParameter/Resource"}}',
-        AfterContext: '{"Properties":{"Value":"newAndDifferent","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport2/mySsmParameter/Resource"}}',
+        BeforeContext:
+          '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport2/mySsmParameter/Resource"}}',
+        AfterContext:
+          '{"Properties":{"Value":"newAndDifferent","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport2/mySsmParameter/Resource"}}',
       },
     },
   ],
   ChangeSetName: 'newIamStuff',
-  ChangeSetId: 'arn:aws:cloudformation:us-east-1:012345678901:changeSet/newIamStuff/b19829fe-20d6-43ba-83b2-d22c42c00d08',
-  StackId: 'arn:aws:cloudformation:us-east-1:012345678901:stack/cdkbugreport2/c4cd77c0-15f7-11ef-a7a6-0affeddeb3e1',
+  ChangeSetId:
+    'arn:aws:cloudformation:us-east-1:012345678901:changeSet/newIamStuff/b19829fe-20d6-43ba-83b2-d22c42c00d08',
+  StackId:
+    'arn:aws:cloudformation:us-east-1:012345678901:stack/cdkbugreport2/c4cd77c0-15f7-11ef-a7a6-0affeddeb3e1',
   StackName: 'cdkbugreport2',
   Parameters: [
     {
@@ -424,8 +410,6 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
   Status: 'CREATE_COMPLETE',
   NotificationARNs: [],
   RollbackConfiguration: {},
-  Capabilities: [
-    'CAPABILITY_NAMED_IAM',
-  ],
+  Capabilities: ['CAPABILITY_NAMED_IAM'],
   IncludeNestedStacks: false,
 };

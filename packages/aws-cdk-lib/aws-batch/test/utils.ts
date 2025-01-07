@@ -9,15 +9,15 @@ export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
   const stack = Stack.of(construct);
   obj = stack.resolve(obj);
 
-  if (typeof(obj) !== 'object') {
+  if (typeof obj !== 'object') {
     return obj;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(x => capitalizePropertyNames(construct, x));
+    return obj.map((x) => capitalizePropertyNames(construct, x));
   }
 
-  const newObj: any = { };
+  const newObj: any = {};
   for (const key of Object.keys(obj)) {
     const value = obj[key];
 

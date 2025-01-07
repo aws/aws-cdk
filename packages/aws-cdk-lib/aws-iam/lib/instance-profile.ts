@@ -110,7 +110,11 @@ export class InstanceProfile extends InstanceProfileBase {
    * @param id construct id
    * @param instanceProfileName the name of the existing InstanceProfile to import
    */
-  public static fromInstanceProfileName(scope: Construct, id: string, instanceProfileName: string): IInstanceProfile {
+  public static fromInstanceProfileName(
+    scope: Construct,
+    id: string,
+    instanceProfileName: string
+  ): IInstanceProfile {
     const instanceProfileArn = Stack.of(scope).formatArn({
       service: 'iam',
       region: '',
@@ -130,7 +134,11 @@ export class InstanceProfile extends InstanceProfileBase {
    * @param id construct id
    * @param instanceProfileArn the ARN of the exiting InstanceProfile to import
    */
-  public static fromInstanceProfileArn(scope: Construct, id: string, instanceProfileArn: string): IInstanceProfile {
+  public static fromInstanceProfileArn(
+    scope: Construct,
+    id: string,
+    instanceProfileArn: string
+  ): IInstanceProfile {
     return InstanceProfile.fromInstanceProfileAttributes(scope, id, { instanceProfileArn });
   }
 
@@ -144,9 +152,18 @@ export class InstanceProfile extends InstanceProfileBase {
    * @param id construct id
    * @param attrs the attributes of the InstanceProfile to import
    */
-  public static fromInstanceProfileAttributes(scope: Construct, id: string, attrs: InstanceProfileAttributes): IInstanceProfile {
+  public static fromInstanceProfileAttributes(
+    scope: Construct,
+    id: string,
+    attrs: InstanceProfileAttributes
+  ): IInstanceProfile {
     class Import extends InstanceProfileBase {
-      public readonly instanceProfileName: string = Arn.extractResourceName(attrs.instanceProfileArn, 'instance-profile').split('/').pop()!;
+      public readonly instanceProfileName: string = Arn.extractResourceName(
+        attrs.instanceProfileArn,
+        'instance-profile'
+      )
+        .split('/')
+        .pop()!;
       public readonly instanceProfileArn: string = attrs.instanceProfileArn;
 
       constructor(s: Construct, i: string) {
@@ -170,10 +187,12 @@ export class InstanceProfile extends InstanceProfileBase {
   constructor(scope: Construct, id: string, props: InstanceProfileProps = {}) {
     super(scope, id, { physicalName: props.instanceProfileName });
 
-    this._role = props.role || new Role(this, 'InstanceRole', {
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
-    });
+    this._role =
+      props.role ||
+      new Role(this, 'InstanceRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+      });
 
     const instanceProfile = new CfnInstanceProfile(this, 'Resource', {
       roles: [this._role.roleName],

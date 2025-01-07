@@ -14,19 +14,23 @@ export function generatePhysicalName(resource: IResource): string {
 
   const region: string = stack.region;
   if (Token.isUnresolved(region) || !region) {
-    throw new Error(`Cannot generate a physical name for ${Node.of(resource).path}, because the region is un-resolved or missing`);
+    throw new Error(
+      `Cannot generate a physical name for ${Node.of(resource).path}, because the region is un-resolved or missing`
+    );
   }
 
   const account: string = stack.account;
   if (Token.isUnresolved(account) || !account) {
-    throw new Error(`Cannot generate a physical name for ${Node.of(resource).path}, because the account is un-resolved or missing`);
+    throw new Error(
+      `Cannot generate a physical name for ${Node.of(resource).path}, because the account is un-resolved or missing`
+    );
   }
 
-  const parts = [stackPart, idPart]
-    .map(part => part.generate());
+  const parts = [stackPart, idPart].map((part) => part.generate());
 
   const hashLength = 12;
-  const sha256 = crypto.createHash('sha256')
+  const sha256 = crypto
+    .createHash('sha256')
     .update(stackPart.bareStr)
     .update(idPart.bareStr)
     .update(region)
@@ -49,7 +53,10 @@ abstract class NamePart {
 }
 
 class PrefixNamePart extends NamePart {
-  constructor(bareStr: string, private readonly prefixLength: number) {
+  constructor(
+    bareStr: string,
+    private readonly prefixLength: number
+  ) {
     super(bareStr);
   }
 
@@ -59,7 +66,10 @@ class PrefixNamePart extends NamePart {
 }
 
 class SuffixNamePart extends NamePart {
-  constructor(str: string, private readonly suffixLength: number) {
+  constructor(
+    str: string,
+    private readonly suffixLength: number
+  ) {
     super(str);
   }
 
@@ -88,7 +98,9 @@ export class GeneratedWhenNeededMarker implements IResolvable {
   }
 
   public resolve(_ctx: IResolveContext): never {
-    throw new Error('Invalid physical name passed to CloudFormation. Use "this.physicalName" instead');
+    throw new Error(
+      'Invalid physical name passed to CloudFormation. Use "this.physicalName" instead'
+    );
   }
 
   public toString(): string {

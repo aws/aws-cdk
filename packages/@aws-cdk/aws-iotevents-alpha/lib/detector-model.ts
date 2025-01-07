@@ -96,10 +96,14 @@ export class DetectorModel extends Resource implements IDetectorModel {
   /**
    * Import an existing detector model.
    */
-  public static fromDetectorModelName(scope: Construct, id: string, detectorModelName: string): IDetectorModel {
-    return new class extends Resource implements IDetectorModel {
+  public static fromDetectorModelName(
+    scope: Construct,
+    id: string,
+    detectorModelName: string
+  ): IDetectorModel {
+    return new (class extends Resource implements IDetectorModel {
       public readonly detectorModelName = detectorModelName;
-    }(scope, id);
+    })(scope, id);
   }
 
   public readonly detectorModelName: string;
@@ -113,9 +117,11 @@ export class DetectorModel extends Resource implements IDetectorModel {
       throw new Error('Detector Model must have at least one Input with a condition');
     }
 
-    const role = props.role ?? new iam.Role(this, 'DetectorModelRole', {
-      assumedBy: new iam.ServicePrincipal('iotevents.amazonaws.com'),
-    });
+    const role =
+      props.role ??
+      new iam.Role(this, 'DetectorModelRole', {
+        assumedBy: new iam.ServicePrincipal('iotevents.amazonaws.com'),
+      });
 
     const resource = new CfnDetectorModel(this, 'Resource', {
       detectorModelName: this.physicalName,

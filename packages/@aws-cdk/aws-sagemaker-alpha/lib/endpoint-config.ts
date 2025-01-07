@@ -155,8 +155,15 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    * @param id the resource id.
    * @param endpointConfigArn the ARN of the endpoint configuration.
    */
-  public static fromEndpointConfigArn(scope: Construct, id: string, endpointConfigArn: string): IEndpointConfig {
-    const endpointConfigName = cdk.Stack.of(scope).splitArn(endpointConfigArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+  public static fromEndpointConfigArn(
+    scope: Construct,
+    id: string,
+    endpointConfigArn: string
+  ): IEndpointConfig {
+    const endpointConfigName = cdk.Stack.of(scope).splitArn(
+      endpointConfigArn,
+      cdk.ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName!;
 
     class Import extends cdk.Resource implements IEndpointConfig {
       public endpointConfigArn = endpointConfigArn;
@@ -174,7 +181,11 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    * @param id the resource id.
    * @param endpointConfigName the name of the endpoint configuration.
    */
-  public static fromEndpointConfigName(scope: Construct, id: string, endpointConfigName: string): IEndpointConfig {
+  public static fromEndpointConfigName(
+    scope: Construct,
+    id: string,
+    endpointConfigName: string
+  ): IEndpointConfig {
     const endpointConfigArn = cdk.Stack.of(scope).formatArn({
       service: 'sagemaker',
       resource: 'endpoint-config',
@@ -200,18 +211,19 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   public readonly endpointConfigName: string;
 
-  private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant } = {};
+  private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant } =
+    {};
 
   constructor(scope: Construct, id: string, props: EndpointConfigProps = {}) {
     super(scope, id, {
       physicalName: props.endpointConfigName,
     });
 
-    (props.instanceProductionVariants || []).map(p => this.addInstanceProductionVariant(p));
+    (props.instanceProductionVariants || []).map((p) => this.addInstanceProductionVariant(p));
 
     // create the endpoint configuration resource
     const endpointConfig = new CfnEndpointConfig(this, 'EndpointConfig', {
-      kmsKeyId: (props.encryptionKey) ? props.encryptionKey.keyArn : undefined,
+      kmsKeyId: props.encryptionKey ? props.encryptionKey.keyArn : undefined,
       endpointConfigName: this.physicalName,
       productionVariants: cdk.Lazy.any({ produce: () => this.renderInstanceProductionVariants() }),
     });
@@ -271,7 +283,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     if (this._instanceProductionVariants.length < 1) {
       throw new Error('Must configure at least 1 production variant');
     } else if (this._instanceProductionVariants.length > 10) {
-      throw new Error('Can\'t have more than 10 production variants');
+      throw new Error("Can't have more than 10 production variants");
     }
   }
 
@@ -291,9 +303,13 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     // check environment compatibility with model
     const model = props.model;
     if (!sameEnv(model.env.account, this.env.account)) {
-      errors.push(`Cannot use model in account ${model.env.account} for endpoint configuration in account ${this.env.account}`);
+      errors.push(
+        `Cannot use model in account ${model.env.account} for endpoint configuration in account ${this.env.account}`
+      );
     } else if (!sameEnv(model.env.region, this.env.region)) {
-      errors.push(`Cannot use model in region ${model.env.region} for endpoint configuration in region ${this.env.region}`);
+      errors.push(
+        `Cannot use model in region ${model.env.region} for endpoint configuration in region ${this.env.region}`
+      );
     }
 
     if (errors.length > 0) {
@@ -306,14 +322,13 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   private renderInstanceProductionVariants(): CfnEndpointConfig.ProductionVariantProperty[] {
     this.validateProductionVariants();
-    return this._instanceProductionVariants.map( v => ({
+    return this._instanceProductionVariants.map((v) => ({
       acceleratorType: v.acceleratorType?.toString(),
       initialInstanceCount: v.initialInstanceCount,
       initialVariantWeight: v.initialVariantWeight,
       instanceType: v.instanceType.toString(),
       modelName: v.modelName,
       variantName: v.variantName,
-    }) );
+    }));
   }
-
 }

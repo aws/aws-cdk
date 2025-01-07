@@ -1,12 +1,17 @@
-import { Step, StackOutputReference, StackDeployment, StackAsset, StageDeployment } from '../blueprint';
+import {
+  Step,
+  StackOutputReference,
+  StackDeployment,
+  StackAsset,
+  StageDeployment,
+} from '../blueprint';
 import { PipelineBase } from '../main/pipeline-base';
 
 /**
  * Answer some questions about a pipeline blueprint
  */
 export class PipelineQueries {
-  constructor(private readonly pipeline: PipelineBase) {
-  }
+  constructor(private readonly pipeline: PipelineBase) {}
 
   /**
    * Return the names of all outputs for the given stack that are referenced in this blueprint
@@ -48,7 +53,9 @@ export class PipelineQueries {
       }
     }
 
-    throw new Error(`Stack '${outputReference.stackDescription}' (producing output '${outputReference.outputName}') is not in the pipeline; call 'addStage()' to add the stack's Stage to the pipeline`);
+    throw new Error(
+      `Stack '${outputReference.stackDescription}' (producing output '${outputReference.outputName}') is not in the pipeline; call 'addStage()' to add the stack's Stage to the pipeline`
+    );
   }
 
   /**

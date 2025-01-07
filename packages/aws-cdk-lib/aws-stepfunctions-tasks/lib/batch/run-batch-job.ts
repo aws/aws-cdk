@@ -179,8 +179,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
 
   constructor(private readonly props: RunBatchJobProps) {
     // validate integrationPattern
-    this.integrationPattern =
-      props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
+    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.SYNC;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -189,7 +188,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
       throw new Error(
-        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`,
+        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`
       );
     }
 
@@ -213,19 +212,20 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     });
 
     // validate timeout
-    props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
-      if (timeout < 60) {
-        throw new Error(`timeout must be greater than 60 seconds. Received ${timeout} seconds.`);
-      }
-    });
+    props.timeout !== undefined &&
+      withResolved(props.timeout.toSeconds(), (timeout) => {
+        if (timeout < 60) {
+          throw new Error(`timeout must be greater than 60 seconds. Received ${timeout} seconds.`);
+        }
+      });
 
     // This is reuqired since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
     if (props.containerOverrides?.environment) {
-      Object.keys(props.containerOverrides.environment).forEach(key => {
+      Object.keys(props.containerOverrides.environment).forEach((key) => {
         if (key.match(/^AWS_BATCH/)) {
           throw new Error(
-            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`,
+            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`
           );
         }
       });
@@ -234,11 +234,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: getResourceArn(
-        'batch',
-        'submitJob',
-        this.integrationPattern,
-      ),
+      resourceArn: getResourceArn('batch', 'submitJob', this.integrationPattern),
       policyStatements: this.configurePolicyStatements(_task),
       parameters: {
         JobDefinition: this.props.jobDefinitionArn,
@@ -247,25 +243,21 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
         Parameters: this.props.payload,
 
         ArrayProperties:
-          this.props.arraySize !== undefined
-            ? { Size: this.props.arraySize }
-            : undefined,
+          this.props.arraySize !== undefined ? { Size: this.props.arraySize } : undefined,
 
         ContainerOverrides: this.props.containerOverrides
           ? this.configureContainerOverrides(this.props.containerOverrides)
           : undefined,
 
         DependsOn: this.props.dependsOn
-          ? this.props.dependsOn.map(jobDependency => ({
-            JobId: jobDependency.jobId,
-            Type: jobDependency.type,
-          }))
+          ? this.props.dependsOn.map((jobDependency) => ({
+              JobId: jobDependency.jobId,
+              Type: jobDependency.type,
+            }))
           : undefined,
 
         RetryStrategy:
-          this.props.attempts !== undefined
-            ? { Attempts: this.props.attempts }
-            : undefined,
+          this.props.attempts !== undefined ? { Attempts: this.props.attempts } : undefined,
 
         Timeout: this.props.timeout
           ? { AttemptDurationSeconds: this.props.timeout.toSeconds() }
@@ -305,12 +297,10 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
   private configureContainerOverrides(containerOverrides: ContainerOverrides) {
     let environment;
     if (containerOverrides.environment) {
-      environment = Object.entries(containerOverrides.environment).map(
-        ([key, value]) => ({
-          Name: key,
-          Value: value,
-        }),
-      );
+      environment = Object.entries(containerOverrides.environment).map(([key, value]) => ({
+        Name: key,
+        Value: value,
+      }));
     }
 
     let resources;

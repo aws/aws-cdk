@@ -321,7 +321,6 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
  * @resource AWS::DocDB::DBCluster
  */
 export class DatabaseCluster extends DatabaseClusterBase {
-
   /**
    * The default number of instances in the DocDB cluster if none are
    * specified
@@ -336,54 +335,75 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
+  public static fromDatabaseClusterAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DatabaseClusterAttributes
+  ): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPort = typeof attrs.port !== 'undefined' ? ec2.Port.tcp(attrs.port) : undefined;
+      public readonly defaultPort =
+        typeof attrs.port !== 'undefined' ? ec2.Port.tcp(attrs.port) : undefined;
       public readonly connections = new ec2.Connections({
         securityGroups: attrs.securityGroup ? [attrs.securityGroup] : undefined,
         defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       private readonly _instanceIdentifiers = attrs.instanceIdentifiers;
-      private readonly _clusterEndpoint = attrs.clusterEndpointAddress && typeof attrs.port !== 'undefined' ?
-        new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
-      private readonly _clusterReadEndpoint = attrs.readerEndpointAddress && typeof attrs.port !== 'undefined' ?
-        new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
-      private readonly _instanceEndpoints = attrs.instanceEndpointAddresses && typeof attrs.port !== 'undefined' ?
-        attrs.instanceEndpointAddresses.map(addr => new Endpoint(addr, attrs.port!)) : undefined;
+      private readonly _clusterEndpoint =
+        attrs.clusterEndpointAddress && typeof attrs.port !== 'undefined'
+          ? new Endpoint(attrs.clusterEndpointAddress, attrs.port)
+          : undefined;
+      private readonly _clusterReadEndpoint =
+        attrs.readerEndpointAddress && typeof attrs.port !== 'undefined'
+          ? new Endpoint(attrs.readerEndpointAddress, attrs.port)
+          : undefined;
+      private readonly _instanceEndpoints =
+        attrs.instanceEndpointAddresses && typeof attrs.port !== 'undefined'
+          ? attrs.instanceEndpointAddresses.map((addr) => new Endpoint(addr, attrs.port!))
+          : undefined;
       private readonly _securityGroupId = attrs.securityGroup?.securityGroupId;
 
       public get instanceIdentifiers(): string[] {
         if (!this._instanceIdentifiers) {
-          throw new Error('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
+          throw new Error(
+            'Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers'
+          );
         }
         return this._instanceIdentifiers;
       }
 
       public get clusterEndpoint(): Endpoint {
         if (!this._clusterEndpoint) {
-          throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+          throw new Error(
+            'Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port'
+          );
         }
         return this._clusterEndpoint;
       }
 
       public get clusterReadEndpoint(): Endpoint {
         if (!this._clusterReadEndpoint) {
-          throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+          throw new Error(
+            'Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port'
+          );
         }
         return this._clusterReadEndpoint;
       }
 
       public get instanceEndpoints(): Endpoint[] {
         if (!this._instanceEndpoints) {
-          throw new Error('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
+          throw new Error(
+            'Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port'
+          );
         }
         return this._instanceEndpoints;
       }
 
       public get securityGroupId(): string {
         if (!this._securityGroupId) {
-          throw new Error('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
+          throw new Error(
+            'Cannot access `securityGroupId` of an imported cluster without securityGroupId'
+          );
         }
         return this._securityGroupId;
       }
@@ -395,12 +415,14 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * The single user secret rotation application.
    */
-  private static readonly SINGLE_USER_ROTATION_APPLICATION = secretsmanager.SecretRotationApplication.MONGODB_ROTATION_SINGLE_USER;
+  private static readonly SINGLE_USER_ROTATION_APPLICATION =
+    secretsmanager.SecretRotationApplication.MONGODB_ROTATION_SINGLE_USER;
 
   /**
    * The multi user secret rotation application.
    */
-  private static readonly MULTI_USER_ROTATION_APPLICATION = secretsmanager.SecretRotationApplication.MONGODB_ROTATION_MULTI_USER;
+  private static readonly MULTI_USER_ROTATION_APPLICATION =
+    secretsmanager.SecretRotationApplication.MONGODB_ROTATION_MULTI_USER;
 
   /**
    * Identifier of the cluster
@@ -497,9 +519,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // HACK: Use an escape-hatch to apply a consistent removal policy to the
       // security group so we don't get errors when trying to delete the stack.
       const securityGroupRemovalPolicy = this.getSecurityGroupRemovalPolicy(props);
-      (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(securityGroupRemovalPolicy, {
-        applyToUpdateReplacePolicy: true,
-      });
+      (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(
+        securityGroupRemovalPolicy,
+        {
+          applyToUpdateReplacePolicy: true,
+        }
+      );
     }
     this.securityGroupId = securityGroup.securityGroupId;
 
@@ -532,15 +557,19 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     const validEngineVersionRegex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
     if (props.engineVersion !== undefined && !validEngineVersionRegex.test(props.engineVersion)) {
-      throw new Error(`Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`);
+      throw new Error(
+        `Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`
+      );
     }
 
     if (
-      props.storageType === StorageType.IOPT1
-      && props.engineVersion !== undefined
-      && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE
+      props.storageType === StorageType.IOPT1 &&
+      props.engineVersion !== undefined &&
+      Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE
     ) {
-      throw new Error(`I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`);
+      throw new Error(
+        `I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`
+      );
     }
 
     // Create the DocDB cluster
@@ -554,7 +583,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
       deletionProtection: props.deletionProtection,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username,
+      masterUsername: secret
+        ? secret.secretValueFromJson('username').unsafeUnwrap()
+        : props.masterUser.username,
       masterUserPassword: secret
         ? secret.secretValueFromJson('password').unsafeUnwrap()
         : props.masterUser.password!.unsafeUnwrap(), // Safe usage
@@ -563,7 +594,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       preferredBackupWindow: props.backup?.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       // EnableCloudwatchLogsExports
-      enableCloudwatchLogsExports: enableCloudwatchLogsExports.length > 0 ? enableCloudwatchLogsExports : undefined,
+      enableCloudwatchLogsExports:
+        enableCloudwatchLogsExports.length > 0 ? enableCloudwatchLogsExports : undefined,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
@@ -596,13 +628,19 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
-    const caCertificateIdentifier = props.caCertificate ? props.caCertificate.toString() : undefined;
+    const caCertificateIdentifier = props.caCertificate
+      ? props.caCertificate.toString()
+      : undefined;
 
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
-      const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}`
-        : props.dbClusterName != null ? `${props.dbClusterName}instance${instanceIndex}` : undefined;
+      const instanceIdentifier =
+        props.instanceIdentifierBase != null
+          ? `${props.instanceIdentifierBase}${instanceIndex}`
+          : props.dbClusterName != null
+            ? `${props.dbClusterName}instance${instanceIndex}`
+            : undefined;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
@@ -635,7 +673,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Sets up CloudWatch log retention if configured.
    */
-  private setLogRetention(cluster: DatabaseCluster, props: DatabaseClusterProps, cloudwatchLogsExports: string[]) {
+  private setLogRetention(
+    cluster: DatabaseCluster,
+    props: DatabaseClusterProps,
+    cloudwatchLogsExports: string[]
+  ) {
     if (props.cloudWatchLogsRetention) {
       for (const log of cloudwatchLogsExports) {
         new logs.LogRetention(cluster, `LogRetention${log}`, {
@@ -652,8 +694,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new Error('AWS::DocDB::DBInstance does not support the SNAPSHOT removal policy');
     }
     if (props.instanceRemovalPolicy) return props.instanceRemovalPolicy;
-    return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
-      props.removalPolicy : RemovalPolicy.DESTROY;
+    return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT
+      ? props.removalPolicy
+      : RemovalPolicy.DESTROY;
   }
 
   private getSecurityGroupRemovalPolicy(props: DatabaseClusterProps) {
@@ -661,8 +704,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new Error('AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy');
     }
     if (props.securityGroupRemovalPolicy) return props.securityGroupRemovalPolicy;
-    return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
-      props.removalPolicy : RemovalPolicy.DESTROY;
+    return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT
+      ? props.removalPolicy
+      : RemovalPolicy.DESTROY;
   }
 
   /**
@@ -696,7 +740,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Adds the multi user rotation to this cluster.
    */
-  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+  public addRotationMultiUser(
+    id: string,
+    options: RotationMultiUserOptions
+  ): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
@@ -720,7 +767,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     if (this.cluster.vpcSecurityGroupIds === undefined) {
       this.cluster.vpcSecurityGroupIds = [];
     }
-    this.cluster.vpcSecurityGroupIds.push(...securityGroups.map(sg => sg.securityGroupId));
+    this.cluster.vpcSecurityGroupIds.push(...securityGroups.map((sg) => sg.securityGroupId));
   }
 }
 

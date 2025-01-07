@@ -138,8 +138,12 @@ export interface IFragmentConcatenator {
  */
 export class StringConcat implements IFragmentConcatenator {
   public join(left: any | undefined, right: any | undefined): any {
-    if (left === undefined) { return right !== undefined ? `${right}` : undefined; }
-    if (right === undefined) { return `${left}`; }
+    if (left === undefined) {
+      return right !== undefined ? `${right}` : undefined;
+    }
+    if (right === undefined) {
+      return `${left}`;
+    }
     return `${left}${right}`;
   }
 }
@@ -149,8 +153,7 @@ export class StringConcat implements IFragmentConcatenator {
  *
  */
 export class DefaultTokenResolver implements ITokenResolver {
-  constructor(private readonly concat: IFragmentConcatenator) {
-  }
+  constructor(private readonly concat: IFragmentConcatenator) {}
 
   /**
    * Default Token resolution

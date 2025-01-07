@@ -8,7 +8,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * Properties for calling a EKS endpoint with EksCall
  */
 export interface EksCallProps extends sfn.TaskStateBaseProps {
-
   /**
    * The EKS cluster
    */
@@ -44,7 +43,6 @@ export interface EksCallProps extends sfn.TaskStateBaseProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html
  */
 export class EksCall extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -60,7 +58,11 @@ export class EksCall extends sfn.TaskStateBase {
   private readonly clusterEndpoint: string;
   private readonly clusterCertificateAuthorityData: string;
 
-  constructor(scope: Construct, id: string, private readonly props: EksCallProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EksCallProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
@@ -69,13 +71,17 @@ export class EksCall extends sfn.TaskStateBase {
     try {
       this.clusterEndpoint = this.props.cluster.clusterEndpoint;
     } catch {
-      throw new Error('The "clusterEndpoint" property must be specified when using an imported Cluster.');
+      throw new Error(
+        'The "clusterEndpoint" property must be specified when using an imported Cluster.'
+      );
     }
 
     try {
       this.clusterCertificateAuthorityData = this.props.cluster.clusterCertificateAuthorityData;
     } catch {
-      throw new Error('The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster.');
+      throw new Error(
+        'The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster.'
+      );
     }
   }
 

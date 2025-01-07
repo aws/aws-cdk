@@ -59,7 +59,11 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
   /**
    * Use an existing route calculator by name
    */
-  public static fromRouteCalculatorName(scope: Construct, id: string, routeCalculatorName: string): IRouteCalculator {
+  public static fromRouteCalculatorName(
+    scope: Construct,
+    id: string,
+    routeCalculatorName: string
+  ): IRouteCalculator {
     const routeCalculatorArn = Stack.of(scope).formatArn({
       service: 'geo',
       resource: 'route-calculator',
@@ -72,7 +76,11 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
   /**
    * Use an existing route calculator by ARN
    */
-  public static fromRouteCalculatorArn(scope: Construct, id: string, routeCalculatorArn: string): IRouteCalculator {
+  public static fromRouteCalculatorArn(
+    scope: Construct,
+    id: string,
+    routeCalculatorArn: string
+  ): IRouteCalculator {
     const parsedArn = Stack.of(scope).splitArn(routeCalculatorArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
@@ -109,23 +117,33 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
   public readonly routeCalculatorUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: RouteCalculatorProps) {
-
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
+    if (
+      props.description &&
+      !Token.isUnresolved(props.description) &&
+      props.description.length > 1000
+    ) {
+      throw new Error(
+        `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`
+      );
     }
 
     if (props.routeCalculatorName !== undefined && !Token.isUnresolved(props.routeCalculatorName)) {
       if (props.routeCalculatorName.length < 1 || props.routeCalculatorName.length > 100) {
-        throw new Error(`\`routeCalculatorName\` must be between 1 and 100 characters, got: ${props.routeCalculatorName.length} characters.`);
+        throw new Error(
+          `\`routeCalculatorName\` must be between 1 and 100 characters, got: ${props.routeCalculatorName.length} characters.`
+        );
       }
 
       if (!/^[-._\w]+$/.test(props.routeCalculatorName)) {
-        throw new Error(`\`routeCalculatorName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.routeCalculatorName}.`);
+        throw new Error(
+          `\`routeCalculatorName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.routeCalculatorName}.`
+        );
       }
     }
 
     super(scope, id, {
-      physicalName: props.routeCalculatorName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
+      physicalName:
+        props.routeCalculatorName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
 
     const routeCalculator = new CfnRouteCalculator(this, 'Resource', {
@@ -157,8 +175,6 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-calculate-route
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'geo:CalculateRoute',
-    );
+    return this.grant(grantee, 'geo:CalculateRoute');
   }
 }

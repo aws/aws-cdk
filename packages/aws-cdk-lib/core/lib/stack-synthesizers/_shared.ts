@@ -19,35 +19,42 @@ export function addStackArtifactToAssembly(
   session: ISynthesisSession,
   stack: Stack,
   stackProps: Partial<cxschema.AwsCloudFormationStackProperties>,
-  additionalStackDependencies: string[]) {
-
+  additionalStackDependencies: string[]
+) {
   const stackTags = stack.tags.tagValues();
 
   // nested stack tags are applied at the AWS::CloudFormation::Stack resource
   // level and are not needed in the cloud assembly.
   if (Object.entries(stackTags).length > 0) {
-    const resolvedTags = Object.entries(stackTags).filter(([k, v]) => !(Token.isUnresolved(k) || Token.isUnresolved(v)));
-    const unresolvedTags = Object.entries(stackTags).filter(([k, v]) => Token.isUnresolved(k) || Token.isUnresolved(v));
+    const resolvedTags = Object.entries(stackTags).filter(
+      ([k, v]) => !(Token.isUnresolved(k) || Token.isUnresolved(v))
+    );
+    const unresolvedTags = Object.entries(stackTags).filter(
+      ([k, v]) => Token.isUnresolved(k) || Token.isUnresolved(v)
+    );
 
     if (unresolvedTags.length > 0) {
-      const rendered = unresolvedTags.map(([k, v]) => `${Token.isUnresolved(k) ? '<TOKEN>': k}=${Token.isUnresolved(v) ? '<TOKEN>' : v}`).join(', ');
+      const rendered = unresolvedTags
+        .map(
+          ([k, v]) =>
+            `${Token.isUnresolved(k) ? '<TOKEN>' : k}=${Token.isUnresolved(v) ? '<TOKEN>' : v}`
+        )
+        .join(', ');
       stack.node.addMetadata(
         cxschema.ArtifactMetadataEntryType.WARN,
-        `Ignoring stack tags that contain deploy-time values (found: ${rendered}). Apply tags containing deploy-time values to resources only, avoid tagging stacks (for example using { excludeResourceTypes: ['aws:cdk:stack'] }).`,
+        `Ignoring stack tags that contain deploy-time values (found: ${rendered}). Apply tags containing deploy-time values to resources only, avoid tagging stacks (for example using { excludeResourceTypes: ['aws:cdk:stack'] }).`
       );
     }
 
     if (resolvedTags.length > 0) {
       stack.node.addMetadata(
         cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-        resolvedTags.map(([key, value]) => ({ Key: key, Value: value })));
+        resolvedTags.map(([key, value]) => ({ Key: key, Value: value }))
+      );
     }
   }
 
-  const deps = [
-    ...stack.dependencies.map(s => s.artifactId),
-    ...additionalStackDependencies,
-  ];
+  const deps = [...stack.dependencies.map((s) => s.artifactId), ...additionalStackDependencies];
   const meta = collectStackMetadata(stack);
 
   // backwards compatibility since originally artifact ID was always equal to
@@ -57,9 +64,8 @@ export function addStackArtifactToAssembly(
   // changes to the assembly manifest. so this means that as long as stack
   // name and artifact ID are the same, the cloud assembly manifest will not
   // change.
-  const stackNameProperty = stack.stackName === stack.artifactId
-    ? { }
-    : { stackName: stack.stackName };
+  const stackNameProperty =
+    stack.stackName === stack.artifactId ? {} : { stackName: stack.stackName };
 
   const properties: cxschema.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,
@@ -86,7 +92,7 @@ export function addStackArtifactToAssembly(
  * Collect the metadata from a stack
  */
 function collectStackMetadata(stack: Stack) {
-  const output: { [id: string]: cxschema.MetadataEntry[] } = { };
+  const output: { [id: string]: cxschema.MetadataEntry[] } = {};
 
   visit(stack);
 
@@ -101,7 +107,9 @@ function collectStackMetadata(stack: Stack) {
 
     if (node.node.metadata.length > 0) {
       // Make the path absolute
-      output[Node.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
+      output[Node.PATH_SEP + node.node.path] = node.node.metadata.map(
+        (md) => stack.resolve(md) as cxschema.MetadataEntry
+      );
     }
 
     for (const child of node.node.children) {

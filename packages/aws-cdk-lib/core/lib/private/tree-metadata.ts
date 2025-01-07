@@ -30,14 +30,17 @@ export class TreeMetadata extends Construct {
    * @internal
    */
   public _synthesizeTree(session: ISynthesisSession) {
-    const lookup: { [path: string]: Node } = { };
+    const lookup: { [path: string]: Node } = {};
 
     const visit = (construct: IConstruct): Node => {
       const children = construct.node.children.map((c) => {
         try {
           return visit(c);
         } catch (e) {
-          Annotations.of(this).addWarningV2(`@aws-cdk/core:failedToRenderTreeMetadata-${c.node.id}`, `Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
+          Annotations.of(this).addWarningV2(
+            `@aws-cdk/core:failedToRenderTreeMetadata-${c.node.id}`,
+            `Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`
+          );
           return undefined;
         }
       });
@@ -49,11 +52,14 @@ export class TreeMetadata extends Construct {
       const node: Node = {
         id: construct.node.id || 'App',
         path: construct.node.path,
-        parent: parent && parent.node.path ? {
-          id: parent.node.id,
-          path: parent.node.path,
-          constructInfo: constructInfoFromConstruct(parent),
-        } : undefined,
+        parent:
+          parent && parent.node.path
+            ? {
+                id: parent.node.id,
+                path: parent.node.path,
+                constructInfo: constructInfoFromConstruct(parent),
+              }
+            : undefined,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct),
         constructInfo: constructInfoFromConstruct(construct),
@@ -71,13 +77,21 @@ export class TreeMetadata extends Construct {
     this._tree = lookup;
 
     const builder = session.assembly;
-    fs.writeFileSync(path.join(builder.outdir, FILE_PATH), JSON.stringify(tree, (key: string, value: any) => {
-      // we are adding in the `parent` attribute for internal use
-      // and it doesn't make much sense to include it in the
-      // tree.json
-      if (key === 'parent') return undefined;
-      return value;
-    }, 2), { encoding: 'utf-8' });
+    fs.writeFileSync(
+      path.join(builder.outdir, FILE_PATH),
+      JSON.stringify(
+        tree,
+        (key: string, value: any) => {
+          // we are adding in the `parent` attribute for internal use
+          // and it doesn't make much sense to include it in the
+          // tree.json
+          if (key === 'parent') return undefined;
+          return value;
+        },
+        2
+      ),
+      { encoding: 'utf-8' }
+    );
 
     builder.addArtifact('Tree', {
       type: ArtifactType.CDK_TREE,
@@ -93,7 +107,9 @@ export class TreeMetadata extends Construct {
    */
   private getNodeWithParents(node: Node): Node {
     if (!this._tree) {
-      throw new Error(`attempting to get node branch for ${node.path}, but the tree has not been created yet!`);
+      throw new Error(
+        `attempting to get node branch for ${node.path}, but the tree has not been created yet!`
+      );
     }
     let tree = node;
     if (node.parent) {
@@ -119,7 +135,10 @@ export class TreeMetadata extends Construct {
      * @param currentNodeChild - The previous node which should be the only child of the current node
      * @returns The node with all children removed except for the path to the current node
      */
-    function renderTreeWithSingleChild(currentNode: Mutable<Node>, currentNodeChild: Mutable<Node>) {
+    function renderTreeWithSingleChild(
+      currentNode: Mutable<Node>,
+      currentNodeChild: Mutable<Node>
+    ) {
       currentNode.children = {
         [currentNodeChild.id]: currentNodeChild,
       };
@@ -150,7 +169,9 @@ export class TreeMetadata extends Construct {
    */
   public _getNodeBranch(constructPath: string): Node | undefined {
     if (!this._tree) {
-      throw new Error(`attempting to get node branch for ${constructPath}, but the tree has not been created yet!`);
+      throw new Error(
+        `attempting to get node branch for ${constructPath}, but the tree has not been created yet!`
+      );
     }
     const tree = this._tree[constructPath];
     const treeWithParents = this.getNodeWithParents(tree);

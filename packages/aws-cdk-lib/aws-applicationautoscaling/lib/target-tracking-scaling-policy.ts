@@ -123,19 +123,22 @@ export class TargetTrackingScalingPolicy extends Construct {
 
   constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
+      throw new Error("Exactly one of 'customMetric' or 'predefinedMetric' must be specified.");
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new Error('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.');
+      throw new Error(
+        'Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.'
+      );
     }
 
     super(scope, id);
 
     // replace dummy value in DYNAMODB_WRITE_CAPACITY_UTILIZATION due to a jsii bug (https://github.com/aws/jsii/issues/2782)
-    const predefinedMetric = props.predefinedMetric === PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION ?
-      PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION :
-      props.predefinedMetric;
+    const predefinedMetric =
+      props.predefinedMetric === PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION
+        ? PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION
+        : props.predefinedMetric;
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyName: props.policyName || cdk.Names.uniqueId(this),
@@ -144,10 +147,13 @@ export class TargetTrackingScalingPolicy extends Construct {
       targetTrackingScalingPolicyConfiguration: {
         customizedMetricSpecification: renderCustomMetric(props.customMetric),
         disableScaleIn: props.disableScaleIn,
-        predefinedMetricSpecification: predefinedMetric !== undefined ? {
-          predefinedMetricType: predefinedMetric,
-          resourceLabel: props.resourceLabel,
-        } : undefined,
+        predefinedMetricSpecification:
+          predefinedMetric !== undefined
+            ? {
+                predefinedMetricType: predefinedMetric,
+                resourceLabel: props.resourceLabel,
+              }
+            : undefined,
         scaleInCooldown: props.scaleInCooldown && props.scaleInCooldown.toSeconds(),
         scaleOutCooldown: props.scaleOutCooldown && props.scaleOutCooldown.toSeconds(),
         targetValue: props.targetValue,
@@ -158,12 +164,18 @@ export class TargetTrackingScalingPolicy extends Construct {
   }
 }
 
-function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
-  if (!metric) { return undefined; }
+function renderCustomMetric(
+  metric?: cloudwatch.IMetric
+): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
+  if (!metric) {
+    return undefined;
+  }
   const c = metric.toMetricConfig().metricStat!;
 
   if (c.statistic.startsWith('p')) {
-    throw new Error(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`);
+    throw new Error(
+      `Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`
+    );
   }
 
   return {
@@ -311,8 +323,8 @@ export enum PredefinedMetric {
   SAGEMAKER_INFERENCE_COMPONENT_CONCURRENT_REQUESTS_PER_COPY_HIGH_RESOLUTION = 'SageMakerInferenceComponentConcurrentRequestsPerCopyHighResolution',
   /**
    * SAGEMAKER_VARIANT_CONCURRENT_REQUESTS_PER_MODEL_HIGH_RESOLUTION
-    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
-    */
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   SAGEMAKER_VARIANT_CONCURRENT_REQUESTS_PER_MODEL_HIGH_RESOLUTION = 'SageMakerVariantConcurrentRequestsPerModelHighResolution',
   /**
    * WORKSPACES_AVERAGE_USER_SESSIONS_CAPACITY_UTILIZATION

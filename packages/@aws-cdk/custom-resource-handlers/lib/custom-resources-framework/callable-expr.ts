@@ -15,7 +15,10 @@ export class CallableExpr {
 
   private readonly expr: Expression;
 
-  private constructor(readonly scope: IScope, private readonly name: string) {
+  private constructor(
+    readonly scope: IScope,
+    private readonly name: string
+  ) {
     this.expr = $E(expr.sym(new ThingSymbol(name, scope)));
   }
 

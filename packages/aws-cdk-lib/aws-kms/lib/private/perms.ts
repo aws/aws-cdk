@@ -17,28 +17,14 @@ export const ADMIN_ACTIONS = [
   'kms:CancelKeyDeletion',
 ];
 
-export const ENCRYPT_ACTIONS = [
-  'kms:Encrypt',
-  'kms:ReEncrypt*',
-  'kms:GenerateDataKey*',
-];
+export const ENCRYPT_ACTIONS = ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'];
 
-export const DECRYPT_ACTIONS = [
-  'kms:Decrypt',
-];
+export const DECRYPT_ACTIONS = ['kms:Decrypt'];
 
-export const SIGN_ACTIONS = [
-  'kms:Sign',
-];
+export const SIGN_ACTIONS = ['kms:Sign'];
 
-export const VERIFY_ACTIONS = [
-  'kms:Verify',
-];
+export const VERIFY_ACTIONS = ['kms:Verify'];
 
-export const GENERATE_HMAC_ACTIONS = [
-  'kms:GenerateMac',
-];
+export const GENERATE_HMAC_ACTIONS = ['kms:GenerateMac'];
 
-export const VERIFY_HMAC_ACTIONS = [
-  'kms:VerifyMac',
-];
+export const VERIFY_HMAC_ACTIONS = ['kms:VerifyMac'];

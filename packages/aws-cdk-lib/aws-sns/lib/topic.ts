@@ -202,7 +202,6 @@ export interface TopicAttributes {
  * A new SNS topic
  */
 export class Topic extends TopicBase {
-
   /**
    * Import an existing SNS topic provided an ARN
    *
@@ -212,7 +211,7 @@ export class Topic extends TopicBase {
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     return Topic.fromTopicAttributes(scope, id, { topicArn });
-  };
+  }
 
   /**
    * Import an existing SNS topic provided a topic attributes
@@ -226,7 +225,9 @@ export class Topic extends TopicBase {
     const fifo = topicName.endsWith('.fifo');
 
     if (attrs.contentBasedDeduplication && !fifo) {
-      throw new Error('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.');
+      throw new Error(
+        'Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.'
+      );
     }
 
     class Import extends TopicBase {
@@ -265,15 +266,17 @@ export class Topic extends TopicBase {
       throw new Error('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.');
     }
     if (
-      props.messageRetentionPeriodInDays !== undefined
-      && !Token.isUnresolved(props.messageRetentionPeriodInDays)
-      && (!Number.isInteger(props.messageRetentionPeriodInDays) || props.messageRetentionPeriodInDays > 365 || props.messageRetentionPeriodInDays < 1)
+      props.messageRetentionPeriodInDays !== undefined &&
+      !Token.isUnresolved(props.messageRetentionPeriodInDays) &&
+      (!Number.isInteger(props.messageRetentionPeriodInDays) ||
+        props.messageRetentionPeriodInDays > 365 ||
+        props.messageRetentionPeriodInDays < 1)
     ) {
       throw new Error('`messageRetentionPeriodInDays` must be an integer between 1 and 365');
     }
 
     if (props.loggingConfigs) {
-      props.loggingConfigs.forEach(c => this.addLoggingConfig(c));
+      props.loggingConfigs.forEach((c) => this.addLoggingConfig(c));
     }
 
     let cfnTopicName: string;
@@ -299,21 +302,32 @@ export class Topic extends TopicBase {
       throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
     }
 
-    if (props.displayName && !Token.isUnresolved(props.displayName) && props.displayName.length > 100) {
-      throw new Error(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`);
+    if (
+      props.displayName &&
+      !Token.isUnresolved(props.displayName) &&
+      props.displayName.length > 100
+    ) {
+      throw new Error(
+        `displayName must be less than or equal to 100 characters, got ${props.displayName.length}`
+      );
     }
 
     const resource = new CfnTopic(this, 'Resource', {
-      archivePolicy: props.messageRetentionPeriodInDays ? {
-        MessageRetentionPeriod: props.messageRetentionPeriodInDays,
-      } : undefined,
+      archivePolicy: props.messageRetentionPeriodInDays
+        ? {
+            MessageRetentionPeriod: props.messageRetentionPeriodInDays,
+          }
+        : undefined,
       displayName: props.displayName,
       topicName: cfnTopicName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
       contentBasedDeduplication: props.contentBasedDeduplication,
       fifoTopic: props.fifo,
       signatureVersion: props.signatureVersion,
-      deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
+      deliveryStatusLogging: Lazy.any(
+        { produce: () => this.renderLoggingConfigs() },
+        { omitEmptyArray: true }
+      ),
       tracingConfig: props.tracingConfig,
     });
 

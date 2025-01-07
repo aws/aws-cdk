@@ -3,7 +3,15 @@ import { Token } from '../../../core';
 import { Condition } from '../condition';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, Errors, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
+import {
+  CatchProps,
+  Errors,
+  IChainable,
+  INextable,
+  ProcessorConfig,
+  ProcessorMode,
+  RetryProps,
+} from '../types';
 
 /**
  * Properties shared by all states
@@ -106,7 +114,9 @@ export abstract class State extends Construct implements IChainable {
     const queue = [start];
     while (queue.length > 0) {
       const state = queue.splice(0, 1)[0]!;
-      if (visited.has(state)) { continue; }
+      if (visited.has(state)) {
+        continue;
+      }
       visited.add(state);
       const outgoing = state.outgoingTransitions(options);
       queue.push(...outgoing);
@@ -124,7 +134,9 @@ export abstract class State extends Construct implements IChainable {
     const queue = [start];
     while (queue.length > 0) {
       const state = queue.splice(0, 1)[0]!;
-      if (visited.has(state)) { continue; }
+      if (visited.has(state)) {
+        continue;
+      }
       visited.add(state);
 
       const outgoing = state.outgoingTransitions(options);
@@ -231,7 +243,7 @@ export abstract class State extends Construct implements IChainable {
    * Tokenized string that evaluates to the state's ID
    */
   public get stateId(): string {
-    return this.prefixes.concat(this.stateName? this.stateName: this.id).join('');
+    return this.prefixes.concat(this.stateName ? this.stateName : this.id).join('');
   }
 
   /**
@@ -250,11 +262,15 @@ export abstract class State extends Construct implements IChainable {
    * with states normally.
    */
   public bindToGraph(graph: StateGraph) {
-    if (this.containingGraph === graph) { return; }
+    if (this.containingGraph === graph) {
+      return;
+    }
 
     if (this.containingGraph) {
       // eslint-disable-next-line max-len
-      throw new Error(`Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`);
+      throw new Error(
+        `Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`
+      );
     }
 
     this.containingGraph = graph;
@@ -420,7 +436,7 @@ export abstract class State extends Construct implements IChainable {
    */
   protected renderBranches(): any {
     return {
-      Branches: this.branches.map(b => b.toGraphJson()),
+      Branches: this.branches.map((b) => b.toGraphJson()),
     };
   }
 
@@ -440,7 +456,9 @@ export abstract class State extends Construct implements IChainable {
   protected renderRetryCatch(): any {
     return {
       Retry: renderList(this.retries, renderRetry, (a, b) => compareErrors(a.errors, b.errors)),
-      Catch: renderList(this.catches, renderCatch, (a, b) => compareErrors(a.props.errors, b.props.errors)),
+      Catch: renderList(this.catches, renderCatch, (a, b) =>
+        compareErrors(a.props.errors, b.props.errors)
+      ),
     };
   }
 
@@ -508,8 +526,12 @@ export abstract class State extends Construct implements IChainable {
    */
   private outgoingTransitions(options: FindStateOptions): State[] {
     const ret = new Array<State>();
-    if (this._next) { ret.push(this._next); }
-    if (this.defaultChoice) { ret.push(this.defaultChoice); }
+    if (this._next) {
+      ret.push(this._next);
+    }
+    if (this.defaultChoice) {
+      ret.push(this.defaultChoice);
+    }
     for (const c of this.choices) {
       ret.push(c.next);
     }
@@ -638,7 +660,9 @@ function validateErrors(errors?: string[]) {
  * Render a list or return undefined for an empty list
  */
 export function renderList<T>(xs: T[], mapFn: (x: T) => any, sortFn?: (a: T, b: T) => number): any {
-  if (xs.length === 0) { return undefined; }
+  if (xs.length === 0) {
+    return undefined;
+  }
   let list = xs;
   if (sortFn) {
     list = xs.sort(sortFn);
@@ -650,7 +674,9 @@ export function renderList<T>(xs: T[], mapFn: (x: T) => any, sortFn?: (a: T, b: 
  * Render JSON path, respecting the special value JsonPath.DISCARD
  */
 export function renderJsonPath(jsonPath?: string): undefined | null | string {
-  if (jsonPath === undefined) { return undefined; }
+  if (jsonPath === undefined) {
+    return undefined;
+  }
 
   if (!Token.isUnresolved(jsonPath) && !jsonPath.startsWith('$')) {
     throw new Error(`Expected JSON path to start with '$', got: ${jsonPath}`);
@@ -669,12 +695,12 @@ interface Prefixable {
  * Whether an object is a Prefixable
  */
 function isPrefixable(x: any): x is Prefixable {
-  return typeof(x) === 'object' && x.addPrefix;
+  return typeof x === 'object' && x.addPrefix;
 }
 
 /**
  * Whether an object is INextable
  */
 function isNextable(x: any): x is INextable {
-  return typeof(x) === 'object' && x.next;
+  return typeof x === 'object' && x.next;
 }

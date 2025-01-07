@@ -20,11 +20,17 @@ export class DropEmptyObjectAtTheEndOfAnArray implements cdk.IResolvable, cdk.IP
   }
 
   public postProcess(o: any, _context: cdk.IResolveContext): any {
-    if (!Array.isArray(o)) { return o; }
+    if (!Array.isArray(o)) {
+      return o;
+    }
 
     const lastEl = o[o.length - 1];
 
-    if (typeof lastEl === 'object' && lastEl !== null && Object.keys(dropUndefined(lastEl)).length === 0) {
+    if (
+      typeof lastEl === 'object' &&
+      lastEl !== null &&
+      Object.keys(dropUndefined(lastEl)).length === 0
+    ) {
       return o.slice(0, o.length - 1);
     }
 

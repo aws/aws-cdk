@@ -34,7 +34,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.5
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_5 = new Runtime('syn-nodejs-puppeteer-3.5', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_5 = new Runtime(
+    'syn-nodejs-puppeteer-3.5',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-3.6` includes the following:
@@ -45,7 +48,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.6
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_6 = new Runtime('syn-nodejs-puppeteer-3.6', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_6 = new Runtime(
+    'syn-nodejs-puppeteer-3.6',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-3.7` includes the following:
@@ -60,7 +66,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.7
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_7 = new Runtime('syn-nodejs-puppeteer-3.7', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_7 = new Runtime(
+    'syn-nodejs-puppeteer-3.7',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-3.8` includes the following:
@@ -74,7 +83,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.8
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_8 = new Runtime('syn-nodejs-puppeteer-3.8', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_8 = new Runtime(
+    'syn-nodejs-puppeteer-3.8',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-3.9` includes the following:
@@ -89,7 +101,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.9
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_9 = new Runtime('syn-nodejs-puppeteer-3.9', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_9 = new Runtime(
+    'syn-nodejs-puppeteer-3.9',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-4.0` includes the following:
@@ -103,7 +118,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-4.0
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_4_0 = new Runtime('syn-nodejs-puppeteer-4.0', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_4_0 = new Runtime(
+    'syn-nodejs-puppeteer-4.0',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-5.0` includes the following:
@@ -117,7 +135,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-5.0
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_5_0 = new Runtime('syn-nodejs-puppeteer-5.0', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_5_0 = new Runtime(
+    'syn-nodejs-puppeteer-5.0',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-5.1` includes the following:
@@ -131,7 +152,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-5.1
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_5_1 = new Runtime('syn-nodejs-puppeteer-5.1', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_5_1 = new Runtime(
+    'syn-nodejs-puppeteer-5.1',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-5.2` includes the following:
@@ -145,7 +169,10 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-5.2
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_5_2 = new Runtime('syn-nodejs-puppeteer-5.2', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_5_2 = new Runtime(
+    'syn-nodejs-puppeteer-5.2',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-6.0` includes the following:
@@ -161,7 +188,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-6.0
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_6_0 = new Runtime('syn-nodejs-puppeteer-6.0', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_6_0 = new Runtime(
+    'syn-nodejs-puppeteer-6.0',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-6.1` includes the following:
@@ -177,7 +207,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-6.1
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_6_1 = new Runtime('syn-nodejs-puppeteer-6.1', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_6_1 = new Runtime(
+    'syn-nodejs-puppeteer-6.1',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-6.2` includes the following:
@@ -192,7 +225,10 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-6.2
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_6_2 = new Runtime('syn-nodejs-puppeteer-6.2', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_6_2 = new Runtime(
+    'syn-nodejs-puppeteer-6.2',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-7.0` includes the following:
@@ -205,7 +241,10 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-7.0
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_7_0 = new Runtime('syn-nodejs-puppeteer-7.0', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_7_0 = new Runtime(
+    'syn-nodejs-puppeteer-7.0',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-8.0` includes the following:
@@ -219,7 +258,10 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-8.0
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_8_0 = new Runtime('syn-nodejs-puppeteer-8.0', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_8_0 = new Runtime(
+    'syn-nodejs-puppeteer-8.0',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-9.0` includes the following:
@@ -232,7 +274,10 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-9.0
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_0 = new Runtime('syn-nodejs-puppeteer-9.0', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_0 = new Runtime(
+    'syn-nodejs-puppeteer-9.0',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-nodejs-puppeteer-9.1` includes the following:
@@ -245,7 +290,10 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-9.1
    */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_1 = new Runtime('syn-nodejs-puppeteer-9.1', RuntimeFamily.NODEJS);
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_9_1 = new Runtime(
+    'syn-nodejs-puppeteer-9.1',
+    RuntimeFamily.NODEJS
+  );
 
   /**
    * `syn-python-selenium-1.0` includes the following:
@@ -256,7 +304,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.0
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_0 = new Runtime('syn-python-selenium-1.0', RuntimeFamily.PYTHON);
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_0 = new Runtime(
+    'syn-python-selenium-1.0',
+    RuntimeFamily.PYTHON
+  );
 
   /**
    * `syn-python-selenium-1.1` includes the following:
@@ -273,7 +324,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.1
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_1 = new Runtime('syn-python-selenium-1.1', RuntimeFamily.PYTHON);
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_1 = new Runtime(
+    'syn-python-selenium-1.1',
+    RuntimeFamily.PYTHON
+  );
 
   /**
    * `syn-python-selenium-1.2` includes the following:
@@ -287,7 +341,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.2
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_2 = new Runtime('syn-python-selenium-1.2', RuntimeFamily.PYTHON);
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_2 = new Runtime(
+    'syn-python-selenium-1.2',
+    RuntimeFamily.PYTHON
+  );
 
   /**
    * `syn-python-selenium-1.3` includes the following:
@@ -301,7 +358,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.3
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_3 = new Runtime('syn-python-selenium-1.3', RuntimeFamily.PYTHON);
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_1_3 = new Runtime(
+    'syn-python-selenium-1.3',
+    RuntimeFamily.PYTHON
+  );
 
   /**
    * `syn-python-selenium-2.0` includes the following:
@@ -320,7 +380,10 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-2.0
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_0 = new Runtime('syn-python-selenium-2.0', RuntimeFamily.PYTHON);
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_0 = new Runtime(
+    'syn-python-selenium-2.0',
+    RuntimeFamily.PYTHON
+  );
 
   /**
    * `syn-python-selenium-2.1` includes the following:
@@ -333,7 +396,10 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-2.0
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_1 = new Runtime('syn-python-selenium-2.1', RuntimeFamily.PYTHON);
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_1 = new Runtime(
+    'syn-python-selenium-2.1',
+    RuntimeFamily.PYTHON
+  );
 
   /**
    * `syn-python-selenium-3.0` includes the following:
@@ -346,7 +412,10 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-3.0
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_3_0 = new Runtime('syn-python-selenium-3.0', RuntimeFamily.PYTHON);
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_3_0 = new Runtime(
+    'syn-python-selenium-3.0',
+    RuntimeFamily.PYTHON
+  );
 
   /**
    * `syn-python-selenium-4.0` includes the following:
@@ -359,12 +428,17 @@ export class Runtime {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-4.0
    */
-  public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime('syn-python-selenium-4.0', RuntimeFamily.PYTHON);
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_4_0 = new Runtime(
+    'syn-python-selenium-4.0',
+    RuntimeFamily.PYTHON
+  );
 
   /**
    * @param name The name of the runtime version
    * @param family The Lambda runtime family
    */
-  public constructor(public readonly name: string, public readonly family: RuntimeFamily) {
-  }
+  public constructor(
+    public readonly name: string,
+    public readonly family: RuntimeFamily
+  ) {}
 }

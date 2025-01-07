@@ -48,7 +48,11 @@ export interface ContentConfig {
  * Game content from an S3 archive.
  */
 export class S3Content extends Content {
-  constructor(private readonly bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  constructor(
+    private readonly bucket: s3.IBucket,
+    private key: string,
+    private objectVersion?: string
+  ) {
     super();
     if (!bucket.bucketName) {
       throw new Error('bucketName is undefined for the provided bucket');
@@ -57,11 +61,13 @@ export class S3Content extends Content {
 
   public bind(_scope: Construct, role: iam.IRole): ContentConfig {
     // Adding permission to access specific content
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      resources: [this.bucket.arnForObjects(this.key)],
-      actions: ['s3:GetObject', 's3:GetObjectVersion'],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        resources: [this.bucket.arnForObjects(this.key)],
+        actions: ['s3:GetObject', 's3:GetObjectVersion'],
+      })
+    );
 
     return {
       s3Location: {
@@ -82,7 +88,10 @@ export class AssetContent extends Content {
   /**
    * @param path The path to the asset file or directory.
    */
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(
+    public readonly path: string,
+    private readonly options: s3_assets.AssetOptions = {}
+  ) {
     super();
   }
 
@@ -94,17 +103,21 @@ export class AssetContent extends Content {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Content instance for every stack.');
+      throw new Error(
+        `Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+          'Create a new Content instance for every stack.'
+      );
     }
     const bucket = s3.Bucket.fromBucketName(scope, 'AssetBucket', this.asset.s3BucketName);
 
     // Adding permission to access specific content
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      resources: [bucket.arnForObjects(this.asset.s3ObjectKey)],
-      actions: ['s3:GetObject', 's3:GetObjectVersion'],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        resources: [bucket.arnForObjects(this.asset.s3ObjectKey)],
+        actions: ['s3:GetObject', 's3:GetObjectVersion'],
+      })
+    );
 
     if (!this.asset.isZipArchive) {
       throw new Error(`Asset must be a .zip file or a directory (${this.path})`);

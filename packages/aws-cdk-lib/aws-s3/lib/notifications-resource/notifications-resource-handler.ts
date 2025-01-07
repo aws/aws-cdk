@@ -59,17 +59,21 @@ export class NotificationsResourceHandler extends Construct {
   constructor(scope: Construct, id: string, props: NotificationsResourceHandlerProps = {}) {
     super(scope, id);
 
-    this.role = props.role ?? new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
+    this.role =
+      props.role ??
+      new iam.Role(this, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
 
     this.role.addManagedPolicy(
-      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
     );
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: ['*'],
-    }));
+    this.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:PutBucketNotification'],
+        resources: ['*'],
+      })
+    );
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
@@ -82,7 +86,20 @@ export class NotificationsResourceHandler extends Construct {
       }
     }
 
-    const handlerSource = fs.readFileSync(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-s3', 'notifications-resource-handler', 'index.py'), 'utf8');
+    const handlerSource = fs.readFileSync(
+      path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'custom-resource-handlers',
+        'dist',
+        'aws-s3',
+        'notifications-resource-handler',
+        'index.py'
+      ),
+      'utf8'
+    );
 
     // Removing lines that starts with '#' (comment lines)
     const handlerSourceWithoutComments = handlerSource.replace(/^ *#.*\n?/gm, '');
@@ -90,7 +107,8 @@ export class NotificationsResourceHandler extends Construct {
     const resource = new InLineLambda(this, 'Resource', {
       type: resourceType,
       properties: {
-        Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
+        Description:
+          'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
         Code: { ZipFile: handlerSourceWithoutComments },
         Handler: 'index.handler',
         Role: this.role.roleArn,

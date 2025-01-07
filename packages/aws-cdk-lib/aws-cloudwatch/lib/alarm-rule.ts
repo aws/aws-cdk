@@ -4,7 +4,6 @@ import { IAlarm, IAlarmRule } from './alarm-base';
  * Enumeration indicates state of Alarm used in building Alarm Rule.
  */
 export enum AlarmState {
-
   /**
    * State indicates resource is in ALARM
    */
@@ -19,25 +18,21 @@ export enum AlarmState {
    * State indicates there is not enough data to determine is resource is in ALARM
    */
   INSUFFICIENT_DATA = 'INSUFFICIENT_DATA',
-
 }
 
 /**
  * Enumeration of supported Composite Alarms operators.
  */
 enum Operator {
-
   AND = 'AND',
   OR = 'OR',
   NOT = 'NOT',
-
 }
 
 /**
  * Class with static functions to build AlarmRule for Composite Alarms.
  */
 export class AlarmRule {
-
   /**
    * function to join all provided AlarmRules with AND operator.
    *
@@ -62,11 +57,11 @@ export class AlarmRule {
    * @param operand IAlarmRule to be wrapped in NOT operator.
    */
   public static not(operand: IAlarmRule): IAlarmRule {
-    return new class implements IAlarmRule {
+    return new (class implements IAlarmRule {
       public renderAlarmRule(): string {
         return `(NOT (${operand.renderAlarmRule()}))`;
       }
-    };
+    })();
   }
 
   /**
@@ -75,11 +70,11 @@ export class AlarmRule {
    * @param value boolean value to be used in rule expression.
    */
   public static fromBoolean(value: boolean): IAlarmRule {
-    return new class implements IAlarmRule {
+    return new (class implements IAlarmRule {
       public renderAlarmRule(): string {
         return `${String(value).toUpperCase()}`;
       }
-    };
+    })();
   }
 
   /**
@@ -89,11 +84,11 @@ export class AlarmRule {
    * @param alarmState AlarmState to be used in Rule Expression.
    */
   public static fromAlarm(alarm: IAlarm, alarmState: AlarmState): IAlarmRule {
-    return new class implements IAlarmRule {
+    return new (class implements IAlarmRule {
       public renderAlarmRule(): string {
         return `${alarmState}("${alarm.alarmArn}")`;
       }
-    };
+    })();
   }
 
   /**
@@ -102,21 +97,21 @@ export class AlarmRule {
    * @param alarmRule string to be used in Rule Expression.
    */
   public static fromString(alarmRule: string): IAlarmRule {
-    return new class implements IAlarmRule {
+    return new (class implements IAlarmRule {
       public renderAlarmRule(): string {
         return alarmRule;
       }
-    };
+    })();
   }
 
   private static concat(operator: Operator, ...operands: IAlarmRule[]): IAlarmRule {
-    return new class implements IAlarmRule {
+    return new (class implements IAlarmRule {
       public renderAlarmRule(): string {
         const expression = operands
-          .map(operand => `${operand.renderAlarmRule()}`)
+          .map((operand) => `${operand.renderAlarmRule()}`)
           .join(` ${operator} `);
         return `(${expression})`;
       }
-    };
+    })();
   }
 }

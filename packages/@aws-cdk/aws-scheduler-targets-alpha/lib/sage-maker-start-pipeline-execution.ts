@@ -40,12 +40,14 @@ export interface SageMakerStartPipelineExecutionProps extends ScheduleTargetBase
 export class SageMakerStartPipelineExecution extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly pipeline: IPipeline,
-    private readonly props: SageMakerStartPipelineExecutionProps = {},
+    private readonly props: SageMakerStartPipelineExecutionProps = {}
   ) {
     super(props, pipeline.pipelineArn);
 
     if (props.pipelineParameterList !== undefined && props.pipelineParameterList.length > 200) {
-      throw new Error(`pipelineParameterList length must be between 0 and 200, got ${props.pipelineParameterList.length}`);
+      throw new Error(
+        `pipelineParameterList length must be between 0 and 200, got ${props.pipelineParameterList.length}`
+      );
     }
   }
 
@@ -54,14 +56,16 @@ export class SageMakerStartPipelineExecution extends ScheduleTargetBase implemen
   }
 
   protected bindBaseTargetConfig(schedule: ISchedule): ScheduleTargetConfig {
-    const sageMakerPipelineParameters = this.props.pipelineParameterList ? {
-      pipelineParameterList: this.props.pipelineParameterList.map(param => {
-        return {
-          name: param.name,
-          value: param.value,
-        };
-      }),
-    } : undefined;
+    const sageMakerPipelineParameters = this.props.pipelineParameterList
+      ? {
+          pipelineParameterList: this.props.pipelineParameterList.map((param) => {
+            return {
+              name: param.name,
+              value: param.value,
+            };
+          }),
+        }
+      : undefined;
     return {
       ...super.bindBaseTargetConfig(schedule),
       sageMakerPipelineParameters,

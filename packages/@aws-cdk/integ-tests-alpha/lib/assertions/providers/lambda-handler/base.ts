@@ -14,7 +14,10 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
   private readonly timeout: NodeJS.Timeout;
   private timedOut = false;
 
-  constructor(protected readonly event: AWSLambda.CloudFormationCustomResourceEvent, protected readonly context: AWSLambda.Context) {
+  constructor(
+    protected readonly event: AWSLambda.CloudFormationCustomResourceEvent,
+    protected readonly context: AWSLambda.Context
+  ) {
     this.timeout = setTimeout(async () => {
       await this.respond({
         status: 'FAILED',
@@ -42,7 +45,9 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
         await this.startExecution(req);
         return;
       } else {
-        const response = await this.processEvent(this.event.ResourceProperties as unknown as Request);
+        const response = await this.processEvent(
+          this.event.ResourceProperties as unknown as Request
+        );
         return response;
       }
     } catch (e) {

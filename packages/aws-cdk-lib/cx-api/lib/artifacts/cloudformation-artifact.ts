@@ -160,9 +160,12 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
     super(assembly, artifactId, artifact);
 
-    const properties = (this.manifest.properties || {}) as cxschema.AwsCloudFormationStackProperties;
+    const properties = (this.manifest.properties ||
+      {}) as cxschema.AwsCloudFormationStackProperties;
     if (!properties.templateFile) {
-      throw new Error('Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest');
+      throw new Error(
+        'Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest'
+      );
     }
     if (!artifact.environment) {
       throw new Error('Invalid CloudFormation stack artifact. Missing environment');
@@ -187,11 +190,14 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.lookupRole = properties.lookupRole;
 
     this.stackName = properties.stackName || artifactId;
-    this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);
+    this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(
+      (e) => e.data as cxschema.AssetMetadataEntry
+    );
 
-    this.displayName = this.stackName === artifactId
-      ? this.hierarchicalId
-      : `${this.hierarchicalId} (${this.stackName})`;
+    this.displayName =
+      this.stackName === artifactId
+        ? this.hierarchicalId
+        : `${this.hierarchicalId} (${this.stackName})`;
 
     this.name = this.stackName; // backwards compat
     this.originalName = this.stackName;
@@ -216,7 +222,9 @@ export class CloudFormationStackArtifact extends CloudArtifact {
 
   private tagsFromMetadata() {
     const ret: Record<string, string> = {};
-    for (const metadataEntry of this.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS)) {
+    for (const metadataEntry of this.findMetadataByType(
+      cxschema.ArtifactMetadataEntryType.STACK_TAGS
+    )) {
       for (const tag of (metadataEntry.data ?? []) as cxschema.StackTagsMetadataEntry) {
         ret[tag.key] = tag.value;
       }

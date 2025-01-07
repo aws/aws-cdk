@@ -6,7 +6,9 @@ export function stringLike(pattern: string) {
 
 export function sortByRunOrder(pattern: any[]): Matcher {
   return new Sorter('SortByRunOrder', pattern, (a: any, b: any) => {
-    if (a.RunOrder !== b.RunOrder) { return a.RunOrder - b.RunOrder; }
+    if (a.RunOrder !== b.RunOrder) {
+      return a.RunOrder - b.RunOrder;
+    }
     return (a.Name as string).localeCompare(b.Name);
   });
 }
@@ -23,14 +25,18 @@ class StringLike extends Matcher {
   }
 
   public test(actual: any): MatchResult {
-    if (typeof(actual) !== 'string') {
-      throw new Error(`Expected string but found ${typeof(actual)} ${JSON.stringify(actual)}`);
+    if (typeof actual !== 'string') {
+      throw new Error(`Expected string but found ${typeof actual} ${JSON.stringify(actual)}`);
     }
     const re = new RegExp(`^${this.pattern.split('*').map(escapeRegex).join('.*')}$`);
 
     const result = new MatchResult(actual);
     if (!re.test(actual)) {
-      result.push(this, [], `Looking for string with pattern "${this.pattern}" but found "${actual}"`);
+      result.push(
+        this,
+        [],
+        `Looking for string with pattern "${this.pattern}" but found "${actual}"`
+      );
     }
     return result;
 
@@ -44,7 +50,7 @@ class Sorter extends Matcher {
   constructor(
     public readonly name: string,
     private readonly pattern: any[],
-    private readonly compareFn: (a: any, b: any) => number,
+    private readonly compareFn: (a: any, b: any) => number
   ) {
     super();
   }
@@ -79,7 +85,11 @@ class StringLengthMatcher extends Matcher {
     }
 
     if (actual.length > this.length) {
-      result.push(this, [], `String is ${actual.length} characters long. Expected at most ${this.length} characters`);
+      result.push(
+        this,
+        [],
+        `String is ${actual.length} characters long. Expected at most ${this.length} characters`
+      );
     }
 
     return result;

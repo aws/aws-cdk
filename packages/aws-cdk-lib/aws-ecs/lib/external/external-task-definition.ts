@@ -27,16 +27,12 @@ export interface ExternalTaskDefinitionProps extends CommonTaskDefinitionProps {
 /**
  * The interface of a task definition run on an External cluster.
  */
-export interface IExternalTaskDefinition extends ITaskDefinition {
-
-}
+export interface IExternalTaskDefinition extends ITaskDefinition {}
 
 /**
  * Attributes used to import an existing External task definition
  */
-export interface ExternalTaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
-
-}
+export interface ExternalTaskDefinitionAttributes extends CommonTaskDefinitionAttributes {}
 
 /**
  * The details of a task definition run on an External cluster.
@@ -47,7 +43,11 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
   /**
    * Imports a task definition from the specified task definition ARN.
    */
-  public static fromEc2TaskDefinitionArn(scope: Construct, id: string, externalTaskDefinitionArn: string): IExternalTaskDefinition {
+  public static fromEc2TaskDefinitionArn(
+    scope: Construct,
+    id: string,
+    externalTaskDefinitionArn: string
+  ): IExternalTaskDefinition {
     return new ImportedTaskDefinition(scope, id, {
       taskDefinitionArn: externalTaskDefinitionArn,
     });
@@ -59,7 +59,7 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
   public static fromExternalTaskDefinitionAttributes(
     scope: Construct,
     id: string,
-    attrs: ExternalTaskDefinitionAttributes,
+    attrs: ExternalTaskDefinitionAttributes
   ): IExternalTaskDefinition {
     return new ImportedTaskDefinition(scope, id, {
       taskDefinitionArn: attrs.taskDefinitionArn,

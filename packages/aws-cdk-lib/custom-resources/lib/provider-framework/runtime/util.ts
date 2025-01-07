@@ -9,7 +9,11 @@ export function getEnv(name: string): string {
 }
 
 export function log(title: any, ...args: any[]) {
-  console.log('[provider-framework]', title, ...args.map(x => typeof(x) === 'object' ? JSON.stringify(x, undefined, 2) : x));
+  console.log(
+    '[provider-framework]',
+    title,
+    ...args.map((x) => (typeof x === 'object' ? JSON.stringify(x, undefined, 2) : x))
+  );
 }
 
 export interface RetryOptions {
@@ -19,7 +23,10 @@ export interface RetryOptions {
   readonly sleep: number;
 }
 
-export function withRetries<A extends Array<any>, B>(options: RetryOptions, fn: (...xs: A) => Promise<B>): (...xs: A) => Promise<B> {
+export function withRetries<A extends Array<any>, B>(
+  options: RetryOptions,
+  fn: (...xs: A) => Promise<B>
+): (...xs: A) => Promise<B> {
   return async (...xs: A) => {
     let attempts = options.attempts;
     let ms = options.sleep;
@@ -45,7 +52,9 @@ export function parseJsonPayload(payload: string | Buffer | Uint8Array | undefin
   // sdk v3 returns payloads in Uint8Array, either it or a string or Buffer
   // can be cast into a buffer and then decoded.
   const text = new TextDecoder().decode(Buffer.from(payload ?? ''));
-  if (!text) { return { }; }
+  if (!text) {
+    return {};
+  }
   try {
     return JSON.parse(text);
   } catch {

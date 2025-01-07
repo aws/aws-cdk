@@ -38,12 +38,16 @@ const receiveMessage = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: queue.queueUrl,
 });
 
-receiveMessage.expect(ExpectedResult.objectLike({
-  Messages: [
-    {
-      Body: message,
-    },
-  ],
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(5),
-});
+receiveMessage
+  .expect(
+    ExpectedResult.objectLike({
+      Messages: [
+        {
+          Body: message,
+        },
+      ],
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(5),
+  });

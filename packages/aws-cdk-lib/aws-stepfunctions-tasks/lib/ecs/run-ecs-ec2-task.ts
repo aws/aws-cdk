@@ -52,7 +52,9 @@ export class RunEcsEc2Task extends EcsRunTaskBase {
     }
 
     if (!props.cluster.hasEc2Capacity) {
-      throw new Error('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
+      throw new Error(
+        'Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.'
+      );
     }
 
     if (!props.taskDefinition.defaultContainer) {
@@ -63,13 +65,22 @@ export class RunEcsEc2Task extends EcsRunTaskBase {
       ...props,
       parameters: {
         LaunchType: 'EC2',
-        PlacementConstraints: noEmpty(flatten((props.placementConstraints || []).map(c => c.toJson().map(uppercaseKeys)))),
-        PlacementStrategy: noEmpty(flatten((props.placementStrategies || []).map(c => c.toJson().map(uppercaseKeys)))),
+        PlacementConstraints: noEmpty(
+          flatten((props.placementConstraints || []).map((c) => c.toJson().map(uppercaseKeys)))
+        ),
+        PlacementStrategy: noEmpty(
+          flatten((props.placementStrategies || []).map((c) => c.toJson().map(uppercaseKeys)))
+        ),
       },
     });
 
     if (props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, undefined, props.subnets, props.securityGroup);
+      this.configureAwsVpcNetworking(
+        props.cluster.vpc,
+        undefined,
+        props.subnets,
+        props.securityGroup
+      );
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
@@ -87,8 +98,8 @@ function validateNoNetworkingProps(props: RunEcsEc2TaskProps) {
   }
 }
 
-function uppercaseKeys(obj: {[key: string]: any}): {[key: string]: any} {
-  const ret: {[key: string]: any} = {};
+function uppercaseKeys(obj: { [key: string]: any }): { [key: string]: any } {
+  const ret: { [key: string]: any } = {};
   for (const key of Object.keys(obj)) {
     ret[key.slice(0, 1).toUpperCase() + key.slice(1)] = obj[key];
   }
@@ -100,6 +111,8 @@ function flatten<A>(xs: A[][]): A[] {
 }
 
 function noEmpty<A>(xs: A[]): A[] | undefined {
-  if (xs.length === 0) { return undefined; }
+  if (xs.length === 0) {
+    return undefined;
+  }
   return xs;
 }

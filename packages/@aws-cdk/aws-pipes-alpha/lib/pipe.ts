@@ -35,7 +35,6 @@ export interface IPipe extends IResource {
    * @attribute
    */
   readonly pipeRole: IRole;
-
 }
 
 /**
@@ -73,11 +72,11 @@ export interface PipeProps {
   readonly filter?: IFilter;
 
   /**
-  * Enrichment step to enhance the data from the source before sending it to the target.
-  *
-  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/pipes-enrichment.html
-  * @default - no enrichment
-  */
+   * Enrichment step to enhance the data from the source before sending it to the target.
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/pipes-enrichment.html
+   * @default - no enrichment
+   */
   readonly enrichment?: IEnrichment;
 
   /**
@@ -88,12 +87,12 @@ export interface PipeProps {
   readonly target: ITarget;
 
   /**
-  * Name of the pipe in the AWS console
-  *
-  * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
-  *
-  * @default - automatically generated name
-  */
+   * Name of the pipe in the AWS console
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
+   *
+   * @default - automatically generated name
+   */
   readonly pipeName?: string;
 
   /**
@@ -170,14 +169,13 @@ abstract class PipeBase extends Resource implements IPipe {
   public abstract readonly pipeName: string;
   public abstract readonly pipeArn: string;
   public abstract readonly pipeRole: IRole;
-
 }
 
 /**
  * An imported pipe.
  */
 class ImportedPipe extends PipeBase {
-  public readonly pipeName: string ;
+  public readonly pipeName: string;
   public readonly pipeArn: string;
   public readonly pipeRole: IRole;
 
@@ -190,7 +188,7 @@ class ImportedPipe extends PipeBase {
       resource: 'pipe',
       resourceName: this.pipeName,
     });
-    this.pipeRole = Role.fromRoleName(this, 'Role', this.pipeName );
+    this.pipeRole = Role.fromRoleName(this, 'Role', this.pipeName);
   }
 }
 
@@ -207,7 +205,6 @@ export class Pipe extends PipeBase {
    * Creates a pipe from the name of a pipe.
    */
   static fromPipeName(scope: Construct, id: string, pipeName: string): IPipe {
-
     return new ImportedPipe(scope, id, pipeName);
   }
 
@@ -216,7 +213,6 @@ export class Pipe extends PipeBase {
   public readonly pipeRole: IRole;
 
   constructor(scope: Construct, id: string, props: PipeProps) {
-
     super(scope, id, { physicalName: props.pipeName });
 
     /**
@@ -244,7 +240,7 @@ export class Pipe extends PipeBase {
     }
 
     // Add the filter criteria to the source parameters
-    const sourceParameters : CfnPipe.PipeSourceParametersProperty= {
+    const sourceParameters: CfnPipe.PipeSourceParametersProperty = {
       ...source.sourceParameters,
       filterCriteria: props.filter,
     };
@@ -270,12 +266,15 @@ export class Pipe extends PipeBase {
     };
 
     // Iterate over all the log destinations and add them to the log configuration
-    const logConfiguration = props.logDestinations?.reduce((currentLogConfiguration, destination) => {
-      const logDestinationConfig = destination.bind(this);
-      destination.grantPush(this.pipeRole);
-      const additionalLogConfiguration = logDestinationConfig.parameters;
-      return { ...currentLogConfiguration, ...additionalLogConfiguration };
-    }, initialLogConfiguration);
+    const logConfiguration = props.logDestinations?.reduce(
+      (currentLogConfiguration, destination) => {
+        const logDestinationConfig = destination.bind(this);
+        destination.grantPush(this.pipeRole);
+        const additionalLogConfiguration = logDestinationConfig.parameters;
+        return { ...currentLogConfiguration, ...additionalLogConfiguration };
+      },
+      initialLogConfiguration
+    );
 
     /**
      * Pipe resource
@@ -299,5 +298,4 @@ export class Pipe extends PipeBase {
     this.pipeName = resource.ref;
     this.pipeArn = resource.attrArn;
   }
-
 }

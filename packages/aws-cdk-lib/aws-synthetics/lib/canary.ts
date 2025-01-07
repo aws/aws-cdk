@@ -13,7 +13,8 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { AutoDeleteUnderlyingResourcesProvider } from '../../custom-resource-handlers/dist/aws-synthetics/auto-delete-underlying-resources-provider.generated';
 
-const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteUnderlyingResources';
+const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE =
+  'Custom::SyntheticsAutoDeleteUnderlyingResources';
 const AUTO_DELETE_UNDERLYING_RESOURCES_TAG = 'aws-cdk:auto-delete-underlying-resources';
 
 /**
@@ -36,8 +37,10 @@ export class Test {
    * @param code The code that the canary should run
    * @param handler The handler of the canary
    */
-  private constructor(public readonly code: Code, public readonly handler: string) {
-  }
+  private constructor(
+    public readonly code: Code,
+    public readonly handler: string
+  ) {}
 }
 
 /**
@@ -345,16 +348,20 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     }
 
     super(scope, id, {
-      physicalName: props.canaryName || cdk.Lazy.string({
-        produce: () => this.generateUniqueName(),
-      }),
+      physicalName:
+        props.canaryName ||
+        cdk.Lazy.string({
+          produce: () => this.generateUniqueName(),
+        }),
     });
 
-    this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
-      encryption: s3.BucketEncryption.KMS_MANAGED,
-      enforceSSL: true,
-      lifecycleRules: props.artifactsBucketLifecycleRules,
-    });
+    this.artifactsBucket =
+      props.artifactsBucketLocation?.bucket ??
+      new s3.Bucket(this, 'ArtifactsBucket', {
+        encryption: s3.BucketEncryption.KMS_MANAGED,
+        enforceSSL: true,
+        lifecycleRules: props.artifactsBucketLifecycleRules,
+      });
 
     this.role = props.role ?? this.createDefaultRole(props);
 
@@ -364,7 +371,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     }
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
-      artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
+      artifactS3Location: this.artifactsBucket.s3UrlForObject(
+        props.artifactsBucketLocation?.prefix
+      ),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.startAfterCreation ?? true,
       runtimeVersion: props.runtime.name,
@@ -389,19 +398,26 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   }
 
   private cleanupUnderlyingResources() {
-    const provider = AutoDeleteUnderlyingResourcesProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
-      useCfnResponseWrapper: false,
-      description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
-      policyStatements: [{
-        Effect: 'Allow',
-        Action: ['lambda:DeleteFunction'],
-        Resource: this.lambdaArn(),
-      }, {
-        Effect: 'Allow',
-        Action: ['synthetics:GetCanary'],
-        Resource: '*',
-      }],
-    });
+    const provider = AutoDeleteUnderlyingResourcesProvider.getOrCreateProvider(
+      this,
+      AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE,
+      {
+        useCfnResponseWrapper: false,
+        description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
+        policyStatements: [
+          {
+            Effect: 'Allow',
+            Action: ['lambda:DeleteFunction'],
+            Resource: this.lambdaArn(),
+          },
+          {
+            Effect: 'Allow',
+            Action: ['synthetics:GetCanary'],
+            Resource: '*',
+          },
+        ],
+      }
+    );
 
     new cdk.CustomResource(this, 'AutoDeleteUnderlyingResourcesCustomResource', {
       resourceType: AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE,
@@ -427,7 +443,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   public get connections(): ec2.Connections {
     if (!this._connections) {
       // eslint-disable-next-line max-len
-      throw new Error('Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.');
+      throw new Error(
+        'Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.'
+      );
     }
     return this._connections;
   }
@@ -507,7 +525,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+      managedPolicies.push(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole')
+      );
     }
 
     return new iam.Role(this, 'ServiceRole', {
@@ -563,34 +583,46 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    * @param runtime - the runtime version
    */
   private validateHandler(handler: string, runtime: Runtime) {
-    const oldRuntimes = [
-      Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
-    ];
+    const oldRuntimes = [Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0];
     if (oldRuntimes.includes(runtime)) {
       if (!handler.match(/^[0-9A-Za-z_\\-]+\.handler*$/)) {
-        throw new Error(`Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`);
+        throw new Error(
+          `Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`
+        );
       }
     } else {
       if (!handler.match(/^([0-9a-zA-Z_-]+\/)*[0-9A-Za-z_\\-]+\.[A-Za-z_][A-Za-z0-9_]*$/)) {
-        throw new Error(`Canary Handler must be specified either as \'fileName.handler\', \'fileName.functionName\', or \'folder/fileName.functionName\', received ${handler}`);
+        throw new Error(
+          `Canary Handler must be specified either as \'fileName.handler\', \'fileName.functionName\', or \'folder/fileName.functionName\', received ${handler}`
+        );
       }
     }
     if (handler.length < 1 || handler.length > 128) {
-      throw new Error(`Canary Handler length must be between 1 and 128, received ${handler.length}`);
+      throw new Error(
+        `Canary Handler length must be between 1 and 128, received ${handler.length}`
+      );
     }
   }
 
   private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
-    if (props.activeTracing === undefined &&
+    if (
+      props.activeTracing === undefined &&
       !props.environmentVariables &&
       !props.memory &&
-      !props.timeout) {
+      !props.timeout
+    ) {
       return undefined;
     }
 
     // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
-    if (props.activeTracing && !cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) {
-      throw new Error('You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.');
+    if (
+      props.activeTracing &&
+      !cdk.Token.isUnresolved(props.runtime.family) &&
+      props.runtime.family !== RuntimeFamily.NODEJS
+    ) {
+      throw new Error(
+        'You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.'
+      );
     }
 
     let memoryInMb: number | undefined;
@@ -608,12 +640,16 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     if (!cdk.Token.isUnresolved(props.timeout) && props.timeout !== undefined) {
       const timeoutInMillis = props.timeout.toMilliseconds();
       if (timeoutInMillis % 1000 !== 0) {
-        throw new Error(`\`timeout\` must be set as an integer representing seconds, got ${timeoutInMillis} milliseconds.`);
+        throw new Error(
+          `\`timeout\` must be set as an integer representing seconds, got ${timeoutInMillis} milliseconds.`
+        );
       }
 
       timeoutInSeconds = props.timeout.toSeconds();
       if (timeoutInSeconds < 3 || timeoutInSeconds > 840) {
-        throw new Error(`\`timeout\` must be between 3 seconds and 840 seconds, got ${timeoutInSeconds} seconds.`);
+        throw new Error(
+          `\`timeout\` must be between 3 seconds and 840 seconds, got ${timeoutInSeconds} seconds.`
+        );
       }
     }
 
@@ -664,7 +700,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     return {
       vpcId: props.vpc.vpcId,
       subnetIds,
-      securityGroupIds: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
+      securityGroupIds: cdk.Lazy.list({
+        produce: () => this.connections.securityGroups.map((sg) => sg.securityGroupId),
+      }),
     };
   }
 
@@ -679,20 +717,29 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       props.artifactS3EncryptionMode === ArtifactsEncryptionMode.S3_MANAGED &&
       props.artifactS3KmsKey
     ) {
-      throw new Error(`A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: ${props.artifactS3EncryptionMode}.`);
+      throw new Error(
+        `A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: ${props.artifactS3EncryptionMode}.`
+      );
     }
 
     // Only check runtime family is Node.js because versions prior to `syn-nodejs-puppeteer-3.3` are deprecated and can no longer be configured.
     if (!isNodeRuntime && props.artifactS3EncryptionMode) {
-      throw new Error(`Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later, got \`${props.runtime.name}\`.`);
+      throw new Error(
+        `Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later, got \`${props.runtime.name}\`.`
+      );
     }
 
-    const encryptionMode = props.artifactS3EncryptionMode ? props.artifactS3EncryptionMode :
-      props.artifactS3KmsKey ? ArtifactsEncryptionMode.KMS : undefined;
+    const encryptionMode = props.artifactS3EncryptionMode
+      ? props.artifactS3EncryptionMode
+      : props.artifactS3KmsKey
+        ? ArtifactsEncryptionMode.KMS
+        : undefined;
 
     let encryptionKey: kms.IKey | undefined;
     if (encryptionMode === ArtifactsEncryptionMode.KMS) {
-      encryptionKey = props.artifactS3KmsKey ?? new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
+      encryptionKey =
+        props.artifactS3KmsKey ??
+        new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
     }
 
     encryptionKey?.grantEncryptDecrypt(this.role);
@@ -719,7 +766,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
   private cannedMetric(
     fn: (dims: { CanaryName: string }) => MetricProps,
-    props?: MetricOptions): Metric {
+    props?: MetricOptions
+  ): Metric {
     return new Metric({
       ...fn({ CanaryName: this.canaryName }),
       ...props,
@@ -746,9 +794,13 @@ const nameRegex: RegExp = /^[0-9a-z_\-]+$/;
  */
 function validateName(name: string) {
   if (name.length > 255) {
-    throw new Error(`Canary name is too large, must be between 1 and 255 characters, but is ${name.length} (got "${name}")`);
+    throw new Error(
+      `Canary name is too large, must be between 1 and 255 characters, but is ${name.length} (got "${name}")`
+    );
   }
   if (!nameRegex.test(name)) {
-    throw new Error(`Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);
+    throw new Error(
+      `Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`
+    );
   }
 }

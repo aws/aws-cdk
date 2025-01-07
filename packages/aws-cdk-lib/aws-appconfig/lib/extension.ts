@@ -68,10 +68,7 @@ export class LambdaDestination implements IEventDestination {
     const policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       resources: [this.extensionUri],
-      actions: [
-        'lambda:InvokeFunction',
-        'lambda:InvokeAsync',
-      ],
+      actions: ['lambda:InvokeFunction', 'lambda:InvokeAsync'],
     });
     this.policyDocument = new iam.PolicyDocument({
       statements: [policy],
@@ -392,12 +389,16 @@ export class Extension extends Resource implements IExtension {
   public static fromExtensionArn(scope: Construct, id: string, extensionArn: string): IExtension {
     const parsedArn = Stack.of(scope).splitArn(extensionArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new Error(`Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`);
+      throw new Error(
+        `Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`
+      );
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 2 || !resourceName[0] || !resourceName[1]) {
-      throw new Error('Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}');
+      throw new Error(
+        'Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}'
+      );
     }
 
     const extensionId = resourceName[0];
@@ -421,13 +422,19 @@ export class Extension extends Resource implements IExtension {
    * @param id The name of the extension construct
    * @param attrs The attributes of the extension
    */
-  public static fromExtensionAttributes(scope: Construct, id: string, attrs: ExtensionAttributes): IExtension {
+  public static fromExtensionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ExtensionAttributes
+  ): IExtension {
     const stack = Stack.of(scope);
-    const extensionArn = attrs.extensionArn || stack.formatArn({
-      service: 'appconfig',
-      resource: 'extension',
-      resourceName: `${attrs.extensionId}/${attrs.extensionVersionNumber}`,
-    });
+    const extensionArn =
+      attrs.extensionArn ||
+      stack.formatArn({
+        service: 'appconfig',
+        resource: 'extension',
+        resourceName: `${attrs.extensionId}/${attrs.extensionVersionNumber}`,
+      });
 
     class Import extends Resource implements IExtension {
       public readonly extensionId = attrs.extensionId;
@@ -498,44 +505,56 @@ export class Extension extends Resource implements IExtension {
     });
 
     this.actions = props.actions;
-    this.name = props.extensionName || Names.uniqueResourceName(this, {
-      maxLength: 64,
-      separator: '-',
-    });
+    this.name =
+      props.extensionName ||
+      Names.uniqueResourceName(this, {
+        maxLength: 64,
+        separator: '-',
+      });
     this.description = props.description;
     this.latestVersionNumber = props.latestVersionNumber;
     this.parameters = props.parameters;
 
     const resource = new CfnExtension(this, 'Resource', {
-      actions: this.actions.reduce((acc: {[key: string]: {[key: string]: string}[]}, cur: Action, index: number) => {
-        const extensionUri = cur.eventDestination.extensionUri;
-        const sourceType = cur.eventDestination.type;
-        this.executionRole = cur.executionRole;
-        const name = cur.name ?? `${this.name}-${index}`;
-        cur.actionPoints.forEach((actionPoint) => {
-          acc[actionPoint] = [
-            {
-              Name: name,
-              Uri: extensionUri,
-              ...(sourceType === SourceType.EVENTS || cur.invokeWithoutExecutionRole
-                ? {}
-                : { RoleArn: this.executionRole?.roleArn || this.getExecutionRole(cur.eventDestination, name).roleArn }),
-              ...(cur.description ? { Description: cur.description } : {}),
-            },
-          ];
-        });
-        return acc;
-      }, {}),
+      actions: this.actions.reduce(
+        (acc: { [key: string]: { [key: string]: string }[] }, cur: Action, index: number) => {
+          const extensionUri = cur.eventDestination.extensionUri;
+          const sourceType = cur.eventDestination.type;
+          this.executionRole = cur.executionRole;
+          const name = cur.name ?? `${this.name}-${index}`;
+          cur.actionPoints.forEach((actionPoint) => {
+            acc[actionPoint] = [
+              {
+                Name: name,
+                Uri: extensionUri,
+                ...(sourceType === SourceType.EVENTS || cur.invokeWithoutExecutionRole
+                  ? {}
+                  : {
+                      RoleArn:
+                        this.executionRole?.roleArn ||
+                        this.getExecutionRole(cur.eventDestination, name).roleArn,
+                    }),
+                ...(cur.description ? { Description: cur.description } : {}),
+              },
+            ];
+          });
+          return acc;
+        },
+        {}
+      ),
       name: this.name,
       description: this.description,
       latestVersionNumber: this.latestVersionNumber,
-      parameters: this.parameters?.reduce((acc: {[key: string]: CfnExtension.ParameterProperty}, cur: Parameter) => {
-        acc[cur.name] = {
-          required: cur.isRequired,
-          description: cur.description,
-        };
-        return acc;
-      }, {}),
+      parameters: this.parameters?.reduce(
+        (acc: { [key: string]: CfnExtension.ParameterProperty }, cur: Parameter) => {
+          acc[cur.name] = {
+            required: cur.isRequired,
+            description: cur.description,
+          };
+          return acc;
+        },
+        {}
+      ),
     });
     this._cfnExtension = resource;
 
@@ -626,12 +645,23 @@ export class ExtensibleBase implements IExtensible {
     this.scope = scope;
   }
 
-  public on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions) {
+  public on(
+    actionPoint: ActionPoint,
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ) {
     this.getExtensionForActionPoint(eventDestination, actionPoint, options);
   }
 
-  public preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions) {
-    this.getExtensionForActionPoint(eventDestination, ActionPoint.PRE_CREATE_HOSTED_CONFIGURATION_VERSION, options);
+  public preCreateHostedConfigurationVersion(
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ) {
+    this.getExtensionForActionPoint(
+      eventDestination,
+      ActionPoint.PRE_CREATE_HOSTED_CONFIGURATION_VERSION,
+      options
+    );
   }
 
   public preStartDeployment(eventDestination: IEventDestination, options?: ExtensionOptions) {
@@ -655,7 +685,11 @@ export class ExtensibleBase implements IExtensible {
   }
 
   public onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions) {
-    this.getExtensionForActionPoint(eventDestination, ActionPoint.ON_DEPLOYMENT_ROLLED_BACK, options);
+    this.getExtensionForActionPoint(
+      eventDestination,
+      ActionPoint.ON_DEPLOYMENT_ROLLED_BACK,
+      options
+    );
   }
 
   public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
@@ -666,40 +700,55 @@ export class ExtensibleBase implements IExtensible {
     this.addExtensionAssociation(extension);
   }
 
-  private getExtensionForActionPoint(eventDestination: IEventDestination, actionPoint: ActionPoint, options?: ExtensionOptions) {
+  private getExtensionForActionPoint(
+    eventDestination: IEventDestination,
+    actionPoint: ActionPoint,
+    options?: ExtensionOptions
+  ) {
     const name = options?.extensionName || this.getExtensionDefaultName();
     const versionNumber = options?.latestVersionNumber ? options?.latestVersionNumber + 1 : 1;
-    const extension = new Extension(this.scope, `Extension${this.getExtensionHash(name, versionNumber)}`, {
-      actions: [
-        new Action({
-          eventDestination,
-          actionPoints: [
-            actionPoint,
-          ],
-        }),
-      ],
-      extensionName: name,
-      ...(options?.description ? { description: options.description } : {}),
-      ...(options?.latestVersionNumber ? { latestVersionNumber: options.latestVersionNumber } : {}),
-      ...(options?.parameters ? { parameters: options.parameters } : {}),
-    });
+    const extension = new Extension(
+      this.scope,
+      `Extension${this.getExtensionHash(name, versionNumber)}`,
+      {
+        actions: [
+          new Action({
+            eventDestination,
+            actionPoints: [actionPoint],
+          }),
+        ],
+        extensionName: name,
+        ...(options?.description ? { description: options.description } : {}),
+        ...(options?.latestVersionNumber
+          ? { latestVersionNumber: options.latestVersionNumber }
+          : {}),
+        ...(options?.parameters ? { parameters: options.parameters } : {}),
+      }
+    );
     this.addExtensionAssociation(extension);
   }
 
   private addExtensionAssociation(extension: IExtension) {
     const versionNumber = extension?.latestVersionNumber ? extension?.latestVersionNumber + 1 : 1;
     const name = extension.name ?? this.getExtensionDefaultName();
-    new CfnExtensionAssociation(this.scope, `AssociationResource${this.getExtensionAssociationHash(name, versionNumber)}`, {
-      extensionIdentifier: extension.extensionId,
-      resourceIdentifier: this.resourceArn,
-      extensionVersionNumber: extension.extensionVersionNumber,
-      parameters: extension.parameters?.reduce((acc: {[key: string]: string}, cur: Parameter) => {
-        if (cur.value) {
-          acc[cur.name] = cur.value;
-        }
-        return acc;
-      }, {}),
-    });
+    new CfnExtensionAssociation(
+      this.scope,
+      `AssociationResource${this.getExtensionAssociationHash(name, versionNumber)}`,
+      {
+        extensionIdentifier: extension.extensionId,
+        resourceIdentifier: this.resourceArn,
+        extensionVersionNumber: extension.extensionVersionNumber,
+        parameters: extension.parameters?.reduce(
+          (acc: { [key: string]: string }, cur: Parameter) => {
+            if (cur.value) {
+              acc[cur.name] = cur.value;
+            }
+            return acc;
+          },
+          {}
+        ),
+      }
+    );
   }
 
   private getExtensionHash(name: string, versionNumber: number) {
@@ -714,10 +763,12 @@ export class ExtensibleBase implements IExtensible {
   }
 
   private getExtensionDefaultName() {
-    return Names.uniqueResourceName(this.scope, {
-      maxLength: 54,
-      separator: '-',
-    }) + '-Extension';
+    return (
+      Names.uniqueResourceName(this.scope, {
+        maxLength: 54,
+        separator: '-',
+      }) + '-Extension'
+    );
   }
 }
 
@@ -733,7 +784,11 @@ export interface IExtensible {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions): void;
+  on(
+    actionPoint: ActionPoint,
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ): void;
 
   /**
    * Adds a PRE_CREATE_HOSTED_CONFIGURATION_VERSION extension with the provided event
@@ -742,7 +797,10 @@ export interface IExtensible {
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+  preCreateHostedConfigurationVersion(
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ): void;
 
   /**
    * Adds a PRE_START_DEPLOYMENT extension with the provided event destination and

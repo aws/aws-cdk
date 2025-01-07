@@ -1,8 +1,12 @@
 import { filterLogicalId, matchSection, formatSectionMatchFailure } from './section';
 import { Template } from './template';
 
-export function findMappings(template: Template, logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-  const section: { [key: string] : {} } = template.Mappings ?? {};
+export function findMappings(
+  template: Template,
+  logicalId: string,
+  props: any = {}
+): { [key: string]: { [key: string]: any } } {
+  const section: { [key: string]: {} } = template.Mappings ?? {};
   const result = matchSection(filterLogicalId(section, logicalId), props);
 
   if (!result.match) {

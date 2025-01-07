@@ -216,9 +216,9 @@ export interface AssertionRequest {
  * Needed to access the whole message via getAtt() on the custom resource.
  */
 export interface AssertionResult {
-/**
- * The result of an assertion
- */
+  /**
+   * The result of an assertion
+   */
   readonly assertion: string;
 
   /**

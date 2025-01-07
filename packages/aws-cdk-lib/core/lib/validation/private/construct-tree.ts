@@ -70,9 +70,7 @@ export class ConstructTree {
   private readonly _constructByTemplatePathAndLogicalId = new Map<string, Map<string, Construct>>();
   private readonly treeMetadata: TreeMetadata;
 
-  constructor(
-    private readonly root: IConstruct,
-  ) {
+  constructor(private readonly root: IConstruct) {
     if (App.isApp(this.root)) {
       this.treeMetadata = this.root.node.tryFindChild('Tree') as TreeMetadata;
     } else {
@@ -81,7 +79,7 @@ export class ConstructTree {
     this._constructByPath.set(this.root.node.path, root);
     // do this once at the start so we don't have to traverse
     // the entire tree everytime we want to find a nested node
-    this.root.node.findAll().forEach(child => {
+    this.root.node.findAll().forEach((child) => {
       this._constructByPath.set(child.node.path, child);
       const defaultChild = child.node.defaultChild;
       if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
@@ -92,7 +90,7 @@ export class ConstructTree {
     });
 
     // Another pass to include all the L1s that haven't been added yet
-    this.root.node.findAll().forEach(child => {
+    this.root.node.findAll().forEach((child) => {
       if (CfnResource.isCfnResource(child)) {
         const stack = Stack.of(child);
         const logicalId = Stack.of(child).resolve(child.logicalId);
@@ -103,7 +101,10 @@ export class ConstructTree {
 
   private setLogicalId(stack: Stack, logicalId: string, child: Construct) {
     if (!this._constructByTemplatePathAndLogicalId.has(stack.templateFile)) {
-      this._constructByTemplatePathAndLogicalId.set(stack.templateFile, new Map([[logicalId, child]]));
+      this._constructByTemplatePathAndLogicalId.set(
+        stack.templateFile,
+        new Map([[logicalId, child]])
+      );
     } else {
       this._constructByTemplatePathAndLogicalId.get(stack.templateFile)?.set(logicalId, child);
     }
@@ -121,9 +122,10 @@ export class ConstructTree {
       if (construct) {
         let trace;
         if (CfnResource.isCfnResource(construct)) {
-          trace = construct.node.metadata.find(meta => !!meta.trace)?.trace ?? [];
+          trace = construct.node.metadata.find((meta) => !!meta.trace)?.trace ?? [];
         } else {
-          trace = construct.node.defaultChild?.node.metadata.find(meta => !!meta.trace)?.trace ?? [];
+          trace =
+            construct.node.defaultChild?.node.metadata.find((meta) => !!meta.trace)?.trace ?? [];
         }
         // take just the items we need and reverse it since we are
         // displaying the trace bottom up
@@ -174,7 +176,7 @@ export class ConstructTree {
     const size = this.nodeSize(node);
 
     const nodeWithTrace = this.getNodeWithTrace(node);
-    const metadata = (locations ?? this.getTraceMetadata(size, nodeWithTrace));
+    const metadata = locations ?? this.getTraceMetadata(size, nodeWithTrace);
     const thisLocation = metadata.pop();
 
     const constructTrace: ConstructTrace = {
@@ -182,9 +184,7 @@ export class ConstructTree {
       path: node.path,
       // the "child" trace will be the "parent" node
       // since we are going bottom up
-      child: node.children
-        ? this.getTrace(this.getChild(node.children), metadata)
-        : undefined,
+      child: node.children ? this.getTrace(this.getChild(node.children), metadata) : undefined,
       construct: node.constructInfo?.fqn,
       libraryVersion: node.constructInfo?.version,
       location: thisLocation ?? "Run with '--debug' to include location info",
@@ -214,9 +214,7 @@ export class ConstructTree {
     let children: Node | undefined = this.getChild(node.children);
     do {
       size++;
-      children = children.children
-        ? this.getChild(children.children)
-        : undefined;
+      children = children.children ? this.getChild(children.children) : undefined;
     } while (children);
 
     return size;

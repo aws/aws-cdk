@@ -31,7 +31,9 @@ class TestStack extends Stack {
     ruleGroup.addRule({
       priority: 20,
       firewallDomainList: overrideList,
-      action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.override('amazon.com')),
+      action: route53resolver.FirewallRuleAction.block(
+        route53resolver.DnsBlockResponse.override('amazon.com')
+      ),
     });
 
     ruleGroup.associate('Association', {

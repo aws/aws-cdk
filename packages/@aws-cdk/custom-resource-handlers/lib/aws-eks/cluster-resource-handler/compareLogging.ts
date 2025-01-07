@@ -9,22 +9,37 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as EKS from '@aws-sdk/client-eks';
 
-export function compareLoggingProps(oldProps: Partial<EKS.CreateClusterCommandInput>,
-  newProps: Partial<EKS.CreateClusterCommandInput>): Partial<EKS.CreateClusterCommandInput> {
+export function compareLoggingProps(
+  oldProps: Partial<EKS.CreateClusterCommandInput>,
+  newProps: Partial<EKS.CreateClusterCommandInput>
+): Partial<EKS.CreateClusterCommandInput> {
   const result: Partial<EKS.CreateClusterCommandInput> = { logging: {} };
   let enabledTypes: EKS.LogType[] = [];
   let disabledTypes: EKS.LogType[] = [];
 
-  if (newProps.logging?.clusterLogging === undefined && oldProps.logging?.clusterLogging === undefined) {
+  if (
+    newProps.logging?.clusterLogging === undefined &&
+    oldProps.logging?.clusterLogging === undefined
+  ) {
     return newProps;
   }
   // if newProps containes LogSetup
-  if (newProps.logging && newProps.logging.clusterLogging && newProps.logging.clusterLogging.length > 0) {
+  if (
+    newProps.logging &&
+    newProps.logging.clusterLogging &&
+    newProps.logging.clusterLogging.length > 0
+  ) {
     enabledTypes = newProps.logging.clusterLogging[0].types!;
     // if oldProps contains LogSetup with enabled:true
-    if (oldProps.logging && oldProps.logging.clusterLogging && oldProps.logging.clusterLogging.length > 0) {
+    if (
+      oldProps.logging &&
+      oldProps.logging.clusterLogging &&
+      oldProps.logging.clusterLogging.length > 0
+    ) {
       // LogType in oldProp but not in newProp should be considered disabled(enabled:false)
-      disabledTypes = oldProps.logging!.clusterLogging![0].types!.filter(t => !newProps.logging!.clusterLogging![0].types!.includes(t));
+      disabledTypes = oldProps.logging!.clusterLogging![0].types!.filter(
+        (t) => !newProps.logging!.clusterLogging![0].types!.includes(t)
+      );
     }
   } else {
     // all enabled:true in oldProps will be enabled:false

@@ -58,4 +58,4 @@ export interface HostedZoneAttributes {
 /**
  * Reference to a public hosted zone
  */
-export interface PublicHostedZoneAttributes extends HostedZoneAttributes { }
+export interface PublicHostedZoneAttributes extends HostedZoneAttributes {}

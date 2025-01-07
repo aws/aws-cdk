@@ -29,7 +29,11 @@ export class Annotations {
    * @param message the error message as should be expected. This should be a string or Matcher object.
    */
   public hasError(constructPath: string, message: any): void {
-    const matchError = hasMessage(this._messages, constructPath, constructMessage('error', message));
+    const matchError = hasMessage(
+      this._messages,
+      constructPath,
+      constructMessage('error', message)
+    );
     if (matchError) {
       throw new Error(matchError);
     }
@@ -42,7 +46,11 @@ export class Annotations {
    * @param message the error message as should be expected. This should be a string or Matcher object.
    */
   public hasNoError(constructPath: string, message: any): void {
-    const matchError = hasNoMessage(this._messages, constructPath, constructMessage('error', message));
+    const matchError = hasNoMessage(
+      this._messages,
+      constructPath,
+      constructMessage('error', message)
+    );
     if (matchError) {
       throw new Error(matchError);
     }
@@ -55,7 +63,9 @@ export class Annotations {
    * @param message the error message as should be expected. This should be a string or Matcher object.
    */
   public findError(constructPath: string, message: any): SynthesisMessage[] {
-    return convertMessagesTypeToArray(findMessage(this._messages, constructPath, constructMessage('error', message)) as Messages);
+    return convertMessagesTypeToArray(
+      findMessage(this._messages, constructPath, constructMessage('error', message)) as Messages
+    );
   }
 
   /**
@@ -65,7 +75,11 @@ export class Annotations {
    * @param message the warning message as should be expected. This should be a string or Matcher object.
    */
   public hasWarning(constructPath: string, message: any): void {
-    const matchError = hasMessage(this._messages, constructPath, constructMessage('warning', message));
+    const matchError = hasMessage(
+      this._messages,
+      constructPath,
+      constructMessage('warning', message)
+    );
     if (matchError) {
       throw new Error(matchError);
     }
@@ -78,7 +92,11 @@ export class Annotations {
    * @param message the warning message as should be expected. This should be a string or Matcher object.
    */
   public hasNoWarning(constructPath: string, message: any): void {
-    const matchError = hasNoMessage(this._messages, constructPath, constructMessage('warning', message));
+    const matchError = hasNoMessage(
+      this._messages,
+      constructPath,
+      constructMessage('warning', message)
+    );
     if (matchError) {
       throw new Error(matchError);
     }
@@ -91,7 +109,9 @@ export class Annotations {
    * @param message the warning message as should be expected. This should be a string or Matcher object.
    */
   public findWarning(constructPath: string, message: any): SynthesisMessage[] {
-    return convertMessagesTypeToArray(findMessage(this._messages, constructPath, constructMessage('warning', message)) as Messages);
+    return convertMessagesTypeToArray(
+      findMessage(this._messages, constructPath, constructMessage('warning', message)) as Messages
+    );
   }
 
   /**
@@ -114,7 +134,11 @@ export class Annotations {
    * @param message the info message as should be expected. This should be a string or Matcher object.
    */
   public hasNoInfo(constructPath: string, message: any): void {
-    const matchError = hasNoMessage(this._messages, constructPath, constructMessage('info', message));
+    const matchError = hasNoMessage(
+      this._messages,
+      constructPath,
+      constructMessage('info', message)
+    );
     if (matchError) {
       throw new Error(matchError);
     }
@@ -127,11 +151,16 @@ export class Annotations {
    * @param message the info message as should be expected. This should be a string or Matcher object.
    */
   public findInfo(constructPath: string, message: any): SynthesisMessage[] {
-    return convertMessagesTypeToArray(findMessage(this._messages, constructPath, constructMessage('info', message)) as Messages);
+    return convertMessagesTypeToArray(
+      findMessage(this._messages, constructPath, constructMessage('info', message)) as Messages
+    );
   }
 }
 
-function constructMessage(type: 'info' | 'warning' | 'error', message: any): {[key:string]: any } {
+function constructMessage(
+  type: 'info' | 'warning' | 'error',
+  message: any
+): { [key: string]: any } {
   return {
     level: type,
     entry: {

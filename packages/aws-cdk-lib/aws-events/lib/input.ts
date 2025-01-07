@@ -1,7 +1,14 @@
 import { IRule } from './rule-ref';
 import {
-  captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+  captureStackTrace,
+  DefaultTokenResolver,
+  IResolvable,
+  IResolveContext,
+  Lazy,
+  Stack,
+  StringConcat,
+  Token,
+  Tokenization,
 } from '../../core';
 
 /**
@@ -52,8 +59,7 @@ export abstract class RuleTargetInput {
     return new LiteralEventInput({ inputPath: path });
   }
 
-  protected constructor() {
-  }
+  protected constructor() {}
 
   /**
    * Return the input properties for this input object
@@ -136,18 +142,23 @@ class LiteralEventInput extends RuleTargetInput {
  * quotes by using a string replace.
  */
 class FieldAwareEventInput extends RuleTargetInput {
-  constructor(private readonly input: any, private readonly inputType: InputType) {
+  constructor(
+    private readonly input: any,
+    private readonly inputType: InputType
+  ) {
     super();
   }
 
   public bind(rule: IRule): RuleTargetInputProperties {
     let fieldCounter = 0;
     const pathToKey = new Map<string, string>();
-    const inputPathsMap: {[key: string]: string} = {};
+    const inputPathsMap: { [key: string]: string } = {};
 
     function keyForField(f: EventField) {
       const existing = pathToKey.get(f.path);
-      if (existing !== undefined) { return existing; }
+      if (existing !== undefined) {
+        return existing;
+      }
 
       fieldCounter += 1;
       const key = f.displayHint || `f${fieldCounter}`;
@@ -161,11 +172,15 @@ class FieldAwareEventInput extends RuleTargetInput {
       }
 
       public resolveToken(t: Token, _context: IResolveContext) {
-        if (!isEventField(t)) { return Token.asString(t); }
+        if (!isEventField(t)) {
+          return Token.asString(t);
+        }
 
         const key = keyForField(t);
         if (inputPathsMap[key] && inputPathsMap[key] !== t.path) {
-          throw new Error(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
+          throw new Error(
+            `Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`
+          );
         }
         inputPathsMap[key] = t.path;
 
@@ -184,10 +199,12 @@ class FieldAwareEventInput extends RuleTargetInput {
       });
       resolved = resolved.split('\n').map(stack.toJsonString).join('\n');
     } else {
-      resolved = stack.toJsonString(Tokenization.resolve(this.input, {
-        scope: rule,
-        resolver: new EventFieldReplacer(),
-      }));
+      resolved = stack.toJsonString(
+        Tokenization.resolve(this.input, {
+          scope: rule,
+          resolver: new EventFieldReplacer(),
+        })
+      );
     }
 
     const keys = Object.keys(inputPathsMap);
@@ -216,20 +233,27 @@ class FieldAwareEventInput extends RuleTargetInput {
    * Valid: { "data": <key> } // Key could be number, bool, obj, or string
    */
   private unquoteKeyPlaceholders(sub: string, keys: string[]) {
-    if (this.inputType !== InputType.Object) { return sub; }
+    if (this.inputType !== InputType.Object) {
+      return sub;
+    }
 
-    return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
+    return Lazy.uncachedString({
+      produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))),
+    });
 
     function deepUnquote(resolved: any): any {
       if (Array.isArray(resolved)) {
         return resolved.map(deepUnquote);
-      } else if (typeof(resolved) === 'object' && resolved !== null) {
+      } else if (typeof resolved === 'object' && resolved !== null) {
         for (const [key, value] of Object.entries(resolved)) {
           resolved[key] = deepUnquote(value);
         }
         return resolved;
-      } else if (typeof(resolved) === 'string') {
-        return keys.reduce((r, key) => r.replace(new RegExp(`(?<!\\\\)\"\<${key}\>\"`, 'g'), `<${key}>`), resolved);
+      } else if (typeof resolved === 'string') {
+        return keys.reduce(
+          (r, key) => r.replace(new RegExp(`(?<!\\\\)\"\<${key}\>\"`, 'g'), `<${key}>`),
+          resolved
+        );
       }
       return resolved;
     }

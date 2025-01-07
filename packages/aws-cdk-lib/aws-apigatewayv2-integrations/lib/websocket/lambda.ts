@@ -34,7 +34,6 @@ export interface WebSocketLambdaIntegrationProps {
  * Lambda WebSocket Integration
  */
 export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
-
   private readonly _id: string;
 
   /**
@@ -45,7 +44,7 @@ export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
   constructor(
     id: string,
     private readonly handler: IFunction,
-    private readonly props: WebSocketLambdaIntegrationProps = {},
+    private readonly props: WebSocketLambdaIntegrationProps = {}
   ) {
     super(id);
     this._id = id;

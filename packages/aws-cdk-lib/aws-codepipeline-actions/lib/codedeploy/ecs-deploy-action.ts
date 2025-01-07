@@ -117,7 +117,9 @@ export class CodeDeployEcsDeployAction extends Action {
 
     if (props.containerImageInputs) {
       if (props.containerImageInputs.length > 4) {
-        throw new Error(`Action cannot have more than 4 container image inputs, got: ${props.containerImageInputs.length}`);
+        throw new Error(
+          `Action cannot have more than 4 container image inputs, got: ${props.containerImageInputs.length}`
+        );
       }
 
       for (const imageInput of props.containerImageInputs) {
@@ -137,44 +139,59 @@ export class CodeDeployEcsDeployAction extends Action {
     this.actionProps = props;
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
-    options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.actionProps.deploymentGroup.application.applicationArn],
-      actions: ['codedeploy:GetApplication', 'codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision'],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        resources: [this.actionProps.deploymentGroup.application.applicationArn],
+        actions: [
+          'codedeploy:GetApplication',
+          'codedeploy:GetApplicationRevision',
+          'codedeploy:RegisterApplicationRevision',
+        ],
+      })
+    );
 
-    options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.actionProps.deploymentGroup.deploymentGroupArn],
-      actions: ['codedeploy:CreateDeployment', 'codedeploy:GetDeployment'],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        resources: [this.actionProps.deploymentGroup.deploymentGroupArn],
+        actions: ['codedeploy:CreateDeployment', 'codedeploy:GetDeployment'],
+      })
+    );
 
-    options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.actionProps.deploymentGroup.deploymentConfig.deploymentConfigArn],
-      actions: ['codedeploy:GetDeploymentConfig'],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        resources: [this.actionProps.deploymentGroup.deploymentConfig.deploymentConfigArn],
+        actions: ['codedeploy:GetDeploymentConfig'],
+      })
+    );
 
     // Allow action to register the task definition template file with ECS
-    options.role.addToPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['ecs:RegisterTaskDefinition'],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['ecs:RegisterTaskDefinition'],
+      })
+    );
 
     // Allow passing any roles specified in the task definition template file to ECS
-    options.role.addToPolicy(new iam.PolicyStatement({
-      actions: ['iam:PassRole'],
-      resources: ['*'],
-      conditions: {
-        StringEqualsIfExists: {
-          'iam:PassedToService': [
-            'ecs-tasks.amazonaws.com',
-          ],
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: ['*'],
+        conditions: {
+          StringEqualsIfExists: {
+            'iam:PassedToService': ['ecs-tasks.amazonaws.com'],
+          },
         },
-      },
-    }));
+      })
+    );
 
     // the Action's Role needs to read from the Bucket to get artifacts
     options.bucket.grantRead(options.role);
@@ -187,12 +204,16 @@ export class CodeDeployEcsDeployAction extends Action {
         ApplicationName: this.actionProps.deploymentGroup.application.applicationName,
         DeploymentGroupName: this.actionProps.deploymentGroup.deploymentGroupName,
 
-        TaskDefinitionTemplateArtifact: Lazy.string({ produce: () => taskDefinitionTemplateArtifact.artifactName }),
+        TaskDefinitionTemplateArtifact: Lazy.string({
+          produce: () => taskDefinitionTemplateArtifact.artifactName,
+        }),
         TaskDefinitionTemplatePath: this.actionProps.taskDefinitionTemplateFile
           ? this.actionProps.taskDefinitionTemplateFile.fileName
           : 'taskdef.json',
 
-        AppSpecTemplateArtifact: Lazy.string({ produce: () => appSpecTemplateArtifact.artifactName }),
+        AppSpecTemplateArtifact: Lazy.string({
+          produce: () => appSpecTemplateArtifact.artifactName,
+        }),
         AppSpecTemplatePath: this.actionProps.appSpecTemplateFile
           ? this.actionProps.appSpecTemplateFile.fileName
           : 'appspec.yaml',
@@ -202,7 +223,9 @@ export class CodeDeployEcsDeployAction extends Action {
     if (this.actionProps.containerImageInputs) {
       for (let i = 1; i <= this.actionProps.containerImageInputs.length; i++) {
         const imageInput = this.actionProps.containerImageInputs[i - 1];
-        actionConfig.configuration[`Image${i}ArtifactName`] = Lazy.string({ produce: () => imageInput.input.artifactName });
+        actionConfig.configuration[`Image${i}ArtifactName`] = Lazy.string({
+          produce: () => imageInput.input.artifactName,
+        });
         actionConfig.configuration[`Image${i}ContainerName`] = imageInput.taskDefinitionPlaceholder
           ? imageInput.taskDefinitionPlaceholder
           : 'IMAGE';
@@ -213,9 +236,13 @@ export class CodeDeployEcsDeployAction extends Action {
   }
 }
 
-function determineTaskDefinitionArtifact(props: CodeDeployEcsDeployActionProps): codepipeline.Artifact {
+function determineTaskDefinitionArtifact(
+  props: CodeDeployEcsDeployActionProps
+): codepipeline.Artifact {
   if (props.taskDefinitionTemplateFile && props.taskDefinitionTemplateInput) {
-    throw new Error("Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action");
+    throw new Error(
+      "Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action"
+    );
   }
   if (props.taskDefinitionTemplateFile) {
     return props.taskDefinitionTemplateFile.artifact;
@@ -223,12 +250,16 @@ function determineTaskDefinitionArtifact(props: CodeDeployEcsDeployActionProps):
   if (props.taskDefinitionTemplateInput) {
     return props.taskDefinitionTemplateInput;
   }
-  throw new Error("Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action");
+  throw new Error(
+    "Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action"
+  );
 }
 
 function determineAppSpecArtifact(props: CodeDeployEcsDeployActionProps): codepipeline.Artifact {
   if (props.appSpecTemplateFile && props.appSpecTemplateInput) {
-    throw new Error("Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action");
+    throw new Error(
+      "Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action"
+    );
   }
   if (props.appSpecTemplateFile) {
     return props.appSpecTemplateFile.artifact;
@@ -236,5 +267,7 @@ function determineAppSpecArtifact(props: CodeDeployEcsDeployActionProps): codepi
   if (props.appSpecTemplateInput) {
     return props.appSpecTemplateInput;
   }
-  throw new Error("Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action");
+  throw new Error(
+    "Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action"
+  );
 }

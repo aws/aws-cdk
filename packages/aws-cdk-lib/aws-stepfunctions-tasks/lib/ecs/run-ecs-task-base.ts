@@ -55,7 +55,7 @@ export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
    *
    * @default - No additional parameters passed
    */
-  readonly parameters?: {[key: string]: any};
+  readonly parameters?: { [key: string]: any };
 }
 
 /**
@@ -73,7 +73,8 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
   constructor(private readonly props: EcsRunTaskBaseProps) {
-    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+    this.integrationPattern =
+      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -82,12 +83,20 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
+      throw new Error(
+        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`
+      );
     }
 
-    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
-      && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
-      throw new Error('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
+    if (
+      this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN &&
+      !sfn.FieldUtils.containsTaskToken(
+        props.containerOverrides?.map((override) => override.environment)
+      )
+    ) {
+      throw new Error(
+        'Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.'
+      );
     }
 
     for (const override of this.props.containerOverrides || []) {
@@ -95,7 +104,9 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
-          throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
+          throw new Error(
+            `Overrides mention container with name '${name}', but no such container in task definition`
+          );
         }
       }
     }
@@ -105,7 +116,9 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     if (this.networkConfiguration !== undefined) {
       // Make sure we have a security group if we're using AWSVPC networking
       if (this.securityGroup === undefined) {
-        this.securityGroup = new ec2.SecurityGroup(task, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+        this.securityGroup = new ec2.SecurityGroup(task, 'SecurityGroup', {
+          vpc: this.props.cluster.vpc,
+        });
       }
       this.connections.addSecurityGroup(this.securityGroup);
     }
@@ -127,10 +140,12 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     vpc: ec2.IVpc,
     assignPublicIp?: boolean,
     subnetSelection?: ec2.SubnetSelection,
-    securityGroup?: ec2.ISecurityGroup) {
-
+    securityGroup?: ec2.ISecurityGroup
+  ) {
     if (subnetSelection === undefined) {
-      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS };
+      subnetSelection = {
+        subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      };
     }
 
     // If none is given here, one will be created later on during bind()
@@ -138,7 +153,8 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     this.networkConfiguration = {
       AwsvpcConfiguration: {
-        AssignPublicIp: assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
+        AssignPublicIp:
+          assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: vpc.selectSubnets(subnetSelection).subnetIds,
         SecurityGroups: cdk.Lazy.list({ produce: () => [this.securityGroup!.securityGroupId] }),
       },
@@ -160,19 +176,25 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: cdk.Lazy.list({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) }),
+        resources: cdk.Lazy.list({
+          produce: () => this.taskExecutionRoles().map((r) => r.roleArn),
+        }),
       }),
     ];
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-        resources: [stack.formatArn({
-          service: 'events',
-          resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForECSTaskRule',
-        })],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          resources: [
+            stack.formatArn({
+              service: 'events',
+              resource: 'rule',
+              resourceName: 'StepFunctionsGetEventsForECSTaskRule',
+            }),
+          ],
+        })
+      );
     }
 
     return policyStatements;
@@ -190,7 +212,9 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 }
 
 function renderOverrides(containerOverrides?: ContainerOverride[]) {
-  if (!containerOverrides) { return undefined; }
+  if (!containerOverrides) {
+    return undefined;
+  }
 
   const ret = new Array<any>();
   for (const override of containerOverrides) {
@@ -200,10 +224,12 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
       Cpu: override.cpu,
       Memory: override.memoryLimit,
       MemoryReservation: override.memoryReservation,
-      Environment: override.environment && override.environment.map(e => ({
-        Name: e.name,
-        Value: e.value,
-      })),
+      Environment:
+        override.environment &&
+        override.environment.map((e) => ({
+          Name: e.name,
+          Value: e.value,
+        })),
     });
   }
 

@@ -3,8 +3,11 @@ import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { Stack } from 'aws-cdk-lib/core';
 
 // eslint-disable-next-line max-len
-export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
-
+export function renderAmazonLinuxUserData(
+  cluster: ICluster,
+  autoScalingGroup: autoscaling.AutoScalingGroup,
+  options: BootstrapOptions = {}
+): string[] {
   const stack = Stack.of(autoScalingGroup);
 
   // determine logical id of ASG so we can signal cloudformation
@@ -15,8 +18,7 @@ export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: a
 
   try {
     const clusterEndpoint = cluster.clusterEndpoint;
-    const clusterCertificateAuthorityData =
-      cluster.clusterCertificateAuthorityData;
+    const clusterCertificateAuthorityData = cluster.clusterCertificateAuthorityData;
     extraArgs.push(`--apiserver-endpoint '${clusterEndpoint}'`);
     extraArgs.push(`--b64-cluster-ca '${clusterCertificateAuthorityData}'`);
   } catch (e) {
@@ -55,9 +57,14 @@ export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: a
   const kubeletExtraArgsSuffix = options.kubeletExtraArgs || '';
 
   // determine lifecycle label based on whether the ASG has a spot price.
-  const lifecycleLabel = autoScalingGroup.spotPrice ? LifecycleLabel.SPOT : LifecycleLabel.ON_DEMAND;
-  const withTaints = autoScalingGroup.spotPrice ? '--register-with-taints=spotInstance=true:PreferNoSchedule' : '';
-  const kubeletExtraArgs = `--node-labels lifecycle=${lifecycleLabel} ${withTaints} ${kubeletExtraArgsSuffix}`.trim();
+  const lifecycleLabel = autoScalingGroup.spotPrice
+    ? LifecycleLabel.SPOT
+    : LifecycleLabel.ON_DEMAND;
+  const withTaints = autoScalingGroup.spotPrice
+    ? '--register-with-taints=spotInstance=true:PreferNoSchedule'
+    : '';
+  const kubeletExtraArgs =
+    `--node-labels lifecycle=${lifecycleLabel} ${withTaints} ${kubeletExtraArgsSuffix}`.trim();
 
   return [
     'set -o xtrace',

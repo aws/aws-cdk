@@ -1,7 +1,11 @@
 import { Construct } from 'constructs';
 import { ILambdaDeploymentConfig } from './deployment-config';
 import { Duration, Names, Resource } from '../../../core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../../custom-resources';
+import {
+  AwsCustomResource,
+  AwsCustomResourcePolicy,
+  PhysicalResourceId,
+} from '../../../custom-resources';
 import { arnForDeploymentConfig, validateName } from '../private/utils';
 
 /**
@@ -27,7 +31,6 @@ export enum CustomLambdaDeploymentConfigType {
  * @deprecated Use `LambdaDeploymentConfig`
  */
 export interface CustomLambdaDeploymentConfigProps {
-
   /**
    * The type of deployment config, either CANARY or LINEAR
    * @deprecated Use `LambdaDeploymentConfig`
@@ -65,7 +68,6 @@ export interface CustomLambdaDeploymentConfigProps {
  * @deprecated CloudFormation now supports Lambda deployment configurations without custom resources. Use `LambdaDeploymentConfig`.
  */
 export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDeploymentConfig {
-
   /**
    * The name of the deployment config
    * @attribute
@@ -110,15 +112,17 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
     // Generates the name of the deployment config. It's also what you'll see in the AWS console
     // The name of the config is <construct unique id>.Lambda<deployment type><percentage>Percent<interval>Minutes
     // Unless the user provides an explicit name
-    this.deploymentConfigName = props.deploymentConfigName
-      ?? `${Names.uniqueId(this)}.Lambda${props.type}${props.percentage}Percent${props.type === CustomLambdaDeploymentConfigType.LINEAR
-        ? 'Every'
-        : ''}${props.interval.toMinutes()}Minutes`;
+    this.deploymentConfigName =
+      props.deploymentConfigName ??
+      `${Names.uniqueId(this)}.Lambda${props.type}${props.percentage}Percent${
+        props.type === CustomLambdaDeploymentConfigType.LINEAR ? 'Every' : ''
+      }${props.interval.toMinutes()}Minutes`;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
 
     // The AWS Custom Resource that calls CodeDeploy to create and delete the resource
     new AwsCustomResource(this, 'DeploymentConfig', {
-      onCreate: { // Run on creation only, to make the resource
+      onCreate: {
+        // Run on creation only, to make the resource
         service: 'CodeDeploy',
         action: 'createDeploymentConfig',
         parameters: {
@@ -129,7 +133,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
         // This `resourceName` is the initial physical ID of the config
         physicalResourceId: PhysicalResourceId.of(this.deploymentConfigName),
       },
-      onUpdate: { // Run on stack update
+      onUpdate: {
+        // Run on stack update
         service: 'CodeDeploy',
         action: 'createDeploymentConfig',
         parameters: {
@@ -141,7 +146,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
         // the old config gets deleted and the new one is created
         physicalResourceId: PhysicalResourceId.of(this.deploymentConfigName),
       },
-      onDelete: { // Run on deletion, or on resource replacement
+      onDelete: {
+        // Run on deletion, or on resource replacement
         service: 'CodeDeploy',
         action: 'deleteDeploymentConfig',
         parameters: {
@@ -155,20 +161,24 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
       installLatestAwsSdk: false,
     });
 
-    this.node.addValidation({ validate: () => validateName('Deployment config', this.deploymentConfigName) });
+    this.node.addValidation({
+      validate: () => validateName('Deployment config', this.deploymentConfigName),
+    });
   }
 
   // Validate the inputs. The percentage/interval limits come from CodeDeploy
   private validateParameters(props: CustomLambdaDeploymentConfigProps): void {
-    if ( !(1 <= props.percentage && props.percentage <= 99) ) {
+    if (!(1 <= props.percentage && props.percentage <= 99)) {
       throw new Error(
         `Invalid deployment config percentage "${props.percentage.toString()}". \
-        Step percentage must be an integer between 1 and 99.`);
+        Step percentage must be an integer between 1 and 99.`
+      );
     }
     if (props.interval.toMinutes() > 2880) {
       throw new Error(
         `Invalid deployment config interval "${props.interval.toString()}". \
-        Traffic shifting intervals must be positive integers up to 2880 (2 days).`);
+        Traffic shifting intervals must be positive integers up to 2880 (2 days).`
+      );
     }
   }
 }

@@ -24,7 +24,11 @@ export abstract class EnvironmentFile {
    * @param key The object key
    * @param objectVersion Optional S3 object version
    */
-  public static fromBucket(bucket: IBucket, key: string, objectVersion?: string): S3EnvironmentFile {
+  public static fromBucket(
+    bucket: IBucket,
+    key: string,
+    objectVersion?: string
+  ): S3EnvironmentFile {
     return new S3EnvironmentFile(bucket, key, objectVersion);
   }
 
@@ -47,7 +51,10 @@ export class AssetEnvironmentFile extends EnvironmentFile {
    * @param path The path to the asset file or directory.
    * @param options
    */
-  constructor(public readonly path: string, private readonly options: AssetOptions = { }) {
+  constructor(
+    public readonly path: string,
+    private readonly options: AssetOptions = {}
+  ) {
     super();
   }
 
@@ -80,7 +87,11 @@ export class AssetEnvironmentFile extends EnvironmentFile {
 export class S3EnvironmentFile extends EnvironmentFile {
   private readonly bucketName: string;
 
-  constructor(bucket: IBucket, private key: string, private objectVersion?: string) {
+  constructor(
+    bucket: IBucket,
+    private key: string,
+    private objectVersion?: string
+  ) {
     super();
 
     if (!bucket.bucketName) {

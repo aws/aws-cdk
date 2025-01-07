@@ -54,18 +54,24 @@ export class CfnReference extends Reference {
    *     Lazy.string({ produce: () => new CfnReference(...) })
    *
    */
-  public static for(target: CfnElement, attribute: string, refRender?: ReferenceRendering, typeHint?: ResolutionTypeHint) {
+  public static for(
+    target: CfnElement,
+    attribute: string,
+    refRender?: ReferenceRendering,
+    typeHint?: ResolutionTypeHint
+  ) {
     return CfnReference.singletonReference(target, attribute, refRender, () => {
-      const cfnIntrinsic = refRender === ReferenceRendering.FN_SUB
-        ? ('${' + target.logicalId + (attribute === 'Ref' ? '' : `.${attribute}`) + '}')
-        : (attribute === 'Ref'
-          ? { Ref: target.logicalId }
-          : {
-            'Fn::GetAtt': refRender === ReferenceRendering.GET_ATT_STRING
-              ? `${target.logicalId}.${attribute}`
-              : [target.logicalId, attribute],
-          }
-        );
+      const cfnIntrinsic =
+        refRender === ReferenceRendering.FN_SUB
+          ? '${' + target.logicalId + (attribute === 'Ref' ? '' : `.${attribute}`) + '}'
+          : attribute === 'Ref'
+            ? { Ref: target.logicalId }
+            : {
+                'Fn::GetAtt':
+                  refRender === ReferenceRendering.GET_ATT_STRING
+                    ? `${target.logicalId}.${attribute}`
+                    : [target.logicalId, attribute],
+              };
       return new CfnReference(cfnIntrinsic, attribute, target, typeHint);
     });
   }
@@ -89,7 +95,12 @@ export class CfnReference extends Reference {
    * Get or create the table.
    * Passing fnSub = true allows cloudformation-include to correctly handle Fn::Sub.
    */
-  private static singletonReference(target: Construct, attribKey: string, refRender: ReferenceRendering | undefined, fresh: () => CfnReference) {
+  private static singletonReference(
+    target: Construct,
+    attribKey: string,
+    refRender: ReferenceRendering | undefined,
+    fresh: () => CfnReference
+  ) {
     let attribs = CfnReference.referenceTable.get(target);
     if (!attribs) {
       attribs = new Map();
@@ -118,7 +129,12 @@ export class CfnReference extends Reference {
   private readonly replacementTokens: Map<Stack, IResolvable>;
   private readonly targetStack: Stack;
 
-  protected constructor(value: any, displayName: string, public readonly target: IConstruct, typeHint?: ResolutionTypeHint) {
+  protected constructor(
+    value: any,
+    displayName: string,
+    public readonly target: IConstruct,
+    typeHint?: ResolutionTypeHint
+  ) {
     // prepend scope path to display name
     super(value, target, displayName, typeHint);
 
@@ -160,7 +176,9 @@ export class CfnReference extends Reference {
     }
 
     if (this.hasValueForStack(stack)) {
-      throw new Error('Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
+      throw new Error(
+        'Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first'
+      );
     }
 
     this.replacementTokens.set(stack, value);

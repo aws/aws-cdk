@@ -68,7 +68,9 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-sagemaker-endpoint-alarms');
 
 const image = sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image'));
-const modelData = sagemaker.ModelData.fromAsset(path.join(__dirname, 'test-artifacts', 'valid-artifact.tar.gz'));
+const modelData = sagemaker.ModelData.fromAsset(
+  path.join(__dirname, 'test-artifacts', 'valid-artifact.tar.gz')
+);
 
 const modelWithArtifact = new sagemaker.Model(stack, 'ModelWithArtifact', {
   containers: [{ image, modelData }],
@@ -106,10 +108,12 @@ productionVariant.metricOverheadLatency().createAlarm(stack, 'OverheadLatencyAla
   threshold: 10,
   evaluationPeriods: 11,
 });
-productionVariant.metricInvocationResponseCode(sagemaker.InvocationHttpResponseCode.INVOCATION_5XX_ERRORS).createAlarm(stack, 'Invocation5XXErrorsAlarm', {
-  threshold: 13,
-  evaluationPeriods: 14,
-});
+productionVariant
+  .metricInvocationResponseCode(sagemaker.InvocationHttpResponseCode.INVOCATION_5XX_ERRORS)
+  .createAlarm(stack, 'Invocation5XXErrorsAlarm', {
+    threshold: 13,
+    evaluationPeriods: 14,
+  });
 productionVariant.metricDiskUtilization().createAlarm(stack, 'DiskUtilizationAlarm', {
   threshold: 16,
   evaluationPeriods: 17,

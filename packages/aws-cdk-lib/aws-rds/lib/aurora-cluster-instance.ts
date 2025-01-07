@@ -79,15 +79,17 @@ export class ClusterInstanceType {
    */
   public static provisioned(instanceType?: ec2.InstanceType): ClusterInstanceType {
     return new ClusterInstanceType(
-      (instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM)).toString(),
-      InstanceType.PROVISIONED,
+      (
+        instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM)
+      ).toString(),
+      InstanceType.PROVISIONED
     );
   }
 
   constructor(
     private readonly instanceType: string,
-    public readonly type: InstanceType,
-  ) { }
+    public readonly type: InstanceType
+  ) {}
 
   /**
    * String representation of the instance type that can be used in the CloudFormation resource
@@ -105,7 +107,11 @@ export interface IClusterInstance {
   /**
    * Create the database instance within the provided cluster
    */
-  bind(scope: Construct, cluster: IDatabaseCluster, options: ClusterInstanceBindOptions): IAuroraClusterInstance;
+  bind(
+    scope: Construct,
+    cluster: IDatabaseCluster,
+    options: ClusterInstanceBindOptions
+  ): IAuroraClusterInstance;
 }
 
 /**
@@ -355,7 +361,10 @@ export class ClusterInstance implements IClusterInstance {
    *   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
    * });
    */
-  public static provisioned(id: string, props: ProvisionedClusterInstanceProps = {}): IClusterInstance {
+  public static provisioned(
+    id: string,
+    props: ProvisionedClusterInstanceProps = {}
+  ): IClusterInstance {
     return new ClusterInstance(id, {
       ...props,
       instanceType: ClusterInstanceType.provisioned(props.instanceType),
@@ -370,7 +379,10 @@ export class ClusterInstance implements IClusterInstance {
    *   scaleWithWriter: true,
    * });
    */
-  public static serverlessV2(id: string, props: ServerlessV2ClusterInstanceProps = {}): IClusterInstance {
+  public static serverlessV2(
+    id: string,
+    props: ServerlessV2ClusterInstanceProps = {}
+  ): IClusterInstance {
     return new ClusterInstance(id, {
       ...props,
       promotionTier: props.scaleWithWriter ? 1 : 2,
@@ -378,12 +390,19 @@ export class ClusterInstance implements IClusterInstance {
     });
   }
 
-  private constructor(private id: string, private readonly props: ClusterInstanceProps) { }
+  private constructor(
+    private id: string,
+    private readonly props: ClusterInstanceProps
+  ) {}
 
   /**
    * Add the ClusterInstance to the cluster
    */
-  public bind(scope: Construct, cluster: IDatabaseCluster, props: ClusterInstanceBindOptions): IAuroraClusterInstance {
+  public bind(
+    scope: Construct,
+    cluster: IDatabaseCluster,
+    props: ClusterInstanceBindOptions
+  ): IAuroraClusterInstance {
     return new AuroraClusterInstance(scope, this.id, {
       cluster,
       ...this.props,
@@ -468,12 +487,9 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
   public readonly performanceInsightRetention?: PerformanceInsightRetention;
   public readonly performanceInsightEncryptionKey?: kms.IKey;
   constructor(scope: Construct, id: string, props: AuroraClusterInstanceProps) {
-    super(
-      scope,
-      props.isFromLegacyInstanceProps ? `${id}Wrapper` : id,
-      {
-        physicalName: props.instanceIdentifier,
-      });
+    super(scope, props.isFromLegacyInstanceProps ? `${id}Wrapper` : id, {
+      physicalName: props.instanceIdentifier,
+    });
     this.tier = props.promotionTier ?? 2;
     if (this.tier > 15) {
       throw new Error('promotionTier must be between 0-15');
@@ -484,49 +500,59 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     let publiclyAccessible = props.publiclyAccessible;
     if (isOwnedResource) {
       const ownedCluster = props.cluster as DatabaseCluster;
-      internetConnected = ownedCluster.vpc.selectSubnets(ownedCluster.vpcSubnets).internetConnectivityEstablished;
-      const isInPublicSubnet = ownedCluster.vpcSubnets && ownedCluster.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
+      internetConnected = ownedCluster.vpc.selectSubnets(
+        ownedCluster.vpcSubnets
+      ).internetConnectivityEstablished;
+      const isInPublicSubnet =
+        ownedCluster.vpcSubnets && ownedCluster.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
       publiclyAccessible = props.publiclyAccessible ?? isInPublicSubnet;
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
-    const instanceType = (props.instanceType ?? ClusterInstanceType.serverlessV2());
+    const instanceType = props.instanceType ?? ClusterInstanceType.serverlessV2();
     this.type = instanceType.type;
-    this.instanceSize = this.type === InstanceType.PROVISIONED ? props.instanceType?.toString() : undefined;
+    this.instanceSize =
+      this.type === InstanceType.PROVISIONED ? props.instanceType?.toString() : undefined;
 
     // engine is never undefined on a managed resource, i.e. DatabaseCluster
     const engine = props.cluster.engine!;
-    const enablePerformanceInsights = props.enablePerformanceInsights
-      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+    const enablePerformanceInsights =
+      props.enablePerformanceInsights ||
+      props.performanceInsightRetention !== undefined ||
+      props.performanceInsightEncryptionKey !== undefined;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+      throw new Error(
+        '`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set'
+      );
     }
 
     this.performanceInsightsEnabled = enablePerformanceInsights;
     this.performanceInsightRetention = enablePerformanceInsights
-      ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+      ? props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT
       : undefined;
     this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
 
-    const instanceParameterGroup = props.parameterGroup ?? (
-      props.parameters
-        ? FeatureFlags.of(this).isEnabled(AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS)
+    const instanceParameterGroup =
+      props.parameterGroup ??
+      (props.parameters
+        ? FeatureFlags.of(this).isEnabled(
+            AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS
+          )
           ? new ParameterGroup(this, 'InstanceParameterGroup', {
-            engine: engine,
-            parameters: props.parameters,
-          })
+              engine: engine,
+              parameters: props.parameters,
+            })
           : new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
-            engine: engine,
-            parameters: props.parameters,
-          })
-        : undefined
-    );
+              engine: engine,
+              parameters: props.parameters,
+            })
+        : undefined);
     const instanceParameterGroupConfig = instanceParameterGroup?.bindToInstance({});
     const instance = new CfnDBInstance(
       props.isFromLegacyInstanceProps ? scope : this,
       props.isFromLegacyInstanceProps ? id : 'Resource',
       {
-      // Link to cluster
+        // Link to cluster
         engine: engine.engineType,
         dbClusterIdentifier: props.cluster.clusterIdentifier,
         promotionTier: props.isFromLegacyInstanceProps ? undefined : this.tier,
@@ -535,20 +561,24 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         dbInstanceClass: props.instanceType ? databaseInstanceType(instanceType) : undefined,
         publiclyAccessible,
         preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-        enablePerformanceInsights: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
+        enablePerformanceInsights:
+          this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
         performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
         performanceInsightsRetentionPeriod: this.performanceInsightRetention,
         // only need to supply this when migrating from legacy method.
         // this is not applicable for aurora instances, but if you do provide it and then
         // change it it will cause an instance replacement
-        dbSubnetGroupName: props.isFromLegacyInstanceProps ? props.subnetGroup?.subnetGroupName : undefined,
+        dbSubnetGroupName: props.isFromLegacyInstanceProps
+          ? props.subnetGroup?.subnetGroupName
+          : undefined,
         dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
         monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
         monitoringRoleArn: props.monitoringRole && props.monitoringRole.roleArn,
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
         allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
         caCertificateIdentifier: props.caCertificate && props.caCertificate.toString(),
-      });
+      }
+    );
     // For instances that are part of a cluster:
     //
     //  Cluster DESTROY or SNAPSHOT -> DESTROY (snapshot is good enough to recreate)

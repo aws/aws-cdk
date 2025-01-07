@@ -4,7 +4,6 @@
  * For more information, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
  */
 export class TimeZone {
-
   /** IANA Time Zone database entry for Africa/Abidjan.  UTC offset +00:00/+00:00. */
   public static readonly AFRICA_ABIDJAN = new TimeZone('Africa/Abidjan');
 
@@ -72,7 +71,9 @@ export class TimeZone {
   public static readonly AMERICA_ARAGUAINA = new TimeZone('America/Araguaina');
 
   /** IANA Time Zone database entry for America/Argentina/Buenos_Aires.  UTC offset −03:00/−03:00. */
-  public static readonly AMERICA_ARGENTINA_BUENOS_AIRES = new TimeZone('America/Argentina/Buenos_Aires');
+  public static readonly AMERICA_ARGENTINA_BUENOS_AIRES = new TimeZone(
+    'America/Argentina/Buenos_Aires'
+  );
 
   /** IANA Time Zone database entry for America/Argentina/Catamarca.  UTC offset −03:00/−03:00. */
   public static readonly AMERICA_ARGENTINA_CATAMARCA = new TimeZone('America/Argentina/Catamarca');
@@ -90,7 +91,9 @@ export class TimeZone {
   public static readonly AMERICA_ARGENTINA_MENDOZA = new TimeZone('America/Argentina/Mendoza');
 
   /** IANA Time Zone database entry for America/Argentina/Rio_Gallegos.  UTC offset −03:00/−03:00. */
-  public static readonly AMERICA_ARGENTINA_RIO_GALLEGOS = new TimeZone('America/Argentina/Rio_Gallegos');
+  public static readonly AMERICA_ARGENTINA_RIO_GALLEGOS = new TimeZone(
+    'America/Argentina/Rio_Gallegos'
+  );
 
   /** IANA Time Zone database entry for America/Argentina/Salta.  UTC offset −03:00/−03:00. */
   public static readonly AMERICA_ARGENTINA_SALTA = new TimeZone('America/Argentina/Salta');
@@ -222,7 +225,9 @@ export class TimeZone {
   public static readonly AMERICA_HERMOSILLO = new TimeZone('America/Hermosillo');
 
   /** IANA Time Zone database entry for America/Indiana/Indianapolis.  UTC offset −05:00/−04:00. */
-  public static readonly AMERICA_INDIANA_INDIANAPOLIS = new TimeZone('America/Indiana/Indianapolis');
+  public static readonly AMERICA_INDIANA_INDIANAPOLIS = new TimeZone(
+    'America/Indiana/Indianapolis'
+  );
 
   /** IANA Time Zone database entry for America/Indiana/Knox.  UTC offset −06:00/−05:00. */
   public static readonly AMERICA_INDIANA_KNOX = new TimeZone('America/Indiana/Knox');
@@ -330,7 +335,9 @@ export class TimeZone {
   public static readonly AMERICA_NORTH_DAKOTA_CENTER = new TimeZone('America/North_Dakota/Center');
 
   /** IANA Time Zone database entry for America/North_Dakota/New_Salem.  UTC offset −06:00/−05:00. */
-  public static readonly AMERICA_NORTH_DAKOTA_NEW_SALEM = new TimeZone('America/North_Dakota/New_Salem');
+  public static readonly AMERICA_NORTH_DAKOTA_NEW_SALEM = new TimeZone(
+    'America/North_Dakota/New_Salem'
+  );
 
   /** IANA Time Zone database entry for America/Nuuk.  UTC offset −03:00/−03:00. */
   public static readonly AMERICA_NUUK = new TimeZone('America/Nuuk');
@@ -348,7 +355,9 @@ export class TimeZone {
   public static readonly AMERICA_PHOENIX = new TimeZone('America/Phoenix');
 
   /** IANA Time Zone database entry for America/Port-au-Prince.  UTC offset −05:00/−04:00. */
-  public static readonly AMERICA_PORT_MINUS_AU_MINUS_PRINCE = new TimeZone('America/Port-au-Prince');
+  public static readonly AMERICA_PORT_MINUS_AU_MINUS_PRINCE = new TimeZone(
+    'America/Port-au-Prince'
+  );
 
   /** IANA Time Zone database entry for America/Porto_Velho.  UTC offset −04:00/−04:00. */
   public static readonly AMERICA_PORTO_VELHO = new TimeZone('America/Porto_Velho');
@@ -1075,7 +1084,5 @@ export class TimeZone {
    *
    * @param timezoneName The name of the timezone
    */
-  private constructor(public readonly timezoneName: string) {
-  }
-
+  private constructor(public readonly timezoneName: string) {}
 }

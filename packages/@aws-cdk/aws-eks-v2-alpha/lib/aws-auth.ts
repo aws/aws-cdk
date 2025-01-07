@@ -42,7 +42,8 @@ export class AwsAuth extends Construct {
      * We should throw when ConfigMap is not supported and that is only when authenticationMode is
      * AuthenticationMode.API.
      */
-    const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+    const supportConfigMap =
+      props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
 
     if (!supportConfigMap) {
       throw new Error('ConfigMap not supported in the AuthenticationMode');
@@ -116,7 +117,6 @@ export class AwsAuth extends Construct {
   }
 
   private assertSameStack(construct: IConstruct) {
-
     const thisStack = Stack.of(this);
 
     if (Stack.of(construct) !== thisStack) {
@@ -124,27 +124,35 @@ export class AwsAuth extends Construct {
       // a dependency on the cluster, allowing those resources to be in a different stack,
       // will create a circular dependency. granted, it won't always be the case,
       // but we opted for the more causious and restrictive approach for now.
-      throw new Error(`${construct.node.path} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`);
+      throw new Error(
+        `${construct.node.path} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`
+      );
     }
   }
 
   private synthesizeMapRoles() {
     return Lazy.any({
-      produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
-        rolearn: m.role.roleArn,
-        username: m.mapping.username ?? m.role.roleArn,
-        groups: m.mapping.groups,
-      }))),
+      produce: () =>
+        this.stack.toJsonString(
+          this.roleMappings.map((m) => ({
+            rolearn: m.role.roleArn,
+            username: m.mapping.username ?? m.role.roleArn,
+            groups: m.mapping.groups,
+          }))
+        ),
     });
   }
 
   private synthesizeMapUsers() {
     return Lazy.any({
-      produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
-        userarn: m.user.userArn,
-        username: m.mapping.username ?? m.user.userArn,
-        groups: m.mapping.groups,
-      }))),
+      produce: () =>
+        this.stack.toJsonString(
+          this.userMappings.map((m) => ({
+            userarn: m.user.userArn,
+            username: m.mapping.username ?? m.user.userArn,
+            groups: m.mapping.groups,
+          }))
+        ),
     });
   }
 

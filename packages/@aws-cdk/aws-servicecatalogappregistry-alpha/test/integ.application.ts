@@ -15,11 +15,7 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
   description: 'my attribute group description',
   attributes: {
     stage: 'alpha',
-    teamMembers: [
-      'markI',
-      'markII',
-      'markIII',
-    ],
+    teamMembers: ['markI', 'markII', 'markIII'],
     public: false,
     publishYear: 2021,
     plannedRoadMap: {
@@ -37,11 +33,7 @@ application.addAttributeGroup('myAnotherAttributeGroup', {
   attributeGroupName: 'myAnotherAttributeGroup',
   attributes: {
     stage: 'alpha',
-    teamMembers: [
-      'markI',
-      'markII',
-      'markIII',
-    ],
+    teamMembers: ['markI', 'markII', 'markIII'],
     public: false,
     publishYear: 2021,
     plannedRoadMap: {

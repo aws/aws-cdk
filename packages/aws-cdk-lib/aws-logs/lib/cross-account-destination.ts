@@ -1,7 +1,10 @@
 import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
-import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
+import {
+  ILogSubscriptionDestination,
+  LogSubscriptionDestinationConfig,
+} from './subscription-filter';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
@@ -68,7 +71,8 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
 
   constructor(scope: Construct, id: string, props: CrossAccountDestinationProps) {
     super(scope, id, {
-      physicalName: props.destinationName ||
+      physicalName:
+        props.destinationName ||
         // In the underlying model, the name is not optional, but we make it so anyway.
         cdk.Lazy.string({ produce: () => this.generateUniqueName() }),
     });

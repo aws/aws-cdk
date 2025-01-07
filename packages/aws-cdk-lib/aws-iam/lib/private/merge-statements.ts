@@ -5,7 +5,11 @@
 
 import { IConstruct } from 'constructs';
 import { partitionPrincipals } from './comparable-principal';
-import { PolicyStatement, EstimateSizeOptions, deriveEstimateSizeOptions } from '../policy-statement';
+import {
+  PolicyStatement,
+  EstimateSizeOptions,
+  deriveEstimateSizeOptions,
+} from '../policy-statement';
 import { IPrincipal } from '../principals';
 import { LITERAL_STRING_KEY } from '../util';
 
@@ -51,13 +55,18 @@ export interface MergeStatementOptions {
  * Good Enough(tm). If it merges anything, it's at least going to produce a smaller output
  * than the input.
  */
-export function mergeStatements(statements: PolicyStatement[], options: MergeStatementOptions): MergeStatementResult {
+export function mergeStatements(
+  statements: PolicyStatement[],
+  options: MergeStatementOptions
+): MergeStatementResult {
   const sizeOptions = deriveEstimateSizeOptions(options.scope);
   const compStatements = statements.map(makeComparable);
-  const mergeFn = options?.mergeIfCombinable ?? true ? mergeIfCombinable : mergeIfEqual;
+  const mergeFn = (options?.mergeIfCombinable ?? true) ? mergeIfCombinable : mergeIfEqual;
 
   // Keep trying until nothing changes anymore
-  while (onePass()) { /* again */ }
+  while (onePass()) {
+    /* again */
+  }
 
   const mergedStatements = new Array<PolicyStatement>();
   const originsMap = new Map<PolicyStatement, PolicyStatement[]>();
@@ -76,7 +85,12 @@ export function mergeStatements(statements: PolicyStatement[], options: MergeSta
     for (let i = 0; i < compStatements.length; i++) {
       let j = i + 1;
       while (j < compStatements.length) {
-        const merged = mergeFn(compStatements[i], compStatements[j], !!options.limitSize, sizeOptions);
+        const merged = mergeFn(
+          compStatements[i],
+          compStatements[j],
+          !!options.limitSize,
+          sizeOptions
+        );
 
         if (merged) {
           compStatements[i] = merged;
@@ -120,14 +134,20 @@ function mergeIfCombinable(
   a: ComparableStatement,
   b: ComparableStatement,
   limitSize: boolean,
-  options: EstimateSizeOptions,
+  options: EstimateSizeOptions
 ): ComparableStatement | undefined {
   // Effects must be the same
-  if (a.statement.effect !== b.statement.effect) { return; }
+  if (a.statement.effect !== b.statement.effect) {
+    return;
+  }
   // We don't merge Sids (for now)
-  if (a.statement.sid || b.statement.sid) { return; }
+  if (a.statement.sid || b.statement.sid) {
+    return;
+  }
 
-  if (a.conditionString !== b.conditionString) { return; }
+  if (a.conditionString !== b.conditionString) {
+    return;
+  }
   if (
     !setEqual(a.statement.notActions, b.statement.notActions) ||
     !setEqual(a.statement.notResources, b.statement.notResources) ||
@@ -138,11 +158,14 @@ function mergeIfCombinable(
 
   // We can merge these statements if 2 out of the 3 sets of Action, Resource, Principal
   // are the same.
-  const setsEqual = (setEqual(a.statement.actions, b.statement.actions) ? 1 : 0) +
+  const setsEqual =
+    (setEqual(a.statement.actions, b.statement.actions) ? 1 : 0) +
     (setEqual(a.statement.resources, b.statement.resources) ? 1 : 0) +
     (setEqualPrincipals(a.statement.principals, b.statement.principals) ? 1 : 0);
 
-  if (setsEqual < 2 || unmergeablePrincipals(a, b)) { return; }
+  if (setsEqual < 2 || unmergeablePrincipals(a, b)) {
+    return;
+  }
 
   const combined = a.statement.copy({
     actions: setMerge(a.statement.actions, b.statement.actions),
@@ -150,7 +173,9 @@ function mergeIfCombinable(
     principals: setMergePrincipals(a.statement.principals, b.statement.principals),
   });
 
-  if (limitSize && combined._estimateSize(options) > MAX_MERGE_SIZE) { return undefined; }
+  if (limitSize && combined._estimateSize(options) > MAX_MERGE_SIZE) {
+    return undefined;
+  }
 
   return {
     originals: [...a.originals, ...b.originals],
@@ -162,10 +187,19 @@ function mergeIfCombinable(
 /**
  * We merge two statements only if they are exactly the same
  */
-function mergeIfEqual(a: ComparableStatement, b: ComparableStatement): ComparableStatement | undefined {
-  if (a.statement.effect !== b.statement.effect) { return; }
-  if (a.statement.sid !== b.statement.sid) { return; }
-  if (a.conditionString !== b.conditionString) { return; }
+function mergeIfEqual(
+  a: ComparableStatement,
+  b: ComparableStatement
+): ComparableStatement | undefined {
+  if (a.statement.effect !== b.statement.effect) {
+    return;
+  }
+  if (a.statement.sid !== b.statement.sid) {
+    return;
+  }
+  if (a.conditionString !== b.conditionString) {
+    return;
+  }
   if (
     !setEqual(a.statement.notActions, b.statement.notActions) ||
     !setEqual(a.statement.notResources, b.statement.notResources) ||
@@ -211,8 +245,12 @@ function makeComparable(s: PolicyStatement): ComparableStatement {
  * therefore be preserved.
  */
 function unmergeablePrincipals(a: ComparableStatement, b: ComparableStatement) {
-  const aHasLiteral = a.statement.principals.some(v => LITERAL_STRING_KEY in v.policyFragment.principalJson);
-  const bHasLiteral = b.statement.principals.some(v => LITERAL_STRING_KEY in v.policyFragment.principalJson);
+  const aHasLiteral = a.statement.principals.some(
+    (v) => LITERAL_STRING_KEY in v.policyFragment.principalJson
+  );
+  const bHasLiteral = b.statement.principals.some(
+    (v) => LITERAL_STRING_KEY in v.policyFragment.principalJson
+  );
   return aHasLiteral !== bHasLiteral;
 }
 
@@ -237,7 +275,7 @@ interface ComparableStatement {
  */
 function setEqual<A>(a: A[], b: A[]) {
   const bSet = new Set(b);
-  return a.length === b.length && a.every(k => bSet.has(k));
+  return a.length === b.length && a.every((k) => bSet.has(k));
 }
 
 /**

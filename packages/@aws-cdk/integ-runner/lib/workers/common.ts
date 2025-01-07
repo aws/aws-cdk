@@ -260,9 +260,21 @@ export interface Diagnostic {
 
 export function printSummary(total: number, failed: number): void {
   if (failed > 0) {
-    logger.print('%s:    %s %s, %s total', chalk.bold('Tests'), chalk.red(failed), chalk.red('failed'), total);
+    logger.print(
+      '%s:    %s %s, %s total',
+      chalk.bold('Tests'),
+      chalk.red(failed),
+      chalk.red('failed'),
+      total
+    );
   } else {
-    logger.print('%s:    %s %s, %s total', chalk.bold('Tests'), chalk.green(total), chalk.green('passed'), total);
+    logger.print(
+      '%s:    %s %s, %s total',
+      chalk.bold('Tests'),
+      chalk.green(total),
+      chalk.green('passed'),
+      total
+    );
   }
 }
 
@@ -272,7 +284,13 @@ export function printSummary(total: number, failed: number): void {
  */
 export function formatAssertionResults(results: AssertionResults): string {
   return Object.entries(results)
-    .map(([id, result]) => format('%s%s', id, result.status === 'success' ? ` - ${result.status}` : `\n${result.message}`))
+    .map(([id, result]) =>
+      format(
+        '%s%s',
+        id,
+        result.status === 'success' ? ` - ${result.status}` : `\n${result.message}`
+      )
+    )
     .join('\n      ');
 }
 
@@ -282,26 +300,59 @@ export function formatAssertionResults(results: AssertionResults): string {
 export function printResults(diagnostic: Diagnostic): void {
   switch (diagnostic.reason) {
     case DiagnosticReason.SNAPSHOT_SUCCESS:
-      logger.success('  UNCHANGED  %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
+      logger.success(
+        '  UNCHANGED  %s %s',
+        diagnostic.testName,
+        chalk.gray(`${diagnostic.duration}s`)
+      );
       break;
     case DiagnosticReason.TEST_SUCCESS:
-      logger.success('  SUCCESS    %s %s\n      ', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.success(
+        '  SUCCESS    %s %s\n      ',
+        diagnostic.testName,
+        chalk.gray(`${diagnostic.duration}s`),
+        diagnostic.message
+      );
       break;
     case DiagnosticReason.NO_SNAPSHOT:
-      logger.error('  NEW        %s %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`));
+      logger.error(
+        '  NEW        %s %s',
+        diagnostic.testName,
+        chalk.gray(`${diagnostic.duration}s`)
+      );
       break;
     case DiagnosticReason.SNAPSHOT_FAILED:
-      logger.error('  CHANGED    %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.error(
+        '  CHANGED    %s %s\n      %s',
+        diagnostic.testName,
+        chalk.gray(`${diagnostic.duration}s`),
+        diagnostic.message
+      );
       break;
     case DiagnosticReason.SNAPSHOT_ERROR:
     case DiagnosticReason.TEST_ERROR:
-      logger.error('  ERROR      %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.error(
+        '  ERROR      %s %s\n      %s',
+        diagnostic.testName,
+        chalk.gray(`${diagnostic.duration}s`),
+        diagnostic.message
+      );
       break;
     case DiagnosticReason.TEST_FAILED:
-      logger.error('  FAILED     %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.error(
+        '  FAILED     %s %s\n      %s',
+        diagnostic.testName,
+        chalk.gray(`${diagnostic.duration}s`),
+        diagnostic.message
+      );
       break;
     case DiagnosticReason.ASSERTION_FAILED:
-      logger.error('  ASSERT     %s %s\n      %s', diagnostic.testName, chalk.gray(`${diagnostic.duration}s`), diagnostic.message);
+      logger.error(
+        '  ASSERT     %s %s\n      %s',
+        diagnostic.testName,
+        chalk.gray(`${diagnostic.duration}s`),
+        diagnostic.message
+      );
       break;
   }
   for (const addl of diagnostic.additionalMessages ?? []) {
@@ -316,5 +367,5 @@ export function printLaggards(testNames: Set<string>) {
     testNames.size < 10 ? ['(', Array.from(testNames).join(', '), ')'].join('') : '',
   ];
 
-  logger.print(chalk.grey(parts.filter(x => x).join(' ')));
+  logger.print(chalk.grey(parts.filter((x) => x).join(' ')));
 }

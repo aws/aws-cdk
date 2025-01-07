@@ -140,14 +140,17 @@ export class CustomResource extends Resource {
 
     const type = renderResourceType(props.resourceType);
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
-    const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
+    const properties = pascalCaseProperties
+      ? uppercaseProperties(props.properties || {})
+      : props.properties || {};
 
-    if (props.serviceTimeout !== undefined && !Token.isUnresolved(props.serviceTimeout)
-    ) {
+    if (props.serviceTimeout !== undefined && !Token.isUnresolved(props.serviceTimeout)) {
       const serviceTimeoutSeconds = props.serviceTimeout.toSeconds();
 
       if (serviceTimeoutSeconds < 1 || serviceTimeoutSeconds > 3600) {
-        throw new Error(`serviceTimeout must either be between 1 and 3600 seconds, got ${serviceTimeoutSeconds}`);
+        throw new Error(
+          `serviceTimeout must either be between 1 and 3600 seconds, got ${serviceTimeoutSeconds}`
+        );
       }
     }
 
@@ -207,7 +210,7 @@ export class CustomResource extends Resource {
  */
 function uppercaseProperties(props: { [key: string]: any }) {
   const ret: { [key: string]: any } = {};
-  Object.keys(props).forEach(key => {
+  Object.keys(props).forEach((key) => {
     const upper = key.slice(0, 1).toUpperCase() + key.slice(1);
     ret[upper] = props[key];
   });
@@ -229,7 +232,9 @@ function renderResourceType(resourceType?: string) {
 
   const typeName = resourceType.slice(resourceType.indexOf('::') + 2);
   if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
-    throw new Error(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`);
+    throw new Error(
+      `Custom resource type name can only include alphanumeric characters and _@- (${typeName})`
+    );
   }
 
   return resourceType;

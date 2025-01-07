@@ -64,29 +64,22 @@ class FeatureFlagStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'BootstrapBrokers3', { value: cluster2.bootstrapBrokersSaslIam });
 
     const certSigningAlgorithm = 'SHA256WITHRSA';
-    const privateCA = new CfnCertificateAuthority(
-      this,
-      'CertificateAuthority',
-      {
-        keyAlgorithm: 'RSA_2048',
-        signingAlgorithm: certSigningAlgorithm,
-        keyStorageSecurityStandard: 'FIPS_140_2_LEVEL_3_OR_HIGHER',
-        type: 'ROOT',
-        subject: {
-          commonName: 'MSK Cluster Root CA',
-          organization: 'Amazon Web Services',
-          organizationalUnit: 'AWS-CDK',
-          country: 'DE',
-          state: 'Berlin',
-          locality: 'Berlin',
-        },
+    const privateCA = new CfnCertificateAuthority(this, 'CertificateAuthority', {
+      keyAlgorithm: 'RSA_2048',
+      signingAlgorithm: certSigningAlgorithm,
+      keyStorageSecurityStandard: 'FIPS_140_2_LEVEL_3_OR_HIGHER',
+      type: 'ROOT',
+      subject: {
+        commonName: 'MSK Cluster Root CA',
+        organization: 'Amazon Web Services',
+        organizationalUnit: 'AWS-CDK',
+        country: 'DE',
+        state: 'Berlin',
+        locality: 'Berlin',
       },
-    );
+    });
 
-    privateCA.node.addMetadata(
-      'Description',
-      'Signing authority for Certificates',
-    );
+    privateCA.node.addMetadata('Description', 'Signing authority for Certificates');
 
     const cert = new CfnCertificate(this, 'Certificate', {
       certificateAuthorityArn: privateCA.attrArn,
@@ -98,20 +91,13 @@ class FeatureFlagStack extends cdk.Stack {
         value: 1,
       },
     });
-    cert.node.addMetadata(
-      'Description',
-      'Certificate for signing requests from MSK-Cluster',
-    );
+    cert.node.addMetadata('Description', 'Certificate for signing requests from MSK-Cluster');
 
     // Activating the certificate using the signing cert authority
-    const certActivation = new CfnCertificateAuthorityActivation(
-      this,
-      'CertificateActivation',
-      {
-        certificateAuthorityArn: privateCA.attrArn,
-        certificate: cert.attrCertificate,
-      },
-    );
+    const certActivation = new CfnCertificateAuthorityActivation(this, 'CertificateActivation', {
+      certificateAuthorityArn: privateCA.attrArn,
+      certificate: cert.attrCertificate,
+    });
 
     const cluster3 = new msk.Cluster(this, 'ClusterIAMTLS', {
       clusterName: 'integ-test-iam-tls-auth',
@@ -128,11 +114,7 @@ class FeatureFlagStack extends cdk.Stack {
       clientAuthentication: msk.ClientAuthentication.saslTls({
         iam: true,
         certificateAuthorities: [
-          CertificateAuthority.fromCertificateAuthorityArn(
-            this,
-            'PrivateCA',
-            privateCA.attrArn,
-          ),
+          CertificateAuthority.fromCertificateAuthorityArn(this, 'PrivateCA', privateCA.attrArn),
         ],
       }),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -195,7 +177,6 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers9', { value: cluster7.bootstrapBrokersTls });
-
   }
 }
 
@@ -215,8 +196,10 @@ assertionProvider.addPolicyStatementFromSdkCall('s3', 'ListBucket', [stack.bucke
 assertionProvider.addPolicyStatementFromSdkCall('s3', 'GetObject', [`${stack.bucketArn}/*`]);
 assertionProvider.addPolicyStatementFromSdkCall('kafka', 'GetBootstrapBrokers', ['*']);
 
-objects.expect(ExpectedResult.objectLike({
-  KeyCount: 1,
-}));
+objects.expect(
+  ExpectedResult.objectLike({
+    KeyCount: 1,
+  })
+);
 
 app.synth();

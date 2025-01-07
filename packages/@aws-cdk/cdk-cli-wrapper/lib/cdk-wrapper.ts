@@ -1,12 +1,19 @@
 import { ChildProcess } from 'child_process';
-import { DefaultCdkOptions, DeployOptions, DestroyOptions, SynthOptions, ListOptions, StackActivityProgress, HotswapMode } from './commands';
+import {
+  DefaultCdkOptions,
+  DeployOptions,
+  DestroyOptions,
+  SynthOptions,
+  ListOptions,
+  StackActivityProgress,
+  HotswapMode,
+} from './commands';
 import { exec, watch } from './utils';
 
 /**
  * AWS CDK CLI operations
  */
 export interface ICdk {
-
   /**
    * cdk deploy
    */
@@ -140,7 +147,9 @@ export class CdkCliWrapper implements ICdk {
     try {
       this.cdk = options.cdkExecutable ?? 'cdk';
     } catch {
-      throw new Error(`could not resolve path to cdk executable: "${options.cdkExecutable ?? 'cdk'}"`);
+      throw new Error(
+        `could not resolve path to cdk executable: "${options.cdkExecutable ?? 'cdk'}"`
+      );
     }
   }
 
@@ -174,16 +183,20 @@ export class CdkCliWrapper implements ICdk {
       ...renderBooleanArg('previous-parameters', options.usePreviousParameters),
       ...renderBooleanArg('rollback', options.rollback),
       ...renderBooleanArg('staging', options.staging),
-      ...options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : [],
-      ...options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : [],
-      ...options.parameters ? renderMapArrayArg('--parameters', options.parameters) : [],
-      ...options.outputsFile ? ['--outputs-file', options.outputsFile] : [],
-      ...options.requireApproval ? ['--require-approval', options.requireApproval] : [],
-      ...options.changeSetName ? ['--change-set-name', options.changeSetName] : [],
-      ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
-      ...options.progress ? ['--progress', options.progress] : ['--progress', StackActivityProgress.EVENTS],
-      ...options.deploymentMethod ? ['--method', options.deploymentMethod] : [],
-      ...options.concurrency ? ['--concurrency', options.concurrency.toString()] : [],
+      ...(options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : []),
+      ...(options.notificationArns
+        ? renderArrayArg('--notification-arns', options.notificationArns)
+        : []),
+      ...(options.parameters ? renderMapArrayArg('--parameters', options.parameters) : []),
+      ...(options.outputsFile ? ['--outputs-file', options.outputsFile] : []),
+      ...(options.requireApproval ? ['--require-approval', options.requireApproval] : []),
+      ...(options.changeSetName ? ['--change-set-name', options.changeSetName] : []),
+      ...(options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : []),
+      ...(options.progress
+        ? ['--progress', options.progress]
+        : ['--progress', StackActivityProgress.EVENTS]),
+      ...(options.deploymentMethod ? ['--method', options.deploymentMethod] : []),
+      ...(options.concurrency ? ['--concurrency', options.concurrency.toString()] : []),
       ...this.createDefaultArguments(options),
     ];
 
@@ -218,15 +231,19 @@ export class CdkCliWrapper implements ICdk {
       ...renderBooleanArg('staging', options.staging),
       ...renderBooleanArg('logs', options.traceLogs),
       hotswap,
-      ...options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : [],
-      ...options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : [],
-      ...options.parameters ? renderMapArrayArg('--parameters', options.parameters) : [],
-      ...options.outputsFile ? ['--outputs-file', options.outputsFile] : [],
-      ...options.requireApproval ? ['--require-approval', options.requireApproval] : [],
-      ...options.changeSetName ? ['--change-set-name', options.changeSetName] : [],
-      ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
-      ...options.progress ? ['--progress', options.progress] : ['--progress', StackActivityProgress.EVENTS],
-      ...options.deploymentMethod ? ['--method', options.deploymentMethod] : [],
+      ...(options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : []),
+      ...(options.notificationArns
+        ? renderArrayArg('--notification-arns', options.notificationArns)
+        : []),
+      ...(options.parameters ? renderMapArrayArg('--parameters', options.parameters) : []),
+      ...(options.outputsFile ? ['--outputs-file', options.outputsFile] : []),
+      ...(options.requireApproval ? ['--require-approval', options.requireApproval] : []),
+      ...(options.changeSetName ? ['--change-set-name', options.changeSetName] : []),
+      ...(options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : []),
+      ...(options.progress
+        ? ['--progress', options.progress]
+        : ['--progress', StackActivityProgress.EVENTS]),
+      ...(options.deploymentMethod ? ['--method', options.deploymentMethod] : []),
       ...this.createDefaultArguments(options),
     ];
 
@@ -235,7 +252,6 @@ export class CdkCliWrapper implements ICdk {
       verbose: this.showOutput,
       env: this.env,
     });
-
   }
 
   /**
@@ -296,7 +312,7 @@ export class CdkCliWrapper implements ICdk {
     this.validateArgs(options);
     const stacks = options.stacks ?? [];
     return [
-      ...options.app ? ['--app', options.app] : [],
+      ...(options.app ? ['--app', options.app] : []),
       ...renderBooleanArg('strict', options.strict),
       ...renderBooleanArg('trace', options.trace),
       ...renderBooleanArg('lookups', options.lookups),
@@ -310,19 +326,22 @@ export class CdkCliWrapper implements ICdk {
       ...renderBooleanArg('asset-metadata', options.assetMetadata),
       ...renderBooleanArg('notices', options.notices),
       ...renderBooleanArg('color', options.color),
-      ...options.context ? renderMapArrayArg('--context', options.context) : [],
-      ...options.profile ? ['--profile', options.profile] : [],
-      ...options.proxy ? ['--proxy', options.proxy] : [],
-      ...options.caBundlePath ? ['--ca-bundle-path', options.caBundlePath] : [],
-      ...options.roleArn ? ['--role-arn', options.roleArn] : [],
-      ...options.output ? ['--output', options.output] : [],
+      ...(options.context ? renderMapArrayArg('--context', options.context) : []),
+      ...(options.profile ? ['--profile', options.profile] : []),
+      ...(options.proxy ? ['--proxy', options.proxy] : []),
+      ...(options.caBundlePath ? ['--ca-bundle-path', options.caBundlePath] : []),
+      ...(options.roleArn ? ['--role-arn', options.roleArn] : []),
+      ...(options.output ? ['--output', options.output] : []),
       ...stacks,
-      ...options.all ? ['--all'] : [],
+      ...(options.all ? ['--all'] : []),
     ];
   }
 }
 
-function renderMapArrayArg(flag: string, parameters: { [name: string]: string | undefined }): string[] {
+function renderMapArrayArg(
+  flag: string,
+  parameters: { [name: string]: string | undefined }
+): string[] {
   const params: string[] = [];
   for (const [key, value] of Object.entries(parameters)) {
     params.push(`${key}=${value}`);

@@ -1,7 +1,12 @@
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
-import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import {
+  baseJobDefinitionProperties,
+  IJobDefinition,
+  JobDefinitionBase,
+  JobDefinitionProps,
+} from './job-definition-base';
 import { IJobQueue } from './job-queue';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
@@ -59,10 +64,17 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
   /**
    * Import a JobDefinition by its arn.
    */
-  public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
+  public static fromJobDefinitionArn(
+    scope: Construct,
+    id: string,
+    jobDefinitionArn: string
+  ): IJobDefinition {
     class Import extends JobDefinitionBase implements IEcsJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
-      public readonly jobDefinitionName = EcsJobDefinition.getJobDefinitionName(this, jobDefinitionArn);
+      public readonly jobDefinitionName = EcsJobDefinition.getJobDefinitionName(
+        this,
+        jobDefinitionArn
+      );
       public readonly enabled = true;
       container = {} as any;
     }
@@ -71,7 +83,10 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
   }
 
   private static getJobDefinitionName(scope: Construct, jobDefinitionArn: string) {
-    const resourceName = Stack.of(scope).splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    const resourceName = Stack.of(scope).splitArn(
+      jobDefinitionArn,
+      ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName!;
     return resourceName.split(':')[0];
   }
 
@@ -106,7 +121,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
 
   /**
    * Grants the `batch:submitJob` permission to the identity on both this job definition and the `queue`
-  */
+   */
   public grantSubmitJob(identity: iam.IGrantable, queue: IJobQueue) {
     iam.Grant.addToPrincipal({
       actions: ['batch:SubmitJob'],

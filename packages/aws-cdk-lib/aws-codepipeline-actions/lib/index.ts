@@ -19,4 +19,3 @@ export * from './s3/source-action';
 export * from './stepfunctions/invoke-action';
 export * from './servicecatalog/deploy-action-beta1';
 export * from './action';
-

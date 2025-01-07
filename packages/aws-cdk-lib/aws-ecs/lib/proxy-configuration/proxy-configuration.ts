@@ -9,5 +9,8 @@ export abstract class ProxyConfiguration {
   /**
    * Called when the proxy configuration is configured on a task definition.
    */
-  public abstract bind(_scope: Construct, _taskDefinition: TaskDefinition): CfnTaskDefinition.ProxyConfigurationProperty;
+  public abstract bind(
+    _scope: Construct,
+    _taskDefinition: TaskDefinition
+  ): CfnTaskDefinition.ProxyConfigurationProperty;
 }

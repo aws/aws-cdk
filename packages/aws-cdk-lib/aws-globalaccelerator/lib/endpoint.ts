@@ -84,4 +84,3 @@ export class RawEndpoint implements IEndpoint {
     } as CfnEndpointGroup.EndpointConfigurationProperty;
   }
 }
-

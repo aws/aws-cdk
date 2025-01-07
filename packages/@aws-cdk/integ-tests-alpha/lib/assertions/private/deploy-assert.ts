@@ -15,7 +15,6 @@ const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
  * Options for DeployAssert
  */
 export interface DeployAssertProps {
-
   /**
    * A stack to use for assertions
    *
@@ -29,12 +28,11 @@ export interface DeployAssertProps {
  * that should be performed on a construct
  */
 export class DeployAssert extends Construct implements IDeployAssert {
-
   /**
    * Returns whether the construct is a DeployAssert construct
    */
   public static isDeployAssert(x: any): x is DeployAssert {
-    return x !== null && typeof (x) === 'object' && DEPLOY_ASSERT_SYMBOL in x;
+    return x !== null && typeof x === 'object' && DEPLOY_ASSERT_SYMBOL in x;
   }
 
   /**
@@ -42,7 +40,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
    */
   public static of(construct: IConstruct): DeployAssert {
     const scopes = Node.of(Node.of(construct).root).findAll();
-    const deployAssert = scopes.find(s => DeployAssert.isDeployAssert(s));
+    const deployAssert = scopes.find((s) => DeployAssert.isDeployAssert(s));
     if (!deployAssert) {
       throw new Error('No DeployAssert construct found in scopes');
     }
@@ -60,7 +58,12 @@ export class DeployAssert extends Construct implements IDeployAssert {
     Object.defineProperty(this, DEPLOY_ASSERT_SYMBOL, { value: true });
   }
 
-  public awsApiCall(service: string, api: string, parameters?: any, outputPaths?: string[]): IApiCall {
+  public awsApiCall(
+    service: string,
+    api: string,
+    parameters?: any,
+    outputPaths?: string[]
+  ): IApiCall {
     let hash = '';
     try {
       hash = md5hash(this.scope.resolve(parameters));
@@ -77,10 +80,12 @@ export class DeployAssert extends Construct implements IDeployAssert {
   public httpApiCall(url: string, options?: FetchOptions): IApiCall {
     let hash = '';
     try {
-      hash = md5hash(this.scope.resolve({
-        url,
-        options,
-      }));
+      hash = md5hash(
+        this.scope.resolve({
+          url,
+          options,
+        })
+      );
     } catch {}
 
     let append = '';
@@ -96,7 +101,11 @@ export class DeployAssert extends Construct implements IDeployAssert {
 
   public invokeFunction(props: LambdaInvokeFunctionProps): IApiCall {
     const hash = md5hash(this.scope.resolve(props));
-    return new LambdaInvokeFunction(this.scope, this.uniqueAssertionId(`LambdaInvoke${hash}`), props);
+    return new LambdaInvokeFunction(
+      this.scope,
+      this.uniqueAssertionId(`LambdaInvoke${hash}`),
+      props
+    );
   }
 
   public expect(id: string, expected: ExpectedResult, actual: ActualResult): void {

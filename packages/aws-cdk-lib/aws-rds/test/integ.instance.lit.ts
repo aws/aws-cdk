@@ -18,7 +18,9 @@ class DatabaseInstanceStack extends cdk.Stack {
     /// !show
     // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
-      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+      engine: rds.DatabaseInstanceEngine.oracleSe2({
+        version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1,
+      }),
       parameters: {
         open_cursors: '2500',
       },
@@ -26,7 +28,9 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+      engine: rds.DatabaseInstanceEngine.oracleSe2({
+        version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1,
+      }),
       configurations: [
         {
           name: 'LOCATOR',
@@ -44,7 +48,9 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     // Database instance with production values
     const instance = new rds.DatabaseInstance(this, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
+      engine: rds.DatabaseInstanceEngine.oracleSe2({
+        version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1,
+      }),
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       multiAz: true,
@@ -56,12 +62,7 @@ class DatabaseInstanceStack extends cdk.Stack {
       backupRetention: cdk.Duration.days(7),
       monitoringInterval: cdk.Duration.seconds(60),
       enablePerformanceInsights: true,
-      cloudwatchLogsExports: [
-        'trace',
-        'audit',
-        'alert',
-        'listener',
-      ],
+      cloudwatchLogsExports: ['trace', 'audit', 'alert', 'listener'],
       cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
       autoMinorVersionUpgrade: true, // required to be true if LOCATOR is used in the option group
       optionGroup,
@@ -89,12 +90,12 @@ class DatabaseInstanceStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_18_X,
     });
 
-    const availabilityRule = instance.onEvent('Availability', { target: new targets.LambdaFunction(fn) });
+    const availabilityRule = instance.onEvent('Availability', {
+      target: new targets.LambdaFunction(fn),
+    });
     availabilityRule.addEventPattern({
       detail: {
-        EventCategories: [
-          'availability',
-        ],
+        EventCategories: ['availability'],
       },
     });
     /// !hide

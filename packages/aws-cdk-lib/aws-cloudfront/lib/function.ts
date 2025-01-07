@@ -8,7 +8,6 @@ import { IResource, Lazy, Names, Resource, Stack } from '../../core';
  * Represents the function's source code
  */
 export abstract class FunctionCode {
-
   /**
    * Inline code for function
    * @returns code object with inline code.
@@ -47,7 +46,6 @@ export interface FileCodeOptions {
  * Represents the function's source code as inline code
  */
 class InlineCode extends FunctionCode {
-
   constructor(private code: string) {
     super();
   }
@@ -61,7 +59,6 @@ class InlineCode extends FunctionCode {
  * Represents the function's source code loaded from an external file
  */
 class FileCode extends FunctionCode {
-
   constructor(private options: FileCodeOptions) {
     super();
   }
@@ -107,7 +104,6 @@ export interface FunctionAttributes {
    * @default FunctionRuntime.JS_1_0
    */
   readonly functionRuntime?: string;
-
 }
 
 /**
@@ -161,14 +157,17 @@ export interface FunctionProps {
  * @resource AWS::CloudFront::Function
  */
 export class Function extends Resource implements IFunction {
-
   /** Imports a function by its name and ARN */
-  public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
-    return new class extends Resource implements IFunction {
+  public static fromFunctionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: FunctionAttributes
+  ): IFunction {
+    return new (class extends Resource implements IFunction {
       public readonly functionName = attrs.functionName;
       public readonly functionArn = attrs.functionArn;
       public readonly functionRuntime = attrs.functionRuntime ?? FunctionRuntime.JS_1_0.value;
-    }(scope, id);
+    })(scope, id);
   }
 
   /**
@@ -197,12 +196,14 @@ export class Function extends Resource implements IFunction {
 
     this.functionName = props.functionName ?? this.generateName();
 
-    const defaultFunctionRuntime = props.keyValueStore ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value;
+    const defaultFunctionRuntime = props.keyValueStore
+      ? FunctionRuntime.JS_2_0.value
+      : FunctionRuntime.JS_1_0.value;
     this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
 
     if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {
       throw new Error(
-        `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`,
+        `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`
       );
     }
 
@@ -212,7 +213,9 @@ export class Function extends Resource implements IFunction {
       functionConfig: {
         comment: props.comment ?? this.functionName,
         runtime: this.functionRuntime,
-        keyValueStoreAssociations: props.keyValueStore ? [{ keyValueStoreArn: props.keyValueStore.keyValueStoreArn }] : undefined,
+        keyValueStoreAssociations: props.keyValueStore
+          ? [{ keyValueStoreArn: props.keyValueStore.keyValueStoreArn }]
+          : undefined,
       },
       name: this.functionName,
     });
@@ -230,9 +233,13 @@ export class Function extends Resource implements IFunction {
     if (Names.uniqueId(this).length <= idLength) {
       return Stack.of(this).region + Names.uniqueId(this);
     }
-    return Stack.of(this).region + Lazy.string({
-      produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
-    });
+    return (
+      Stack.of(this).region +
+      Lazy.string({
+        produce: () =>
+          Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
+      })
+    );
   }
 }
 
@@ -240,7 +247,6 @@ export class Function extends Resource implements IFunction {
  * The type of events that a CloudFront function can be invoked in response to.
  */
 export enum FunctionEventType {
-
   /**
    * The viewer-request specifies the incoming request
    */

@@ -28,16 +28,20 @@ export interface InvokeFunctionProps {
  * @deprecated Use `LambdaInvoke`
  */
 export class InvokeFunction implements sfn.IStepFunctionsTask {
-  constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: InvokeFunctionProps = {}) {
-  }
+  constructor(
+    private readonly lambdaFunction: lambda.IFunction,
+    private readonly props: InvokeFunctionProps = {}
+  ) {}
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: this.lambdaFunction.functionArn,
-      policyStatements: [new iam.PolicyStatement({
-        resources: this.lambdaFunction.resourceArnsForGrantInvoke,
-        actions: ['lambda:InvokeFunction'],
-      })],
+      policyStatements: [
+        new iam.PolicyStatement({
+          resources: this.lambdaFunction.resourceArnsForGrantInvoke,
+          actions: ['lambda:InvokeFunction'],
+        }),
+      ],
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',
       metricDimensions: { LambdaFunctionArn: this.lambdaFunction.functionArn },

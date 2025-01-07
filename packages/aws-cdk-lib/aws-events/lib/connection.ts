@@ -60,7 +60,7 @@ export abstract class Authorization {
    * What these are depends on the target of your connection.
    */
   public static apiKey(apiKeyName: string, apiKeyValue: SecretValue): Authorization {
-    return new class extends Authorization {
+    return new (class extends Authorization {
       public _bind() {
         return {
           authorizationType: AuthorizationType.API_KEY,
@@ -72,14 +72,14 @@ export abstract class Authorization {
           } as CfnConnection.AuthParametersProperty,
         };
       }
-    }();
+    })();
   }
 
   /**
    * Use username and password authorization
    */
   public static basic(username: string, password: SecretValue): Authorization {
-    return new class extends Authorization {
+    return new (class extends Authorization {
       public _bind() {
         return {
           authorizationType: AuthorizationType.BASIC,
@@ -91,7 +91,7 @@ export abstract class Authorization {
           } as CfnConnection.AuthParametersProperty,
         };
       }
-    }();
+    })();
   }
 
   /**
@@ -102,7 +102,7 @@ export abstract class Authorization {
       throw new Error('httpMethod must be one of GET, POST, PUT');
     }
 
-    return new class extends Authorization {
+    return new (class extends Authorization {
       public _bind() {
         return {
           authorizationType: AuthorizationType.OAUTH_CLIENT_CREDENTIALS,
@@ -123,8 +123,7 @@ export abstract class Authorization {
           } as CfnConnection.AuthParametersProperty,
         };
       }
-    }();
-
+    })();
   }
 
   /**
@@ -139,7 +138,6 @@ export abstract class Authorization {
  * Properties for `Authorization.oauth()`
  */
 export interface OAuthAuthorizationProps {
-
   /**
    * The URL to the authorization endpoint
    */
@@ -194,7 +192,7 @@ export abstract class HttpParameter {
    * The value is not treated as a secret.
    */
   public static fromString(value: string): HttpParameter {
-    return new class extends HttpParameter {
+    return new (class extends HttpParameter {
       public _render(name: string) {
         return {
           key: name,
@@ -202,14 +200,14 @@ export abstract class HttpParameter {
           isValueSecret: false,
         } as CfnConnection.ParameterProperty;
       }
-    }();
+    })();
   }
 
   /**
    * Make an OAuthParameter from a secret
    */
   public static fromSecret(value: SecretValue): HttpParameter {
-    return new class extends HttpParameter {
+    return new (class extends HttpParameter {
       public _render(name: string) {
         return {
           key: name,
@@ -217,7 +215,7 @@ export abstract class HttpParameter {
           isValueSecret: true,
         } as CfnConnection.ParameterProperty;
       }
-    }();
+    })();
   }
 
   /**
@@ -300,7 +298,12 @@ export class Connection extends Resource implements IConnection {
    * @param id Construct ID
    * @param connectionArn ARN of imported connection
    */
-  public static fromEventBusArn(scope: Construct, id: string, connectionArn: string, connectionSecretArn: string): IConnection {
+  public static fromEventBusArn(
+    scope: Construct,
+    id: string,
+    connectionArn: string,
+    connectionSecretArn: string
+  ): IConnection {
     const parts = Stack.of(scope).parseArn(connectionArn);
 
     return new ImportedConnection(scope, id, {
@@ -316,7 +319,11 @@ export class Connection extends Resource implements IConnection {
    * @param id Construct ID
    * @param attrs Imported connection properties
    */
-  public static fromConnectionAttributes(scope: Construct, id: string, attrs: ConnectionAttributes): IConnection {
+  public static fromConnectionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ConnectionAttributes
+  ): IConnection {
     return new ImportedConnection(scope, id, attrs);
   }
 
@@ -345,11 +352,14 @@ export class Connection extends Resource implements IConnection {
 
     const authBind = props.authorization._bind();
 
-    const invocationHttpParameters = !!props.headerParameters || !!props.queryStringParameters || !!props.bodyParameters ? {
-      bodyParameters: renderHttpParameters(props.bodyParameters),
-      headerParameters: renderHttpParameters(props.headerParameters),
-      queryStringParameters: renderHttpParameters(props.queryStringParameters),
-    } : undefined;
+    const invocationHttpParameters =
+      !!props.headerParameters || !!props.queryStringParameters || !!props.bodyParameters
+        ? {
+            bodyParameters: renderHttpParameters(props.bodyParameters),
+            headerParameters: renderHttpParameters(props.headerParameters),
+            queryStringParameters: renderHttpParameters(props.queryStringParameters),
+          }
+        : undefined;
 
     let connection = new CfnConnection(this, 'Connection', {
       authorizationType: authBind.authorizationType,
@@ -416,8 +426,12 @@ enum AuthorizationType {
   OAUTH_CLIENT_CREDENTIALS = 'OAUTH_CLIENT_CREDENTIALS',
 }
 
-function renderHttpParameters(ps?: Record<string, HttpParameter>): CfnConnection.ParameterProperty[] | undefined {
-  if (!ps || Object.keys(ps).length === 0) { return undefined; }
+function renderHttpParameters(
+  ps?: Record<string, HttpParameter>
+): CfnConnection.ParameterProperty[] | undefined {
+  if (!ps || Object.keys(ps).length === 0) {
+    return undefined;
+  }
 
   return Object.entries(ps).map(([name, p]) => p._render(name));
 }

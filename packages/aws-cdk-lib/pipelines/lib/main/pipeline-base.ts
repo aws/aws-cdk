@@ -1,6 +1,13 @@
 import { Construct } from 'constructs';
 import { AspectPriority, Aspects, Stage } from '../../../core';
-import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep, FileSet } from '../blueprint';
+import {
+  AddStageOpts as StageOptions,
+  WaveOptions,
+  Wave,
+  IFileSetProducer,
+  ShellStep,
+  FileSet,
+} from '../blueprint';
 
 const PIPELINE_SYMBOL = Symbol.for('@aws-cdk/pipelines.PipelineBase');
 
@@ -40,7 +47,7 @@ export abstract class PipelineBase extends Construct {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isPipeline(x: any): x is PipelineBase {
-    return x !== null && typeof (x) === 'object' && PIPELINE_SYMBOL in x;
+    return x !== null && typeof x === 'object' && PIPELINE_SYMBOL in x;
   }
 
   /**
@@ -72,14 +79,19 @@ export abstract class PipelineBase extends Construct {
     }
 
     if (!props.synth.primaryOutput) {
-      throw new Error(`synthStep ${props.synth} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`);
+      throw new Error(
+        `synthStep ${props.synth} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`
+      );
     }
 
     this.synth = props.synth;
     this.waves = [];
     this.cloudAssemblyFileSet = props.synth.primaryOutput;
 
-    Aspects.of(this).add({ visit: () => this.buildJustInTime() }, { priority: AspectPriority.MUTATING });
+    Aspects.of(this).add(
+      { visit: () => this.buildJustInTime() },
+      { priority: AspectPriority.MUTATING }
+    );
   }
 
   /**
@@ -91,7 +103,7 @@ export abstract class PipelineBase extends Construct {
    */
   public addStage(stage: Stage, options?: StageOptions) {
     if (this.built) {
-      throw new Error('addStage: can\'t add Stages anymore after buildPipeline() has been called');
+      throw new Error("addStage: can't add Stages anymore after buildPipeline() has been called");
     }
     return this.addWave(stage.stageName).addStage(stage, options);
   }
@@ -113,7 +125,7 @@ export abstract class PipelineBase extends Construct {
    */
   public addWave(id: string, options?: WaveOptions) {
     if (this.built) {
-      throw new Error('addWave: can\'t add Waves anymore after buildPipeline() has been called');
+      throw new Error("addWave: can't add Waves anymore after buildPipeline() has been called");
     }
 
     const wave = new Wave(id, options);

@@ -50,8 +50,7 @@ export interface LambdaProps {
  * Amazon SNS.
  */
 export class Lambda implements ses.IReceiptRuleAction {
-  constructor(private readonly props: LambdaProps) {
-  }
+  constructor(private readonly props: LambdaProps) {}
 
   public bind(rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
     // Allow SES to invoke Lambda function
@@ -66,12 +65,18 @@ export class Lambda implements ses.IReceiptRuleAction {
     }
 
     // Ensure permission is deployed before rule
-    const permission = this.props.function.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission;
-    if (permission) { // The Lambda could be imported
+    const permission = this.props.function.permissionsNode.tryFindChild(
+      permissionId
+    ) as lambda.CfnPermission;
+    if (permission) {
+      // The Lambda could be imported
       rule.node.addDependency(permission);
     } else {
       // eslint-disable-next-line max-len
-      cdk.Annotations.of(rule).addWarningV2('@aws-cdk/aws-ses-actions:lambdaAddInvokePermissions', 'This rule is using a Lambda action with an imported function. Ensure permission is given to SES to invoke that function.');
+      cdk.Annotations.of(rule).addWarningV2(
+        '@aws-cdk/aws-ses-actions:lambdaAddInvokePermissions',
+        'This rule is using a Lambda action with an imported function. Ensure permission is given to SES to invoke that function.'
+      );
     }
 
     return {

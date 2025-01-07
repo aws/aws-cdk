@@ -120,7 +120,11 @@ export class EmrAddStep extends sfn.TaskStateBase {
   private readonly actionOnFailure: ActionOnFailure;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrAddStepProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EmrAddStepProps
+  ) {
     super(scope, id, props);
     this.actionOnFailure = props.actionOnFailure ?? ActionOnFailure.CONTINUE;
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
@@ -145,14 +149,13 @@ export class EmrAddStep extends sfn.TaskStateBase {
             Jar: this.props.jar,
             MainClass: this.props.mainClass,
             Args: this.props.args,
-            Properties: (this.props.properties === undefined) ?
-              undefined :
-              Object.entries(this.props.properties).map(
-                kv => ({
-                  Key: kv[0],
-                  Value: kv[1],
-                }),
-              ),
+            Properties:
+              this.props.properties === undefined
+                ? undefined
+                : Object.entries(this.props.properties).map((kv) => ({
+                    Key: kv[0],
+                    Value: kv[1],
+                  })),
           },
         },
       }),
@@ -183,14 +186,18 @@ export class EmrAddStep extends sfn.TaskStateBase {
     ];
 
     if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-        resources: [stack.formatArn({
-          service: 'events',
-          resource: 'rule',
-          resourceName: 'StepFunctionsGetEventForEMRAddJobFlowStepsRule',
-        })],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          resources: [
+            stack.formatArn({
+              service: 'events',
+              resource: 'rule',
+              resourceName: 'StepFunctionsGetEventForEMRAddJobFlowStepsRule',
+            }),
+          ],
+        })
+      );
     }
 
     return policyStatements;

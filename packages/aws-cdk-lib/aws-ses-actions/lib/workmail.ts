@@ -34,8 +34,7 @@ export interface WorkMailProps {
  * @see https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-workmail.html
  */
 export class WorkMail implements ses.IReceiptRuleAction {
-  constructor(private readonly props: WorkMailProps) {
-  }
+  constructor(private readonly props: WorkMailProps) {}
 
   public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
     return {

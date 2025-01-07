@@ -4,7 +4,17 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
+import {
+  ArnFormat,
+  FeatureFlags,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  Size,
+  Stack,
+  Tags,
+  Token,
+} from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -14,7 +24,6 @@ import * as cxapi from '../../cx-api';
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
 export enum LifecyclePolicy {
-
   /**
    * After 1 day of not being accessed.
    */
@@ -114,8 +123,8 @@ export enum ThroughputMode {
   PROVISIONED = 'provisioned',
 
   /**
-  * This mode scales the throughput automatically regardless of file system size.
-  */
+   * This mode scales the throughput automatically regardless of file system size.
+   */
   ELASTIC = 'elastic',
 }
 
@@ -188,7 +197,6 @@ export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy {
  * Properties of EFS FileSystem.
  */
 export interface FileSystemProps {
-
   /**
    * VPC to launch the file system in.
    */
@@ -476,7 +484,11 @@ export abstract class ReplicationConfiguration {
    * @param availabilityZone The availability zone name of the destination file system.
    * @param kmsKey AWS KMS key used to protect the encrypted file system. Default is service-managed KMS key for Amazon EFS.
    */
-  public static oneZoneFileSystem(region: string, availabilityZone: string, kmsKey?: kms.IKey): ReplicationConfiguration {
+  public static oneZoneFileSystem(
+    region: string,
+    availabilityZone: string,
+    kmsKey?: kms.IKey
+  ): ReplicationConfiguration {
     return new OneZoneFileSystem({ region, availabilityZone, kmsKey });
   }
 
@@ -552,12 +564,12 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   public abstract readonly connections: ec2.Connections;
 
   /**
-  * @attribute
-  */
+   * @attribute
+   */
   public abstract readonly fileSystemId: string;
   /**
-  * @attribute
-  */
+   * @attribute
+   */
   public abstract readonly fileSystemArn: string;
 
   /**
@@ -603,7 +615,11 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * @param actions The client actions to grant
    * @param conditions The conditions to grant
    */
-  private _grantClient(grantee: iam.IGrantable, actions: ClientAction[], conditions?: Record<string, Record<string, unknown>>): iam.Grant {
+  private _grantClient(
+    grantee: iam.IGrantable,
+    actions: ClientAction[],
+    conditions?: Record<string, Record<string, unknown>>
+  ): iam.Grant {
     this._grantedClient = true;
     return iam.Grant.addToPrincipalOrResource({
       grantee: grantee,
@@ -631,10 +647,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * @param grantee The principal to grant read and write to
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
-    return this._grantClient(grantee, [
-      ClientAction.MOUNT,
-      ClientAction.WRITE,
-    ], {
+    return this._grantClient(grantee, [ClientAction.MOUNT, ClientAction.WRITE], {
       Bool: {
         'elasticfilesystem:AccessedViaMountTarget': 'true',
       },
@@ -646,15 +659,15 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * @param grantee The principal to grant root access to
    */
   public grantRootAccess(grantee: iam.IGrantable): iam.Grant {
-    return this._grantClient(grantee, [
-      ClientAction.MOUNT,
-      ClientAction.WRITE,
-      ClientAction.ROOT_ACCESS,
-    ], {
-      Bool: {
-        'elasticfilesystem:AccessedViaMountTarget': 'true',
-      },
-    });
+    return this._grantClient(
+      grantee,
+      [ClientAction.MOUNT, ClientAction.WRITE, ClientAction.ROOT_ACCESS],
+      {
+        Bool: {
+          'elasticfilesystem:AccessedViaMountTarget': 'true',
+        },
+      }
+    );
   }
 
   /**
@@ -665,9 +678,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    *
    * @param statement The policy statement to add
    */
-  public addToResourcePolicy(
-    statement: iam.PolicyStatement,
-  ): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this._resource) {
       return { statementAdded: false };
     }
@@ -699,7 +710,11 @@ export class FileSystem extends FileSystemBase {
   /**
    * Import an existing File System from the given properties.
    */
-  public static fromFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
+  public static fromFileSystemAttributes(
+    scope: Construct,
+    id: string,
+    attrs: FileSystemAttributes
+  ): IFileSystem {
     return new ImportedFileSystem(scope, id, attrs);
   }
 
@@ -735,24 +750,42 @@ export class FileSystem extends FileSystemBase {
       throw new Error('performanceMode MAX_IO is not supported for One Zone file systems.');
     }
 
-    if (props.oneZone) { this.oneZoneValidation(); }
-
-    if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
-      throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
+    if (props.oneZone) {
+      this.oneZoneValidation();
     }
 
-    if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
-      throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
+    if (
+      props.throughputMode === ThroughputMode.PROVISIONED &&
+      props.provisionedThroughputPerSecond === undefined
+    ) {
+      throw new Error(
+        'Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED'
+      );
     }
 
-    if (props.replicationConfiguration && props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
-      throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
+    if (
+      props.throughputMode === ThroughputMode.ELASTIC &&
+      props.performanceMode === PerformanceMode.MAX_IO
+    ) {
+      throw new Error(
+        'ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO'
+      );
+    }
+
+    if (
+      props.replicationConfiguration &&
+      props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED
+    ) {
+      throw new Error(
+        "Cannot configure 'replicationConfiguration' when 'replicationOverwriteProtection' is set to 'DISABLED'"
+      );
     }
 
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
-    const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
-      cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
+    const encrypted =
+      props.encrypted ??
+      (FeatureFlags.of(this).isEnabled(cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
     // LifecyclePolicies must be an array of objects, each containing a single policy
     const lifecyclePolicies: CfnFileSystem.LifecyclePolicyProperty[] = [];
@@ -762,7 +795,9 @@ export class FileSystem extends FileSystemBase {
     }
 
     if (props.outOfInfrequentAccessPolicy) {
-      lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
+      lifecyclePolicies.push({
+        transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy,
+      });
     }
 
     if (props.transitionToArchivePolicy) {
@@ -771,25 +806,31 @@ export class FileSystem extends FileSystemBase {
 
     // if props.vpcSubnets.availabilityZones is defined, select the first one as the zone otherwise
     // the first AZ of the VPC.
-    const oneZoneAzName = props.vpcSubnets?.availabilityZones ?
-      props.vpcSubnets.availabilityZones[0] : props.vpc.availabilityZones[0];
+    const oneZoneAzName = props.vpcSubnets?.availabilityZones
+      ? props.vpcSubnets.availabilityZones[0]
+      : props.vpc.availabilityZones[0];
 
-    const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
-      replicationOverwriteProtection: props.replicationOverwriteProtection,
-    } : undefined;
+    const fileSystemProtection =
+      props.replicationOverwriteProtection !== undefined
+        ? {
+            replicationOverwriteProtection: props.replicationOverwriteProtection,
+          }
+        : undefined;
 
-    const replicationConfiguration = props.replicationConfiguration ? {
-      destinations: [
-        {
-          fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
-          kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
-          region: props.replicationConfiguration.destinationFileSystem ?
-            props.replicationConfiguration.destinationFileSystem.env.region :
-            (props.replicationConfiguration.region ?? Stack.of(this).region),
-          availabilityZoneName: props.replicationConfiguration.availabilityZone,
-        },
-      ],
-    } : undefined;
+    const replicationConfiguration = props.replicationConfiguration
+      ? {
+          destinations: [
+            {
+              fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
+              kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
+              region: props.replicationConfiguration.destinationFileSystem
+                ? props.replicationConfiguration.destinationFileSystem.env.region
+                : (props.replicationConfiguration.region ?? Stack.of(this).region),
+              availabilityZoneName: props.replicationConfiguration.availabilityZone,
+            },
+          ],
+        }
+      : undefined;
 
     this._resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
@@ -801,22 +842,22 @@ export class FileSystem extends FileSystemBase {
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
       fileSystemPolicy: Lazy.any({
         produce: () => {
-          const denyAnonymousAccessFlag = FeatureFlags.of(this).isEnabled(cxapi.EFS_DENY_ANONYMOUS_ACCESS) ?? false;
+          const denyAnonymousAccessFlag =
+            FeatureFlags.of(this).isEnabled(cxapi.EFS_DENY_ANONYMOUS_ACCESS) ?? false;
           const denyAnonymousAccessByDefault = denyAnonymousAccessFlag || this._grantedClient;
           const allowAnonymousAccess = props.allowAnonymousAccess ?? !denyAnonymousAccessByDefault;
           if (!allowAnonymousAccess) {
-            this.addToResourcePolicy(new iam.PolicyStatement({
-              principals: [new iam.AnyPrincipal()],
-              actions: [
-                ClientAction.WRITE,
-                ClientAction.ROOT_ACCESS,
-              ],
-              conditions: {
-                Bool: {
-                  'elasticfilesystem:AccessedViaMountTarget': 'true',
+            this.addToResourcePolicy(
+              new iam.PolicyStatement({
+                principals: [new iam.AnyPrincipal()],
+                actions: [ClientAction.WRITE, ClientAction.ROOT_ACCESS],
+                conditions: {
+                  Bool: {
+                    'elasticfilesystem:AccessedViaMountTarget': 'true',
+                  },
                 },
-              },
-            }));
+              })
+            );
           }
           return this._fileSystemPolicy;
         },
@@ -833,9 +874,11 @@ export class FileSystem extends FileSystemBase {
 
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
-    const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
-      vpc: props.vpc,
-    }));
+    const securityGroup =
+      props.securityGroup ||
+      new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
+        vpc: props.vpc,
+      });
 
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
@@ -856,29 +899,27 @@ export class FileSystem extends FileSystemBase {
     // We now have to create the mount target for each of the mentioned subnet
 
     // we explictly use FeatureFlags to maintain backwards compatibility
-    const useMountTargetOrderInsensitiveLogicalID = FeatureFlags.of(this).isEnabled(cxapi.EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID);
+    const useMountTargetOrderInsensitiveLogicalID = FeatureFlags.of(this).isEnabled(
+      cxapi.EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID
+    );
     this.mountTargetsAvailable = [];
     if (useMountTargetOrderInsensitiveLogicalID) {
       subnets.subnets.forEach((subnet) => {
-        const mountTarget = new CfnMountTarget(this,
-          `EfsMountTarget-${subnet.node.id}`,
-          {
-            fileSystemId: this.fileSystemId,
-            securityGroups: Array.of(securityGroup.securityGroupId),
-            subnetId: subnet.subnetId,
-          });
+        const mountTarget = new CfnMountTarget(this, `EfsMountTarget-${subnet.node.id}`, {
+          fileSystemId: this.fileSystemId,
+          securityGroups: Array.of(securityGroup.securityGroupId),
+          subnetId: subnet.subnetId,
+        });
         this._mountTargetsAvailable.add(mountTarget);
       });
     } else {
       let mountTargetCount = 0;
       subnets.subnetIds.forEach((subnetId: string) => {
-        const mountTarget = new CfnMountTarget(this,
-          'EfsMountTarget' + (++mountTargetCount),
-          {
-            fileSystemId: this.fileSystemId,
-            securityGroups: Array.of(securityGroup.securityGroupId),
-            subnetId,
-          });
+        const mountTarget = new CfnMountTarget(this, 'EfsMountTarget' + ++mountTargetCount, {
+          fileSystemId: this.fileSystemId,
+          securityGroups: Array.of(securityGroup.securityGroupId),
+          subnetId,
+        });
         this._mountTargetsAvailable.add(mountTarget);
       });
     }
@@ -888,21 +929,27 @@ export class FileSystem extends FileSystemBase {
   private oneZoneValidation() {
     // validate when props.oneZone is enabled
     if (this.props.vpcSubnets && !this.props.vpcSubnets.availabilityZones) {
-      throw new Error('When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.');
+      throw new Error(
+        'When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.'
+      );
     }
     // when vpcSubnets.availabilityZones is defined
     if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones) {
       // it has to be only one az
       if (this.props.vpcSubnets.availabilityZones?.length !== 1) {
-        throw new Error('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.');
+        throw new Error(
+          'When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.'
+        );
       }
       // it has to be in availabilityZones
       // but we only check this when vpc.availabilityZones are valid(not dummy values nore unresolved tokens)
       const isNotUnresolvedToken = (x: string) => !Token.isUnresolved(x);
       const isNotDummy = (x: string) => !x.startsWith('dummy');
-      if (this.props.vpc.availabilityZones.every(isNotUnresolvedToken) &&
-      this.props.vpc.availabilityZones.every(isNotDummy) &&
-      !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])) {
+      if (
+        this.props.vpc.availabilityZones.every(isNotUnresolvedToken) &&
+        this.props.vpc.availabilityZones.every(isNotDummy) &&
+        !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])
+      ) {
         throw new Error('vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.');
       }
     }
@@ -947,11 +994,13 @@ class ImportedFileSystem extends FileSystemBase {
       throw new Error('One of fileSystemId or fileSystemArn, but not both, must be provided.');
     }
 
-    this.fileSystemArn = attrs.fileSystemArn ?? Stack.of(scope).formatArn({
-      service: 'elasticfilesystem',
-      resource: 'file-system',
-      resourceName: attrs.fileSystemId,
-    });
+    this.fileSystemArn =
+      attrs.fileSystemArn ??
+      Stack.of(scope).formatArn({
+        service: 'elasticfilesystem',
+        resource: 'file-system',
+        resourceName: attrs.fileSystemId,
+      });
 
     const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
 

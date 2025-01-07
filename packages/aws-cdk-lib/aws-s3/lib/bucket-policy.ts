@@ -77,9 +77,9 @@ export class BucketPolicy extends Resource {
       bucket = Bucket.fromBucketName(cfnBucketPolicy, '@FromCfnBucket', cfnBucketPolicy.bucket);
     }
 
-    const ret = new class extends BucketPolicy {
+    const ret = new (class extends BucketPolicy {
       public readonly document = PolicyDocument.fromJson(cfnBucketPolicy.policyDocument);
-    }(cfnBucketPolicy, id, {
+    })(cfnBucketPolicy, id, {
       bucket,
     });
     // mark the Bucket as having this Policy

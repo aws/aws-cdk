@@ -82,9 +82,13 @@ export class Choice extends State {
    * Use this to combine all possible choice paths back.
    */
   public afterwards(options: AfterwardsOptions = {}): Chain {
-    const endStates = State.filterNextables(State.findReachableEndStates(this, { includeErrorHandlers: options.includeErrorHandlers }));
+    const endStates = State.filterNextables(
+      State.findReachableEndStates(this, { includeErrorHandlers: options.includeErrorHandlers })
+    );
     if (options.includeOtherwise && this.defaultChoice) {
-      throw new Error(`'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
+      throw new Error(
+        `'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`
+      );
     }
     if (options.includeOtherwise) {
       endStates.push(new DefaultAsNext(this));
@@ -134,8 +138,7 @@ export interface AfterwardsOptions {
  * Adapter to make the .otherwise() transition settable through .next()
  */
 class DefaultAsNext implements INextable {
-  constructor(private readonly choice: Choice) {
-  }
+  constructor(private readonly choice: Choice) {}
 
   public next(state: IChainable): Chain {
     this.choice.otherwise(state);

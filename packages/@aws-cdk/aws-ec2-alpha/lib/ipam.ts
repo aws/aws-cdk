@@ -53,7 +53,6 @@ export enum AwsServiceName {
  * Options to create a new Ipam in the account
  */
 export interface IpamProps {
-
   /**
    * The operating Regions for an IPAM.
    * Operating Regions are AWS Regions where the IPAM is allowed to manage IP address CIDRs
@@ -93,7 +92,6 @@ export enum IpamScopeType {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html
  */
 export interface PoolOptions {
-
   /**
    * addressFamily - The address family of the pool (ipv4 or ipv6).
    */
@@ -127,14 +125,14 @@ export interface PoolOptions {
   readonly publicIpSource?: IpamPoolPublicIpSource;
 
   /**
-  * Limits which service in AWS that the pool can be used in.
-  *
-  * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
-  *
-  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
-  *
-  * @default - required in case of an IPv6, throws an error if not provided.
-  */
+   * Limits which service in AWS that the pool can be used in.
+   *
+   * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
+   *
+   * @default - required in case of an IPv6, throws an error if not provided.
+   */
   readonly awsService?: AwsServiceName;
 
   /**
@@ -184,9 +182,9 @@ export interface IpamPoolCidrProvisioningOptions {
  */
 export interface IIpamPool {
   /**
- * Pool ID to be passed to the VPC construct
- * @attribute IpamPoolId
- */
+   * Pool ID to be passed to the VPC construct
+   * @attribute IpamPoolId
+   */
   readonly ipamPoolId: string;
 
   /**
@@ -204,7 +202,6 @@ export interface IIpamPool {
    * Function to associate a IPv6 address with IPAM pool
    */
   provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): CfnIPAMPoolCidr;
-
 }
 
 /**
@@ -229,14 +226,12 @@ interface IpamScopeProps extends IpamScopeOptions {
    * @default - throws an error if no scope id is provided
    */
   readonly ipamScopeId?: string;
-
 }
 
 /**
  * Being used in IPAM class to add pools to default scope created by IPAM.
  */
 export interface IpamScopeOptions {
-
   /**
    * IPAM scope name that will be used for tagging
    *
@@ -251,7 +246,6 @@ export interface IpamScopeOptions {
  * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipam.html}.
  */
 export interface IpamOptions {
-
   /**
    * CIDR Mask for Vpc
    * Only required when using AWS Ipam
@@ -279,7 +273,6 @@ export interface IpamOptions {
  * Interface for IpamScope Class
  */
 export interface IIpamScopeBase {
-
   /**
    * Reference to the current scope of stack to be passed in order to create
    * a new IPAM pool
@@ -300,7 +293,6 @@ export interface IIpamScopeBase {
    * Function to add a new pool to an IPAM scope
    */
   addPool(id: string, options: PoolOptions): IIpamPool;
-
 }
 
 /**
@@ -311,7 +303,6 @@ export interface IIpamScopeBase {
  * @internal
  */
 class IpamPool extends Resource implements IIpamPool {
-
   /**
    * Pool ID to be passed to the VPC construct
    * @attribute IpamPoolId
@@ -336,9 +327,12 @@ class IpamPool extends Resource implements IIpamPool {
 
   constructor(scope: Construct, id: string, props: IpamPoolProps) {
     super(scope, id, {
-      physicalName: props.ipamPoolName ?? Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
-      }),
+      physicalName:
+        props.ipamPoolName ??
+        Lazy.string({
+          produce: () =>
+            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+        }),
     });
 
     if (props.addressFamily === AddressFamily.IP_V6 && !props.awsService) {
@@ -352,7 +346,7 @@ class IpamPool extends Resource implements IIpamPool {
 
     this._ipamPool = new CfnIPAMPool(this, id, {
       addressFamily: props.addressFamily,
-      provisionedCidrs: props.ipv4ProvisionedCidrs?.map(cidr => ({ cidr })),
+      provisionedCidrs: props.ipv4ProvisionedCidrs?.map((cidr) => ({ cidr })),
       locale: props.locale,
       ipamScopeId: props.ipamScopeId,
       publicIpSource: props.publicIpSource,
@@ -361,7 +355,7 @@ class IpamPool extends Resource implements IIpamPool {
     this.ipamPoolId = this._ipamPool.attrIpamPoolId;
 
     // Populating to check for subnet range against all IPv4 ranges assigned to VPC including IPAM
-    props.ipv4ProvisionedCidrs?.map(cidr => (this.ipamIpv4Cidrs.push(cidr)));
+    props.ipv4ProvisionedCidrs?.map((cidr) => this.ipamIpv4Cidrs.push(cidr));
     this.node.defaultChild = this._ipamPool;
   }
 
@@ -388,7 +382,6 @@ class IpamPool extends Resource implements IIpamPool {
  * @resource AWS::EC2::IPAMScope
  */
 class IpamScope extends Resource implements IIpamScopeBase {
-
   /**
    * Stores the reference to newly created Resource
    */
@@ -434,7 +427,6 @@ class IpamScope extends Resource implements IIpamScopeBase {
   addPool(id: string, options: PoolOptions): IIpamPool {
     return createIpamPool(this.scope, id, this.props, options, this.scopeId);
   }
-
 }
 
 /**
@@ -445,7 +437,7 @@ class IpamScopeBase implements IIpamScopeBase {
     readonly scope: Construct,
     readonly scopeId: string,
     private readonly props: IpamScopeProps,
-    readonly scopeType?: IpamScopeType,
+    readonly scopeType?: IpamScopeType
   ) {
     this.scopeType = IpamScopeType.DEFAULT;
     if (!props.ipamScopeId) {
@@ -471,10 +463,10 @@ class IpamScopeBase implements IIpamScopeBase {
  */
 export class Ipam extends Resource {
   /**
- * Provides access to default public IPAM scope through add pool method.
- * Usage: To add an Ipam Pool to a default public scope
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
- */
+   * Provides access to default public IPAM scope through add pool method.
+   * Usage: To add an Ipam Pool to a default public scope
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
+   */
   public readonly publicScope: IIpamScopeBase;
 
   /**
@@ -522,7 +514,9 @@ export class Ipam extends Resource {
     this.ipamName = props?.ipamName;
 
     this._ipam = new CfnIPAM(this, 'Ipam', {
-      operatingRegions: this.operatingRegions ? this.operatingRegions.map(region => ({ regionName: region })) : [],
+      operatingRegions: this.operatingRegions
+        ? this.operatingRegions.map((region) => ({ regionName: region }))
+        : [],
     });
     this.node.defaultChild = this._ipam;
 
@@ -539,7 +533,6 @@ export class Ipam extends Resource {
     });
 
     this.scopes.push(this.publicScope, this.privateScope);
-
   }
 
   /**
@@ -566,11 +559,12 @@ function createIpamPool(
   id: string,
   scopeOptions: IpamScopeProps,
   poolOptions: PoolOptions,
-  scopeId: string,
+  scopeId: string
 ): IpamPool {
   const isLocaleInOperatingRegions = scopeOptions.ipamOperatingRegions
-    ? scopeOptions.ipamOperatingRegions.map(region => ({ regionName: region }))
-      .some(region => region.regionName === poolOptions.locale)
+    ? scopeOptions.ipamOperatingRegions
+        .map((region) => ({ regionName: region }))
+        .some((region) => region.regionName === poolOptions.locale)
     : false;
 
   if (!isLocaleInOperatingRegions) {
@@ -587,4 +581,3 @@ function createIpamPool(
     awsService: poolOptions.awsService,
   });
 }
-

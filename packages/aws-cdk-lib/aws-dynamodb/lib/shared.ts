@@ -7,7 +7,6 @@ import { IResource } from '../../core';
  * Supported DynamoDB table operations.
  */
 export enum Operation {
-
   /** GetItem */
   GET_ITEM = 'GetItem',
 
@@ -55,7 +54,6 @@ export enum Operation {
  * Options for configuring a system errors metric that considers multiple operations.
  */
 export interface SystemErrorsForOperationsMetricOptions extends cloudwatch.MetricOptions {
-
   /**
    * The operations to apply the metric to.
    *
@@ -92,12 +90,12 @@ export interface WarmThroughput {
   /**
    * Configures the number of read units per second a table will be able to handle instantly
    * @default - no readUnitsPerSecond configured
-  */
+   */
   readonly readUnitsPerSecond?: number;
   /**
    * Configures the number of write units per second a table will be able to handle instantly
    * @default - no writeUnitsPerSecond configured
-  */
+   */
   readonly writeUnitsPerSecond?: number;
 }
 
@@ -418,7 +416,9 @@ export interface ITable extends IResource {
    * @param props properties of a metric
    *
    */
-  metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
+  metricSystemErrorsForOperations(
+    props?: SystemErrorsForOperationsMetricOptions
+  ): cloudwatch.IMetric;
 
   /**
    * Metric for the user errors

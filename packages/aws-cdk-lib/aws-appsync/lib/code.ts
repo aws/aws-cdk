@@ -56,7 +56,10 @@ export class AssetCode extends Code {
   /**
    * @param path The path to the asset file.
    */
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(
+    public readonly path: string,
+    private readonly options: s3_assets.AssetOptions = {}
+  ) {
     super();
   }
 
@@ -68,8 +71,10 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Code instance for every stack.');
+      throw new Error(
+        `Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+          'Create a new Code instance for every stack.'
+      );
     }
 
     return {

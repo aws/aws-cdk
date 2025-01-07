@@ -9,7 +9,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * Properties for invoking a Lambda function with LambdaInvoke
  */
 export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
-
   /**
    * Lambda function to invoke
    */
@@ -81,7 +80,6 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-lambda.html
  */
 export class LambdaInvoke extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -92,21 +90,31 @@ export class LambdaInvoke extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: LambdaInvokeProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: LambdaInvokeProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, LambdaInvoke.SUPPORTED_INTEGRATION_PATTERNS);
 
-    if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
-      && !sfn.FieldUtils.containsTaskToken(props.payload)) {
-      throw new Error('Task Token is required in `payload` for callback. Use JsonPath.taskToken to set the token.');
+    if (
+      this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN &&
+      !sfn.FieldUtils.containsTaskToken(props.payload)
+    ) {
+      throw new Error(
+        'Task Token is required in `payload` for callback. Use JsonPath.taskToken to set the token.'
+      );
     }
 
-    if (props.payloadResponseOnly &&
-      (props.integrationPattern || props.invocationType || props.clientContext || props.qualifier)) {
+    if (
+      props.payloadResponseOnly &&
+      (props.integrationPattern || props.invocationType || props.clientContext || props.qualifier)
+    ) {
       throw new Error(
-        "The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified.",
+        "The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified."
       );
     }
 
@@ -129,7 +137,12 @@ export class LambdaInvoke extends sfn.TaskStateBase {
     if (props.retryOnServiceExceptions ?? true) {
       // Best practice from https://docs.aws.amazon.com/step-functions/latest/dg/bp-lambda-serviceexception.html
       this.addRetry({
-        errors: ['Lambda.ClientExecutionTimeoutException', 'Lambda.ServiceException', 'Lambda.AWSLambdaException', 'Lambda.SdkClientException'],
+        errors: [
+          'Lambda.ClientExecutionTimeoutException',
+          'Lambda.ServiceException',
+          'Lambda.AWSLambdaException',
+          'Lambda.SdkClientException',
+        ],
         interval: cdk.Duration.seconds(2),
         maxAttempts: 6,
         backoffRate: 2,
@@ -147,14 +160,18 @@ export class LambdaInvoke extends sfn.TaskStateBase {
     if (this.props.payloadResponseOnly) {
       return {
         Resource: this.props.lambdaFunction.functionArn,
-        ...this.props.payload && { Parameters: sfn.FieldUtils.renderObject(this.props.payload.value) },
+        ...(this.props.payload && {
+          Parameters: sfn.FieldUtils.renderObject(this.props.payload.value),
+        }),
       };
     } else {
       return {
         Resource: integrationResourceArn('lambda', 'invoke', this.integrationPattern),
         Parameters: sfn.FieldUtils.renderObject({
           FunctionName: this.props.lambdaFunction.functionArn,
-          Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromJsonPathAt('$').value,
+          Payload: this.props.payload
+            ? this.props.payload.value
+            : sfn.TaskInput.fromJsonPathAt('$').value,
           InvocationType: this.props.invocationType,
           ClientContext: this.props.clientContext,
           Qualifier: this.props.qualifier,

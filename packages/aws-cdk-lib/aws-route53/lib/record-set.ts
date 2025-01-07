@@ -6,7 +6,15 @@ import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
-import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
+import {
+  CustomResource,
+  Duration,
+  IResource,
+  Names,
+  RemovalPolicy,
+  Resource,
+  Token,
+} from '../../core';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
 
@@ -306,8 +314,10 @@ export class RecordTarget {
    * @param values correspond with the chosen record type (e.g. for 'A' Type, specify one or more IP addresses)
    * @param aliasTarget alias for targets such as CloudFront distribution to route traffic to
    */
-  protected constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
-  }
+  protected constructor(
+    public readonly values?: string[],
+    public readonly aliasTarget?: IAliasRecordTarget
+  ) {}
 }
 
 /**
@@ -339,13 +349,28 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    if (props.weight && !Token.isUnresolved(props.weight) && (props.weight < 0 || props.weight > 255)) {
+    if (
+      props.weight &&
+      !Token.isUnresolved(props.weight) &&
+      (props.weight < 0 || props.weight > 255)
+    ) {
       throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
     }
-    if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
-      throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
+    if (
+      props.setIdentifier &&
+      (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)
+    ) {
+      throw new Error(
+        `setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`
+      );
     }
-    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
+    if (
+      props.setIdentifier &&
+      props.weight === undefined &&
+      !props.geoLocation &&
+      !props.region &&
+      !props.multiValueAnswer
+    ) {
       throw new Error('setIdentifier can only be specified for non-simple routing policies');
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
@@ -367,9 +392,14 @@ export class RecordSet extends Resource implements IRecordSet {
     this.region = props.region;
     this.multiValueAnswer = props.multiValueAnswer;
 
-    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
+    const ttl = props.target.aliasTarget
+      ? undefined
+      : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
-    const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
+    const recordName = determineFullyQualifiedDomainName(
+      props.recordName || props.zone.zoneName,
+      props.zone
+    );
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
@@ -379,11 +409,13 @@ export class RecordSet extends Resource implements IRecordSet {
       aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this, props.zone),
       ttl,
       comment: props.comment,
-      geoLocation: props.geoLocation ? {
-        continentCode: props.geoLocation.continentCode,
-        countryCode: props.geoLocation.countryCode,
-        subdivisionCode: props.geoLocation.subdivisionCode,
-      } : undefined,
+      geoLocation: props.geoLocation
+        ? {
+            continentCode: props.geoLocation.continentCode,
+            countryCode: props.geoLocation.countryCode,
+            subdivisionCode: props.geoLocation.subdivisionCode,
+          }
+        : undefined,
       multiValueAnswer: props.multiValueAnswer,
       setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
@@ -395,13 +427,20 @@ export class RecordSet extends Resource implements IRecordSet {
 
     if (props.deleteExisting) {
       // Delete existing record before creating the new one
-      const provider = DeleteExistingRecordSetProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
-        policyStatements: [{ // IAM permissions for all providers
-          Effect: 'Allow',
-          Action: 'route53:GetChange',
-          Resource: '*',
-        }],
-      });
+      const provider = DeleteExistingRecordSetProvider.getOrCreateProvider(
+        this,
+        DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE,
+        {
+          policyStatements: [
+            {
+              // IAM permissions for all providers
+              Effect: 'Allow',
+              Action: 'route53:GetChange',
+              Resource: '*',
+            },
+          ],
+        }
+      );
       // Add to the singleton policy for this specific provider
       provider.addToRolePolicy({
         Effect: 'Allow',
@@ -462,7 +501,7 @@ export class RecordSet extends Resource implements IRecordSet {
     }
 
     if (this.region) {
-      const idPrefix= `REGION_${this.region}_ID_`;
+      const idPrefix = `REGION_${this.region}_ID_`;
       return this.createIdentifier(idPrefix);
     }
 
@@ -484,8 +523,7 @@ export class RecordSet extends Resource implements IRecordSet {
  *
  * @deprecated Use RecordTarget
  */
-export class AddressRecordTarget extends RecordTarget {
-}
+export class AddressRecordTarget extends RecordTarget {}
 
 /**
  * Construction properties for a ARecord.
@@ -500,7 +538,7 @@ export interface ARecordProps extends RecordSetOptions {
 /**
  * Construction properties to import existing ARecord as target.
  */
-export interface ARecordAttrs extends RecordSetOptions{
+export interface ARecordAttrs extends RecordSetOptions {
   /**
    * Existing A record DNS name to set RecordTarget
    */
@@ -513,7 +551,6 @@ export interface ARecordAttrs extends RecordSetOptions{
  * @resource AWS::Route53::RecordSet
  */
 export class ARecord extends RecordSet {
-
   /**
    * Creates new A record of type alias with target set to an existing A Record DNS.
    * Use when the target A record is created outside of CDK
@@ -544,8 +581,7 @@ export class ARecord extends RecordSet {
  * Converts the type of a given ARecord DNS name, created outside CDK, to an AliasRecordTarget
  */
 class ARecordAsAliasTarget implements IAliasRecordTarget {
-  constructor(private readonly aRrecordAttrs: ARecordAttrs) {
-  }
+  constructor(private readonly aRrecordAttrs: ARecordAttrs) {}
 
   public bind(_record: IRecordSet, _zone?: IHostedZone | undefined): AliasRecordTargetConfig {
     if (!_zone) {
@@ -628,7 +664,7 @@ export class TxtRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.TXT,
-      target: RecordTarget.fromValues(...props.values.map(v => formatTxt(v))),
+      target: RecordTarget.fromValues(...props.values.map((v) => formatTxt(v))),
     });
   }
 }
@@ -648,9 +684,9 @@ function formatTxt(string: string): string {
   const result = [];
   let idx = 0;
   while (idx < string.length) {
-    result.push(string.slice(idx, idx += 255)); // chunks of 255 characters long
+    result.push(string.slice(idx, (idx += 255))); // chunks of 255 characters long
   }
-  return result.map(r => JSON.stringify(r)).join('');
+  return result.map((r) => JSON.stringify(r)).join('');
 }
 
 /**
@@ -697,7 +733,9 @@ export class SrvRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.SRV,
-      target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.weight} ${v.port} ${v.hostName}`)),
+      target: RecordTarget.fromValues(
+        ...props.values.map((v) => `${v.priority} ${v.weight} ${v.port} ${v.hostName}`)
+      ),
     });
   }
 }
@@ -765,7 +803,9 @@ export class CaaRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.CAA,
-      target: RecordTarget.fromValues(...props.values.map(v => `${v.flag} ${v.tag} "${v.value}"`)),
+      target: RecordTarget.fromValues(
+        ...props.values.map((v) => `${v.flag} ${v.tag} "${v.value}"`)
+      ),
     });
   }
 }
@@ -833,7 +873,7 @@ export class MxRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.MX,
-      target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.hostName}`)),
+      target: RecordTarget.fromValues(...props.values.map((v) => `${v.priority} ${v.hostName}`)),
     });
   }
 }
@@ -906,9 +946,12 @@ export class ZoneDelegationRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.NS,
-      target: RecordTarget.fromValues(...Token.isUnresolved(props.nameServers)
-        ? props.nameServers // Can't map a string-array token!
-        : props.nameServers.map(ns => (Token.isUnresolved(ns) || ns.endsWith('.')) ? ns : `${ns}.`),
+      target: RecordTarget.fromValues(
+        ...(Token.isUnresolved(props.nameServers)
+          ? props.nameServers // Can't map a string-array token!
+          : props.nameServers.map((ns) =>
+              Token.isUnresolved(ns) || ns.endsWith('.') ? ns : `${ns}.`
+            ))
       ),
       ttl: props.ttl || Duration.days(2),
     });
@@ -980,15 +1023,24 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       throw Error('Only one of parentHostedZoneName and parentHostedZoneId is supported');
     }
 
-    const provider = CrossAccountZoneDelegationProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE);
+    const provider = CrossAccountZoneDelegationProvider.getOrCreateProvider(
+      this,
+      CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE
+    );
 
-    const role = iam.Role.fromRoleArn(this, 'cross-account-zone-delegation-handler-role', provider.roleArn);
+    const role = iam.Role.fromRoleArn(
+      this,
+      'cross-account-zone-delegation-handler-role',
+      provider.roleArn
+    );
 
-    const addToPrinciplePolicyResult = role.addToPrincipalPolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['sts:AssumeRole'],
-      resources: [props.delegationRole.roleArn],
-    }));
+    const addToPrinciplePolicyResult = role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['sts:AssumeRole'],
+        resources: [props.delegationRole.roleArn],
+      })
+    );
 
     const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
       resourceType: CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE,

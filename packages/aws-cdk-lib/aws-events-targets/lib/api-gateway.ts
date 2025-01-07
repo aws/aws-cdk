@@ -1,4 +1,9 @@
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import {
+  addToDeadLetterQueueResourcePolicy,
+  bindBaseTargetConfig,
+  singletonEventRole,
+  TargetBaseProps,
+} from './util';
 import * as api from '../../aws-apigateway';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -7,7 +12,6 @@ import * as iam from '../../aws-iam';
  * Customize the API Gateway Event Target
  */
 export interface ApiGatewayProps extends TargetBaseProps {
-
   /**
    * The method for api resource invoked by the rule.
    *
@@ -36,7 +40,7 @@ export interface ApiGatewayProps extends TargetBaseProps {
    *
    * @default no header parameters
    */
-  readonly headerParameters?: { [key: string]: (string) };
+  readonly headerParameters?: { [key: string]: string };
 
   /**
    * The path parameter values to be used to
@@ -51,7 +55,7 @@ export interface ApiGatewayProps extends TargetBaseProps {
    *
    * @default no querystring parameters
    */
-  readonly queryStringParameters?: { [key: string]: (string) };
+  readonly queryStringParameters?: { [key: string]: string };
 
   /**
    * This will be the post request body send to the API.
@@ -79,7 +83,10 @@ export class ApiGateway implements events.IRuleTarget {
    * @param restApi - IRestApi implementation to use as event target
    * @param props - Properties to configure the APIGateway target
    */
-  constructor(restApi: api.IRestApi, private readonly props?: ApiGatewayProps) {
+  constructor(
+    restApi: api.IRestApi,
+    private readonly props?: ApiGatewayProps
+  ) {
     this._restApi = restApi;
   }
 
@@ -111,31 +118,34 @@ export class ApiGateway implements events.IRuleTarget {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
 
-    const wildcardCountsInPath = this.props?.path?.match( /\*/g )?.length ?? 0;
+    const wildcardCountsInPath = this.props?.path?.match(/\*/g)?.length ?? 0;
     if (wildcardCountsInPath !== (this.props?.pathParameterValues || []).length) {
-      throw new Error('The number of wildcards in the path does not match the number of path pathParameterValues.');
+      throw new Error(
+        'The number of wildcards in the path does not match the number of path pathParameterValues.'
+      );
     }
 
     const restApiArn = this._restApi.arnForExecuteApi(
       this.props?.method,
       this.props?.path || '/',
-      this.props?.stage || this._restApi.deploymentStage.stageName,
+      this.props?.stage || this._restApi.deploymentStage.stageName
     );
 
     const role = this.props?.eventRole || singletonEventRole(this._restApi);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [restApiArn],
-      actions: [
-        'execute-api:Invoke',
-        'execute-api:ManageConnections',
-      ],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        resources: [restApiArn],
+        actions: ['execute-api:Invoke', 'execute-api:ManageConnections'],
+      })
+    );
 
     return {
       ...(this.props ? bindBaseTargetConfig(this.props) : {}),
       arn: restApiArn,
       role,
-      deadLetterConfig: this.props?.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
+      deadLetterConfig: this.props?.deadLetterQueue && {
+        arn: this.props.deadLetterQueue?.queueArn,
+      },
       input: this.props?.postBody,
       targetResource: this._restApi,
       httpParameters: {
@@ -145,6 +155,4 @@ export class ApiGateway implements events.IRuleTarget {
       },
     };
   }
-
 }
-

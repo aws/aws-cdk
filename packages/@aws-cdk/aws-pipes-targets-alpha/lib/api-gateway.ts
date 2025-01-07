@@ -80,17 +80,19 @@ export class ApiGatewayTarget implements ITarget {
     this.restApiArn = this.restApi.arnForExecuteApi(
       this.restApiParameters?.method,
       this.restApiParameters?.path || '/',
-      this.restApiParameters?.stage || this.restApi.deploymentStage.stageName,
+      this.restApiParameters?.stage || this.restApi.deploymentStage.stageName
     );
 
     this.targetArn = this.restApiArn;
   }
 
   grantPush(grantee: IRole): void {
-    grantee.addToPrincipalPolicy(new PolicyStatement({
-      resources: [this.restApiArn],
-      actions: ['execute-api:Invoke'],
-    }));
+    grantee.addToPrincipalPolicy(
+      new PolicyStatement({
+        resources: [this.restApiArn],
+        actions: ['execute-api:Invoke'],
+      })
+    );
   }
 
   bind(pipe: IPipe): TargetConfig {

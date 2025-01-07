@@ -45,23 +45,22 @@ const putParameterStep = new tasks.CallAwsService(stack, 'PutParameter', {
   action: 'putParameter',
   iamResources: ['*'],
   parameters: {
-    'Name': parameterName,
+    Name: parameterName,
     'Value.$': '$[0].body', // The message is received in batches, we just take the first message to update the parameter.
-    'Type': 'String',
-    'Overwrite': true,
+    Type: 'String',
+    Overwrite: true,
   },
 });
 
 const targetStateMachine = new sfn.StateMachine(stack, 'TargetStateMachine', {
-  definitionBody: sfn.DefinitionBody.fromChainable( putParameterStep),
+  definitionBody: sfn.DefinitionBody.fromChainable(putParameterStep),
 });
 
 new Pipe(stack, 'Pipe', {
   source: new TestSource(sourceQueue),
-  target: new SfnStateMachine(targetStateMachine,
-    {
-      inputTransformation: InputTransformation.fromObject({ body: '<$.body>' }),
-    }),
+  target: new SfnStateMachine(targetStateMachine, {
+    inputTransformation: InputTransformation.fromObject({ body: '<$.body>' }),
+  }),
 });
 
 const test = new IntegTest(app, 'integtest-pipe-target-sfn', {
@@ -74,16 +73,22 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: rainbow,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SSM', 'getParameter',
-  {
-    Name: parameterName,
-  })).expect(ExpectedResult.objectLike({
-  Parameter: {
-    Name: parameterName,
-    Value: rainbow,
-  },
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(10),
-});
+putMessageOnQueue
+  .next(
+    test.assertions.awsApiCall('SSM', 'getParameter', {
+      Name: parameterName,
+    })
+  )
+  .expect(
+    ExpectedResult.objectLike({
+      Parameter: {
+        Name: parameterName,
+        Value: rainbow,
+      },
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.seconds(10),
+  });
 
 app.synth();

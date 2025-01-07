@@ -7,15 +7,13 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const topicRule = new iot.TopicRule(this, 'TopicRule', {
-      sql: iot.IotSql.fromStringAsVer20160323(
-        "SELECT * FROM 'device/+/data'",
-      ),
+      sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
     });
 
     topicRule.addAction(
       new actions.IotRepublishMqttAction('${topic()}/republish', {
         qualityOfService: actions.MqttQualityOfService.AT_LEAST_ONCE,
-      }),
+      })
     );
   }
 }

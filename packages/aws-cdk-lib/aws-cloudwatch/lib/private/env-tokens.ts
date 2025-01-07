@@ -4,14 +4,14 @@ import * as cdk from '../../../core';
  * Make a Token that renders to given region if used in a different stack, otherwise undefined
  */
 export function regionIfDifferentFromStack(region: string): string {
-  return cdk.Token.asString(new StackDependentToken(region, stack => stack.region));
+  return cdk.Token.asString(new StackDependentToken(region, (stack) => stack.region));
 }
 
 /**
  * Make a Token that renders to given account if used in a different stack, otherwise undefined
  */
 export function accountIfDifferentFromStack(account: string): string {
-  return cdk.Token.asString(new StackDependentToken(account, stack => stack.account));
+  return cdk.Token.asString(new StackDependentToken(account, (stack) => stack.account));
 }
 
 /**
@@ -19,7 +19,10 @@ export function accountIfDifferentFromStack(account: string): string {
  */
 class StackDependentToken implements cdk.IResolvable {
   public readonly creationStack: string[];
-  constructor(private readonly originalValue: string, private readonly fn: (stack: cdk.Stack) => string) {
+  constructor(
+    private readonly originalValue: string,
+    private readonly fn: (stack: cdk.Stack) => string
+  ) {
     this.creationStack = cdk.captureStackTrace();
   }
 

@@ -67,9 +67,9 @@ export interface IVpcIngressConnection extends cdk.IResource {
   readonly vpcIngressConnectionArn: string;
 
   /**
-    * The name of the VPC Ingress Connection.
-    * @attribute
-    */
+   * The name of the VPC Ingress Connection.
+   * @attribute
+   */
   readonly vpcIngressConnectionName: string;
 }
 
@@ -82,7 +82,11 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
   /**
    * Import from VPC Ingress Connection from attributes.
    */
-  public static fromVpcIngressConnectionAttributes(scope: Construct, id: string, attrs: VpcIngressConnectionAttributes): IVpcIngressConnection {
+  public static fromVpcIngressConnectionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: VpcIngressConnectionAttributes
+  ): IVpcIngressConnection {
     const vpcIngressConnectionArn = attrs.vpcIngressConnectionArn;
     const domainName = attrs.domainName;
     const status = attrs.status;
@@ -101,7 +105,11 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
   /**
    * Imports an App Runner VPC Ingress Connection from its ARN
    */
-  public static fromArn(scope: Construct, id: string, vpcIngressConnectionArn: string): IVpcIngressConnection {
+  public static fromArn(
+    scope: Construct,
+    id: string,
+    vpcIngressConnectionArn: string
+  ): IVpcIngressConnection {
     const resourceParts = cdk.Fn.split('/', vpcIngressConnectionArn);
 
     const vpcIngressConnectionName = cdk.Fn.select(0, resourceParts);
@@ -143,17 +151,19 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
       physicalName: props.vpcIngressConnectionName,
     });
 
-    if (props.vpcIngressConnectionName !== undefined && !cdk.Token.isUnresolved(props.vpcIngressConnectionName)) {
-
+    if (
+      props.vpcIngressConnectionName !== undefined &&
+      !cdk.Token.isUnresolved(props.vpcIngressConnectionName)
+    ) {
       if (props.vpcIngressConnectionName.length < 4 || props.vpcIngressConnectionName.length > 40) {
         throw new Error(
-          `\`vpcIngressConnectionName\` must be between 4 and 40 characters, got: ${props.vpcIngressConnectionName.length} characters.`,
+          `\`vpcIngressConnectionName\` must be between 4 and 40 characters, got: ${props.vpcIngressConnectionName.length} characters.`
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcIngressConnectionName)) {
         throw new Error(
-          `\`vpcIngressConnectionName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcIngressConnectionName}.`,
+          `\`vpcIngressConnectionName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcIngressConnectionName}.`
         );
       }
     }

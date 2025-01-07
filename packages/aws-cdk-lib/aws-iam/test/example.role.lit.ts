@@ -10,10 +10,12 @@ export class ExampleConstruct extends Construct {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
 
-    role.addToPolicy(new PolicyStatement({
-      resources: ['*'],
-      actions: ['lambda:InvokeFunction'],
-    }));
+    role.addToPolicy(
+      new PolicyStatement({
+        resources: ['*'],
+        actions: ['lambda:InvokeFunction'],
+      })
+    );
     /// !hide
   }
 }

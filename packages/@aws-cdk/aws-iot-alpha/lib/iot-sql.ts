@@ -57,7 +57,10 @@ export abstract class IotSql {
 }
 
 class IotSqlImpl extends IotSql {
-  constructor(private readonly version: string, private readonly sql: string) {
+  constructor(
+    private readonly version: string,
+    private readonly sql: string
+  ) {
     super();
 
     if (sql === '') {

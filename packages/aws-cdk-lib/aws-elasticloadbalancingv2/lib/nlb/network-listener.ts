@@ -2,7 +2,11 @@ import { Construct } from 'constructs';
 import { NetworkListenerAction } from './network-listener-action';
 import { NetworkListenerCertificate } from './network-listener-certificate';
 import { INetworkLoadBalancer } from './network-load-balancer';
-import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
+import {
+  INetworkLoadBalancerTarget,
+  INetworkTargetGroup,
+  NetworkTargetGroup,
+} from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
@@ -92,8 +96,7 @@ export interface BaseNetworkListenerProps {
  *
  * @deprecated Use IListenerCertificate instead
  */
-export interface INetworkListenerCertificateProps extends IListenerCertificate {
-}
+export interface INetworkListenerCertificateProps extends IListenerCertificate {}
 
 /**
  * Properties for a Network Listener attached to a Load Balancer
@@ -125,16 +128,28 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Looks up a network listener
    */
-  public static fromLookup(scope: Construct, id: string, options: NetworkListenerLookupOptions): INetworkListener {
+  public static fromLookup(
+    scope: Construct,
+    id: string,
+    options: NetworkListenerLookupOptions
+  ): INetworkListener {
     let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
     if (options.listenerProtocol) {
       validateNetworkProtocol(options.listenerProtocol);
 
       switch (options.listenerProtocol) {
-        case Protocol.TCP: listenerProtocol = cxschema.LoadBalancerListenerProtocol.TCP; break;
-        case Protocol.UDP: listenerProtocol = cxschema.LoadBalancerListenerProtocol.UDP; break;
-        case Protocol.TCP_UDP: listenerProtocol = cxschema.LoadBalancerListenerProtocol.TCP_UDP; break;
-        case Protocol.TLS: listenerProtocol = cxschema.LoadBalancerListenerProtocol.TLS; break;
+        case Protocol.TCP:
+          listenerProtocol = cxschema.LoadBalancerListenerProtocol.TCP;
+          break;
+        case Protocol.UDP:
+          listenerProtocol = cxschema.LoadBalancerListenerProtocol.UDP;
+          break;
+        case Protocol.TCP_UDP:
+          listenerProtocol = cxschema.LoadBalancerListenerProtocol.TCP_UDP;
+          break;
+        case Protocol.TLS:
+          listenerProtocol = cxschema.LoadBalancerListenerProtocol.TLS;
+          break;
       }
     }
 
@@ -154,7 +169,11 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Import an existing listener
    */
-  public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
+  public static fromNetworkListenerArn(
+    scope: Construct,
+    id: string,
+    networkListenerArn: string
+  ): INetworkListener {
     class Import extends Resource implements INetworkListener {
       public listenerArn = networkListenerArn;
     }
@@ -183,7 +202,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     validateNetworkProtocol(proto);
 
-    if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
+    if (proto === Protocol.TLS && certs.filter((v) => v != null).length === 0) {
       throw new Error('When the protocol is set to TLS, you must specify certificates');
     }
 
@@ -200,7 +219,10 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       protocol: proto,
       port: props.port,
       sslPolicy: props.sslPolicy,
-      certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
+      certificates: Lazy.any(
+        { produce: () => this.certificateArns.map((certificateArn) => ({ certificateArn })) },
+        { omitEmptyArray: true }
+      ),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
 
@@ -212,7 +234,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       this.addCertificates('DefaultCertificates', certs);
     }
     if (props.defaultAction && props.defaultTargetGroups) {
-      throw new Error('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'');
+      throw new Error("Specify at most one of 'defaultAction' and 'defaultTargetGroups'");
     }
 
     if (props.defaultAction) {
@@ -225,7 +247,9 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     if (props.tcpIdleTimeout !== undefined && !Token.isUnresolved(props.tcpIdleTimeout)) {
       if (props.tcpIdleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-        throw new Error(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${props.tcpIdleTimeout.toMilliseconds()} milliseconds.`);
+        throw new Error(
+          `\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${props.tcpIdleTimeout.toMilliseconds()} milliseconds.`
+        );
       }
 
       const tcpIdleTimeoutSeconds = props.tcpIdleTimeout.toSeconds();
@@ -235,7 +259,9 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       }
 
       if (tcpIdleTimeoutSeconds < 60 || tcpIdleTimeoutSeconds > 6000) {
-        throw new Error(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`);
+        throw new Error(
+          `\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`
+        );
       }
 
       this.setAttribute('tcp.idle_timeout.seconds', tcpIdleTimeoutSeconds.toString());
@@ -303,7 +329,9 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
       // eslint-disable-next-line max-len
-      throw new Error('Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup');
+      throw new Error(
+        'Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup'
+      );
     }
 
     const group = new NetworkTargetGroup(this, id + 'Group', {
@@ -335,8 +363,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 /**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends IListener {
-}
+export interface INetworkListener extends IListener {}
 
 /**
  * Properties for adding a new action to a listener

@@ -7,7 +7,7 @@ import { Duration } from '../../core';
  * The set of properties for streaming event sources shared by
  * Dynamo, Kinesis and Kafka.
  */
-export interface BaseStreamEventSourceProps{
+export interface BaseStreamEventSourceProps {
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
    * source at the time of invoking your function. Your function receives an
@@ -151,7 +151,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - None
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<{ [key: string]: any }>;
 
   /**
    * Add Customer managed KMS key to encrypt Filter Criteria.
@@ -191,7 +191,9 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       }
       if (minimumPollers != undefined && maximumPollers != undefined) {
         if (minimumPollers > maximumPollers) {
-          throw new Error('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
+          throw new Error(
+            'Minimum provisioned pollers must be less than or equal to maximum provisioned pollers'
+          );
         }
       }
     }
@@ -199,9 +201,14 @@ export abstract class StreamEventSource implements lambda.IEventSource {
 
   public abstract bind(_target: lambda.IFunction): void;
 
-  protected enrichMappingOptions(options: lambda.EventSourceMappingOptions): lambda.EventSourceMappingOptions {
+  protected enrichMappingOptions(
+    options: lambda.EventSourceMappingOptions
+  ): lambda.EventSourceMappingOptions {
     // check if this event source support S3 as OnFailure, currently only kakfa source are supported
-    if (this.props.onFailure instanceof S3OnFailureDestination && !options.supportS3OnFailureDestination) {
+    if (
+      this.props.onFailure instanceof S3OnFailureDestination &&
+      !options.supportS3OnFailureDestination
+    ) {
       throw new Error('S3 onFailure Destination is not supported for this event source');
     }
     return {

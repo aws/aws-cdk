@@ -68,9 +68,15 @@ export class ItemBatcher {
   public render(): any {
     return {
       ...(this.props.maxItemsPerBatch && { MaxItemsPerBatch: this.props.maxItemsPerBatch }),
-      ...(this.props.maxItemsPerBatchPath && { MaxItemsPerBatchPath: this.props.maxItemsPerBatchPath }),
-      ...(this.props.maxInputBytesPerBatch && { MaxInputBytesPerBatch: this.props.maxInputBytesPerBatch }),
-      ...(this.props.maxInputBytesPerBatchPath && { MaxInputBytesPerBatchPath: this.props.maxInputBytesPerBatchPath }),
+      ...(this.props.maxItemsPerBatchPath && {
+        MaxItemsPerBatchPath: this.props.maxItemsPerBatchPath,
+      }),
+      ...(this.props.maxInputBytesPerBatch && {
+        MaxInputBytesPerBatch: this.props.maxInputBytesPerBatch,
+      }),
+      ...(this.props.maxInputBytesPerBatchPath && {
+        MaxInputBytesPerBatchPath: this.props.maxInputBytesPerBatchPath,
+      }),
       ...(this.props.batchInput && { BatchInput: this.props.batchInput }),
     };
   }
@@ -85,7 +91,9 @@ export class ItemBatcher {
     }
 
     if (this.props.maxInputBytesPerBatch && this.props.maxInputBytesPerBatchPath) {
-      errors.push('Provide either `maxInputBytesPerBatch` or `maxInputBytesPerBatchPath`, but not both');
+      errors.push(
+        'Provide either `maxInputBytesPerBatch` or `maxInputBytesPerBatchPath`, but not both'
+      );
     }
 
     if (
@@ -93,7 +101,8 @@ export class ItemBatcher {
       !this.props.maxItemsPerBatchPath &&
       !this.props.maxInputBytesPerBatch &&
       !this.props.maxInputBytesPerBatchPath &&
-      !this.props.batchInput) {
+      !this.props.batchInput
+    ) {
       errors.push('Provide at least one value to the ItemBatcher');
     }
 

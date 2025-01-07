@@ -20,26 +20,34 @@ const connection = new glue.Connection(stack, 'MyConnection', {
   },
 });
 
-const columns = [{
-  name: 'col1',
-  type: glue.Schema.STRING,
-}, {
-  name: 'col2',
-  type: glue.Schema.STRING,
-  comment: 'col2 comment',
-}, {
-  name: 'col3',
-  type: glue.Schema.array(glue.Schema.STRING),
-}, {
-  name: 'col4',
-  type: glue.Schema.map(glue.Schema.STRING, glue.Schema.STRING),
-}, {
-  name: 'col5',
-  type: glue.Schema.struct([{
+const columns = [
+  {
     name: 'col1',
     type: glue.Schema.STRING,
-  }]),
-}];
+  },
+  {
+    name: 'col2',
+    type: glue.Schema.STRING,
+    comment: 'col2 comment',
+  },
+  {
+    name: 'col3',
+    type: glue.Schema.array(glue.Schema.STRING),
+  },
+  {
+    name: 'col4',
+    type: glue.Schema.map(glue.Schema.STRING, glue.Schema.STRING),
+  },
+  {
+    name: 'col5',
+    type: glue.Schema.struct([
+      {
+        name: 'col1',
+        type: glue.Schema.STRING,
+      },
+    ]),
+  },
+];
 
 new glue.ExternalTable(stack, 'MyTableWithCustomLocation', {
   database,

@@ -15,7 +15,8 @@ const httpApi = new apigwv2.HttpApi(stack, 'HttpApi');
 httpApi.addRoutes({
   path: '/get',
   methods: [apigwv2.HttpMethod.GET],
-  integration: new integrations.HttpLambdaIntegration('GetIntegration',
+  integration: new integrations.HttpLambdaIntegration(
+    'GetIntegration',
     new lambda.Function(stack, 'GetHandler', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
@@ -24,13 +25,15 @@ httpApi.addRoutes({
           statusCode: 200,
           body: 'Hello!',
         });`),
-    })),
+    })
+  ),
 });
 
 httpApi.addRoutes({
   path: '/post',
   methods: [apigwv2.HttpMethod.POST],
-  integration: new integrations.HttpLambdaIntegration('PostIntegration',
+  integration: new integrations.HttpLambdaIntegration(
+    'PostIntegration',
     new lambda.Function(stack, 'PostHandler', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
@@ -39,13 +42,15 @@ httpApi.addRoutes({
           statusCode: 200,
           body: 'Received body: ' + body,
         });`),
-    })),
+    })
+  ),
 });
 
 httpApi.addRoutes({
   path: '/status/403',
   methods: [apigwv2.HttpMethod.GET],
-  integration: new integrations.HttpLambdaIntegration('ForbiddenIntegration',
+  integration: new integrations.HttpLambdaIntegration(
+    'ForbiddenIntegration',
     new lambda.Function(stack, 'ForbiddenHandler', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
@@ -53,7 +58,8 @@ httpApi.addRoutes({
         exports.handler = async ({ body }) => ({
           statusCode: 403,
         });`),
-    })),
+    })
+  ),
 });
 
 const stage = new apigwv2.HttpStage(stack, 'Stage', {
@@ -62,46 +68,39 @@ const stage = new apigwv2.HttpStage(stack, 'Stage', {
   autoDeploy: true,
 });
 
-integ.assertions.httpApiCall(
-  `${stage.url}/get`,
-).expect(
+integ.assertions.httpApiCall(`${stage.url}/get`).expect(
   ExpectedResult.objectLike({
     status: 200,
     ok: true,
     body: 'Hello!',
-  }),
+  })
 );
 
-integ.assertions.httpApiCall(
-  `${stage.url}/post`,
-  {
+integ.assertions
+  .httpApiCall(`${stage.url}/post`, {
     method: 'POST',
     body: JSON.stringify({ key: 'value' }),
     headers: { 'Content-Type': 'application/json' },
-  },
-).expect(
-  ExpectedResult.objectLike({
-    status: 200,
-    ok: true,
-    body: 'Received body: {"key":"value"}',
-  }),
-);
+  })
+  .expect(
+    ExpectedResult.objectLike({
+      status: 200,
+      ok: true,
+      body: 'Received body: {"key":"value"}',
+    })
+  );
 
-integ.assertions.httpApiCall(
-  `${stage.url}/status/403`,
-).expect(
+integ.assertions.httpApiCall(`${stage.url}/status/403`).expect(
   ExpectedResult.objectLike({
     status: 403,
     ok: false,
-  }),
+  })
 );
 
 // We are also using httpbin.org to test the assertions with a fixed URL
 // See https://github.com/aws/aws-cdk/issues/29700
 
-integ.assertions.httpApiCall(
-  'https://httpbin.org/get?key=value#hash',
-).expect(
+integ.assertions.httpApiCall('https://httpbin.org/get?key=value#hash').expect(
   ExpectedResult.objectLike({
     status: 200,
     ok: true,
@@ -109,32 +108,29 @@ integ.assertions.httpApiCall(
       url: 'https://httpbin.org/get?key=value',
       args: { key: 'value' },
     },
-  }),
+  })
 );
 
-integ.assertions.httpApiCall(
-  'https://httpbin.org/post',
-  {
+integ.assertions
+  .httpApiCall('https://httpbin.org/post', {
     method: 'POST',
     body: JSON.stringify({ key: 'value' }),
     headers: { 'Content-Type': 'application/json' },
-  },
-).expect(
-  ExpectedResult.objectLike({
-    status: 200,
-    ok: true,
-    body: {
-      url: 'https://httpbin.org/post',
-      json: { key: 'value' },
-    },
-  }),
-);
+  })
+  .expect(
+    ExpectedResult.objectLike({
+      status: 200,
+      ok: true,
+      body: {
+        url: 'https://httpbin.org/post',
+        json: { key: 'value' },
+      },
+    })
+  );
 
-integ.assertions.httpApiCall(
-  'https://httpbin.org/status/403',
-).expect(
+integ.assertions.httpApiCall('https://httpbin.org/status/403').expect(
   ExpectedResult.objectLike({
     status: 403,
     ok: false,
-  }),
+  })
 );

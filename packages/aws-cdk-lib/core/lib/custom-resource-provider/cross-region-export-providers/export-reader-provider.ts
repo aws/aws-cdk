@@ -19,12 +19,14 @@ export interface ExportReaderProps {}
  * @internal - this is intentionally not exported from core
  */
 export class ExportReader extends Construct {
-  public static getOrCreate(scope: Construct, uniqueId: string, _props: ExportReaderProps = {}): ExportReader {
+  public static getOrCreate(
+    scope: Construct,
+    uniqueId: string,
+    _props: ExportReaderProps = {}
+  ): ExportReader {
     const stack = Stack.of(scope);
     const existing = stack.node.tryFindChild(uniqueId);
-    return existing
-      ? existing as ExportReader
-      : new ExportReader(stack, uniqueId);
+    return existing ? (existing as ExportReader) : new ExportReader(stack, uniqueId);
   }
 
   private readonly importParameters: CrossRegionExports = {};
@@ -35,19 +37,17 @@ export class ExportReader extends Construct {
 
     const resourceType = 'Custom::CrossRegionExportReader';
     const serviceToken = CrossRegionSsmReaderProvider.getOrCreate(this, resourceType, {
-      policyStatements: [{
-        Effect: 'Allow',
-        Resource: stack.formatArn({
-          service: 'ssm',
-          resource: 'parameter',
-          resourceName: `${SSM_EXPORT_PATH_PREFIX}${stack.stackName}/*`,
-        }),
-        Action: [
-          'ssm:AddTagsToResource',
-          'ssm:RemoveTagsFromResource',
-          'ssm:GetParameters',
-        ],
-      }],
+      policyStatements: [
+        {
+          Effect: 'Allow',
+          Resource: stack.formatArn({
+            service: 'ssm',
+            resource: 'parameter',
+            resourceName: `${SSM_EXPORT_PATH_PREFIX}${stack.stackName}/*`,
+          }),
+          Action: ['ssm:AddTagsToResource', 'ssm:RemoveTagsFromResource', 'ssm:GetParameters'],
+        },
+      ],
     });
 
     const properties: ExportReaderCRProps = {

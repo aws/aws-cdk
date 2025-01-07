@@ -9,14 +9,20 @@ import { UserHandlerProps } from '../handler-props';
 
 const secretsManager = new SecretsManager({});
 
-export async function handler(props: UserHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
+export async function handler(
+  props: UserHandlerProps & ClusterProps,
+  event: AWSLambda.CloudFormationCustomResourceEvent
+) {
   const username = props.username;
   const passwordSecretArn = props.passwordSecretArn;
   const clusterProps = props;
 
   if (event.RequestType === 'Create') {
     await createUser(username, passwordSecretArn, clusterProps);
-    return { PhysicalResourceId: makePhysicalId(username, clusterProps, event.RequestId), Data: { username: username } };
+    return {
+      PhysicalResourceId: makePhysicalId(username, clusterProps, event.RequestId),
+      Data: { username: username },
+    };
   } else if (event.RequestType === 'Delete') {
     await dropUser(username, clusterProps);
     return;
@@ -25,8 +31,11 @@ export async function handler(props: UserHandlerProps & ClusterProps, event: AWS
       username,
       passwordSecretArn,
       clusterProps,
-      event.OldResourceProperties as unknown as UserHandlerProps & ClusterProps);
-    const physicalId = replace ? makePhysicalId(username, clusterProps, event.RequestId) : event.PhysicalResourceId;
+      event.OldResourceProperties as unknown as UserHandlerProps & ClusterProps
+    );
+    const physicalId = replace
+      ? makePhysicalId(username, clusterProps, event.RequestId)
+      : event.PhysicalResourceId;
     return { PhysicalResourceId: physicalId, Data: { username: username } };
   } else {
     /* eslint-disable-next-line dot-notation */
@@ -48,10 +57,13 @@ async function updateUser(
   username: string,
   passwordSecretArn: string,
   clusterProps: ClusterProps,
-  oldResourceProperties: UserHandlerProps & ClusterProps,
+  oldResourceProperties: UserHandlerProps & ClusterProps
 ): Promise<{ replace: boolean }> {
   const oldClusterProps = oldResourceProperties;
-  if (clusterProps.clusterName !== oldClusterProps.clusterName || clusterProps.databaseName !== oldClusterProps.databaseName) {
+  if (
+    clusterProps.clusterName !== oldClusterProps.clusterName ||
+    clusterProps.databaseName !== oldClusterProps.databaseName
+  ) {
     await createUser(username, passwordSecretArn, clusterProps);
     return { replace: true };
   }

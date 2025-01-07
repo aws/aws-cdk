@@ -1,6 +1,11 @@
 import { Construct } from 'constructs';
 import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoItemCollectionMetrics, DynamoReturnValues } from './shared-types';
+import {
+  DynamoAttributeValue,
+  DynamoConsumedCapacity,
+  DynamoItemCollectionMetrics,
+  DynamoReturnValues,
+} from './shared-types';
 import * as ddb from '../../../aws-dynamodb';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
@@ -89,7 +94,11 @@ export class DynamoDeleteItem extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: Construct, id: string, private readonly props: DynamoDeleteItemProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: DynamoDeleteItemProps
+  ) {
     super(scope, id, props);
 
     this.taskPolicies = [

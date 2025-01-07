@@ -86,11 +86,15 @@ export class CustomState extends State implements IChainable, INextable {
     // Retriers and Catchers can be specified directly in the stateJson or indirectly to the construct with addRetry() and addCatch().
     // renderRetryCatch() only renders the indirectly supplied Retriers and Catchers, so we need to manually merge in those directly in the stateJson
     if (Array.isArray(this.stateJson.Retry)) {
-      state.Retry = Array.isArray(state.Retry) ? [...state.Retry, ...this.stateJson.Retry] : [...this.stateJson.Retry];
+      state.Retry = Array.isArray(state.Retry)
+        ? [...state.Retry, ...this.stateJson.Retry]
+        : [...this.stateJson.Retry];
     }
 
     if (Array.isArray(this.stateJson.Catch)) {
-      state.Catch = Array.isArray(state.Catch) ? [...state.Catch, ...this.stateJson.Catch] : [...this.stateJson.Catch];
+      state.Catch = Array.isArray(state.Catch)
+        ? [...state.Catch, ...this.stateJson.Catch]
+        : [...this.stateJson.Catch];
     }
 
     return state;
@@ -121,18 +125,24 @@ export class CustomState extends State implements IChainable, INextable {
   }
 
   private addMultipleRetrySourcesWarning(): void {
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:multipleRetrySources', [
-      'CustomState constructs can configure state retries using the stateJson property or by using the addRetry() function.',
-      'When retries are configured using both of these, the state definition\'s Retry field is generated ',
-      'by first rendering retries from addRetry(), then rendering retries from the stateJson.',
-    ].join('\n'));
+    Annotations.of(this).addWarningV2(
+      '@aws-cdk/aws-stepfunctions:multipleRetrySources',
+      [
+        'CustomState constructs can configure state retries using the stateJson property or by using the addRetry() function.',
+        "When retries are configured using both of these, the state definition's Retry field is generated ",
+        'by first rendering retries from addRetry(), then rendering retries from the stateJson.',
+      ].join('\n')
+    );
   }
 
   private addMultipleCatchSourcesWarning(): void {
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:multipleCatchSources', [
-      'CustomState constructs can configure state catchers using the stateJson property or by using the addCatch() function.',
-      'When catchers are configured using both of these, the state definition\'s Catch field is generated ',
-      'by first rendering catchers from addCatch(), then rendering catchers from the stateJson.',
-    ].join('\n'));
+    Annotations.of(this).addWarningV2(
+      '@aws-cdk/aws-stepfunctions:multipleCatchSources',
+      [
+        'CustomState constructs can configure state catchers using the stateJson property or by using the addCatch() function.',
+        "When catchers are configured using both of these, the state definition's Catch field is generated ",
+        'by first rendering catchers from addCatch(), then rendering catchers from the stateJson.',
+      ].join('\n')
+    );
   }
 }

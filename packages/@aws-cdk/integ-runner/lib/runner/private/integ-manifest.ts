@@ -41,7 +41,6 @@ export class IntegManifestReader {
     try {
       const obj = Manifest.loadIntegManifest(fileName);
       return new IntegManifestReader(path.dirname(fileName), obj);
-
     } catch (e: any) {
       throw new Error(`Cannot read integ manifest '${fileName}': ${e.message}`);
     }
@@ -60,7 +59,9 @@ export class IntegManifestReader {
       throw new Error(`Cannot read integ manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
-      return IntegManifestReader.fromFile(path.join(filePath, IntegManifestReader.DEFAULT_FILENAME));
+      return IntegManifestReader.fromFile(
+        path.join(filePath, IntegManifestReader.DEFAULT_FILENAME)
+      );
     }
     return IntegManifestReader.fromFile(filePath);
   }
@@ -69,7 +70,10 @@ export class IntegManifestReader {
    * The directory where the manifest was found
    */
   public readonly directory: string;
-  constructor(directory: string, private readonly manifest: IntegManifest) {
+  constructor(
+    directory: string,
+    private readonly manifest: IntegManifest
+  ) {
     this.directory = directory;
   }
 

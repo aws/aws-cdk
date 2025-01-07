@@ -41,8 +41,7 @@ export abstract class Cache {
       _toCloudFormation(): CfnProject.ProjectCacheProperty | undefined {
         return { type: 'NO_CACHE' };
       },
-      _bind(): void {
-      },
+      _bind(): void {},
     };
   }
 
@@ -56,7 +55,9 @@ export abstract class Cache {
         type: 'LOCAL',
         modes,
       }),
-      _bind: () => { return; },
+      _bind: () => {
+        return;
+      },
     };
   }
 
@@ -69,7 +70,7 @@ export abstract class Cache {
     return {
       _toCloudFormation: () => ({
         type: 'S3',
-        location: Fn.join('/', [bucket.bucketName, options && options.prefix || Aws.NO_VALUE]),
+        location: Fn.join('/', [bucket.bucketName, (options && options.prefix) || Aws.NO_VALUE]),
       }),
       _bind: (project) => {
         bucket.grantReadWrite(project);

@@ -3,10 +3,12 @@ import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
 
-export function addDefaultCapacityProvider(cluster: ecs.Cluster,
+export function addDefaultCapacityProvider(
+  cluster: ecs.Cluster,
   stack: cdk.Stack,
   vpc: ec2.Vpc,
-  props?: Omit<ecs.AsgCapacityProviderProps, 'autoScalingGroup'>) {
+  props?: Omit<ecs.AsgCapacityProviderProps, 'autoScalingGroup'>
+) {
   const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
     vpc,
     machineImage: ecs.EcsOptimizedImage.amazonLinux2(),

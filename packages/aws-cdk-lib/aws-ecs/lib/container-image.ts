@@ -65,7 +65,6 @@ export abstract class ContainerImage {
   public static fromTarball(tarballFile: string): ContainerImage {
     return {
       bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
-
         const asset = new TarballImageAsset(scope, 'Tarball', { tarballFile });
         asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
 
@@ -79,7 +78,10 @@ export abstract class ContainerImage {
   /**
    * Called when the image is used by a ContainerDefinition
    */
-  public abstract bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig;
+  public abstract bind(
+    scope: Construct,
+    containerDefinition: ContainerDefinition
+  ): ContainerImageConfig;
 }
 
 /**

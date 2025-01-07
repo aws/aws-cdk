@@ -73,16 +73,25 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EventBridgePutEventsProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EventBridgePutEventsProps
+  ) {
     super(scope, id, props);
 
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(this.integrationPattern, EventBridgePutEvents.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      EventBridgePutEvents.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
-      if (!sfn.FieldUtils.containsTaskToken(props.entries.map(entry => entry.detail))) {
-        throw new Error('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
+      if (!sfn.FieldUtils.containsTaskToken(props.entries.map((entry) => entry.detail))) {
+        throw new Error(
+          'Task Token is required in `entries`. Use JsonPath.taskToken to set the token.'
+        );
       }
     }
 
@@ -100,22 +109,21 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
    * Returns an array of EventBusArn strings based on this.props.entries
    */
   private get eventBusArns(): string[] {
-    return this.props.entries
-      .map(entry => {
-        if (entry.eventBus) {
-          // If an eventBus is provided, use the corresponding ARN
-          return entry.eventBus.eventBusArn;
-        } else {
-          // If neither an eventBus nor eventBusName is provided,
-          // format the ARN for the default event bus in the account.
-          return cdk.Stack.of(this).formatArn({
-            resource: 'event-bus',
-            resourceName: 'default',
-            arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-            service: 'events',
-          });
-        }
-      });
+    return this.props.entries.map((entry) => {
+      if (entry.eventBus) {
+        // If an eventBus is provided, use the corresponding ARN
+        return entry.eventBus.eventBusArn;
+      } else {
+        // If neither an eventBus nor eventBusName is provided,
+        // format the ARN for the default event bus in the account.
+        return cdk.Stack.of(this).formatArn({
+          resource: 'event-bus',
+          resourceName: 'default',
+          arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+          service: 'events',
+        });
+      }
+    });
   }
 
   /**
@@ -133,7 +141,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
 
   private renderEntries(): Object[] {
     // we should have validated all entries in validateEntries()
-    return this.props.entries.map(entry => {
+    return this.props.entries.map((entry) => {
       return {
         Detail: entry.detail?.value,
         DetailType: entry.detailType,
@@ -147,7 +155,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
     if (this.props.entries.length <= 0) {
       throw new Error('Value for property `entries` must be a non-empty array.');
     }
-    if (this.props.entries.some(e => e.source.startsWith('aws.'))) {
+    if (this.props.entries.some((e) => e.source.startsWith('aws.'))) {
       throw new Error('Event source cannot start with "aws."');
     }
   }

@@ -42,7 +42,10 @@ export class RegionInfo {
    * @returns a mapping with AWS region codes as the keys,
    *   and the fact in the given region as the value for that key
    */
-  public static limitedRegionMap(factName: string, partitions: string[]): { [region: string]: string } {
+  public static limitedRegionMap(
+    factName: string,
+    partitions: string[]
+  ): { [region: string]: string } {
     const ret: Record<string, string> = {};
     for (const [region, value] of Object.entries(RegionInfo.regionMap(factName))) {
       if (partitions.includes(partitionInformation(region).partition)) {
@@ -151,8 +154,14 @@ export class RegionInfo {
    * @param insightsVersion the version (e.g. 1.0.98.0)
    * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
    */
-  public cloudwatchLambdaInsightsArn(insightsVersion: string, architecture?: string): string | undefined {
-    return Fact.find(this.name, FactName.cloudwatchLambdaInsightsVersion(insightsVersion, architecture));
+  public cloudwatchLambdaInsightsArn(
+    insightsVersion: string,
+    architecture?: string
+  ): string | undefined {
+    return Fact.find(
+      this.name,
+      FactName.cloudwatchLambdaInsightsVersion(insightsVersion, architecture)
+    );
   }
 
   /**
@@ -160,7 +169,7 @@ export class RegionInfo {
    * @param layerVersion The layer version (e.g. 2.0.181)
    * @param architecture The Lambda Function architecture (e.g. 'x86_64' or 'arm64'), defaults to x86_64
    */
-  public appConfigLambdaArn(layerVersion: string, architecture?: string) : string | undefined {
+  public appConfigLambdaArn(layerVersion: string, architecture?: string): string | undefined {
     return Fact.find(this.name, FactName.appConfigLambdaLayerVersion(layerVersion, architecture));
   }
 
@@ -186,7 +195,11 @@ export class RegionInfo {
    * @param version the layer version.
    * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
    */
-  public adotLambdaLayerArn(type: string, version: string, architecture: string): string | undefined {
+  public adotLambdaLayerArn(
+    type: string,
+    version: string,
+    architecture: string
+  ): string | undefined {
     return Fact.find(this.name, FactName.adotLambdaLayer(type, version, architecture));
   }
 
@@ -206,5 +219,4 @@ export class RegionInfo {
   public get samlSignOnUrl(): string | undefined {
     return Fact.find(this.name, FactName.SAML_SIGN_ON_URL);
   }
-
 }

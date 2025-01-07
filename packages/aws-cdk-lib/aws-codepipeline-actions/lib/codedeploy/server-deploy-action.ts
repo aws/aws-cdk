@@ -36,25 +36,34 @@ export class CodeDeployServerDeployAction extends Action {
     this.deploymentGroup = props.deploymentGroup;
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
-    options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.deploymentGroup.application.applicationArn],
-      actions: ['codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision'],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        resources: [this.deploymentGroup.application.applicationArn],
+        actions: ['codedeploy:GetApplicationRevision', 'codedeploy:RegisterApplicationRevision'],
+      })
+    );
 
-    options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.deploymentGroup.deploymentGroupArn],
-      actions: ['codedeploy:CreateDeployment', 'codedeploy:GetDeployment'],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        resources: [this.deploymentGroup.deploymentGroupArn],
+        actions: ['codedeploy:CreateDeployment', 'codedeploy:GetDeployment'],
+      })
+    );
 
-    options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.deploymentGroup.deploymentConfig.deploymentConfigArn],
-      actions: ['codedeploy:GetDeploymentConfig'],
-    }));
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        resources: [this.deploymentGroup.deploymentConfig.deploymentConfigArn],
+        actions: ['codedeploy:GetDeploymentConfig'],
+      })
+    );
 
     // grant the ASG Role permissions to read from the Pipeline Bucket
     for (const asg of this.deploymentGroup.autoScalingGroups || []) {

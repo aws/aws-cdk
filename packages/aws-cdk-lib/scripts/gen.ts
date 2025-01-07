@@ -8,7 +8,7 @@ const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
 const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
 const scopeMapPath = path.join(__dirname, 'scope-map.json');
 
-main().catch(e => {
+main().catch((e) => {
   // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
@@ -17,11 +17,11 @@ main().catch(e => {
 async function main() {
   // Generate all L1s based on config in scope-map.json
 
-  const generated = (await generateAll(awsCdkLibDir, {
+  const generated = await generateAll(awsCdkLibDir, {
     coreImport: '../../core',
     cloudwatchImport: '../../aws-cloudwatch',
     scopeMapPath,
-  }));
+  });
 
   await updateExportsAndEntryPoints(generated);
   await writeScopeMap(generated);
@@ -60,14 +60,19 @@ async function updateExportsAndEntryPoints(modules: ModuleMap) {
       pkgJson.exports[exportName] = `./${moduleConfig.name}/index.js`;
     }
 
-    if (!indexStatements.find(e => e.includes(moduleConfig.name))) {
+    if (!indexStatements.find((e) => e.includes(moduleConfig.name))) {
       indexStatements.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
     }
   }
 
   // sort exports
-  pkgJson.exports = Object.fromEntries(Object.entries(pkgJson.exports).sort(([e1], [e2]) => e1.localeCompare(e2)));
+  pkgJson.exports = Object.fromEntries(
+    Object.entries(pkgJson.exports).sort(([e1], [e2]) => e1.localeCompare(e2))
+  );
 
   await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-  await fs.writeFile(topLevelIndexFilePath, indexStatements.sort((l1, l2) => l1.localeCompare(l2)).join('\n') + '\n');
+  await fs.writeFile(
+    topLevelIndexFilePath,
+    indexStatements.sort((l1, l2) => l1.localeCompare(l2)).join('\n') + '\n'
+  );
 }

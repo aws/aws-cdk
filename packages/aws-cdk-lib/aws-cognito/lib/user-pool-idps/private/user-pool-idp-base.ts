@@ -9,10 +9,17 @@ import { UserPoolIdentityProviderProps, AttributeMapping } from '../base';
  *
  * @internal
  */
-export abstract class UserPoolIdentityProviderBase extends Resource implements IUserPoolIdentityProvider {
+export abstract class UserPoolIdentityProviderBase
+  extends Resource
+  implements IUserPoolIdentityProvider
+{
   public abstract readonly providerName: string;
 
-  public constructor(scope: Construct, id: string, private readonly props: UserPoolIdentityProviderProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: UserPoolIdentityProviderProps
+  ) {
     super(scope, id);
     props.userPool.registerIdentityProvider(this);
   }
@@ -33,7 +40,9 @@ export abstract class UserPoolIdentityProviderBase extends Resource implements I
         return { ...agg, [k]: v.attributeName };
       }, mapping);
     }
-    if (Object.keys(mapping).length === 0) { return undefined; }
+    if (Object.keys(mapping).length === 0) {
+      return undefined;
+    }
     return mapping;
   }
 }

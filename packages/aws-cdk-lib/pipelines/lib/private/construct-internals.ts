@@ -10,7 +10,9 @@ export function appOf(construct: IConstruct): App {
   const root = Node.of(construct).root;
 
   if (!App.isApp(root)) {
-    throw new Error(`Construct must be created under an App, but is not: ${Node.of(construct).path}`);
+    throw new Error(
+      `Construct must be created under an App, but is not: ${Node.of(construct).path}`
+    );
   }
 
   return root;

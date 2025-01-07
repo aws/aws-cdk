@@ -8,9 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'test-dynamodbv2-put-item-action-stack');
 
 const topicRule = new iot.TopicRule(stack, 'TopicRule', {
-  sql: iot.IotSql.fromStringAsVer20160323(
-    "SELECT * FROM 'device/+/data'",
-  ),
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
 });
 
 const tablePartitionKey: dynamodb.Attribute = {

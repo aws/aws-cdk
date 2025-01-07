@@ -9,7 +9,7 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 export class StepFunctionsStartExecution extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly stateMachine: IStateMachine,
-    props: ScheduleTargetBaseProps,
+    props: ScheduleTargetBaseProps
   ) {
     super(props, stateMachine.stateMachineArn);
   }

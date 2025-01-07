@@ -97,7 +97,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - automatically discovered by `esbuild`
    */
-  readonly tsconfig? : string;
+  readonly tsconfig?: string;
 
   /**
    * This option tells esbuild to write out a JSON file relative to output directory with metadata about the build.
@@ -135,7 +135,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no comments are passed
    */
-  readonly banner? : string;
+  readonly banner?: string;
 
   /**
    * Use this to insert an arbitrary string at the end of generated JavaScript files.
@@ -146,7 +146,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no comments are passed
    */
-  readonly footer? : string;
+  readonly footer?: string;
 
   /**
    * The charset to use for esbuild's output.
@@ -243,13 +243,13 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly forceDockerBundling?: boolean;
 
   /**
-  * Run compilation using tsc before running file through bundling step.
-  * This usually is not required unless you are using new experimental features that
-  * are only supported by typescript's `tsc` compiler.
-  * One example of such feature is `emitDecoratorMetadata`.
-  *
-  * @default false
-  */
+   * Run compilation using tsc before running file through bundling step.
+   * This usually is not required unless you are using new experimental features that
+   * are only supported by typescript's `tsc` compiler.
+   * One example of such feature is `emitDecoratorMetadata`.
+   *
+   * @default false
+   */
   readonly preCompilation?: boolean;
 
   /**

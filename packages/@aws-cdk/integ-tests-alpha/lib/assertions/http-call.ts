@@ -8,7 +8,7 @@ import { WaiterStateMachine, WaiterStateMachineOptions } from './waiter-state-ma
 /**
  * Options for creating an HttpApiCall provider
  */
-export interface HttpCallProps extends HttpRequestParameters { }
+export interface HttpCallProps extends HttpRequestParameters {}
 /**
  * Construct that creates a custom resource that will perform
  * an HTTP API Call
@@ -39,19 +39,22 @@ export class HttpApiCall extends ApiCallBase {
 
     // Needed so that all the policies set up by the provider should be available before the custom resource is provisioned.
     this.apiCallResource.node.addDependency(this.provider);
-    Aspects.of(this).add({
-      visit(node: IConstruct) {
-        if (node instanceof HttpApiCall) {
-          if (node.expectedResult) {
-            const result = node.apiCallResource.getAttString('assertion');
+    Aspects.of(this).add(
+      {
+        visit(node: IConstruct) {
+          if (node instanceof HttpApiCall) {
+            if (node.expectedResult) {
+              const result = node.apiCallResource.getAttString('assertion');
 
-            new CfnOutput(node, 'AssertionResults', {
-              value: result,
-            }).overrideLogicalId(`AssertionResults${id.replace(/[\W_]+/g, '')}`);
+              new CfnOutput(node, 'AssertionResults', {
+                value: result,
+              }).overrideLogicalId(`AssertionResults${id.replace(/[\W_]+/g, '')}`);
+            }
           }
-        }
+        },
       },
-    }, { priority: AspectPriority.MUTATING });
+      { priority: AspectPriority.MUTATING }
+    );
   }
 
   public assertAtPath(_path: string, _expected: ExpectedResult): IApiCall {
@@ -64,5 +67,5 @@ export class HttpApiCall extends ApiCallBase {
     this.stateMachineArn = waiter.stateMachineArn;
     this.provider.addPolicyStatementFromSdkCall('states', 'StartExecution');
     return this;
-  };
+  }
 }

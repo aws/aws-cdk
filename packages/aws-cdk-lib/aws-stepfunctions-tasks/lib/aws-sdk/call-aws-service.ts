@@ -73,17 +73,26 @@ export class CallAwsService extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: Construct, id: string, private readonly props: CallAwsServiceProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: CallAwsServiceProps
+  ) {
     super(scope, id, props);
 
     if (this.props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
     }
-    if (!Token.isUnresolved(this.props.action) && !this.props.action.startsWith(this.props.action[0]?.toLowerCase())) {
+    if (
+      !Token.isUnresolved(this.props.action) &&
+      !this.props.action.startsWith(this.props.action[0]?.toLowerCase())
+    ) {
       throw new Error(`action must be camelCase, got: ${this.props.action}`);
     }
     if (this.props.parameters) {
-      const invalidKeys = Object.keys(this.props.parameters).filter(key => !key.startsWith(key[0]?.toUpperCase()));
+      const invalidKeys = Object.keys(this.props.parameters).filter(
+        (key) => !key.startsWith(key[0]?.toUpperCase())
+      );
       if (invalidKeys.length) {
         throw new Error(`parameter names must be PascalCase, got: ${invalidKeys.join(', ')}`);
       }
@@ -106,7 +115,7 @@ export class CallAwsService extends sfn.TaskStateBase {
         // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
         actions: [props.iamAction ?? `${iamService}:${props.action}`],
       }),
-      ...props.additionalIamStatements ?? [],
+      ...(props.additionalIamStatements ?? []),
     ];
   }
 
@@ -127,7 +136,7 @@ export class CallAwsService extends sfn.TaskStateBase {
       Resource: integrationResourceArn(
         'aws-sdk',
         `${service}:${this.props.action}`,
-        this.props.integrationPattern,
+        this.props.integrationPattern
       ),
       Parameters: sfn.FieldUtils.renderObject(this.props.parameters) ?? {}, // Parameters is required for aws-sdk
     };

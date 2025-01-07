@@ -38,7 +38,7 @@ export class Tags {
     // towards a working API.
     if (Matcher.isMatcher(tags) && tags.name === 'absent') {
       throw new Error(
-        'Match.absent() will never match Tags because "{}" is the default value. Use Tags.hasNone() instead.',
+        'Match.absent() will never match Tags because "{}" is the default value. Use Tags.hasNone() instead.'
       );
     }
 
@@ -46,9 +46,7 @@ export class Tags {
 
     const result = matcher.test(this.all());
     if (result.hasFailed()) {
-      throw new Error(
-        'Stack tags did not match as expected:\n' + result.renderMismatch(),
-      );
+      throw new Error('Stack tags did not match as expected:\n' + result.renderMismatch());
     }
   }
 

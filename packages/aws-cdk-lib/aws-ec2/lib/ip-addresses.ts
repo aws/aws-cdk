@@ -36,7 +36,7 @@ export class IpAddresses {
     return new AwsIpam(props);
   }
 
-  private constructor() { }
+  private constructor() {}
 }
 
 /**
@@ -64,7 +64,6 @@ export interface IIpAddresses {
  * CIDR Allocated Vpc
  */
 export interface VpcIpamOptions {
-
   /**
    * CIDR Block for Vpc
    *
@@ -91,7 +90,6 @@ export interface VpcIpamOptions {
  * Subnet requested for allocation
  */
 export interface RequestedSubnet {
-
   /**
    * The availability zone for the subnet
    */
@@ -224,7 +222,6 @@ export interface AllocatedSubnet {
  * Configuration for AwsIpam
  */
 export interface AwsIpamProps {
-
   /**
    * Netmask length for Vpc
    */
@@ -266,8 +263,7 @@ export interface AwsIpamProps {
  *
  */
 class AwsIpam implements IIpAddresses {
-  constructor(private readonly props: AwsIpamProps) {
-  }
+  constructor(private readonly props: AwsIpamProps) {}
 
   /**
    * Allocates Vpc CIDR. called when creating a Vpc using AwsIpam.
@@ -283,23 +279,29 @@ class AwsIpam implements IIpAddresses {
    * Allocates Subnets CIDRs. Called by VPC when creating subnets.
    */
   allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions {
+    const cidrSplit = calculateCidrSplits(
+      this.props.ipv4NetmaskLength,
+      input.requestedSubnets.map((mask) => {
+        if (
+          mask.configuration.cidrMask === undefined &&
+          this.props.defaultSubnetIpv4NetmaskLength === undefined
+        ) {
+          throw new Error(
+            'If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options'
+          );
+        }
 
-    const cidrSplit = calculateCidrSplits(this.props.ipv4NetmaskLength, input.requestedSubnets.map((mask => {
+        const cidrMask = mask.configuration.cidrMask ?? this.props.defaultSubnetIpv4NetmaskLength;
 
-      if ((mask.configuration.cidrMask === undefined) && (this.props.defaultSubnetIpv4NetmaskLength=== undefined) ) {
-        throw new Error('If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options');
-      }
+        if (cidrMask === undefined) {
+          throw new Error('Should not have happened, but satisfies the type checker');
+        }
 
-      const cidrMask = mask.configuration.cidrMask ?? this.props.defaultSubnetIpv4NetmaskLength;
+        return cidrMask;
+      })
+    );
 
-      if (cidrMask === undefined) {
-        throw new Error('Should not have happened, but satisfies the type checker');
-      }
-
-      return cidrMask;
-    })));
-
-    const allocatedSubnets: AllocatedSubnet[] = cidrSplit.map(subnet => {
+    const allocatedSubnets: AllocatedSubnet[] = cidrSplit.map((subnet) => {
       return {
         cidr: cidrSplitToCfnExpression(input.vpcCidr, subnet),
       };
@@ -308,7 +310,6 @@ class AwsIpam implements IIpAddresses {
     return {
       allocatedSubnets: allocatedSubnets,
     };
-
   }
 }
 
@@ -332,7 +333,7 @@ export function cidrSplitToCfnExpression(parentCidr: string, split: CidrSplit) {
   }
 
   if (split.count <= MAX_COUNT) {
-    return Fn.select(split.index, Fn.cidr(parentCidr, split.count, `${32-split.netmask}`));
+    return Fn.select(split.index, Fn.cidr(parentCidr, split.count, `${32 - split.netmask}`));
   }
 
   if (split.netmask - MAX_COUNT_BITS < 1) {
@@ -347,7 +348,7 @@ export function cidrSplitToCfnExpression(parentCidr: string, split: CidrSplit) {
   return cidrSplitToCfnExpression(cidrSplitToCfnExpression(parentCidr, parentSplit), {
     netmask: split.netmask,
     count: MAX_COUNT,
-    index: split.index - (parentSplit.index * MAX_COUNT),
+    index: split.index - parentSplit.index * MAX_COUNT,
   });
 }
 
@@ -371,7 +372,9 @@ class Cidr implements IIpAddresses {
 
   constructor(private readonly cidrBlock: string) {
     if (Token.isUnresolved(cidrBlock)) {
-      throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
+      throw new Error(
+        "'cidr' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)"
+      );
     }
 
     this.networkBuilder = new NetworkBuilder(this.cidrBlock);
@@ -390,7 +393,6 @@ class Cidr implements IIpAddresses {
    * Allocates Subnets Cidrs. Called by VPC when creating subnets.
    */
   allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions {
-
     const allocatedSubnets: AllocatedSubnet[] = [];
     const subnetsWithoutDefinedCidr: IRequestedSubnetInstance[] = [];
     //default: Available IP space is evenly divided across subnets if no cidr is given.
@@ -408,8 +410,10 @@ class Cidr implements IIpAddresses {
       }
     });
 
-    const cidrMaskForRemaining = this.networkBuilder.maskForRemainingSubnets(subnetsWithoutDefinedCidr.length);
-    subnetsWithoutDefinedCidr.forEach((subnet)=> {
+    const cidrMaskForRemaining = this.networkBuilder.maskForRemainingSubnets(
+      subnetsWithoutDefinedCidr.length
+    );
+    subnetsWithoutDefinedCidr.forEach((subnet) => {
       allocatedSubnets.splice(subnet.index, 0, {
         cidr: this.networkBuilder.addSubnet(cidrMaskForRemaining),
       });
@@ -436,7 +440,7 @@ export class Ipv6Addresses {
     return new AmazonProvided();
   }
 
-  private constructor() { }
+  private constructor() {}
 }
 
 /**

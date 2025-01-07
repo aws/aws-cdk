@@ -23,17 +23,18 @@ class TestStack extends cdk.Stack {
       code: lambda.Code.fromInline(`
         exports.handler = (event) => {
           console.log("It is test for lambda action of AWS IoT Rule.", event);
-        };`,
-      ),
+        };`),
     });
 
     const state = new iotevents.State({
       stateName: 'MyState',
-      onEnter: [{
-        eventName: 'test-event',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [new actions.LambdaInvokeAction(func)],
-      }],
+      onEnter: [
+        {
+          eventName: 'test-event',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [new actions.LambdaInvokeAction(func)],
+        },
+      ],
     });
 
     new iotevents.DetectorModel(this, 'MyDetectorModel', {

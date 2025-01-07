@@ -1,7 +1,14 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import { Lazy, Resource, Stack, Annotations } from '../../../core';
-import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
+import {
+  BaseService,
+  BaseServiceOptions,
+  DeploymentControllerType,
+  IBaseService,
+  IService,
+  LaunchType,
+} from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -87,9 +94,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
 /**
  * The interface for a service using the EC2 launch type on an ECS cluster.
  */
-export interface IEc2Service extends IService {
-
-}
+export interface IEc2Service extends IService {}
 
 /**
  * The properties to import from the service using the EC2 launch type.
@@ -121,11 +126,14 @@ export interface Ec2ServiceAttributes {
  * @resource AWS::ECS::Service
  */
 export class Ec2Service extends BaseService implements IEc2Service {
-
   /**
    * Imports from the specified service ARN.
    */
-  public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
+  public static fromEc2ServiceArn(
+    scope: Construct,
+    id: string,
+    ec2ServiceArn: string
+  ): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, ec2ServiceArn);
@@ -136,7 +144,11 @@ export class Ec2Service extends BaseService implements IEc2Service {
   /**
    * Imports from the specified service attributes.
    */
-  public static fromEc2ServiceAttributes(scope: Construct, id: string, attrs: Ec2ServiceAttributes): IBaseService {
+  public static fromEc2ServiceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: Ec2ServiceAttributes
+  ): IBaseService {
     return fromServiceAttributes(scope, id, attrs);
   }
 
@@ -149,14 +161,20 @@ export class Ec2Service extends BaseService implements IEc2Service {
    */
   constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
-      throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
+      throw new Error(
+        "Daemon mode launches one task on every instance. Don't supply desiredCount."
+      );
     }
 
     if (props.daemon && props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
       throw new Error('Maximum percent must be 100 for daemon mode.');
     }
 
-    if (props.minHealthyPercent !== undefined && props.maxHealthyPercent !== undefined && props.minHealthyPercent >= props.maxHealthyPercent) {
+    if (
+      props.minHealthyPercent !== undefined &&
+      props.maxHealthyPercent !== undefined &&
+      props.minHealthyPercent >= props.maxHealthyPercent
+    ) {
       throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
     }
 
@@ -168,21 +186,31 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
-    super(scope, id, {
-      ...props,
-      desiredCount: props.desiredCount,
-      maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
-      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
-      launchType: LaunchType.EC2,
-      enableECSManagedTags: props.enableECSManagedTags,
-    },
-    {
-      cluster: props.cluster.clusterName,
-      taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
-      placementConstraints: Lazy.any({ produce: () => this.constraints }),
-      placementStrategies: Lazy.any({ produce: () => this.strategies }, { omitEmptyArray: true }),
-      schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-    }, props.taskDefinition);
+    super(
+      scope,
+      id,
+      {
+        ...props,
+        desiredCount: props.desiredCount,
+        maxHealthyPercent:
+          props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
+        minHealthyPercent:
+          props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
+        launchType: LaunchType.EC2,
+        enableECSManagedTags: props.enableECSManagedTags,
+      },
+      {
+        cluster: props.cluster.clusterName,
+        taskDefinition:
+          props.deploymentController?.type === DeploymentControllerType.EXTERNAL
+            ? undefined
+            : props.taskDefinition.taskDefinitionArn,
+        placementConstraints: Lazy.any({ produce: () => this.constraints }),
+        placementStrategies: Lazy.any({ produce: () => this.strategies }, { omitEmptyArray: true }),
+        schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
+      },
+      props.taskDefinition
+    );
 
     this.constraints = undefined;
     this.strategies = [];
@@ -196,7 +224,12 @@ export class Ec2Service extends BaseService implements IEc2Service {
     }
 
     if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+      this.configureAwsVpcNetworkingWithSecurityGroups(
+        props.cluster.vpc,
+        props.assignPublicIp,
+        props.vpcSubnets,
+        securityGroups
+      );
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroups from ASG.
       // We have to be smart here -- by default future Security Group rules would be created
@@ -207,22 +240,30 @@ export class Ec2Service extends BaseService implements IEc2Service {
       // In that case, reference the same security groups but make sure new rules are
       // created in the current scope (i.e., this stack)
       validateNoNetworkingProps(props);
-      this.connections.addSecurityGroup(...securityGroupsInThisStack(this, props.cluster.connections.securityGroups));
+      this.connections.addSecurityGroup(
+        ...securityGroupsInThisStack(this, props.cluster.connections.securityGroups)
+      );
     }
 
     if (props.placementConstraints) {
       this.addPlacementConstraints(...props.placementConstraints);
     }
-    this.addPlacementStrategies(...props.placementStrategies || []);
+    this.addPlacementStrategies(...(props.placementStrategies || []));
 
     this.node.addValidation({
-      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+      validate: () =>
+        !this.taskDefinition.defaultContainer
+          ? ['A TaskDefinition must have at least one essential container']
+          : [],
     });
 
     this.node.addValidation({ validate: this.validateEc2Service.bind(this) });
 
     if (props.minHealthyPercent === undefined && props.daemon) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercentDaemon', 'minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs:minHealthyPercentDaemon',
+        'minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705'
+      );
     }
   }
 
@@ -257,7 +298,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
   private validateEc2Service(): string[] {
     const ret = new Array<string>();
     if (!this.daemon && !this.cluster.hasEc2Capacity) {
-      ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
+      ret.push(
+        'Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.'
+      );
     }
     return ret;
   }
@@ -267,11 +310,15 @@ export class Ec2Service extends BaseService implements IEc2Service {
  * Validate combinations of networking arguments.
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcSubnets !== undefined
-    || props.securityGroup !== undefined
-    || props.securityGroups !== undefined
-    || props.assignPublicIp) {
-    throw new Error('vpcSubnets, securityGroup(s) and assignPublicIp can only be used in AwsVpc networking mode');
+  if (
+    props.vpcSubnets !== undefined ||
+    props.securityGroup !== undefined ||
+    props.securityGroups !== undefined ||
+    props.assignPublicIp
+  ) {
+    throw new Error(
+      'vpcSubnets, securityGroup(s) and assignPublicIp can only be used in AwsVpc networking mode'
+    );
   }
 }
 
@@ -283,17 +330,27 @@ function validateNoNetworkingProps(props: Ec2ServiceProps) {
  * but new Ingress and Egress rule resources will be added in the current stack instead of the
  * other one.
  */
-function securityGroupsInThisStack(scope: Construct, groups: ec2.ISecurityGroup[]): ec2.ISecurityGroup[] {
+function securityGroupsInThisStack(
+  scope: Construct,
+  groups: ec2.ISecurityGroup[]
+): ec2.ISecurityGroup[] {
   const thisStack = Stack.of(scope);
 
   let i = 1;
-  return groups.map(group => {
-    if (thisStack === Stack.of(group)) { return group; } // Simple case, just return the original one
+  return groups.map((group) => {
+    if (thisStack === Stack.of(group)) {
+      return group;
+    } // Simple case, just return the original one
 
-    return ec2.SecurityGroup.fromSecurityGroupId(scope, `SecurityGroup${i++}`, group.securityGroupId, {
-      allowAllOutbound: group.allowAllOutbound,
-      mutable: true,
-    });
+    return ec2.SecurityGroup.fromSecurityGroupId(
+      scope,
+      `SecurityGroup${i++}`,
+      group.securityGroupId,
+      {
+        allowAllOutbound: group.allowAllOutbound,
+        mutable: true,
+      }
+    );
   });
 }
 

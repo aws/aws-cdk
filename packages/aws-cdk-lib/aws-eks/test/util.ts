@@ -24,7 +24,7 @@ export interface testFixtureClusterOptions {
    * If true, a FargateCluster will be created, otherwise a regular Cluster.
    */
   isFargate?: boolean;
-};
+}
 
 /**
  * Creates a test fixture for an EKS cluster.
@@ -34,14 +34,20 @@ export interface testFixtureClusterOptions {
  * @param options - Additional options for the test fixture cluster.
  * @returns An object containing the stack, app, and the created cluster.
  */
-export function testFixtureCluster(props: Omit<ClusterProps, 'version'> = {}, region: string = DEFAULT_REGION, options?: testFixtureClusterOptions) {
+export function testFixtureCluster(
+  props: Omit<ClusterProps, 'version'> = {},
+  region: string = DEFAULT_REGION,
+  options?: testFixtureClusterOptions
+) {
   const { stack, app } = testFixtureNoVpc(region);
   const clusterProps = {
     version: CLUSTER_VERSION,
     prune: false, // mainly because this feature was added later and we wanted to avoid having to update all test expectations....
     ...props,
   };
-  const cluster = options?.isFargate ? new FargateCluster(stack, 'Cluster', clusterProps) : new Cluster(stack, 'Cluster', clusterProps);
+  const cluster = options?.isFargate
+    ? new FargateCluster(stack, 'Cluster', clusterProps)
+    : new Cluster(stack, 'Cluster', clusterProps);
 
   return { stack, app, cluster };
-};
+}

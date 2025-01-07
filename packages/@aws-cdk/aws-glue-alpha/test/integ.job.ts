@@ -22,10 +22,17 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-glue-job');
 
 const script = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py'));
-const scriptResolveOptions = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'resolve_options.py'));
+const scriptResolveOptions = glue.Code.fromAsset(
+  path.join(__dirname, 'job-script', 'resolve_options.py')
+);
 const moduleUtils = glue.Code.fromAsset(path.join(__dirname, 'module', 'utils.zip'));
 
-[glue.GlueVersion.V2_0, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0, glue.GlueVersion.V5_0].forEach((glueVersion) => {
+[
+  glue.GlueVersion.V2_0,
+  glue.GlueVersion.V3_0,
+  glue.GlueVersion.V4_0,
+  glue.GlueVersion.V5_0,
+].forEach((glueVersion) => {
   const etlJob = new glue.Job(stack, 'EtlJob' + glueVersion.name, {
     jobName: 'EtlJob' + glueVersion.name,
     executable: glue.JobExecutable.pythonEtl({
@@ -40,8 +47,8 @@ const moduleUtils = glue.Code.fromAsset(path.join(__dirname, 'module', 'utils.zi
     timeout: cdk.Duration.minutes(5),
     notifyDelayAfter: cdk.Duration.minutes(1),
     defaultArguments: {
-      'arg1': 'value1',
-      'arg2': 'value2',
+      arg1: 'value1',
+      arg2: 'value2',
       '--conf': 'valueConf',
     },
     sparkUI: {
@@ -65,7 +72,9 @@ const moduleUtils = glue.Code.fromAsset(path.join(__dirname, 'module', 'utils.zi
       glueVersion,
       script,
     }),
-    workerType: [glue.GlueVersion.V2_0].includes(glueVersion) ? glue.WorkerType.G_1X : glue.WorkerType.G_025X,
+    workerType: [glue.GlueVersion.V2_0].includes(glueVersion)
+      ? glue.WorkerType.G_1X
+      : glue.WorkerType.G_025X,
     workerCount: 10,
     defaultArguments: {
       arg1: 'value1',

@@ -1,5 +1,10 @@
 import { Construct } from 'constructs';
-import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
+import {
+  BaseDeploymentConfig,
+  BaseDeploymentConfigOptions,
+  ComputePlatform,
+  IBaseDeploymentConfig,
+} from '../base-deployment-config';
 import { deploymentConfig } from '../private/utils';
 import { TrafficRouting } from '../traffic-routing-config';
 
@@ -16,8 +21,7 @@ import { TrafficRouting } from '../traffic-routing-config';
  * The default, pre-defined Configurations are available as constants on the `EcsDeploymentConfig` class
  * (for example, `EcsDeploymentConfig.AllAtOnce`).
  */
-export interface IEcsDeploymentConfig extends IBaseDeploymentConfig {
-}
+export interface IEcsDeploymentConfig extends IBaseDeploymentConfig {}
 
 /**
  * Construction properties of `EcsDeploymentConfig`.
@@ -38,15 +42,25 @@ export interface EcsDeploymentConfigProps extends BaseDeploymentConfigOptions {
  */
 export class EcsDeploymentConfig extends BaseDeploymentConfig implements IEcsDeploymentConfig {
   /** CodeDeploy predefined deployment configuration that shifts all traffic to the updated ECS task set at once. */
-  public static readonly ALL_AT_ONCE = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSAllAtOnce');
+  public static readonly ALL_AT_ONCE = EcsDeploymentConfig.deploymentConfig(
+    'CodeDeployDefault.ECSAllAtOnce'
+  );
   /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every minute until all traffic is shifted. */
-  public static readonly LINEAR_10PERCENT_EVERY_1MINUTES = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSLinear10PercentEvery1Minutes');
+  public static readonly LINEAR_10PERCENT_EVERY_1MINUTES = EcsDeploymentConfig.deploymentConfig(
+    'CodeDeployDefault.ECSLinear10PercentEvery1Minutes'
+  );
   /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic every three minutes until all traffic is shifted. */
-  public static readonly LINEAR_10PERCENT_EVERY_3MINUTES = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSLinear10PercentEvery3Minutes');
+  public static readonly LINEAR_10PERCENT_EVERY_3MINUTES = EcsDeploymentConfig.deploymentConfig(
+    'CodeDeployDefault.ECSLinear10PercentEvery3Minutes'
+  );
   /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed five minutes later. */
-  public static readonly CANARY_10PERCENT_5MINUTES = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSCanary10Percent5Minutes');
+  public static readonly CANARY_10PERCENT_5MINUTES = EcsDeploymentConfig.deploymentConfig(
+    'CodeDeployDefault.ECSCanary10Percent5Minutes'
+  );
   /** CodeDeploy predefined deployment configuration that shifts 10 percent of traffic in the first increment. The remaining 90 percent is deployed 15 minutes later. */
-  public static readonly CANARY_10PERCENT_15MINUTES = EcsDeploymentConfig.deploymentConfig('CodeDeployDefault.ECSCanary10Percent15Minutes');
+  public static readonly CANARY_10PERCENT_15MINUTES = EcsDeploymentConfig.deploymentConfig(
+    'CodeDeployDefault.ECSCanary10Percent15Minutes'
+  );
 
   /**
    * Import a custom Deployment Configuration for an ECS Deployment Group defined outside the CDK.
@@ -56,7 +70,11 @@ export class EcsDeploymentConfig extends BaseDeploymentConfig implements IEcsDep
    * @param ecsDeploymentConfigName the name of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static fromEcsDeploymentConfigName(scope: Construct, id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
+  public static fromEcsDeploymentConfigName(
+    scope: Construct,
+    id: string,
+    ecsDeploymentConfigName: string
+  ): IEcsDeploymentConfig {
     return this.fromDeploymentConfigName(scope, id, ecsDeploymentConfigName);
   }
 

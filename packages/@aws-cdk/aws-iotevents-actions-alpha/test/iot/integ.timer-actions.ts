@@ -24,26 +24,31 @@ class TestStack extends cdk.Stack {
 
     const online = new iotevents.State({
       stateName: 'Online',
-      onEnter: [{
-        eventName: 'enter-event',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [
-          new actions.SetTimerAction('MyTimer', actions.TimerDuration.fromDuration(cdk.Duration.seconds(60))),
-        ],
-      }],
-      onInput: [{
-        eventName: 'input-event',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [
-          new actions.ResetTimerAction('MyTimer'),
-        ],
-      }],
-      onExit: [{
-        eventName: 'exit-event',
-        actions: [
-          new actions.ClearTimerAction('MyTimer'),
-        ],
-      }],
+      onEnter: [
+        {
+          eventName: 'enter-event',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [
+            new actions.SetTimerAction(
+              'MyTimer',
+              actions.TimerDuration.fromDuration(cdk.Duration.seconds(60))
+            ),
+          ],
+        },
+      ],
+      onInput: [
+        {
+          eventName: 'input-event',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [new actions.ResetTimerAction('MyTimer')],
+        },
+      ],
+      onExit: [
+        {
+          eventName: 'exit-event',
+          actions: [new actions.ClearTimerAction('MyTimer')],
+        },
+      ],
     });
     const offline = new iotevents.State({ stateName: 'Offline' });
 

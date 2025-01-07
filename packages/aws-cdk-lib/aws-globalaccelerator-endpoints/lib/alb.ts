@@ -35,7 +35,10 @@ export interface ApplicationLoadBalancerEndpointOptions {
 export class ApplicationLoadBalancerEndpoint implements ga.IEndpoint {
   public readonly region?: string;
 
-  constructor(private readonly loadBalancer: elbv2.IApplicationLoadBalancer, private readonly options: ApplicationLoadBalancerEndpointOptions = {}) {
+  constructor(
+    private readonly loadBalancer: elbv2.IApplicationLoadBalancer,
+    private readonly options: ApplicationLoadBalancerEndpointOptions = {}
+  ) {
     validateWeight(options.weight);
     this.region = loadBalancer.env.region;
   }

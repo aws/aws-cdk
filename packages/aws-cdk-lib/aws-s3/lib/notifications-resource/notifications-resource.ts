@@ -63,7 +63,11 @@ export class BucketNotifications extends Construct {
    * @param target The target construct
    * @param filters A set of S3 key filters
    */
-  public addNotification(event: EventType, target: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+  public addNotification(
+    event: EventType,
+    target: IBucketNotificationDestination,
+    ...filters: NotificationKeyFilter[]
+  ) {
     const resource = this.createResourceOnce();
 
     // resolve target. this also provides an opportunity for the target to e.g. update
@@ -96,7 +100,10 @@ export class BucketNotifications extends Construct {
         break;
 
       default:
-        throw new Error('Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type]);
+        throw new Error(
+          'Unsupported notification target type:' +
+            BucketNotificationDestinationType[targetProps.type]
+        );
     }
   }
 
@@ -108,7 +115,8 @@ export class BucketNotifications extends Construct {
   private renderNotificationConfiguration(): NotificationConfiguration {
     return {
       EventBridgeConfiguration: this.eventBridgeEnabled ? {} : undefined,
-      LambdaFunctionConfigurations: this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
+      LambdaFunctionConfigurations:
+        this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
       QueueConfigurations: this.queueNotifications.length > 0 ? this.queueNotifications : undefined,
       TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined,
     };
@@ -135,10 +143,12 @@ export class BucketNotifications extends Construct {
       }
 
       if (!managed) {
-        handler.addToRolePolicy(new iam.PolicyStatement({
-          actions: ['s3:GetBucketNotification'],
-          resources: ['*'],
-        }));
+        handler.addToRolePolicy(
+          new iam.PolicyStatement({
+            actions: ['s3:GetBucketNotification'],
+            resources: ['*'],
+          })
+        );
       }
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
@@ -146,7 +156,9 @@ export class BucketNotifications extends Construct {
         properties: {
           ServiceToken: handler.functionArn,
           BucketName: this.bucket.bucketName,
-          NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
+          NotificationConfiguration: cdk.Lazy.any({
+            produce: () => this.renderNotificationConfiguration(),
+          }),
           Managed: managed,
           SkipDestinationValidation: this.skipDestinationValidation,
         },
@@ -222,7 +234,7 @@ interface CommonConfiguration {
   Filter?: Filter;
 }
 
-interface EventBridgeConfiguration { }
+interface EventBridgeConfiguration {}
 
 interface LambdaFunctionConfiguration extends CommonConfiguration {
   LambdaFunctionArn: string;

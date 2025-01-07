@@ -2,12 +2,14 @@ import { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
 import { Duration, NestedStack, Stack } from '../../core';
-import { ClusterResourceOnEventFunction, ClusterResourceIsCompleteFunction } from '../../custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated';
+import {
+  ClusterResourceOnEventFunction,
+  ClusterResourceIsCompleteFunction,
+} from '../../custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated';
 import * as cr from '../../custom-resources';
 import { NodeProxyAgentLayer } from '../../lambda-layer-node-proxy-agent';
 
 export interface ClusterResourceProviderProps {
-
   /**
    * The VPC to provision the functions in.
    */
@@ -46,11 +48,13 @@ export interface ClusterResourceProviderProps {
  * @internal
  */
 export class ClusterResourceProvider extends NestedStack {
-
   public static getOrCreate(scope: Construct, props: ClusterResourceProviderProps) {
     const stack = Stack.of(scope);
     const uid = '@aws-cdk/aws-eks.ClusterResourceProvider';
-    return stack.node.tryFindChild(uid) as ClusterResourceProvider ?? new ClusterResourceProvider(stack, uid, props);
+    return (
+      (stack.node.tryFindChild(uid) as ClusterResourceProvider) ??
+      new ClusterResourceProvider(stack, uid, props)
+    );
   }
 
   /**
@@ -105,5 +109,7 @@ export class ClusterResourceProvider extends NestedStack {
   /**
    * The custom resource service token for this provider.
    */
-  public get serviceToken() { return this.provider.serviceToken; }
+  public get serviceToken() {
+    return this.provider.serviceToken;
+  }
 }

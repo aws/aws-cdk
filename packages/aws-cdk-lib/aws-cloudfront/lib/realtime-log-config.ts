@@ -56,15 +56,19 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
 
   constructor(scope: Construct, id: string, props: RealtimeLogConfigProps) {
     super(scope, id, {
-      physicalName: props.realtimeLogConfigName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, {}) }),
+      physicalName:
+        props.realtimeLogConfigName ??
+        Lazy.string({ produce: () => Names.uniqueResourceName(this, {}) }),
     });
 
-    if ((props.samplingRate < 1 || props.samplingRate > 100)) {
-      throw new Error(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`);
+    if (props.samplingRate < 1 || props.samplingRate > 100) {
+      throw new Error(
+        `Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`
+      );
     }
 
     const resource = new CfnRealtimeLogConfig(this, 'Resource', {
-      endPoints: props.endPoints.map(endpoint => {
+      endPoints: props.endPoints.map((endpoint) => {
         return endpoint._renderEndpoint(this);
       }),
       fields: props.fields,

@@ -28,17 +28,19 @@ const parameter = new ssm.StringParameter(stack, 'MyParameter', {
 });
 
 const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definitionBody: sfn.DefinitionBody.fromChainable(new tasks.CallAwsService(stack, 'PutParameter', {
-    service: 'ssm',
-    action: 'putParameter',
-    iamResources: ['*'],
-    parameters: {
-      'Name.$': '$.Name',
-      'Value.$': '$.Value',
-      'Type': 'String',
-      'Overwrite': true,
-    },
-  })),
+  definitionBody: sfn.DefinitionBody.fromChainable(
+    new tasks.CallAwsService(stack, 'PutParameter', {
+      service: 'ssm',
+      action: 'putParameter',
+      iamResources: ['*'],
+      parameters: {
+        'Name.$': '$.Name',
+        'Value.$': '$.Value',
+        Type: 'String',
+        Overwrite: true,
+      },
+    })
+  ),
 });
 
 const eventBus = new events.EventBus(stack, 'EventBus', {
@@ -52,9 +54,11 @@ const rule = new events.Rule(stack, 'Rule', {
   eventPattern: {
     detailType: ['🐶➡️😺'],
   },
-  targets: [new targets.SfnStateMachine( stateMachine, {
-    input: events.RuleTargetInput.fromObject(stateMachinePayload),
-  })],
+  targets: [
+    new targets.SfnStateMachine(stateMachine, {
+      input: events.RuleTargetInput.fromObject(stateMachinePayload),
+    }),
+  ],
 });
 
 const eventEntry: EventBridgePutEventsEntry = {
@@ -66,7 +70,7 @@ const eventEntry: EventBridgePutEventsEntry = {
 
 const scheduleRule = new scheduler.Schedule(stack, 'Schedule', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(10)),
-  target: new EventBridgePutEvents(eventEntry, {} ),
+  target: new EventBridgePutEvents(eventEntry, {}),
 });
 
 scheduleRule.node.addDependency(rule); // the schedule rule must be created after the event bus rule, so that the event bus rule can trigger the step function
@@ -81,11 +85,15 @@ const getParameter = integrationTest.assertions.awsApiCall('SSM', 'getParameter'
 });
 
 // Verifies that expected parameter is created by the invoked step function
-getParameter.expect(ExpectedResult.objectLike({
-  Parameter: {
-    Name: stateMachinePayload.Name,
-    Value: stateMachinePayload.Value,
-  },
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(5),
-});
+getParameter
+  .expect(
+    ExpectedResult.objectLike({
+      Parameter: {
+        Name: stateMachinePayload.Name,
+        Value: stateMachinePayload.Value,
+      },
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(5),
+  });

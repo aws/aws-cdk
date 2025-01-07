@@ -48,7 +48,7 @@ export enum CpuCredits {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances-unlimited-mode.html
    */
   UNLIMITED = 'unlimited',
-};
+}
 
 /**
  * Provides the options for specifying the instance initiated shutdown behavior.
@@ -66,7 +66,7 @@ export enum InstanceInitiatedShutdownBehavior {
    * The instance will be terminated when it initiates a shutdown.
    */
   TERMINATE = 'terminate',
-};
+}
 
 /**
  * Interface for LaunchTemplate-like objects.
@@ -191,7 +191,7 @@ export interface LaunchTemplateSpotOptions {
    * @default The default end date is 7 days from the current date.
    */
   readonly validUntil?: Expiration;
-};
+}
 
 /**
  * The state of token usage for your instance metadata requests.
@@ -495,19 +495,29 @@ export interface LaunchTemplateAttributes {
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html
  */
-export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGrantable, IConnectable {
+export class LaunchTemplate
+  extends Resource
+  implements ILaunchTemplate, iam.IGrantable, IConnectable
+{
   /**
    * Import an existing LaunchTemplate.
    */
-  public static fromLaunchTemplateAttributes(scope: Construct, id: string, attrs: LaunchTemplateAttributes): ILaunchTemplate {
+  public static fromLaunchTemplateAttributes(
+    scope: Construct,
+    id: string,
+    attrs: LaunchTemplateAttributes
+  ): ILaunchTemplate {
     const haveId = Boolean(attrs.launchTemplateId);
     const haveName = Boolean(attrs.launchTemplateName);
     if (haveId == haveName) {
-      throw new Error('LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.');
+      throw new Error(
+        'LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.'
+      );
     }
 
     class Import extends Resource implements ILaunchTemplate {
-      public readonly versionNumber = attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
+      public readonly versionNumber =
+        attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
       public readonly launchTemplateId? = attrs.launchTemplateId;
       public readonly launchTemplateName? = attrs.launchTemplateName;
     }
@@ -602,11 +612,16 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });
     if (spotDuration !== undefined && (spotDuration < 1 || spotDuration > 6)) {
       // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#fixed-duration-spot-instances
-      Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
+      Annotations.of(this).addError(
+        'Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.'
+      );
     }
 
     // Basic validation of the provided httpPutResponseHopLimit
-    if (props.httpPutResponseHopLimit !== undefined && (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
+    if (
+      props.httpPutResponseHopLimit !== undefined &&
+      (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)
+    ) {
       // See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
       Annotations.of(this).addError('HttpPutResponseHopLimit must between 1 and 64');
     }
@@ -616,7 +631,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     if (props.keyName && props.keyPair) {
-      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new Error("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
     }
 
     // use provided instance profile or create one if a role was provided
@@ -640,7 +655,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const securityGroupsToken = Lazy.list({
       produce: () => {
         if (this._connections && this._connections.securityGroups.length > 0) {
-          return this._connections.securityGroups.map(sg => sg.securityGroupId);
+          return this._connections.securityGroups.map((sg) => sg.securityGroupId);
         }
         return undefined;
       },
@@ -656,8 +671,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
     }
 
-    if (FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA) ||
-      FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
+    if (
+      FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA) ||
+      FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)
+    ) {
       // priority: prop.userData -> userData from machineImage -> undefined
       this.userData = props.userData ?? imageConfig?.userData;
     } else {
@@ -689,7 +706,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         },
       };
       // Remove SpotOptions if there are none.
-      if (Object.keys(marketOptions.spotOptions).filter(k => marketOptions.spotOptions[k]).length == 0) {
+      if (
+        Object.keys(marketOptions.spotOptions).filter((k) => marketOptions.spotOptions[k]).length ==
+        0
+      ) {
         marketOptions.spotOptions = undefined;
       }
     }
@@ -700,7 +720,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       produce: () => {
         if (this.tags.hasTags()) {
           const renderedTags = this.tags.renderTags();
-          const lowerCaseRenderedTags = renderedTags.map( (tag: { [key: string]: string}) => {
+          const lowerCaseRenderedTags = renderedTags.map((tag: { [key: string]: string }) => {
             return {
               key: tag.Key,
               value: tag.Value,
@@ -725,7 +745,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       produce: () => {
         if (this.tags.hasTags()) {
           const renderedTags = this.tags.renderTags();
-          const lowerCaseRenderedTags = renderedTags.map( (tag: { [key: string]: string}) => {
+          const lowerCaseRenderedTags = renderedTags.map((tag: { [key: string]: string }) => {
             return {
               key: tag.Key,
               value: tag.Value,
@@ -742,39 +762,67 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       },
     });
 
-    const networkInterfaces = props.associatePublicIpAddress !== undefined
-      ? [{ deviceIndex: 0, associatePublicIpAddress: props.associatePublicIpAddress, groups: securityGroupsToken }]
-      : undefined;
+    const networkInterfaces =
+      props.associatePublicIpAddress !== undefined
+        ? [
+            {
+              deviceIndex: 0,
+              associatePublicIpAddress: props.associatePublicIpAddress,
+              groups: securityGroupsToken,
+            },
+          ]
+        : undefined;
 
-    if (props.versionDescription && !Token.isUnresolved(props.versionDescription) && props.versionDescription.length > 255) {
-      throw new Error(`versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`);
+    if (
+      props.versionDescription &&
+      !Token.isUnresolved(props.versionDescription) &&
+      props.versionDescription.length > 255
+    ) {
+      throw new Error(
+        `versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`
+      );
     }
 
     const resource = new CfnLaunchTemplate(this, 'Resource', {
       launchTemplateName: props?.launchTemplateName,
       versionDescription: props?.versionDescription,
       launchTemplateData: {
-        blockDeviceMappings: props?.blockDevices !== undefined ? launchTemplateBlockDeviceMappings(this, props.blockDevices) : undefined,
-        creditSpecification: props?.cpuCredits !== undefined ? {
-          cpuCredits: props.cpuCredits,
-        } : undefined,
+        blockDeviceMappings:
+          props?.blockDevices !== undefined
+            ? launchTemplateBlockDeviceMappings(this, props.blockDevices)
+            : undefined,
+        creditSpecification:
+          props?.cpuCredits !== undefined
+            ? {
+                cpuCredits: props.cpuCredits,
+              }
+            : undefined,
         disableApiTermination: props?.disableApiTermination,
         ebsOptimized: props?.ebsOptimized,
-        enclaveOptions: props?.nitroEnclaveEnabled !== undefined ? {
-          enabled: props.nitroEnclaveEnabled,
-        } : undefined,
-        hibernationOptions: props?.hibernationConfigured !== undefined ? {
-          configured: props.hibernationConfigured,
-        } : undefined,
+        enclaveOptions:
+          props?.nitroEnclaveEnabled !== undefined
+            ? {
+                enabled: props.nitroEnclaveEnabled,
+              }
+            : undefined,
+        hibernationOptions:
+          props?.hibernationConfigured !== undefined
+            ? {
+                configured: props.hibernationConfigured,
+              }
+            : undefined,
         iamInstanceProfile: iamProfileArn !== undefined ? { arn: iamProfileArn } : undefined,
         imageId: imageConfig?.imageId,
         instanceType: props?.instanceType?.toString(),
         instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,
         instanceMarketOptions: marketOptions,
         keyName: props.keyPair?.keyPairName ?? props?.keyName,
-        monitoring: props?.detailedMonitoring !== undefined ? {
-          enabled: props.detailedMonitoring,
-        } : undefined,
+        monitoring:
+          props?.detailedMonitoring !== undefined
+            ? {
+                enabled: props.detailedMonitoring,
+              }
+            : undefined,
         securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
         tagSpecifications: tagsToken,
         userData: userDataToken,
@@ -810,7 +858,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
         // CDK has no abstraction for Placement yet.
         // placement: undefined,
-
       },
       tagSpecifications: ltTagsToken,
     });
@@ -835,20 +882,39 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     if (props.requireImdsv2 === true && props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL) {
       Annotations.of(this).addError('httpTokens must be required when requireImdsv2 is true');
     }
-    if (props.httpEndpoint !== undefined || props.httpProtocolIpv6 !== undefined || props.httpPutResponseHopLimit !== undefined ||
-      props.httpTokens !== undefined || props.instanceMetadataTags !== undefined || props.requireImdsv2 === true) {
+    if (
+      props.httpEndpoint !== undefined ||
+      props.httpProtocolIpv6 !== undefined ||
+      props.httpPutResponseHopLimit !== undefined ||
+      props.httpTokens !== undefined ||
+      props.instanceMetadataTags !== undefined ||
+      props.requireImdsv2 === true
+    ) {
       requireMetadataOptions = true;
     }
     if (requireMetadataOptions) {
       return {
-        httpEndpoint: props.httpEndpoint === true ? 'enabled' :
-          props.httpEndpoint === false ? 'disabled' : undefined,
-        httpProtocolIpv6: props.httpProtocolIpv6 === true ? 'enabled' :
-          props.httpProtocolIpv6 === false ? 'disabled' : undefined,
+        httpEndpoint:
+          props.httpEndpoint === true
+            ? 'enabled'
+            : props.httpEndpoint === false
+              ? 'disabled'
+              : undefined,
+        httpProtocolIpv6:
+          props.httpProtocolIpv6 === true
+            ? 'enabled'
+            : props.httpProtocolIpv6 === false
+              ? 'disabled'
+              : undefined,
         httpPutResponseHopLimit: props.httpPutResponseHopLimit,
-        httpTokens: props.requireImdsv2 === true ? LaunchTemplateHttpTokens.REQUIRED : props.httpTokens,
-        instanceMetadataTags: props.instanceMetadataTags === true ? 'enabled' :
-          props.instanceMetadataTags === false ? 'disabled' : undefined,
+        httpTokens:
+          props.requireImdsv2 === true ? LaunchTemplateHttpTokens.REQUIRED : props.httpTokens,
+        instanceMetadataTags:
+          props.instanceMetadataTags === true
+            ? 'enabled'
+            : props.instanceMetadataTags === false
+              ? 'disabled'
+              : undefined,
       };
     } else {
       return undefined;
@@ -862,7 +928,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     if (!this._connections) {
-      throw new Error('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.');
+      throw new Error(
+        'LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.'
+      );
     }
     this._connections.addSecurityGroup(securityGroup);
   }
@@ -874,7 +942,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new Error('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.');
+      throw new Error(
+        'LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.'
+      );
     }
     return this._connections;
   }
@@ -886,7 +956,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get grantPrincipal(): iam.IPrincipal {
     if (!this._grantPrincipal) {
-      throw new Error('LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.');
+      throw new Error(
+        'LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.'
+      );
     }
     return this._grantPrincipal;
   }

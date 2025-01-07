@@ -78,7 +78,9 @@ export class IamResource {
    * Example: ofType('Query', 'GetExample')
    */
   public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
+    const arns = fields.length
+      ? fields.map((field) => `types/${type}/fields/${field}`)
+      : [`types/${type}/*`];
     return new IamResource(arns);
   }
 
@@ -107,7 +109,7 @@ export class IamResource {
         resource: `apis/${api.apiId}`,
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: `${arn}`,
-      }),
+      })
     );
   }
 }
@@ -116,7 +118,6 @@ export class IamResource {
  * Visibility type for a GraphQL API
  */
 export enum Visibility {
-
   /**
    * Public, open to the internet
    */
@@ -157,7 +158,6 @@ export enum AuthorizationType {
  * Interface for GraphQL
  */
 export interface IGraphqlApi extends IResource {
-
   /**
    * an unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
@@ -221,7 +221,11 @@ export interface IGraphqlApi extends IResource {
    * @param eventBus The EventBridge EventBus on which to put events
    * @param options The optional configuration for this data source
    */
-  addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: DataSourceOptions): EventBridgeDataSource;
+  addEventBridgeDataSource(
+    id: string,
+    eventBus: IEventBus,
+    options?: DataSourceOptions
+  ): EventBridgeDataSource;
 
   /**
    * add a new Lambda data source to this API
@@ -230,7 +234,11 @@ export interface IGraphqlApi extends IResource {
    * @param lambdaFunction The Lambda function to call to interact with this data source
    * @param options The optional configuration for this data source
    */
-  addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
+  addLambdaDataSource(
+    id: string,
+    lambdaFunction: IFunction,
+    options?: DataSourceOptions
+  ): LambdaDataSource;
 
   /**
    * add a new Rds data source to this API
@@ -274,7 +282,11 @@ export interface IGraphqlApi extends IResource {
    * @param domain The elasticsearch domain for this data source
    * @param options The optional configuration for this data source
    */
-  addElasticsearchDataSource(id: string, domain: IElasticsearchDomain, options?: DataSourceOptions): ElasticsearchDataSource;
+  addElasticsearchDataSource(
+    id: string,
+    domain: IElasticsearchDomain,
+    options?: DataSourceOptions
+  ): ElasticsearchDataSource;
 
   /**
    * Add a new OpenSearch data source to this API
@@ -283,7 +295,11 @@ export interface IGraphqlApi extends IResource {
    * @param domain The OpenSearch domain for this data source
    * @param options The optional configuration for this data source
    */
-  addOpenSearchDataSource(id: string, domain: IOpenSearchDomain, options?: DataSourceOptions): OpenSearchDataSource;
+  addOpenSearchDataSource(
+    id: string,
+    domain: IOpenSearchDomain,
+    options?: DataSourceOptions
+  ): OpenSearchDataSource;
 
   /**
    * creates a new resolver for this datasource and API using the given properties
@@ -339,7 +355,6 @@ export interface IGraphqlApi extends IResource {
  * Base Class for GraphQL API
  */
 export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
-
   /**
    * an unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
@@ -388,7 +403,11 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param table The DynamoDB table backing this data source
    * @param options The optional configuration for this data source
    */
-  public addDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions): DynamoDbDataSource {
+  public addDynamoDbDataSource(
+    id: string,
+    table: ITable,
+    options?: DataSourceOptions
+  ): DynamoDbDataSource {
     return new DynamoDbDataSource(this, id, {
       api: this,
       table,
@@ -404,7 +423,11 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
    */
-  public addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource {
+  public addHttpDataSource(
+    id: string,
+    endpoint: string,
+    options?: HttpDataSourceOptions
+  ): HttpDataSource {
     return new HttpDataSource(this, id, {
       api: this,
       endpoint,
@@ -421,7 +444,11 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param lambdaFunction The Lambda function to call to interact with this data source
    * @param options The optional configuration for this data source
    */
-  public addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource {
+  public addLambdaDataSource(
+    id: string,
+    lambdaFunction: IFunction,
+    options?: DataSourceOptions
+  ): LambdaDataSource {
     return new LambdaDataSource(this, id, {
       api: this,
       lambdaFunction,
@@ -443,7 +470,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
     serverlessCluster: IServerlessCluster,
     secretStore: ISecret,
     databaseName?: string,
-    options?: DataSourceOptions,
+    options?: DataSourceOptions
   ): RdsDataSource {
     return new RdsDataSource(this, id, {
       api: this,
@@ -468,7 +495,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
     serverlessCluster: IDatabaseCluster,
     secretStore: ISecret,
     databaseName?: string,
-    options?: DataSourceOptions,
+    options?: DataSourceOptions
   ): RdsDataSource {
     return new RdsDataSource(this, id, {
       api: this,
@@ -488,7 +515,11 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param domain The elasticsearch domain for this data source
    * @param options The optional configuration for this data source
    */
-  public addElasticsearchDataSource(id: string, domain: IElasticsearchDomain, options?: DataSourceOptions): ElasticsearchDataSource {
+  public addElasticsearchDataSource(
+    id: string,
+    domain: IElasticsearchDomain,
+    options?: DataSourceOptions
+  ): ElasticsearchDataSource {
     return new ElasticsearchDataSource(this, id, {
       api: this,
       name: options?.name,
@@ -503,7 +534,11 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param eventBus The EventBridge EventBus on which to put events
    * @param options The optional configuration for this data source
    */
-  addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: DataSourceOptions): EventBridgeDataSource {
+  addEventBridgeDataSource(
+    id: string,
+    eventBus: IEventBus,
+    options?: DataSourceOptions
+  ): EventBridgeDataSource {
     return new EventBridgeDataSource(this, id, {
       api: this,
       eventBus,
@@ -519,7 +554,11 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param domain The OpenSearch domain for this data source
    * @param options The optional configuration for this data source
    */
-  public addOpenSearchDataSource(id: string, domain: IOpenSearchDomain, options?: DataSourceOptions): OpenSearchDataSource {
+  public addOpenSearchDataSource(
+    id: string,
+    domain: IOpenSearchDomain,
+    options?: DataSourceOptions
+  ): OpenSearchDataSource {
     return new OpenSearchDataSource(this, id, {
       api: this,
       name: options?.name,

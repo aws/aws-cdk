@@ -95,12 +95,11 @@ export interface NestedStackProps {
  *
  */
 export class NestedStack extends Stack {
-
   /**
    * Checks if `x` is an object of type `NestedStack`.
    */
   public static isNestedStack(x: any): x is NestedStack {
-    return x != null && typeof(x) === 'object' && NESTED_STACK_SYMBOL in x;
+    return x != null && typeof x === 'object' && NESTED_STACK_SYMBOL in x;
   }
 
   public readonly templateFile: string;
@@ -113,7 +112,7 @@ export class NestedStack extends Stack {
   private _templateUrl?: string;
   private _parentStack: Stack;
 
-  constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
+  constructor(scope: Construct, id: string, props: NestedStackProps = {}) {
     const parentStack = findParentStack(scope);
 
     super(scope, id, {
@@ -137,7 +136,9 @@ export class NestedStack extends Stack {
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
       // This value cannot be cached since it changes during the synthesis phase
       templateUrl: Lazy.uncachedString({ produce: () => this._templateUrl || '<unresolved>' }),
-      parameters: Lazy.any({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
+      parameters: Lazy.any({
+        produce: () => (Object.keys(this.parameters).length > 0 ? this.parameters : undefined),
+      }),
       notificationArns: props.notificationArns,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
     });
@@ -150,7 +151,10 @@ export class NestedStack extends Stack {
     // if resolved from the outer stack, use the { Ref } of the AWS::CloudFormation::Stack resource
     // which resolves the ARN of the stack. We need to extract the stack name, which is the second
     // component after splitting by "/"
-    this._contextualStackName = this.contextualAttribute(Aws.STACK_NAME, Fn.select(1, Fn.split('/', this.resource.ref)));
+    this._contextualStackName = this.contextualAttribute(
+      Aws.STACK_NAME,
+      Fn.select(1, Fn.split('/', this.resource.ref))
+    );
     this._contextualStackId = this.contextualAttribute(Aws.STACK_ID, this.resource.ref);
   }
 
@@ -256,7 +260,7 @@ export class NestedStack extends Stack {
 
     // tell tools such as SAM CLI that the "TemplateURL" property of this resource
     // points to the nested stack template for local emulation
-    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || {};
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.templateFile;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
@@ -270,7 +274,9 @@ function findParentStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
+  const parentStack = Node.of(scope)
+    .scopes.reverse()
+    .find((p) => Stack.isStack(p));
   if (!parentStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }

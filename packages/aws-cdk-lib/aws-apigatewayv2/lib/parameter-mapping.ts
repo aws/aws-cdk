@@ -6,56 +6,72 @@ export interface IMappingValue {
    * Represents a Mapping Value.
    */
   readonly value: string;
-};
+}
 
 /**
  * Represents a Mapping Value.
  */
 export class MappingValue implements IMappingValue {
   /**
-  * Creates an empty mapping value.
-  */
+   * Creates an empty mapping value.
+   */
   public static readonly NONE = new MappingValue('');
 
   /**
    * Creates a header mapping value.
    */
-  public static requestHeader(name: string) { return new MappingValue(`$request.header.${name}`); }
+  public static requestHeader(name: string) {
+    return new MappingValue(`$request.header.${name}`);
+  }
 
   /**
    * Creates a query string mapping value.
    */
-  public static requestQueryString(name: string) { return new MappingValue(`$request.querystring.${name}`); }
+  public static requestQueryString(name: string) {
+    return new MappingValue(`$request.querystring.${name}`);
+  }
 
   /**
    * Creates a request body mapping value.
    */
-  public static requestBody(name: string) { return new MappingValue(`$request.body.${name}`); }
+  public static requestBody(name: string) {
+    return new MappingValue(`$request.body.${name}`);
+  }
 
   /**
    * Creates a request path mapping value.
    */
-  public static requestPath() { return new MappingValue('$request.path'); }
+  public static requestPath() {
+    return new MappingValue('$request.path');
+  }
 
   /**
    * Creates a request path parameter mapping value.
    */
-  public static requestPathParam(name: string) { return new MappingValue(`$request.path.${name}`); }
+  public static requestPathParam(name: string) {
+    return new MappingValue(`$request.path.${name}`);
+  }
 
   /**
    * Creates a context variable mapping value.
    */
-  public static contextVariable(variableName: string) { return new MappingValue(`$context.${variableName}`); }
+  public static contextVariable(variableName: string) {
+    return new MappingValue(`$context.${variableName}`);
+  }
 
   /**
    * Creates a stage variable mapping value.
    */
-  public static stageVariable(variableName: string) { return new MappingValue(`$stageVariables.${variableName}`); }
+  public static stageVariable(variableName: string) {
+    return new MappingValue(`$stageVariables.${variableName}`);
+  }
 
   /**
    * Creates a custom mapping value.
    */
-  public static custom(value: string) { return new MappingValue(value); }
+  public static custom(value: string) {
+    return new MappingValue(value);
+  }
 
   /**
    * Represents a Mapping Value.
@@ -71,7 +87,6 @@ export class MappingValue implements IMappingValue {
  * Represents a Parameter Mapping.
  */
 export class ParameterMapping {
-
   /**
    * Creates a mapping from an object.
    */
@@ -84,8 +99,8 @@ export class ParameterMapping {
   }
 
   /**
-  * Represents all created parameter mappings.
-  */
+   * Represents all created parameter mappings.
+   */
   public readonly mappings: { [key: string]: string };
   constructor() {
     this.mappings = {};

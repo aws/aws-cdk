@@ -12,7 +12,10 @@ export abstract class DockerCredential {
    * Creates a DockerCredential for DockerHub.
    * Convenience method for `customRegistry('https://index.docker.io/v1/', opts)`.
    */
-  public static dockerHub(secret: secretsmanager.ISecret, opts: ExternalDockerCredentialOptions = {}): DockerCredential {
+  public static dockerHub(
+    secret: secretsmanager.ISecret,
+    opts: ExternalDockerCredentialOptions = {}
+  ): DockerCredential {
     return new ExternalDockerCredential('https://index.docker.io/v1/', secret, opts);
   }
 
@@ -22,7 +25,8 @@ export abstract class DockerCredential {
   public static customRegistry(
     registryDomain: string,
     secret: secretsmanager.ISecret,
-    opts: ExternalDockerCredentialOptions = {}): DockerCredential {
+    opts: ExternalDockerCredentialOptions = {}
+  ): DockerCredential {
     return new ExternalDockerCredential(registryDomain, secret, opts);
   }
 
@@ -35,11 +39,14 @@ export abstract class DockerCredential {
    * with one ECR repo and another with another ECR repo in the same account and region will
    * result in failures when using these credentials in the pipeline.
    */
-  public static ecr(repositories: ecr.IRepository[], opts?: EcrDockerCredentialOptions): DockerCredential {
+  public static ecr(
+    repositories: ecr.IRepository[],
+    opts?: EcrDockerCredentialOptions
+  ): DockerCredential {
     return new EcrDockerCredential(repositories, opts ?? {});
   }
 
-  constructor(protected readonly usages?: DockerCredentialUsage[]) { }
+  constructor(protected readonly usages?: DockerCredentialUsage[]) {}
 
   /**
    * Determines if this credential is relevant to the input usage.
@@ -60,7 +67,7 @@ export abstract class DockerCredential {
    * to support the `docker-credential-cdk-assets` tool for `docker login`.
    * @internal
    */
-  public abstract _renderCdkAssetsConfig(): DockerCredentialCredentialSource
+  public abstract _renderCdkAssetsConfig(): DockerCredentialCredentialSource;
 }
 
 /** Options for defining credentials for a Docker Credential */
@@ -109,25 +116,30 @@ export enum DockerCredentialUsage {
   SELF_UPDATE = 'SELF_UPDATE',
   /** Asset publishing */
   ASSET_PUBLISHING = 'ASSET_PUBLISHING',
-};
+}
 
 /** DockerCredential defined by registry domain and a secret */
 class ExternalDockerCredential extends DockerCredential {
   constructor(
     private readonly registryDomain: string,
     private readonly secret: secretsmanager.ISecret,
-    private readonly opts: ExternalDockerCredentialOptions) {
+    private readonly opts: ExternalDockerCredentialOptions
+  ) {
     super(opts.usages);
   }
 
   public grantRead(grantee: iam.IGrantable, usage: DockerCredentialUsage) {
-    if (!this._applicableForUsage(usage)) { return; }
+    if (!this._applicableForUsage(usage)) {
+      return;
+    }
 
     if (this.opts.assumeRole) {
-      grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        resources: [this.opts.assumeRole.roleArn],
-      }));
+      grantee.grantPrincipal.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: ['sts:AssumeRole'],
+          resources: [this.opts.assumeRole.roleArn],
+        })
+      );
     }
     const role = this.opts.assumeRole ?? grantee;
     this.secret.grantRead(role);
@@ -149,26 +161,35 @@ class ExternalDockerCredential extends DockerCredential {
 class EcrDockerCredential extends DockerCredential {
   public readonly registryDomain: string;
 
-  constructor(private readonly repositories: ecr.IRepository[], private readonly opts: EcrDockerCredentialOptions) {
+  constructor(
+    private readonly repositories: ecr.IRepository[],
+    private readonly opts: EcrDockerCredentialOptions
+  ) {
     super(opts.usages);
 
     if (repositories.length === 0) {
-      throw new Error('must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
+      throw new Error(
+        'must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`'
+      );
     }
     this.registryDomain = Fn.select(0, Fn.split('/', repositories[0].repositoryUri));
   }
 
   public grantRead(grantee: iam.IGrantable, usage: DockerCredentialUsage) {
-    if (!this._applicableForUsage(usage)) { return; }
+    if (!this._applicableForUsage(usage)) {
+      return;
+    }
 
     if (this.opts.assumeRole) {
-      grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        resources: [this.opts.assumeRole.roleArn],
-      }));
+      grantee.grantPrincipal.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: ['sts:AssumeRole'],
+          resources: [this.opts.assumeRole.roleArn],
+        })
+      );
     }
     const role = this.opts.assumeRole ?? grantee;
-    this.repositories.forEach(repo => repo.grantPull(role));
+    this.repositories.forEach((repo) => repo.grantPull(role));
   }
 
   public _renderCdkAssetsConfig(): DockerCredentialCredentialSource {
@@ -202,12 +223,17 @@ interface DockerCredentialCredentialSource {
 export function dockerCredentialsInstallCommands(
   usage: DockerCredentialUsage,
   registries?: DockerCredential[],
-  osType?: ec2.OperatingSystemType | 'both'): string[] {
+  osType?: ec2.OperatingSystemType | 'both'
+): string[] {
+  const relevantRegistries = (registries ?? []).filter((reg) => reg._applicableForUsage(usage));
+  if (!relevantRegistries || relevantRegistries.length === 0) {
+    return [];
+  }
 
-  const relevantRegistries = (registries ?? []).filter(reg => reg._applicableForUsage(usage));
-  if (!relevantRegistries || relevantRegistries.length === 0) { return []; }
-
-  const domainCredentials = relevantRegistries.reduce(function (map: Record<string, any>, registry) {
+  const domainCredentials = relevantRegistries.reduce(function (
+    map: Record<string, any>,
+    registry
+  ) {
     Object.assign(map, registry._renderCdkAssetsConfig());
     return map;
   }, {});
@@ -229,8 +255,8 @@ export function dockerCredentialsInstallCommands(
   if (osType === 'both') {
     return [
       // These tags are magic and will be stripped when rendering the project
-      ...windowsCommands.map(c => `!WINDOWS!${c}`),
-      ...linuxCommands.map(c => `!LINUX!${c}`),
+      ...windowsCommands.map((c) => `!WINDOWS!${c}`),
+      ...linuxCommands.map((c) => `!LINUX!${c}`),
     ];
   } else if (osType === ec2.OperatingSystemType.WINDOWS) {
     return windowsCommands;

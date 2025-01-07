@@ -111,15 +111,22 @@ export class TargetTrackingScalingPolicy extends Construct {
 
   constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
+      throw new Error("Exactly one of 'customMetric' or 'predefinedMetric' must be specified.");
     }
 
-    if (props.predefinedMetric === PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET && !props.resourceLabel) {
-      throw new Error('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel');
+    if (
+      props.predefinedMetric === PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET &&
+      !props.resourceLabel
+    ) {
+      throw new Error(
+        'When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel'
+      );
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new Error('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.');
+      throw new Error(
+        'Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.'
+      );
     }
 
     super(scope, id);
@@ -128,14 +135,18 @@ export class TargetTrackingScalingPolicy extends Construct {
       policyType: 'TargetTrackingScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       cooldown: props.cooldown && props.cooldown.toSeconds().toString(),
-      estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
+      estimatedInstanceWarmup:
+        props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       targetTrackingConfiguration: {
         customizedMetricSpecification: renderCustomMetric(props.customMetric),
         disableScaleIn: props.disableScaleIn,
-        predefinedMetricSpecification: props.predefinedMetric !== undefined ? {
-          predefinedMetricType: props.predefinedMetric,
-          resourceLabel: props.resourceLabel,
-        } : undefined,
+        predefinedMetricSpecification:
+          props.predefinedMetric !== undefined
+            ? {
+                predefinedMetricType: props.predefinedMetric,
+                resourceLabel: props.resourceLabel,
+              }
+            : undefined,
         targetValue: props.targetValue,
       },
     });
@@ -144,8 +155,12 @@ export class TargetTrackingScalingPolicy extends Construct {
   }
 }
 
-function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
-  if (!metric) { return undefined; }
+function renderCustomMetric(
+  metric?: cloudwatch.IMetric
+): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
+  if (!metric) {
+    return undefined;
+  }
   const c = metric.toMetricConfig().metricStat!;
 
   return {

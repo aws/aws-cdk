@@ -1,4 +1,11 @@
-import { DefaultTokenResolver, IResolveContext, Lazy, StringConcat, Token, Tokenization } from 'aws-cdk-lib';
+import {
+  DefaultTokenResolver,
+  IResolveContext,
+  Lazy,
+  StringConcat,
+  Token,
+  Tokenization,
+} from 'aws-cdk-lib';
 import { IPipe } from './pipe';
 import { unquote } from './unquote';
 
@@ -58,7 +65,7 @@ export class InputTransformation implements IInputTransformation {
     return new InputTransformation(inputTemplate, TemplateType.OBJECT);
   }
 
-  private type : TemplateType;
+  private type: TemplateType;
 
   /**
    * The inputTemplate that is used to transform the input event payload
@@ -71,7 +78,6 @@ export class InputTransformation implements IInputTransformation {
   }
 
   public bind(pipe: IPipe): InputTransformationConfig {
-
     if (this.type === 'Text') {
       return { inputTemplate: this.inputTemplate as string };
     }
@@ -85,8 +91,9 @@ export class InputTransformation implements IInputTransformation {
   }
 
   private unquoteDynamicInputs(sub: string) {
-
-    return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
+    return Lazy.uncachedString({
+      produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))),
+    });
 
     /**
      * Removes the quotes from the values that are in the keys array
@@ -99,7 +106,7 @@ export class InputTransformation implements IInputTransformation {
         return resolved.map(deepUnquote);
       }
 
-      if (typeof(resolved) === 'object' && resolved !== null) {
+      if (typeof resolved === 'object' && resolved !== null) {
         for (const [key, value] of Object.entries(resolved)) {
           resolved[key] = deepUnquote(value);
         }
@@ -112,4 +119,3 @@ export class InputTransformation implements IInputTransformation {
     }
   }
 }
-

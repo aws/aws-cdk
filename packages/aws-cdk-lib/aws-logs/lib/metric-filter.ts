@@ -18,7 +18,6 @@ export interface MetricFilterProps extends MetricFilterOptions {
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
 export class MetricFilter extends Resource {
-
   private readonly metricName: string;
   private readonly metricNamespace: string;
 
@@ -32,7 +31,9 @@ export class MetricFilter extends Resource {
 
     const numberOfDimensions = Object.keys(props.dimensions ?? {}).length;
     if (numberOfDimensions > 3) {
-      throw new Error(`MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`);
+      throw new Error(
+        `MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`
+      );
     }
 
     // It looks odd to map this object to a singleton list, but that's how
@@ -47,14 +48,18 @@ export class MetricFilter extends Resource {
       logGroupName: props.logGroup.logGroupName,
       filterName: this.physicalName,
       filterPattern: props.filterPattern.logPatternString,
-      metricTransformations: [{
-        metricNamespace: props.metricNamespace,
-        metricName: props.metricName,
-        metricValue: props.metricValue ?? '1',
-        defaultValue: props.defaultValue,
-        dimensions: props.dimensions ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value })) : undefined,
-        unit: props.unit,
-      }],
+      metricTransformations: [
+        {
+          metricNamespace: props.metricNamespace,
+          metricName: props.metricName,
+          metricValue: props.metricValue ?? '1',
+          defaultValue: props.defaultValue,
+          dimensions: props.dimensions
+            ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value }))
+            : undefined,
+          unit: props.unit,
+        },
+      ],
     });
   }
 

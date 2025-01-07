@@ -51,7 +51,7 @@ export class CaCertificate {
   /**
    * @param identifier - CA certificate identifier
    */
-  private constructor(private readonly identifier: string) { }
+  private constructor(private readonly identifier: string) {}
 
   /**
    * Returns the CA certificate identifier as a string

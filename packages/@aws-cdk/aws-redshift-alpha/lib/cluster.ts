@@ -5,8 +5,24 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from 'aws-cdk-lib/core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
+import {
+  ArnFormat,
+  CustomResource,
+  Duration,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  SecretValue,
+  Stack,
+  Token,
+} from 'aws-cdk-lib/core';
+import {
+  AwsCustomResource,
+  AwsCustomResourcePolicy,
+  PhysicalResourceId,
+  Provider,
+} from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -189,7 +205,10 @@ export interface RotationMultiUserOptions {
  * Create a Redshift Cluster with a given number of nodes.
  * Implemented by `Cluster` via `ClusterBase`.
  */
-export interface ICluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface ICluster
+  extends IResource,
+    ec2.IConnectable,
+    secretsmanager.ISecretAttachmentTarget {
   /**
    * Name of the cluster
    *
@@ -230,7 +249,6 @@ export interface ClusterAttributes {
    * Cluster endpoint port
    */
   readonly clusterEndpointPort: number;
-
 }
 
 /**
@@ -483,7 +501,11 @@ export class Cluster extends ClusterBase {
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+  public static fromClusterAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ClusterAttributes
+  ): ICluster {
     class Import extends ClusterBase {
       public readonly connections = new ec2.Connections({
         securityGroups: attrs.securityGroups,
@@ -491,7 +513,10 @@ export class Cluster extends ClusterBase {
       });
       public readonly clusterName = attrs.clusterName;
       public readonly instanceIdentifiers: string[] = [];
-      public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.clusterEndpointPort);
+      public readonly clusterEndpoint = new Endpoint(
+        attrs.clusterEndpointAddress,
+        attrs.clusterEndpointPort
+      );
     }
     return new Import(scope, id);
   }
@@ -558,19 +583,23 @@ export class Cluster extends ClusterBase {
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
-    const subnetGroup = props.subnetGroup ?? new ClusterSubnetGroup(this, 'Subnets', {
-      description: `Subnets for ${id} Redshift cluster`,
-      vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
-      removalPolicy: removalPolicy,
-    });
+    const subnetGroup =
+      props.subnetGroup ??
+      new ClusterSubnetGroup(this, 'Subnets', {
+        description: `Subnets for ${id} Redshift cluster`,
+        vpc: this.vpc,
+        vpcSubnets: this.vpcSubnets,
+        removalPolicy: removalPolicy,
+      });
 
-    const securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
-      description: 'Redshift security group',
-      vpc: this.vpc,
-    })];
+    const securityGroups = props.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: 'Redshift security group',
+        vpc: this.vpc,
+      }),
+    ];
 
-    const securityGroupIds = securityGroups.map(sg => sg.securityGroupId);
+    const securityGroupIds = securityGroups.map((sg) => sg.securityGroupId);
 
     let secret: DatabaseSecret | undefined;
     if (!props.masterUser.masterPassword) {
@@ -588,8 +617,10 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot set property encryptionKey without enabling encryption!');
     }
 
-    this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
-    this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
+    this.singleUserRotationApplication =
+      secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
+    this.multiUserRotationApplication =
+      secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
     let loggingProperties;
     if (props.loggingProperties) {
@@ -598,21 +629,14 @@ export class Cluster extends ClusterBase {
         s3KeyPrefix: props.loggingProperties.loggingKeyPrefix,
       };
       props.loggingProperties.loggingBucket.addToResourcePolicy(
-        new iam.PolicyStatement(
-          {
-            actions: [
-              's3:GetBucketAcl',
-              's3:PutObject',
-            ],
-            resources: [
-              props.loggingProperties.loggingBucket.arnForObjects('*'),
-              props.loggingProperties.loggingBucket.bucketArn,
-            ],
-            principals: [
-              new iam.ServicePrincipal('redshift.amazonaws.com'),
-            ],
-          },
-        ),
+        new iam.PolicyStatement({
+          actions: ['s3:GetBucketAcl', 's3:PutObject'],
+          resources: [
+            props.loggingProperties.loggingBucket.arnForObjects('*'),
+            props.loggingProperties.loggingBucket.bucketArn,
+          ],
+          principals: [new iam.ServicePrincipal('redshift.amazonaws.com')],
+        })
       );
     }
 
@@ -620,7 +644,9 @@ export class Cluster extends ClusterBase {
 
     if (props.multiAz) {
       if (!nodeType.startsWith('ra3')) {
-        throw new Error(`Multi-AZ cluster is only supported for RA3 node types, got: ${props.nodeType}`);
+        throw new Error(
+          `Multi-AZ cluster is only supported for RA3 node types, got: ${props.nodeType}`
+        );
       }
       if (clusterType === ClusterType.SINGLE_NODE) {
         throw new Error('Multi-AZ cluster is not supported for `clusterType` single-node');
@@ -628,10 +654,14 @@ export class Cluster extends ClusterBase {
     }
 
     if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
-      throw new Error('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
-    };
+      throw new Error(
+        'ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.'
+      );
+    }
     if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
-      throw new Error(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`);
+      throw new Error(
+        `Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`
+      );
     }
 
     this.cluster = new CfnCluster(this, 'Resource', {
@@ -643,17 +673,23 @@ export class Cluster extends ClusterBase {
       clusterSubnetGroupName: subnetGroup.clusterSubnetGroupName,
       vpcSecurityGroupIds: securityGroupIds,
       port: props.port,
-      clusterParameterGroupName: props.parameterGroup && props.parameterGroup.clusterParameterGroupName,
+      clusterParameterGroupName:
+        props.parameterGroup && props.parameterGroup.clusterParameterGroupName,
       // Admin (unsafeUnwrap here is safe)
-      masterUsername: secret?.secretValueFromJson('username').unsafeUnwrap() ?? props.masterUser.masterUsername,
-      masterUserPassword: secret?.secretValueFromJson('password').unsafeUnwrap()
-        ?? props.masterUser.masterPassword?.unsafeUnwrap()
-        ?? 'default',
+      masterUsername:
+        secret?.secretValueFromJson('username').unsafeUnwrap() ?? props.masterUser.masterUsername,
+      masterUserPassword:
+        secret?.secretValueFromJson('password').unsafeUnwrap() ??
+        props.masterUser.masterPassword?.unsafeUnwrap() ??
+        'default',
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       nodeType,
       numberOfNodes: nodeCount,
       loggingProperties,
-      iamRoles: Lazy.list({ produce: () => this.roles.map(role => role.roleArn) }, { omitEmpty: true }),
+      iamRoles: Lazy.list(
+        { produce: () => this.roles.map((role) => role.roleArn) },
+        { omitEmpty: true }
+      ),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
@@ -688,7 +724,7 @@ export class Cluster extends ClusterBase {
     }
     // Add default role if specified and also available in the roles list
     if (props.defaultRole) {
-      if (props.roles?.some(x => x === props.defaultRole)) {
+      if (props.roles?.some((x) => x === props.defaultRole)) {
         this.addDefaultIamRole(props.defaultRole);
       } else {
         throw new Error('Default role must be included in role list.');
@@ -726,7 +762,10 @@ export class Cluster extends ClusterBase {
   /**
    * Adds the multi user rotation to this cluster.
    */
-  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+  public addRotationMultiUser(
+    id: string,
+    options: RotationMultiUserOptions
+  ): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
@@ -745,7 +784,9 @@ export class Cluster extends ClusterBase {
     if (clusterType === ClusterType.SINGLE_NODE) {
       // This property must not be set for single-node clusters; be generous and treat a value of 1 node as undefined.
       if (numberOfNodes !== undefined && numberOfNodes !== 1) {
-        throw new Error('Number of nodes must be not be supplied or be 1 for cluster type single-node');
+        throw new Error(
+          'Number of nodes must be not be supplied or be 1 for cluster type single-node'
+        );
       }
       return undefined;
     } else {
@@ -754,7 +795,9 @@ export class Cluster extends ClusterBase {
       }
       const nodeCount = numberOfNodes ?? 2;
       if (nodeCount < 2 || nodeCount > 100) {
-        throw new Error('Number of nodes for cluster type multi-node must be at least 2 and no more than 100');
+        throw new Error(
+          'Number of nodes for cluster type multi-node must be at least 2 and no more than 100'
+        );
       }
       return nodeCount;
     }
@@ -771,7 +814,9 @@ export class Cluster extends ClusterBase {
       const param: { [name: string]: string } = {};
       param[name] = value;
       this.parameterGroup = new ClusterParameterGroup(this, 'ParameterGroup', {
-        description: this.cluster.clusterIdentifier ? `Parameter Group for the ${this.cluster.clusterIdentifier} Redshift cluster` : 'Cluster parameter group for family redshift-1.0',
+        description: this.cluster.clusterIdentifier
+          ? `Parameter Group for the ${this.cluster.clusterIdentifier} Redshift cluster`
+          : 'Cluster parameter group for family redshift-1.0',
         parameters: param,
       });
       this.cluster.clusterParameterGroupName = this.parameterGroup.clusterParameterGroupName;
@@ -792,25 +837,38 @@ export class Cluster extends ClusterBase {
     const rebootFunction = new lambda.SingletonFunction(this, 'RedshiftClusterRebooterFunction', {
       uuid: '511e207f-13df-4b8b-b632-c32b30b65ac2',
       runtime: lambda.determineLatestNodeRuntime(this),
-      code: lambda.Code.fromAsset(path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-redshift-alpha', 'cluster-parameter-change-reboot-handler')),
+      code: lambda.Code.fromAsset(
+        path.join(
+          __dirname,
+          '..',
+          'custom-resource-handlers',
+          'dist',
+          'aws-redshift-alpha',
+          'cluster-parameter-change-reboot-handler'
+        )
+      ),
       handler: 'index.handler',
       timeout: Duration.seconds(900),
     });
-    rebootFunction.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['redshift:DescribeClusters'],
-      resources: ['*'],
-    }));
-    rebootFunction.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['redshift:RebootCluster'],
-      resources: [
-        Stack.of(this).formatArn({
-          service: 'redshift',
-          resource: 'cluster',
-          resourceName: this.clusterName,
-          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        }),
-      ],
-    }));
+    rebootFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['redshift:DescribeClusters'],
+        resources: ['*'],
+      })
+    );
+    rebootFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['redshift:RebootCluster'],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'redshift',
+            resource: 'cluster',
+            resourceName: this.clusterName,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          }),
+        ],
+      })
+    );
     const provider = new Provider(this, 'ResourceProvider', {
       onEventHandler: rebootFunction,
     });
@@ -822,7 +880,9 @@ export class Cluster extends ClusterBase {
         ParameterGroupName: Lazy.string({
           produce: () => {
             if (!this.parameterGroup) {
-              throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+              throw new Error(
+                'Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.'
+              );
             }
             return this.parameterGroup.clusterParameterGroupName;
           },
@@ -830,7 +890,9 @@ export class Cluster extends ClusterBase {
         ParametersString: Lazy.string({
           produce: () => {
             if (!(this.parameterGroup instanceof ClusterParameterGroup)) {
-              throw new Error('Cannot enable reboot for parameter changes when using an imported parameter group.');
+              throw new Error(
+                'Cannot enable reboot for parameter changes when using an imported parameter group.'
+              );
             }
             return JSON.stringify(this.parameterGroup.parameters);
           },
@@ -840,7 +902,9 @@ export class Cluster extends ClusterBase {
     Lazy.any({
       produce: () => {
         if (!this.parameterGroup) {
-          throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+          throw new Error(
+            'Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.'
+          );
         }
         customResource.node.addDependency(this, this.parameterGroup);
       },
@@ -865,7 +929,9 @@ export class Cluster extends ClusterBase {
       }
     }
     if (!roleAlreadyOnCluster) {
-      throw new Error('Default role must be associated to the Redshift cluster to be set as the default role.');
+      throw new Error(
+        'Default role must be associated to the Redshift cluster to be set as the default role.'
+      );
     }
 
     // On UPDATE or CREATE define the default IAM role. On DELETE, remove the default IAM role
@@ -877,9 +943,7 @@ export class Cluster extends ClusterBase {
           ClusterIdentifier: this.cluster.ref,
           DefaultIamRoleArn: defaultIamRole.roleArn,
         },
-        physicalResourceId: PhysicalResourceId.of(
-          `${defaultIamRole.roleArn}-${this.cluster.ref}`,
-        ),
+        physicalResourceId: PhysicalResourceId.of(`${defaultIamRole.roleArn}-${this.cluster.ref}`),
       },
       onDelete: {
         service: 'Redshift',
@@ -888,9 +952,7 @@ export class Cluster extends ClusterBase {
           ClusterIdentifier: this.cluster.ref,
           DefaultIamRoleArn: '',
         },
-        physicalResourceId: PhysicalResourceId.of(
-          `${defaultIamRole.roleArn}-${this.cluster.ref}`,
-        ),
+        physicalResourceId: PhysicalResourceId.of(`${defaultIamRole.roleArn}-${this.cluster.ref}`),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,

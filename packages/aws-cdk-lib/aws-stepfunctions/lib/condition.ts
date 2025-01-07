@@ -2,7 +2,6 @@
  * A Condition for use in a Choice state branch
  */
 export abstract class Condition {
-
   /**
    * Matches if variable is present
    */
@@ -306,7 +305,11 @@ export abstract class Condition {
    * Matches if a timestamp field is after or equal to the timestamp at a given mapping path
    */
   public static timestampGreaterThanEqualsJsonPath(variable: string, value: string): Condition {
-    return new VariableComparison(variable, ComparisonOperator.TimestampGreaterThanEqualsPath, value);
+    return new VariableComparison(
+      variable,
+      ComparisonOperator.TimestampGreaterThanEqualsPath,
+      value
+    );
   }
 
   /**
@@ -387,7 +390,6 @@ enum ComparisonOperator {
   IsTimestamp,
   IsPresent,
   StringMatches,
-
 }
 
 /**
@@ -402,10 +404,16 @@ enum CompoundOperator {
  * Scalar comparison
  */
 class VariableComparison extends Condition {
-  constructor(private readonly variable: string, private readonly comparisonOperator: ComparisonOperator, private readonly value: any) {
+  constructor(
+    private readonly variable: string,
+    private readonly comparisonOperator: ComparisonOperator,
+    private readonly value: any
+  ) {
     super();
     if (!/^\$|(\$[.[])/.test(variable)) {
-      throw new Error(`Variable reference must be '$', start with '$.', or start with '$[', got '${variable}'`);
+      throw new Error(
+        `Variable reference must be '$', start with '$.', or start with '$[', got '${variable}'`
+      );
     }
   }
 
@@ -423,7 +431,10 @@ class VariableComparison extends Condition {
 class CompoundCondition extends Condition {
   private readonly conditions: Condition[];
 
-  constructor(private readonly operator: CompoundOperator, ...conditions: Condition[]) {
+  constructor(
+    private readonly operator: CompoundOperator,
+    ...conditions: Condition[]
+  ) {
     super();
     this.conditions = conditions;
     if (conditions.length === 0) {
@@ -433,7 +444,7 @@ class CompoundCondition extends Condition {
 
   public renderCondition(): any {
     return {
-      [CompoundOperator[this.operator]]: this.conditions.map(c => c.renderCondition()),
+      [CompoundOperator[this.operator]]: this.conditions.map((c) => c.renderCondition()),
     };
   }
 }

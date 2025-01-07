@@ -72,11 +72,17 @@ function findAllNestedStacks(root: IConstruct) {
   const result = new Array<Stack>();
 
   const includeStack = (stack: IConstruct): stack is Stack => {
-    if (!Stack.isStack(stack)) { return false; }
-    if (!stack.nested) { return false; }
+    if (!Stack.isStack(stack)) {
+      return false;
+    }
+    if (!stack.nested) {
+      return false;
+    }
 
     // test: if we are not within a stage, then include it.
-    if (!Stage.of(stack)) { return true; }
+    if (!Stage.of(stack)) {
+      return true;
+    }
 
     return Stage.of(stack) === root;
   };
@@ -114,7 +120,9 @@ function findTransitiveDeps(root: IConstruct): Dependency[] {
     for (const dependable of source.node.dependencies) {
       for (const target of Dependable.of(dependable).dependencyRoots) {
         let foundTargets = found.get(source);
-        if (!foundTargets) { found.set(source, foundTargets = new Set()); }
+        if (!foundTargets) {
+          found.set(source, (foundTargets = new Set()));
+        }
 
         if (!foundTargets.has(target)) {
           ret.push({ source, target });

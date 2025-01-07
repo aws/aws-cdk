@@ -78,10 +78,19 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
    * @param id The construct's name.
    * @param codeSigningConfigArn The ARN of code signing config.
    */
-  public static fromCodeSigningConfigArn( scope: Construct, id: string, codeSigningConfigArn: string): ICodeSigningConfig {
-    const codeSigningProfileId = Stack.of(scope).splitArn(codeSigningConfigArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+  public static fromCodeSigningConfigArn(
+    scope: Construct,
+    id: string,
+    codeSigningConfigArn: string
+  ): ICodeSigningConfig {
+    const codeSigningProfileId = Stack.of(scope).splitArn(
+      codeSigningConfigArn,
+      ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName;
     if (!codeSigningProfileId) {
-      throw new Error(`Code signing config ARN must be in the format 'arn:<partition>:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`);
+      throw new Error(
+        `Code signing config ARN must be in the format 'arn:<partition>:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`
+      );
     }
     const assertedCodeSigningProfileId = codeSigningProfileId;
     class Import extends Resource implements ICodeSigningConfig {
@@ -101,7 +110,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
   constructor(scope: Construct, id: string, props: CodeSigningConfigProps) {
     super(scope, id);
 
-    const signingProfileVersionArns = props.signingProfiles.map(signingProfile => {
+    const signingProfileVersionArns = props.signingProfiles.map((signingProfile) => {
       return signingProfile.signingProfileVersionArn;
     });
 
@@ -110,7 +119,8 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
         signingProfileVersionArns,
       },
       codeSigningPolicies: {
-        untrustedArtifactOnDeployment: props.untrustedArtifactOnDeployment ?? UntrustedArtifactOnDeployment.WARN,
+        untrustedArtifactOnDeployment:
+          props.untrustedArtifactOnDeployment ?? UntrustedArtifactOnDeployment.WARN,
       },
       description: props.description,
     });

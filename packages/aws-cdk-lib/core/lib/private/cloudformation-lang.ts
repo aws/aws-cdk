@@ -56,14 +56,22 @@ export class CloudFormationLang {
    * Produce a CloudFormation expression to concat two arbitrary expressions when resolving
    */
   public static concat(left: any | undefined, right: any | undefined): any {
-    if (left === undefined && right === undefined) { return ''; }
+    if (left === undefined && right === undefined) {
+      return '';
+    }
 
     const parts = new Array<any>();
-    if (left !== undefined) { parts.push(left); }
-    if (right !== undefined) { parts.push(right); }
+    if (left !== undefined) {
+      parts.push(left);
+    }
+    if (right !== undefined) {
+      parts.push(right);
+    }
 
     // Some case analysis to produce minimal expressions
-    if (parts.length === 1) { return parts[0]; }
+    if (parts.length === 1) {
+      return parts[0];
+    }
     if (parts.length === 2 && isConcatable(parts[0]) && isConcatable(parts[1])) {
       return `${parts[0]}${parts[1]}`;
     }
@@ -170,8 +178,10 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
   recurse(ctx.resolve(root, { allowIntrinsicKeys: true }));
 
   switch (ret.length) {
-    case 0: return undefined;
-    case 1: return renderSegment(ret[0]);
+    case 0:
+      return undefined;
+    case 1:
+      return renderSegment(ret[0]);
     default:
       return fnJoinConcat(ret.map(renderSegment));
   }
@@ -180,7 +190,9 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
    * Stringify a JSON element
    */
   function recurse(obj: any): void {
-    if (obj === undefined) { return; }
+    if (obj === undefined) {
+      return;
+    }
 
     if (Token.isUnresolved(obj)) {
       throw new Error("This shouldn't happen anymore");
@@ -219,13 +231,17 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     indent += space;
     let atLeastOne = false;
     for (const [comma, item] of sepIter(xs)) {
-      if (comma) { pushLiteral(','); }
+      if (comma) {
+        pushLiteral(',');
+      }
       pushLineBreak();
       each(item);
       atLeastOne = true;
     }
     indent -= space;
-    if (atLeastOne) { pushLineBreak(); }
+    if (atLeastOne) {
+      pushLineBreak();
+    }
     pushLiteral(post);
   }
 
@@ -320,8 +336,10 @@ type Segment = { type: 'literal'; parts: string[] } | { type: 'intrinsic'; intri
  */
 function renderSegment(s: Segment): NonNullable<any> {
   switch (s.type) {
-    case 'literal': return s.parts.join('');
-    case 'intrinsic': return s.intrinsic;
+    case 'literal':
+      return s.parts.join('');
+    case 'intrinsic':
+      return s.intrinsic;
   }
 }
 
@@ -346,7 +364,7 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
     if (isSplicableFnJoinIntrinsic(el)) {
       values.splice(i, 1, ...el['Fn::Join'][1]);
     } else if (i > 0 && isConcatable(values[i - 1]) && isConcatable(values[i])) {
-      values[i - 1] = `${values[i-1]}${delimiter}${values[i]}`;
+      values[i - 1] = `${values[i - 1]}${delimiter}${values[i]}`;
       values.splice(i, 1);
     } else {
       i += 1;
@@ -356,14 +374,24 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
   return values;
 
   function isSplicableFnJoinIntrinsic(obj: any): boolean {
-    if (!isIntrinsic(obj)) { return false; }
-    if (Object.keys(obj)[0] !== 'Fn::Join') { return false; }
+    if (!isIntrinsic(obj)) {
+      return false;
+    }
+    if (Object.keys(obj)[0] !== 'Fn::Join') {
+      return false;
+    }
 
     const [delim, list] = obj['Fn::Join'];
-    if (delim !== delimiter) { return false; }
+    if (delim !== delimiter) {
+      return false;
+    }
 
-    if (Token.isUnresolved(list)) { return false; }
-    if (!Array.isArray(list)) { return false; }
+    if (Token.isUnresolved(list)) {
+      return false;
+    }
+    if (!Array.isArray(list)) {
+      return false;
+    }
 
     return true;
   }
@@ -377,10 +405,14 @@ function isConcatable(obj: any): boolean {
  * Return whether the given value represents a CloudFormation intrinsic
  */
 function isIntrinsic(x: any) {
-  if (Array.isArray(x) || x === null || typeof x !== 'object') { return false; }
+  if (Array.isArray(x) || x === null || typeof x !== 'object') {
+    return false;
+  }
 
   const keys = Object.keys(x);
-  if (keys.length !== 1) { return false; }
+  if (keys.length !== 1) {
+    return false;
+  }
 
   return keys[0] === 'Ref' || isNameOfCloudFormationIntrinsic(keys[0]);
 }

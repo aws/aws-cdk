@@ -39,10 +39,12 @@ export class SqsQueueAction implements iot.IAction {
    */
   public _bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [this.queue.queueArn],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [this.queue.queueArn],
+      })
+    );
 
     return {
       configuration: {

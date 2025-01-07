@@ -87,7 +87,6 @@ export interface NotificationRuleProps extends NotificationRuleOptions {
  * Represents a notification rule
  */
 export interface INotificationRule extends IResource {
-
   /**
    * The ARN of the notification rule (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    *
@@ -116,7 +115,11 @@ export class NotificationRule extends Resource implements INotificationRule {
    * @param id The construct's name
    * @param notificationRuleArn Notification rule ARN (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    */
-  public static fromNotificationRuleArn(scope: constructs.Construct, id: string, notificationRuleArn: string): INotificationRule {
+  public static fromNotificationRuleArn(
+    scope: constructs.Construct,
+    id: string,
+    notificationRuleArn: string
+  ): INotificationRule {
     class Import extends Resource implements INotificationRule {
       readonly notificationRuleArn = notificationRuleArn;
 
@@ -153,9 +156,7 @@ export class NotificationRule extends Resource implements INotificationRule {
       targets: this.targets,
       eventTypeIds: this.events,
       resource: source.sourceArn,
-      status: props.enabled !== undefined
-        ? (props.enabled ? 'ENABLED' : 'DISABLED')
-        : undefined,
+      status: props.enabled !== undefined ? (props.enabled ? 'ENABLED' : 'DISABLED') : undefined,
       createdBy: props.createdBy,
     });
 

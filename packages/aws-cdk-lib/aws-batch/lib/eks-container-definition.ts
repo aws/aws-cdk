@@ -3,9 +3,15 @@ import { CfnJobDefinition } from './batch.generated';
 import * as ecs from '../../aws-ecs';
 import { Lazy, Size } from '../../core';
 
-const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.EmptyDirVolume');
-const HOST_PATH_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.HostPathVolume');
-const SECRET_PATH_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.SecretVolume');
+const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for(
+  'aws-cdk-lib/aws-batch/lib/eks-container-definition.EmptyDirVolume'
+);
+const HOST_PATH_VOLUME_SYMBOL = Symbol.for(
+  'aws-cdk-lib/aws-batch/lib/eks-container-definition.HostPathVolume'
+);
+const SECRET_PATH_VOLUME_SYMBOL = Symbol.for(
+  'aws-cdk-lib/aws-batch/lib/eks-container-definition.SecretVolume'
+);
 
 /**
  * A container that can be run with EKS orchestration on EC2 resources
@@ -54,7 +60,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * *Note*: Environment variables cannot start with "AWS_BATCH".
    * This naming convention is reserved for variables that AWS Batch sets.
    */
-  readonly env?: { [key:string]: string };
+  readonly env?: { [key: string]: string };
 
   /**
    * The image pull policy for this container
@@ -334,7 +340,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - no environment variables
    */
-  readonly env?: { [key:string]: string };
+  readonly env?: { [key: string]: string };
 
   /**
    * The image pull policy for this container
@@ -534,7 +540,7 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
   public readonly image: ecs.ContainerImage;
   public readonly args?: string[];
   public readonly command?: string[];
-  public readonly env?: { [key:string]: string };
+  public readonly env?: { [key: string]: string };
   public readonly imagePullPolicy?: ImagePullPolicy;
   public readonly name?: string;
   public readonly memoryLimit?: Size;
@@ -599,13 +605,13 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
       imagePullPolicy: this.imagePullPolicy,
       resources: {
         limits: {
-          'cpu': this.cpuLimit,
-          'memory': this.memoryLimit ? this.memoryLimit.toMebibytes() + 'Mi' : undefined,
+          cpu: this.cpuLimit,
+          memory: this.memoryLimit ? this.memoryLimit.toMebibytes() + 'Mi' : undefined,
           'nvidia.com/gpu': this.gpuLimit,
         },
         requests: {
-          'cpu': this.cpuReservation,
-          'memory': this.memoryReservation ? this.memoryReservation.toMebibytes() + 'Mi' : undefined,
+          cpu: this.cpuReservation,
+          memory: this.memoryReservation ? this.memoryReservation.toMebibytes() + 'Mi' : undefined,
           'nvidia.com/gpu': this.gpuReservation,
         },
       },
@@ -631,7 +637,7 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
         },
       }),
     };
-  };
+  }
 }
 
 /**
@@ -768,8 +774,8 @@ export class EmptyDirVolume extends EksVolume {
   /**
    * Returns `true` if `x` is an EmptyDirVolume, `false` otherwise
    */
-  public static isEmptyDirVolume(x: any) : x is EmptyDirVolume {
-    return x !== null && typeof(x) === 'object' && EMPTY_DIR_VOLUME_SYMBOL in x;
+  public static isEmptyDirVolume(x: any): x is EmptyDirVolume {
+    return x !== null && typeof x === 'object' && EMPTY_DIR_VOLUME_SYMBOL in x;
   }
 
   /**
@@ -824,8 +830,8 @@ export class HostPathVolume extends EksVolume {
   /**
    * returns `true` if `x` is a HostPathVolume, `false` otherwise
    */
-  public static isHostPathVolume(x: any) : x is HostPathVolume {
-    return x !== null && typeof(x) === 'object' && HOST_PATH_VOLUME_SYMBOL in x;
+  public static isHostPathVolume(x: any): x is HostPathVolume {
+    return x !== null && typeof x === 'object' && HOST_PATH_VOLUME_SYMBOL in x;
   }
 
   /**
@@ -880,8 +886,8 @@ export class SecretPathVolume extends EksVolume {
   /**
    * returns `true` if `x` is a `SecretPathVolume` and `false` otherwise
    */
-  public static isSecretPathVolume(x: any) : x is SecretPathVolume {
-    return x !== null && typeof(x) === 'object' && SECRET_PATH_VOLUME_SYMBOL in x;
+  public static isSecretPathVolume(x: any): x is SecretPathVolume {
+    return x !== null && typeof x === 'object' && SECRET_PATH_VOLUME_SYMBOL in x;
   }
 
   /**

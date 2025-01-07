@@ -117,7 +117,11 @@ export class StepScalingPolicy extends Construct {
       throw new Error(`'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`);
     }
 
-    if (props.evaluationPeriods !== undefined && !cdk.Token.isUnresolved(props.evaluationPeriods) && props.evaluationPeriods < 1) {
+    if (
+      props.evaluationPeriods !== undefined &&
+      !cdk.Token.isUnresolved(props.evaluationPeriods) &&
+      props.evaluationPeriods < 1
+    ) {
       throw new Error(`evaluationPeriods cannot be less than 1, got: ${props.evaluationPeriods}`);
     }
     if (props.datapointsToAlarm !== undefined) {
@@ -127,11 +131,14 @@ export class StepScalingPolicy extends Construct {
       if (!cdk.Token.isUnresolved(props.datapointsToAlarm) && props.datapointsToAlarm < 1) {
         throw new Error(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`);
       }
-      if (!cdk.Token.isUnresolved(props.datapointsToAlarm)
-        && !cdk.Token.isUnresolved(props.evaluationPeriods)
-        && props.evaluationPeriods < props.datapointsToAlarm
+      if (
+        !cdk.Token.isUnresolved(props.datapointsToAlarm) &&
+        !cdk.Token.isUnresolved(props.evaluationPeriods) &&
+        props.evaluationPeriods < props.datapointsToAlarm
       ) {
-        throw new Error(`datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: ${props.datapointsToAlarm}, evaluationPeriods: ${props.evaluationPeriods}`);
+        throw new Error(
+          `datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: ${props.datapointsToAlarm}, evaluationPeriods: ${props.evaluationPeriods}`
+        );
       }
     }
 
@@ -147,7 +154,8 @@ export class StepScalingPolicy extends Construct {
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
         adjustmentType,
         cooldown: props.cooldown,
-        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
+        metricAggregationType:
+          props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         scalingTarget: props.scalingTarget,
       });
@@ -178,7 +186,8 @@ export class StepScalingPolicy extends Construct {
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
         adjustmentType,
         cooldown: props.cooldown,
-        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
+        metricAggregationType:
+          props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         scalingTarget: props.scalingTarget,
       });
@@ -244,7 +253,9 @@ export interface ScalingInterval {
 
 function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregationType | undefined {
   const statistic = metric.toMetricConfig().metricStat?.statistic;
-  if (statistic == null) { return undefined; } // Math expression, don't know aggregation, leave default
+  if (statistic == null) {
+    return undefined;
+  } // Math expression, don't know aggregation, leave default
 
   switch (statistic) {
     case 'Average':
@@ -268,8 +279,7 @@ function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregatio
  * aws-cloudwatch-actions -> aws-autoscaling (for the definition of IStepScalingAction)
  */
 class StepScalingAlarmAction implements cloudwatch.IAlarmAction {
-  constructor(private readonly stepScalingAction: StepScalingAction) {
-  }
+  constructor(private readonly stepScalingAction: StepScalingAction) {}
 
   public bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     return { alarmActionArn: this.stepScalingAction.scalingPolicyArn };

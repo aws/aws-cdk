@@ -2,14 +2,17 @@ import { Construct } from 'constructs';
 import { IVpcEndpointService } from '../../aws-ec2';
 import { Fn, Names, Stack } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
+import {
+  AwsCustomResource,
+  AwsCustomResourcePolicy,
+  PhysicalResourceId,
+} from '../../custom-resources';
 import { IPublicHostedZone, TxtRecord } from '../lib';
 
 /**
  * Properties to configure a VPC Endpoint Service domain name
  */
 export interface VpcEndpointServiceDomainNameProps {
-
   /**
    * The VPC Endpoint Service to configure Private DNS for
    */
@@ -35,12 +38,11 @@ export interface VpcEndpointServiceDomainNameProps {
  * A Private DNS configuration for a VPC endpoint service.
  */
 export class VpcEndpointServiceDomainName extends Construct {
-
   // Track all domain names created, so someone doesn't accidentally associate two domains with a single service
   private static readonly endpointServices: IVpcEndpointService[] = [];
 
   // Track all domain names created, so someone doesn't accidentally associate two domains with a single service
-  private static readonly endpointServicesMap: { [endpointService: string]: string} = {};
+  private static readonly endpointServicesMap: { [endpointService: string]: string } = {};
 
   /**
    * The domain name associated with the private DNS configuration
@@ -68,7 +70,11 @@ export class VpcEndpointServiceDomainName extends Construct {
     VpcEndpointServiceDomainName.endpointServices.push(props.endpointService);
 
     // Enable Private DNS on the endpoint service and retrieve the AWS-generated configuration
-    const privateDnsConfiguration = this.getPrivateDnsConfiguration(serviceUniqueId, serviceId, this.domainName);
+    const privateDnsConfiguration = this.getPrivateDnsConfiguration(
+      serviceUniqueId,
+      serviceId,
+      this.domainName
+    );
 
     // Tell AWS to verify that this account owns the domain attached to the service
     this.verifyPrivateDnsConfiguration(privateDnsConfiguration, props.publicHostedZone);
@@ -82,7 +88,8 @@ export class VpcEndpointServiceDomainName extends Construct {
     if (serviceUniqueId in VpcEndpointServiceDomainName.endpointServicesMap) {
       const endpoint = VpcEndpointServiceDomainName.endpointServicesMap[serviceUniqueId];
       throw new Error(
-        `Cannot create a VpcEndpointServiceDomainName for service ${serviceUniqueId}, another VpcEndpointServiceDomainName (${endpoint}) is already associated with it`);
+        `Cannot create a VpcEndpointServiceDomainName for service ${serviceUniqueId}, another VpcEndpointServiceDomainName (${endpoint}) is already associated with it`
+      );
     }
   }
 
@@ -90,8 +97,11 @@ export class VpcEndpointServiceDomainName extends Construct {
    * Sets up Custom Resources to make AWS calls to set up Private DNS on an endpoint service,
    * returning the values to use in a TxtRecord, which AWS uses to verify domain ownership.
    */
-  private getPrivateDnsConfiguration(serviceUniqueId: string, serviceId: string, privateDnsName: string): PrivateDnsConfiguration {
-
+  private getPrivateDnsConfiguration(
+    serviceUniqueId: string,
+    serviceId: string,
+    privateDnsName: string
+  ): PrivateDnsConfiguration {
     // The custom resource which tells AWS to enable Private DNS on the given service, using the given domain name
     // AWS will generate a name/value pair for use in a TxtRecord, which is used to verify domain ownership.
     const enablePrivateDnsAction = {
@@ -123,10 +133,7 @@ export class VpcEndpointServiceDomainName extends Construct {
             'ec2',
             Stack.of(this).region,
             Stack.of(this).account,
-            Fn.join('/', [
-              'vpc-endpoint-service',
-              serviceId,
-            ]),
+            Fn.join('/', ['vpc-endpoint-service', serviceId]),
           ]),
         ],
       }),
@@ -164,8 +171,12 @@ export class VpcEndpointServiceDomainName extends Construct {
     getNames.node.addDependency(enable);
 
     // Get the references to the name/value pair associated with the endpoint service
-    const name = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Name');
-    const value = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Value');
+    const name = getNames.getResponseField(
+      'ServiceConfigurations.0.PrivateDnsNameConfiguration.Name'
+    );
+    const value = getNames.getResponseField(
+      'ServiceConfigurations.0.PrivateDnsNameConfiguration.Value'
+    );
 
     return { name, value, serviceId };
   }
@@ -174,7 +185,10 @@ export class VpcEndpointServiceDomainName extends Construct {
    * Creates a Route53 entry and a Custom Resource which explicitly tells AWS to verify ownership
    * of the domain name attached to an endpoint service.
    */
-  private verifyPrivateDnsConfiguration(config: PrivateDnsConfiguration, publicHostedZone: IPublicHostedZone) {
+  private verifyPrivateDnsConfiguration(
+    config: PrivateDnsConfiguration,
+    publicHostedZone: IPublicHostedZone
+  ) {
     // Create the TXT record in the provided hosted zone
     const verificationRecord = new TxtRecord(this, 'DnsVerificationRecord', {
       recordName: config.name,
@@ -202,10 +216,7 @@ export class VpcEndpointServiceDomainName extends Construct {
             'ec2',
             Stack.of(this).region,
             Stack.of(this).account,
-            Fn.join('/', [
-              'vpc-endpoint-service',
-              config.serviceId,
-            ]),
+            Fn.join('/', ['vpc-endpoint-service', config.serviceId]),
           ]),
         ],
       }),
@@ -230,4 +241,4 @@ interface PrivateDnsConfiguration {
  */
 function hashcode(s: string): string {
   return md5hash(s);
-};
+}

@@ -1,4 +1,3 @@
-
 /**
  * Properties of a discovered SecurityGroup.
  */

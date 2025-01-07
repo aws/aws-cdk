@@ -1,5 +1,11 @@
 import { IntrinsicParser, IntrinsicExpression } from './intrinstics';
-import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '../../../core';
+import {
+  captureStackTrace,
+  IResolvable,
+  IResolveContext,
+  Token,
+  Tokenization,
+} from '../../../core';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
@@ -90,7 +96,9 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
  * From an expression, return the list of JSON paths referenced in it
  */
 function findPathsInIntrinsicFunctions(expression?: string): string[] {
-  if (!expression) { return []; }
+  if (!expression) {
+    return [];
+  }
 
   const ret = new Array<string>();
 
@@ -119,14 +127,18 @@ function findPathsInIntrinsicFunctions(expression?: string): string[] {
 }
 
 interface FieldHandlers {
-  handleString(key: string, x: string): {[key: string]: string};
-  handleList(key: string, x: string[]): {[key: string]: string[] | string };
-  handleNumber(key: string, x: number): {[key: string]: number | string};
-  handleBoolean(key: string, x: boolean): {[key: string]: boolean};
-  handleResolvable(key: string, x: IResolvable): {[key: string]: any};
+  handleString(key: string, x: string): { [key: string]: string };
+  handleList(key: string, x: string[]): { [key: string]: string[] | string };
+  handleNumber(key: string, x: number): { [key: string]: number | string };
+  handleBoolean(key: string, x: boolean): { [key: string]: boolean };
+  handleResolvable(key: string, x: IResolvable): { [key: string]: any };
 }
 
-export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
+export function recurseObject(
+  obj: object | undefined,
+  handlers: FieldHandlers,
+  visited: object[] = []
+): object | undefined {
   // If the argument received is not actually an object (string, number, boolean, undefined, ...) or null
   // just return it as is as there's nothing to be rendered. This should only happen in the original call to
   // recurseObject as any recursive calls to it are checking for typeof value === 'object' && value !== null
@@ -135,7 +147,9 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
   }
 
   // Avoiding infinite recursion
-  if (visited.includes(obj)) { return {}; }
+  if (visited.includes(obj)) {
+    return {};
+  }
 
   // Marking current object as visited for the current recursion path
   visited.push(obj);
@@ -171,7 +185,12 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
 /**
  * Render an array that may or may not contain a string list token
  */
-function recurseArray(key: string, arr: any[], handlers: FieldHandlers, visited: object[] = []): {[key: string]: any[] | string} {
+function recurseArray(
+  key: string,
+  arr: any[],
+  handlers: FieldHandlers,
+  visited: object[] = []
+): { [key: string]: any[] | string } {
   if (isStringArray(arr)) {
     const path = jsonPathStringList(arr);
     if (path !== undefined) {
@@ -188,10 +207,12 @@ function recurseArray(key: string, arr: any[], handlers: FieldHandlers, visited:
 }
 
 function resolveArray(arr: any[], handlers: FieldHandlers, visited: object[] = []): any[] {
-  return arr.map(value => {
-    if ((typeof value === 'string' && jsonPathString(value) !== undefined)
-        || (typeof value === 'number' && jsonPathNumber(value) !== undefined)
-        || (isStringArray(value) && jsonPathStringList(value) !== undefined)) {
+  return arr.map((value) => {
+    if (
+      (typeof value === 'string' && jsonPathString(value) !== undefined) ||
+      (typeof value === 'number' && jsonPathNumber(value) !== undefined) ||
+      (isStringArray(value) && jsonPathStringList(value) !== undefined)
+    ) {
       throw new Error('Cannot use JsonPath fields in an array, they must be used in objects');
     }
     if (Array.isArray(value)) {
@@ -205,7 +226,7 @@ function resolveArray(arr: any[], handlers: FieldHandlers, visited: object[] = [
 }
 
 function isStringArray(x: any): x is string[] {
-  return Array.isArray(x) && x.every(el => typeof el === 'string');
+  return Array.isArray(x) && x.every((el) => typeof el === 'string');
 }
 
 /**
@@ -213,7 +234,7 @@ function isStringArray(x: any): x is string[] {
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
-function renderString(key: string, value: string): {[key: string]: string} {
+function renderString(key: string, value: string): { [key: string]: string } {
   const path = jsonPathString(value);
   if (path !== undefined) {
     return { [key + '.$']: path };
@@ -228,7 +249,7 @@ function renderString(key: string, value: string): {[key: string]: string} {
  * If we can extract a Path from it, render as a path string, otherwise as itself (will
  * be resolved later
  */
-function renderResolvable(key: string, value: IResolvable): {[key: string]: any} {
+function renderResolvable(key: string, value: IResolvable): { [key: string]: any } {
   const path = jsonPathFromAny(value);
   if (path !== undefined) {
     return { [key + '.$']: path };
@@ -242,7 +263,7 @@ function renderResolvable(key: string, value: IResolvable): {[key: string]: any}
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
-function renderStringList(key: string, value: string[]): {[key: string]: string[] | string} {
+function renderStringList(key: string, value: string[]): { [key: string]: string[] | string } {
   const path = jsonPathStringList(value);
   if (path !== undefined) {
     return { [key + '.$']: path };
@@ -256,7 +277,7 @@ function renderStringList(key: string, value: string[]): {[key: string]: string[
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
-function renderNumber(key: string, value: number): {[key: string]: number | string} {
+function renderNumber(key: string, value: number): { [key: string]: number | string } {
   const path = jsonPathNumber(value);
   if (path !== undefined) {
     return { [key + '.$']: path };
@@ -268,7 +289,7 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
 /**
  * Render a parameter boolean
  */
-function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
+function renderBoolean(key: string, value: boolean): { [key: string]: boolean } {
   return { [key]: value };
 }
 
@@ -282,7 +303,9 @@ export function jsonPathString(x: string): string | undefined {
   const jsonPathTokens = fragments.tokens.filter(JsonPathToken.isJsonPathToken);
 
   if (jsonPathTokens.length > 0 && fragments.length > 1) {
-    throw new Error(`Field references must be the entire string, cannot concatenate them (found '${x}')`);
+    throw new Error(
+      `Field references must be the entire string, cannot concatenate them (found '${x}')`
+    );
   }
   if (jsonPathTokens.length > 0) {
     return jsonPathTokens[0].path;
@@ -291,8 +314,12 @@ export function jsonPathString(x: string): string | undefined {
 }
 
 export function jsonPathFromAny(x: any) {
-  if (!x) { return undefined; }
-  if (typeof x === 'string') { return jsonPathString(x); }
+  if (!x) {
+    return undefined;
+  }
+  if (typeof x === 'string') {
+    return jsonPathString(x);
+  }
   return pathFromToken(Tokenization.reverse(x));
 }
 
@@ -344,7 +371,7 @@ function singleQuotestring(x: string) {
     const c = x[i];
     if (c === "'") {
       ret.push("\\'");
-    } else if (c === '\\' && (i == x.length - 1 || (x[i+1] != '{' && x[i+1] != '}'))) {
+    } else if (c === '\\' && (i == x.length - 1 || (x[i + 1] != '{' && x[i + 1] != '}'))) {
       // Escape backslash, but only if it doesn't immediately precede a curly brace
       ret.push('\\\\');
     } else {

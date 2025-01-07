@@ -11,7 +11,7 @@ class TestStack extends cdk.Stack {
 
     const topicRule = new iot.TopicRule(this, 'TopicRule', {
       sql: iot.IotSql.fromStringAsVer20160323(
-        "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+        "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'"
       ),
     });
 
@@ -22,7 +22,7 @@ class TestStack extends cdk.Stack {
       new actions.S3PutObjectAction(bucket, {
         key: '${year}/${month}/${day}/${topic(2)}',
         accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
-      }),
+      })
     );
   }
 }

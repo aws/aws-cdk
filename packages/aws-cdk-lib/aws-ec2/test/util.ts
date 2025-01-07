@@ -5,7 +5,12 @@ export function stringLike(pattern: string | RegExp): Matcher {
 }
 
 export class RegexMatcher extends Matcher {
-  constructor(private readonly pattern: RegExp, public readonly name: string = 'RegexMatch') { super(); }
+  constructor(
+    private readonly pattern: RegExp,
+    public readonly name: string = 'RegexMatch'
+  ) {
+    super();
+  }
   public test(actual: any): MatchResult {
     const result = new MatchResult(actual);
     if (!this.pattern.test(actual)) {

@@ -8,7 +8,6 @@ import { IPipe } from '.';
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipeenrichmentparameters.html
  */
 export interface EnrichmentParametersConfig {
-
   /**
    * The parameters for the enrichment target.
    */
@@ -37,4 +36,3 @@ export interface IEnrichment {
    */
   bind(pipe: IPipe): EnrichmentParametersConfig;
 }
-

@@ -75,7 +75,7 @@ export abstract class ConcreteWidget implements IWidget {
    * Copy the warnings from the given metric
    */
   protected copyMetricWarnings(...ms: IMetric[]) {
-    ms.forEach(m => {
+    ms.forEach((m) => {
       for (const [id, message] of Object.entries(m.warningsV2 ?? {})) {
         this.warningsV2![id] = message;
       }

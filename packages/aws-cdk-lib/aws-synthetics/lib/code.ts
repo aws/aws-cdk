@@ -10,7 +10,6 @@ import { Stage } from '../../core';
  * The code the canary should execute
  */
 export abstract class Code {
-
   /**
    * Specify code inline.
    *
@@ -89,7 +88,10 @@ export class AssetCode extends Code {
   /**
    * @param assetPath The path to the asset file or directory.
    */
-  public constructor(private assetPath: string, private options?: s3_assets.AssetOptions) {
+  public constructor(
+    private assetPath: string,
+    private options?: s3_assets.AssetOptions
+  ) {
     super();
 
     if (!fs.existsSync(this.assetPath)) {
@@ -134,7 +136,9 @@ export class AssetCode extends Code {
     // Get the staged (or copied) asset path.
     // `this.asset.assetPath` is relative to the `outdir`, not the `assetOutDir`.
     const asmManifestDir = Stage.of(scope)?.outdir;
-    const assetPath = asmManifestDir ? path.join(asmManifestDir, this.asset.assetPath): this.assetPath;
+    const assetPath = asmManifestDir
+      ? path.join(asmManifestDir, this.asset.assetPath)
+      : this.assetPath;
 
     if (path.extname(assetPath) !== '.zip') {
       if (!fs.lstatSync(assetPath).isDirectory()) {
@@ -143,11 +147,21 @@ export class AssetCode extends Code {
       const filename = handler.split('.')[0];
       const nodeFilename = `${filename}.js`;
       const pythonFilename = `${filename}.py`;
-      if (family === RuntimeFamily.NODEJS && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
-        throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
+      if (
+        family === RuntimeFamily.NODEJS &&
+        !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))
+      ) {
+        throw new Error(
+          `The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`
+        );
       }
-      if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
-        throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
+      if (
+        family === RuntimeFamily.PYTHON &&
+        !fs.existsSync(path.join(assetPath, 'python', pythonFilename))
+      ) {
+        throw new Error(
+          `The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`
+        );
       }
     }
   }
@@ -166,7 +180,6 @@ export class InlineCode extends Code {
   }
 
   public bind(_scope: Construct, handler: string, _family: RuntimeFamily): CodeConfig {
-
     if (handler !== 'index.handler') {
       throw new Error(`The handler for inline code must be "index.handler" (got "${handler}")`);
     }
@@ -181,7 +194,11 @@ export class InlineCode extends Code {
  * S3 bucket path to the code zip file
  */
 export class S3Code extends Code {
-  public constructor(private bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  public constructor(
+    private bucket: s3.IBucket,
+    private key: string,
+    private objectVersion?: string
+  ) {
     super();
   }
 

@@ -101,10 +101,17 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
   private readonly logBucket?: s3.IBucket;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrContainersStartJobRunProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EmrContainersStartJobRunProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
-    validatePatternSupported(this.integrationPattern, EmrContainersStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      EmrContainersStartJobRun.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     if (this.props.applicationConfig) {
       this.validateAppConfig(this.props.applicationConfig);
@@ -114,9 +121,13 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       this.validateSparkSubmitJobDriver(props.jobDriver.sparkSubmitJobDriver);
     }
 
-    if (this.props.executionRole === undefined
-      && sfn.JsonPath.isEncodedJsonPath(props.virtualCluster.id)) {
-      throw new Error('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
+    if (
+      this.props.executionRole === undefined &&
+      sfn.JsonPath.isEncodedJsonPath(props.virtualCluster.id)
+    ) {
+      throw new Error(
+        'Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy'
+      );
     }
 
     this.logGroup = this.assignLogGroup();
@@ -143,23 +154,29 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         JobDriver: {
           SparkSubmitJobDriver: {
             EntryPoint: this.props.jobDriver.sparkSubmitJobDriver?.entryPoint.value,
-            EntryPointArguments: this.props.jobDriver.sparkSubmitJobDriver?.entryPointArguments?.value,
+            EntryPointArguments:
+              this.props.jobDriver.sparkSubmitJobDriver?.entryPointArguments?.value,
             SparkSubmitParameters: this.props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters,
           },
         },
         ConfigurationOverrides: {
-          ApplicationConfiguration: cdk.listMapper(this.applicationConfigPropertyToJson)(this.props.applicationConfig),
+          ApplicationConfiguration: cdk.listMapper(this.applicationConfigPropertyToJson)(
+            this.props.applicationConfig
+          ),
           MonitoringConfiguration: {
-            CloudWatchMonitoringConfiguration: this.logGroup ? {
-              LogGroupName: this.logGroup.logGroupName,
-              LogStreamNamePrefix: this.props.monitoring!.logStreamNamePrefix,
-            } : undefined,
-            PersistentAppUI: (this.props.monitoring?.persistentAppUI === false)
-              ? 'DISABLED'
-              : 'ENABLED',
-            S3MonitoringConfiguration: this.logBucket ? {
-              LogUri: this.logBucket.s3UrlForObject(),
-            } : undefined,
+            CloudWatchMonitoringConfiguration: this.logGroup
+              ? {
+                  LogGroupName: this.logGroup.logGroupName,
+                  LogStreamNamePrefix: this.props.monitoring!.logStreamNamePrefix,
+                }
+              : undefined,
+            PersistentAppUI:
+              this.props.monitoring?.persistentAppUI === false ? 'DISABLED' : 'ENABLED',
+            S3MonitoringConfiguration: this.logBucket
+              ? {
+                  LogUri: this.logBucket.s3UrlForObject(),
+                }
+              : undefined,
           },
         },
         Tags: this.props.tags,
@@ -174,7 +191,9 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     return {
       Classification: cdk.stringToCloudFormation(property.classification.classificationStatement),
       Properties: property.properties ? cdk.objectToCloudFormation(property.properties) : undefined,
-      Configurations: property.nestedConfig ? cdk.listMapper(this.applicationConfigPropertyToJson)(property.nestedConfig) : undefined,
+      Configurations: property.nestedConfig
+        ? cdk.listMapper(this.applicationConfigPropertyToJson)(property.nestedConfig)
+        : undefined,
     };
   };
 
@@ -182,13 +201,17 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     if (appConfig?.properties === undefined) {
       return;
     } else if (Object.keys(appConfig.properties).length > 100) {
-      throw new Error(`Application configuration properties must have 100 or fewer entries. Received ${Object.keys(appConfig.properties).length}`);
+      throw new Error(
+        `Application configuration properties must have 100 or fewer entries. Received ${Object.keys(appConfig.properties).length}`
+      );
     }
   }
 
   private validatePropertiesNestedAppConfigBothNotUndefined(appConfig: ApplicationConfiguration) {
     if (appConfig?.properties === undefined && appConfig?.nestedConfig === undefined) {
-      throw new Error('Application configuration must have either properties or nested app configurations defined.');
+      throw new Error(
+        'Application configuration must have either properties or nested app configurations defined.'
+      );
     }
   }
 
@@ -196,47 +219,64 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     if (config === undefined) {
       return;
     } else if (config.length > 100) {
-      throw new Error(`Application configuration array must have 100 or fewer entries. Received ${config.length}`);
+      throw new Error(
+        `Application configuration array must have 100 or fewer entries. Received ${config.length}`
+      );
     } else {
-      config.forEach(element => this.validateAppConfig(element.nestedConfig));
-      config.forEach(element => this.validateAppConfigPropertiesLength(element));
-      config.forEach(element => this.validatePropertiesNestedAppConfigBothNotUndefined(element));
+      config.forEach((element) => this.validateAppConfig(element.nestedConfig));
+      config.forEach((element) => this.validateAppConfigPropertiesLength(element));
+      config.forEach((element) => this.validatePropertiesNestedAppConfigBothNotUndefined(element));
     }
   }
 
   private isArrayOfStrings(value: any): boolean {
-    return Array.isArray(value) && value.every(item => typeof item === 'string');
+    return Array.isArray(value) && value.every((item) => typeof item === 'string');
   }
 
-  private validateEntryPointArguments (entryPointArguments:sfn.TaskInput) {
+  private validateEntryPointArguments(entryPointArguments: sfn.TaskInput) {
     if (typeof entryPointArguments.value === 'string') {
       if (!sfn.JsonPath.isEncodedJsonPath(entryPointArguments.value)) {
-        throw new Error('Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string');
+        throw new Error(
+          'Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string'
+        );
       }
     } else if (!this.isArrayOfStrings(entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array or an encoded JSON path but received ${typeof entryPointArguments.value}.`);
+      throw new Error(
+        `Entry point arguments must be a string array or an encoded JSON path but received ${typeof entryPointArguments.value}.`
+      );
     }
   }
 
-  private validateEntryPointArgumentsLength (entryPointArguments:sfn.TaskInput) {
-    if (this.isArrayOfStrings(entryPointArguments.value)
-        && (entryPointArguments.value.length > 10280 || entryPointArguments.value.length < 1)) {
-      throw new Error(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArguments.value.length}.`);
+  private validateEntryPointArgumentsLength(entryPointArguments: sfn.TaskInput) {
+    if (
+      this.isArrayOfStrings(entryPointArguments.value) &&
+      (entryPointArguments.value.length > 10280 || entryPointArguments.value.length < 1)
+    ) {
+      throw new Error(
+        `Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArguments.value.length}.`
+      );
     }
   }
 
-  private validateSparkSubmitParametersLength (sparkSubmitParameters : string) {
+  private validateSparkSubmitParametersLength(sparkSubmitParameters: string) {
     if (sparkSubmitParameters.length > 102400 || sparkSubmitParameters.length < 1) {
-      throw new Error(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${sparkSubmitParameters.length}.`);
+      throw new Error(
+        `Spark submit parameters must be between 1 and 102400 characters in length. Received ${sparkSubmitParameters.length}.`
+      );
     }
   }
-  private validateEntryPoint (entryPoint: TaskInput) {
-    if (!sfn.JsonPath.isEncodedJsonPath(entryPoint.value) && (entryPoint.value.length > 256|| entryPoint.value.length < 1)) {
-      throw new Error(`Entry point must be between 1 and 256 characters in length. Received ${entryPoint.value.length}.`);
+  private validateEntryPoint(entryPoint: TaskInput) {
+    if (
+      !sfn.JsonPath.isEncodedJsonPath(entryPoint.value) &&
+      (entryPoint.value.length > 256 || entryPoint.value.length < 1)
+    ) {
+      throw new Error(
+        `Entry point must be between 1 and 256 characters in length. Received ${entryPoint.value.length}.`
+      );
     }
   }
 
-  private validateSparkSubmitJobDriver (driver:SparkSubmitJobDriver) {
+  private validateSparkSubmitJobDriver(driver: SparkSubmitJobDriver) {
     this.validateEntryPoint(driver.entryPoint);
     if (driver.entryPointArguments) {
       this.validateEntryPointArguments(driver.entryPointArguments);
@@ -247,19 +287,21 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
   }
 
-  private assignLogGroup = () : any => {
+  private assignLogGroup = (): any => {
     if (this.props.monitoring?.logGroup) {
-      return (this.props.monitoring?.logGroup);
+      return this.props.monitoring?.logGroup;
     } else {
-      return (this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined);
+      return this.props.monitoring?.logging
+        ? new logs.LogGroup(this, 'Monitoring Log Group')
+        : undefined;
     }
   };
 
-  private assignLogBucket = () : any => {
+  private assignLogBucket = (): any => {
     if (this.props.monitoring?.logBucket) {
-      return (this.props.monitoring?.logBucket);
+      return this.props.monitoring?.logBucket;
     } else {
-      return (this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined);
+      return this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined;
     }
   };
 
@@ -268,7 +310,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     const jobExecutionRole = new iam.Role(this, 'Job-Execution-Role', {
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('emr-containers.amazonaws.com'),
-        new iam.ServicePrincipal('states.amazonaws.com'),
+        new iam.ServicePrincipal('states.amazonaws.com')
       ),
     });
 
@@ -284,10 +326,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
             resource: '*',
           }),
         ],
-        actions: [
-          'logs:DescribeLogGroups',
-        ],
-      }),
+        actions: ['logs:DescribeLogGroups'],
+      })
     );
 
     this.updateRoleTrustPolicy(jobExecutionRole);
@@ -295,7 +335,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     return jobExecutionRole;
   }
   private grantMonitoringPolicies() {
-
     this.logBucket?.grantReadWrite(this.role);
     this.logGroup?.grantWrite(this.role);
     this.logGroup?.grant(this.role, 'logs:DescribeLogStreams');
@@ -308,10 +347,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
             resource: '*',
           }),
         ],
-        actions: [
-          'logs:DescribeLogGroups',
-        ],
-      }),
+        actions: ['logs:DescribeLogGroups'],
+      })
     );
   }
 
@@ -333,7 +370,10 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         parameters: {
           id: this.props.virtualCluster.id,
         },
-        outputPaths: ['virtualCluster.containerProvider.info.eksInfo.namespace', 'virtualCluster.containerProvider.id'],
+        outputPaths: [
+          'virtualCluster.containerProvider.info.eksInfo.namespace',
+          'virtualCluster.containerProvider.id',
+        ],
         physicalResourceId: cr.PhysicalResourceId.of('id'),
       },
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
@@ -347,7 +387,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
      * https://awscli.amazonaws.com/v2/documentation/api/latest/reference/emr-containers/update-role-trust-policy.html
      * Commands available through SDK: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRcontainers.html
      * Commands available through CLI: https://awscli.amazonaws.com/v2/documentation/api/latest/reference/emr-containers/index.html
-    */
+     */
     const cliLayer = new awscli.AwsCliLayer(this, 'awsclilayer');
     const shellCliLambda = new RolePolicySingletonFunction(this, 'Call Update-Role-Trust-Policy', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8757C',
@@ -364,26 +404,23 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
             resourceName: eksClusterInfo.getResponseField('virtualCluster.containerProvider.id'),
           }),
         ],
-        actions: [
-          'eks:DescribeCluster',
-        ],
-      }),
+        actions: ['eks:DescribeCluster'],
+      })
     );
     shellCliLambda.addToRolePolicy(
       new iam.PolicyStatement({
         resources: [role.roleArn],
-        actions: [
-          'iam:GetRole',
-          'iam:UpdateAssumeRolePolicy',
-        ],
-      }),
+        actions: ['iam:GetRole', 'iam:UpdateAssumeRolePolicy'],
+      })
     );
     const provider = new cr.Provider(this, 'CustomResourceProvider', {
       onEventHandler: shellCliLambda,
     });
     new cdk.CustomResource(this, 'Custom Resource', {
       properties: {
-        eksNamespace: eksClusterInfo.getResponseField('virtualCluster.containerProvider.info.eksInfo.namespace'),
+        eksNamespace: eksClusterInfo.getResponseField(
+          'virtualCluster.containerProvider.info.eksInfo.namespace'
+        ),
         eksClusterId: eksClusterInfo.getResponseField('virtualCluster.containerProvider.id'),
         roleName: role.roleName,
       },
@@ -399,7 +436,9 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
             arnFormat: cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
             service: 'emr-containers',
             resource: 'virtualclusters',
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualCluster.id) ? '*' : this.props.virtualCluster.id, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualCluster.id)
+              ? '*'
+              : this.props.virtualCluster.id, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
           }),
         ],
         actions: ['emr-containers:StartJobRun'],
@@ -419,14 +458,13 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
               arnFormat: cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
               service: 'emr-containers',
               resource: 'virtualclusters',
-              resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualCluster.id) ? '*' : `${this.props.virtualCluster.id}/jobruns/*`, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
+              resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.virtualCluster.id)
+                ? '*'
+                : `${this.props.virtualCluster.id}/jobruns/*`, // Need wild card for dynamic start job run https://docs.aws.amazon.com/step-functions/latest/dg/emr-eks-iam.html
             }),
           ],
-          actions: [
-            'emr-containers:DescribeJobRun',
-            'emr-containers:CancelJobRun',
-          ],
-        }),
+          actions: ['emr-containers:DescribeJobRun', 'emr-containers:CancelJobRun'],
+        })
       );
     }
 
@@ -536,7 +574,7 @@ export class Classification {
    *
    * @param classificationStatement A literal string in case a new EMR classification is released, if not already defined.
    */
-  constructor(public readonly classificationStatement: string) { }
+  constructor(public readonly classificationStatement: string) {}
 }
 
 /**
@@ -655,7 +693,7 @@ export class ReleaseLabel {
    *
    * @param label A literal string that contains the release-version ex. 'emr-x.x.x-latest'
    */
-  constructor(public readonly label: string) { }
+  constructor(public readonly label: string) {}
 }
 
 /**
@@ -681,5 +719,5 @@ export class VirtualClusterInput {
    *
    * @param id The VirtualCluster Id
    */
-  private constructor(public readonly id: string) { }
+  private constructor(public readonly id: string) {}
 }

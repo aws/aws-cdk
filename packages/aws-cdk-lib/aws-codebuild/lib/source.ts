@@ -151,9 +151,11 @@ abstract class GitSource extends Source {
       sourceProperty: {
         ...superConfig.sourceProperty,
         gitCloneDepth: this.cloneDepth,
-        gitSubmodulesConfig: this.fetchSubmodules ? {
-          fetchSubmodules: this.fetchSubmodules,
-        } : undefined,
+        gitSubmodulesConfig: this.fetchSubmodules
+          ? {
+              fetchSubmodules: this.fetchSubmodules,
+            }
+          : undefined,
       },
     };
   }
@@ -491,7 +493,9 @@ export class FilterGroup {
 
   private addBaseRefFilter(refName: string, include: boolean) {
     if (this.actions.has(EventAction.PUSH)) {
-      throw new Error('A base reference condition cannot be added if a Group contains a PUSH event action');
+      throw new Error(
+        'A base reference condition cannot be added if a Group contains a PUSH event action'
+      );
     }
     return this.addFilter(WebhookFilterTypes.BASE_REF, refName, include);
   }
@@ -505,11 +509,16 @@ export class FilterGroup {
   }
 
   private addFilter(type: WebhookFilterTypes, pattern: string, include: boolean) {
-    return new FilterGroup(this.actions, this.filters.concat([{
-      type,
-      pattern,
-      excludeMatchedPattern: include ? undefined : true,
-    }]));
+    return new FilterGroup(
+      this.actions,
+      this.filters.concat([
+        {
+          type,
+          pattern,
+          excludeMatchedPattern: include ? undefined : true,
+        },
+      ])
+    );
   }
 }
 
@@ -607,11 +616,16 @@ abstract class ThirdPartyGitSource extends GitSource {
         reportBuildStatus: this.reportBuildStatus,
       },
       sourceVersion: superConfig.sourceVersion,
-      buildTriggers: webhook === undefined ? undefined : {
-        webhook,
-        buildType: this.webhookTriggersBatchBuild ? 'BUILD_BATCH' : undefined,
-        filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
-      },
+      buildTriggers:
+        webhook === undefined
+          ? undefined
+          : {
+              webhook,
+              buildType: this.webhookTriggersBatchBuild ? 'BUILD_BATCH' : undefined,
+              filterGroups: anyFilterGroupsProvided
+                ? this.webhookFilters.map((fg) => fg._toJson())
+                : undefined,
+            },
     };
   }
 }
@@ -638,10 +652,12 @@ class CodeCommitSource extends GitSource {
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
-    project.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['codecommit:GitPull'],
-      resources: [this.repo.repositoryArn],
-    }));
+    project.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['codecommit:GitPull'],
+        resources: [this.repo.repositoryArn],
+      })
+    );
 
     const superConfig = super.bind(_scope, project);
     return {
@@ -729,12 +745,13 @@ abstract class CommonGithubSource extends ThirdPartyGitSource {
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
-        buildStatusConfig: this.buildStatusContext !== undefined || this.buildStatusUrl !== undefined
-          ? {
-            context: this.buildStatusContext,
-            targetUrl: this.buildStatusUrl,
-          }
-          : undefined,
+        buildStatusConfig:
+          this.buildStatusContext !== undefined || this.buildStatusUrl !== undefined
+            ? {
+                context: this.buildStatusContext,
+                targetUrl: this.buildStatusUrl,
+              }
+            : undefined,
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
@@ -773,8 +790,12 @@ class GitHubSource extends CommonGithubSource {
   constructor(props: GitHubSourceProps) {
     super(props);
     this.organization = props.repo === undefined ? props.owner : undefined;
-    this.webhookFilters = props.webhookFilters ?? (this.organization ? [FilterGroup.inEventOf(EventAction.WORKFLOW_JOB_QUEUED)] : []);
-    this.sourceLocation = this.organization ? 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION' : `https://github.com/${props.owner}/${props.repo}.git`;
+    this.webhookFilters =
+      props.webhookFilters ??
+      (this.organization ? [FilterGroup.inEventOf(EventAction.WORKFLOW_JOB_QUEUED)] : []);
+    this.sourceLocation = this.organization
+      ? 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION'
+      : `https://github.com/${props.owner}/${props.repo}.git`;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
@@ -787,11 +808,12 @@ class GitHubSource extends CommonGithubSource {
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: this.organization
         ? {
-          ...superConfig.buildTriggers,
-          scopeConfiguration: {
-            name: this.organization,
-          },
-        } : superConfig.buildTriggers,
+            ...superConfig.buildTriggers,
+            scopeConfiguration: {
+              name: this.organization,
+            },
+          }
+        : superConfig.buildTriggers,
     };
   }
 }
@@ -829,11 +851,15 @@ class GitHubEnterpriseSource extends CommonGithubSource {
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
     if (this.hasCommitMessageFilterAndPrEvent()) {
-      throw new Error('COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events');
+      throw new Error(
+        'COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events'
+      );
     }
 
     if (this.hasFilePathFilterAndPrEvent()) {
-      throw new Error('FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events');
+      throw new Error(
+        'FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events'
+      );
     }
 
     const superConfig = super.bind(_scope, _project);
@@ -849,21 +875,26 @@ class GitHubEnterpriseSource extends CommonGithubSource {
   }
 
   private hasCommitMessageFilterAndPrEvent() {
-    return this.webhookFilters.some(fg => (
-      fg._filters.some(fp => fp.type === WebhookFilterTypes.COMMIT_MESSAGE) &&
-      this.hasPrEvent(fg._actions)));
+    return this.webhookFilters.some(
+      (fg) =>
+        fg._filters.some((fp) => fp.type === WebhookFilterTypes.COMMIT_MESSAGE) &&
+        this.hasPrEvent(fg._actions)
+    );
   }
   private hasFilePathFilterAndPrEvent() {
-    return this.webhookFilters.some(fg => (
-      fg._filters.some(fp => fp.type === WebhookFilterTypes.FILE_PATH) &&
-      this.hasPrEvent(fg._actions)));
+    return this.webhookFilters.some(
+      (fg) =>
+        fg._filters.some((fp) => fp.type === WebhookFilterTypes.FILE_PATH) &&
+        this.hasPrEvent(fg._actions)
+    );
   }
   private hasPrEvent(actions: EventAction[]) {
     return actions.includes(
       EventAction.PULL_REQUEST_CREATED ||
-      EventAction.PULL_REQUEST_MERGED ||
-      EventAction.PULL_REQUEST_REOPENED ||
-      EventAction.PULL_REQUEST_UPDATED);
+        EventAction.PULL_REQUEST_MERGED ||
+        EventAction.PULL_REQUEST_REOPENED ||
+        EventAction.PULL_REQUEST_UPDATED
+    );
   }
 }
 
@@ -915,7 +946,9 @@ class BitBucketSource extends ThirdPartyGitSource {
   public bind(_scope: Construct, _project: IProject): SourceConfig {
     // BitBucket sources don't support the PULL_REQUEST_REOPENED event action
     if (this.anyWebhookFilterContainsPrReopenedEventAction()) {
-      throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
+      throw new Error(
+        'BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action'
+      );
     }
 
     const superConfig = super.bind(_scope, _project);
@@ -923,12 +956,13 @@ class BitBucketSource extends ThirdPartyGitSource {
       sourceProperty: {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
-        buildStatusConfig: this.buildStatusName !== undefined || this.buildStatusUrl !== undefined
-          ? {
-            context: this.buildStatusName,
-            targetUrl: this.buildStatusUrl,
-          }
-          : undefined,
+        buildStatusConfig:
+          this.buildStatusName !== undefined || this.buildStatusUrl !== undefined
+            ? {
+                context: this.buildStatusName,
+                targetUrl: this.buildStatusUrl,
+              }
+            : undefined,
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
@@ -936,14 +970,16 @@ class BitBucketSource extends ThirdPartyGitSource {
   }
 
   private anyWebhookFilterContainsPrReopenedEventAction() {
-    return this.webhookFilters.findIndex(fg => {
-      return fg._actions.findIndex(a => a === EventAction.PULL_REQUEST_REOPENED) !== -1;
-    }) !== -1;
+    return (
+      this.webhookFilters.findIndex((fg) => {
+        return fg._actions.findIndex((a) => a === EventAction.PULL_REQUEST_REOPENED) !== -1;
+      }) !== -1
+    );
   }
 }
 
 function set2Array<T>(set: Set<T>): T[] {
   const ret: T[] = [];
-  set.forEach(el => ret.push(el));
+  set.forEach((el) => ret.push(el));
   return ret;
 }

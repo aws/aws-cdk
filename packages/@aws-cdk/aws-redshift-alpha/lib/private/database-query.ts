@@ -38,10 +38,14 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
 
     if (props.timeout && !cdk.Token.isUnresolved(props.timeout)) {
       if (props.timeout.toMilliseconds() < cdk.Duration.seconds(1).toMilliseconds()) {
-        throw new Error(`The timeout for the handler must be BETWEEN 1 second and 15 minutes, got ${props.timeout.toMilliseconds()} milliseconds.`);
+        throw new Error(
+          `The timeout for the handler must be BETWEEN 1 second and 15 minutes, got ${props.timeout.toMilliseconds()} milliseconds.`
+        );
       }
       if (props.timeout.toSeconds() > cdk.Duration.minutes(15).toSeconds()) {
-        throw new Error(`The timeout for the handler must be between 1 second and 15 minutes, got ${props.timeout.toSeconds()} seconds.`);
+        throw new Error(
+          `The timeout for the handler must be between 1 second and 15 minutes, got ${props.timeout.toSeconds()} seconds.`
+        );
       }
     }
 
@@ -56,10 +60,12 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
       uuid: '3de5bea7-27da-4796-8662-5efb56431b5f',
       lambdaPurpose: 'Query Redshift Database',
     });
-    handler.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['redshift-data:DescribeStatement', 'redshift-data:ExecuteStatement'],
-      resources: ['*'],
-    }));
+    handler.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['redshift-data:DescribeStatement', 'redshift-data:ExecuteStatement'],
+        resources: ['*'],
+      })
+    );
     adminUser.grantRead(handler);
 
     const provider = new customresources.Provider(this, 'Provider', {
@@ -106,12 +112,12 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
           adminUser = cluster.secret;
         } else {
           throw new Error(
-            'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)',
+            'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster did not generate admin user credentials (they were provided explicitly)'
           );
         }
       } else {
         throw new Error(
-          'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported',
+          'Administrative access to the Redshift cluster is required but an admin user secret was not provided and the cluster was imported'
         );
       }
     }
@@ -126,10 +132,12 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
     const id = handler.constructName + 'InvokerRole';
     const existing = cdk.Stack.of(this).node.tryFindChild(id);
     return existing != null
-      ? existing as iam.Role
+      ? (existing as iam.Role)
       : new iam.Role(cdk.Stack.of(this), id, {
-        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
-      });
+          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+          ],
+        });
   }
 }

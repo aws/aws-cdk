@@ -67,7 +67,9 @@ interface ITagFormatter {
 class StandardFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (!Array.isArray(cfnPropertyTags)) {
-      throw new Error(`Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new Error(
+        `Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`
+      );
     }
 
     const tags: Tag[] = [];
@@ -105,15 +107,15 @@ class StandardFormatter implements ITagFormatter {
 class AsgFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (!Array.isArray(cfnPropertyTags)) {
-      throw new Error(`Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new Error(
+        `Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`
+      );
     }
 
     const tags: Tag[] = [];
     const dynamicTags: any = [];
     for (const tag of cfnPropertyTags) {
-      if (tag.key === undefined ||
-          tag.value === undefined ||
-          tag.propagateAtLaunch === undefined) {
+      if (tag.key === undefined || tag.value === undefined || tag.propagateAtLaunch === undefined) {
         dynamicTags.push(tag);
       } else {
         // using interp to ensure Token is now string
@@ -147,8 +149,10 @@ class AsgFormatter implements ITagFormatter {
  */
 class MapFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
-    if (Array.isArray(cfnPropertyTags) || typeof(cfnPropertyTags) !== 'object') {
-      throw new Error(`Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`);
+    if (Array.isArray(cfnPropertyTags) || typeof cfnPropertyTags !== 'object') {
+      throw new Error(
+        `Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`
+      );
     }
 
     const tags: Tag[] = [];
@@ -193,7 +197,7 @@ class KeyValueFormatter implements ITagFormatter {
 
   public formatTags(unformattedTags: Tag[]): any {
     const tags: StackTag[] = [];
-    unformattedTags.forEach(tag => {
+    unformattedTags.forEach((tag) => {
       tags.push({
         Key: tag.key,
         Value: tag.value,
@@ -213,21 +217,24 @@ class NoFormat implements ITagFormatter {
   }
 }
 
-let _tagFormattersCache: {[key: string]: ITagFormatter} | undefined;
+let _tagFormattersCache: { [key: string]: ITagFormatter } | undefined;
 
 /**
  * Access tag formatters table
  *
  * In a function because we're in a load cycle with cfn-resource that defines `TagType`.
  */
-function TAG_FORMATTERS(): {[key: string]: ITagFormatter} {
-  return _tagFormattersCache ?? (_tagFormattersCache = {
-    [TagType.AUTOSCALING_GROUP]: new AsgFormatter(),
-    [TagType.STANDARD]: new StandardFormatter(),
-    [TagType.MAP]: new MapFormatter(),
-    [TagType.KEY_VALUE]: new KeyValueFormatter(),
-    [TagType.NOT_TAGGABLE]: new NoFormat(),
-  });
+function TAG_FORMATTERS(): { [key: string]: ITagFormatter } {
+  return (
+    _tagFormattersCache ??
+    (_tagFormattersCache = {
+      [TagType.AUTOSCALING_GROUP]: new AsgFormatter(),
+      [TagType.STANDARD]: new StandardFormatter(),
+      [TagType.MAP]: new MapFormatter(),
+      [TagType.KEY_VALUE]: new KeyValueFormatter(),
+      [TagType.NOT_TAGGABLE]: new NoFormat(),
+    })
+  );
 }
 
 /**
@@ -303,7 +310,12 @@ export class TagManager {
    */
   public static isTaggable(construct: any): construct is ITaggable {
     const tags = (construct as any).tags;
-    return tags !== undefined && tags !== null && typeof tags === 'object' && (tags as any)[TAG_MANAGER_SYM];
+    return (
+      tags !== undefined &&
+      tags !== null &&
+      typeof tags === 'object' &&
+      (tags as any)[TAG_MANAGER_SYM]
+    );
   }
 
   /**
@@ -317,7 +329,11 @@ export class TagManager {
    * Return the TagManager associated with the given construct, if any
    */
   public static of(construct: any): TagManager | undefined {
-    return TagManager.isTaggableV2(construct) ? construct.cdkTagManager : TagManager.isTaggable(construct) ? construct.tags : undefined;
+    return TagManager.isTaggableV2(construct)
+      ? construct.cdkTagManager
+      : TagManager.isTaggable(construct)
+        ? construct.tags
+        : undefined;
   }
 
   /**
@@ -344,7 +360,12 @@ export class TagManager {
   private readonly externalTagPriority = 50;
   private readonly didHaveInitialTags: boolean;
 
-  constructor(tagType: TagType, resourceTypeName: string, initialTags?: any, options: TagManagerOptions = { }) {
+  constructor(
+    tagType: TagType,
+    resourceTypeName: string,
+    initialTags?: any,
+    options: TagManagerOptions = {}
+  ) {
     this.resourceTypeName = resourceTypeName;
     this.tagFormatter = TAG_FORMATTERS()[tagType];
     this.tagPropertyName = options.tagPropertyName || 'tags';
@@ -387,16 +408,18 @@ export class TagManager {
    */
   public renderTags(combineWithTags?: any): any {
     if (combineWithTags !== undefined && this.didHaveInitialTags) {
-      throw new Error('Specify external tags either during the creation of TagManager, or as a parameter to renderTags(), but not both');
+      throw new Error(
+        'Specify external tags either during the creation of TagManager, or as a parameter to renderTags(), but not both'
+      );
     }
     this.parseExternalTags(combineWithTags);
     const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
 
     if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
-      const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
+      const ret = [...(formattedTags ?? []), ...(this.dynamicTags ?? [])];
       return ret.length > 0 ? ret : undefined;
     } else {
-      const ret = { ...formattedTags ?? {}, ...this.dynamicTags ?? {} };
+      const ret = { ...(formattedTags ?? {}), ...(this.dynamicTags ?? {}) };
       return Object.keys(ret).length > 0 ? ret : undefined;
     }
   }
@@ -446,8 +469,7 @@ export class TagManager {
   }
 
   private get sortedTags(): Tag[] {
-    return Array.from(this.tags.values())
-      .sort((a, b) => a.key.localeCompare(b.key));
+    return Array.from(this.tags.values()).sort((a, b) => a.key.localeCompare(b.key));
   }
 
   /**

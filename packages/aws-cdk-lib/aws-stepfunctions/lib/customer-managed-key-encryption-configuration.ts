@@ -32,11 +32,19 @@ export class CustomerManagedEncryptionConfiguration extends EncryptionConfigurat
   }
 
   private isInvalidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds: cdk.Duration) {
-    return kmsDataKeyReusePeriodSeconds.toSeconds() < 60 || kmsDataKeyReusePeriodSeconds.toSeconds() > 900;
+    return (
+      kmsDataKeyReusePeriodSeconds.toSeconds() < 60 ||
+      kmsDataKeyReusePeriodSeconds.toSeconds() > 900
+    );
   }
 
-  private validateKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds: cdk.Duration | undefined) {
-    if (kmsDataKeyReusePeriodSeconds && this.isInvalidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds)) {
+  private validateKmsDataKeyReusePeriodSeconds(
+    kmsDataKeyReusePeriodSeconds: cdk.Duration | undefined
+  ) {
+    if (
+      kmsDataKeyReusePeriodSeconds &&
+      this.isInvalidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds)
+    ) {
       throw new Error('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
     }
   }

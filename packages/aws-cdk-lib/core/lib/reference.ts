@@ -27,4 +27,3 @@ export abstract class Reference extends Intrinsic {
     this.displayName = displayName || 'Reference';
   }
 }
-

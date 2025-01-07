@@ -113,7 +113,7 @@ export class EngineVersion {
    * Constructor for specifying a custom engine version
    * @param version the engine version of Neptune
    */
-  public constructor(public readonly version: string) { }
+  public constructor(public readonly version: string) {}
 }
 
 /**
@@ -133,7 +133,7 @@ export class LogType {
    * Constructor for specifying a custom log type
    * @param value the log type
    */
-  public constructor(public readonly value: string) { }
+  public constructor(public readonly value: string) {}
 }
 
 export interface ServerlessScalingConfiguration {
@@ -454,11 +454,14 @@ export interface DatabaseClusterAttributes {
  * A new or imported database cluster.
  */
 export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
-
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
+  public static fromDatabaseClusterAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DatabaseClusterAttributes
+  ): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
@@ -546,7 +549,6 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
  * @resource AWS::Neptune::DBCluster
  */
 export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
-
   /**
    * The default number of instances in the Neptune cluster if none are
    * specified
@@ -606,12 +608,15 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       throw new Error(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
-    this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
-      description: `Subnets for ${id} database`,
-      vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
-      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
-    });
+    this.subnetGroup =
+      props.subnetGroup ??
+      new SubnetGroup(this, 'Subnets', {
+        description: `Subnets for ${id} database`,
+        vpc: this.vpc,
+        vpcSubnets: this.vpcSubnets,
+        removalPolicy:
+          props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+      });
 
     const securityGroups = props.securityGroups ?? [
       new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -627,12 +632,15 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       throw new Error('KMS key supplied but storageEncrypted is false');
     }
 
-    const deletionProtection = props.deletionProtection ?? (props.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
+    const deletionProtection =
+      props.deletionProtection ?? (props.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
 
     this.enableIamAuthentication = props.iamAuthentication;
 
     if (props.instanceType === InstanceType.SERVERLESS && !props.serverlessScalingConfiguration) {
-      throw new Error('You need to specify a serverless scaling configuration with a db.serverless instance type.');
+      throw new Error(
+        'You need to specify a serverless scaling configuration with a db.serverless instance type.'
+      );
     }
 
     this.validateServerlessScalingConfiguration(props.serverlessScalingConfiguration);
@@ -643,10 +651,12 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       engineVersion: props.engineVersion?.version,
       dbClusterIdentifier: props.dbClusterName,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
-      vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+      vpcSecurityGroupIds: securityGroups.map((sg) => sg.securityGroupId),
       dbClusterParameterGroupName: props.clusterParameterGroup?.clusterParameterGroupName,
       deletionProtection: deletionProtection,
-      associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
+      associatedRoles: props.associatedRoles
+        ? props.associatedRoles.map((role) => ({ roleArn: role.roleArn }))
+        : undefined,
       iamAuthEnabled: Lazy.any({ produce: () => this.enableIamAuthentication }),
       dbPort: props.port,
       // Backup
@@ -656,7 +666,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       // CloudWatch Logs exports
-      enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
+      enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map((logType) => logType.value),
       storageEncrypted,
       serverlessScalingConfiguration: props.serverlessScalingConfiguration,
       // Tags
@@ -677,7 +687,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     // Log retention
     const retention = props.cloudwatchLogsRetention;
     if (retention) {
-      props.cloudwatchLogsExports?.forEach(logType => {
+      props.cloudwatchLogsExports?.forEach((logType) => {
         new logs.LogRetention(this, `${logType.value}LogRetention`, {
           logGroupName: `/aws/neptune/${this.clusterIdentifier}/${logType.value}`,
           role: props.cloudwatchLogsRetentionRole,
@@ -695,8 +705,12 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
-      const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}`
-        : props.dbClusterName != null ? `${props.dbClusterName}instance${instanceIndex}` : undefined;
+      const instanceIdentifier =
+        props.instanceIdentifierBase != null
+          ? `${props.instanceIdentifierBase}${instanceIndex}`
+          : props.dbClusterName != null
+            ? `${props.dbClusterName}instance${instanceIndex}`
+            : undefined;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
@@ -726,17 +740,28 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     });
   }
 
-  private validateServerlessScalingConfiguration(serverlessScalingConfiguration?: ServerlessScalingConfiguration) {
+  private validateServerlessScalingConfiguration(
+    serverlessScalingConfiguration?: ServerlessScalingConfiguration
+  ) {
     if (!serverlessScalingConfiguration) return;
     if (serverlessScalingConfiguration.minCapacity < 1) {
-      throw new Error(`ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`);
+      throw new Error(
+        `ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`
+      );
     }
-    if (serverlessScalingConfiguration.maxCapacity < 2.5 || serverlessScalingConfiguration.maxCapacity > 128) {
-      throw new Error(`ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived ${serverlessScalingConfiguration.maxCapacity}`);
+    if (
+      serverlessScalingConfiguration.maxCapacity < 2.5 ||
+      serverlessScalingConfiguration.maxCapacity > 128
+    ) {
+      throw new Error(
+        `ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived ${serverlessScalingConfiguration.maxCapacity}`
+      );
     }
     if (serverlessScalingConfiguration.minCapacity >= serverlessScalingConfiguration.maxCapacity) {
-      throw new Error(`ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +
-        `must be less than serverlessScalingConfiguration maxCapacity ${serverlessScalingConfiguration.maxCapacity}`);
+      throw new Error(
+        `ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +
+          `must be less than serverlessScalingConfiguration maxCapacity ${serverlessScalingConfiguration.maxCapacity}`
+      );
     }
   }
 }

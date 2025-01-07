@@ -13,10 +13,12 @@ export function defaultAddPrincipalToAssumeRole(principal: IPrincipal, doc: Poli
     principal.addToAssumeRolePolicy(doc);
   } else {
     // Principal can't add itself, we do it for them
-    doc.addStatements(new PolicyStatement({
-      actions: [principal.assumeRoleAction],
-      principals: [principal],
-    }));
+    doc.addStatements(
+      new PolicyStatement({
+        actions: [principal.assumeRoleAction],
+        principals: [principal],
+      })
+    );
   }
 }
 

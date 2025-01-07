@@ -3,7 +3,11 @@ import { FargateTaskDefinition } from '../../../aws-ecs';
 import { EcsTask } from '../../../aws-events-targets';
 import { Annotations } from '../../../core';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
-import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
+import {
+  ScheduledTaskBase,
+  ScheduledTaskBaseProps,
+  ScheduledTaskImageProps,
+} from '../base/scheduled-task-base';
 
 /**
  * The properties for the ScheduledFargateTask task.
@@ -29,9 +33,9 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, Farga
 /**
  * The properties for the ScheduledFargateTask using an image.
  */
-export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProps, FargateServiceBaseProps {
-
-}
+export interface ScheduledFargateTaskImageOptions
+  extends ScheduledTaskImageProps,
+    FargateServiceBaseProps {}
 
 /**
  * The properties for the ScheduledFargateTask using a task definition.
@@ -68,7 +72,9 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     super(scope, id, props);
 
     if (props.scheduledFargateTaskDefinitionOptions && props.scheduledFargateTaskImageOptions) {
-      throw new Error('You must specify either a scheduledFargateTaskDefinitionOptions or scheduledFargateTaskOptions, not both.');
+      throw new Error(
+        'You must specify either a scheduledFargateTaskDefinitionOptions or scheduledFargateTaskOptions, not both.'
+      );
     } else if (props.scheduledFargateTaskDefinitionOptions) {
       this.taskDefinition = props.scheduledFargateTaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledFargateTaskImageOptions) {
@@ -91,23 +97,38 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     }
 
     if (props.taskDefinition) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'taskDefinition\' is ignored, use \'scheduledFargateTaskDefinitionOptions\' or \'scheduledFargateTaskImageOptions\' instead.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs-patterns:propertyIgnored',
+        "Property 'taskDefinition' is ignored, use 'scheduledFargateTaskDefinitionOptions' or 'scheduledFargateTaskImageOptions' instead."
+      );
     }
     if (props.cpu) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'cpu\' is ignored, use \'scheduledFargateTaskImageOptions.cpu\' instead.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs-patterns:propertyIgnored',
+        "Property 'cpu' is ignored, use 'scheduledFargateTaskImageOptions.cpu' instead."
+      );
     }
     if (props.memoryLimitMiB) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'memoryLimitMiB\' is ignored, use \'scheduledFargateTaskImageOptions.memoryLimitMiB\' instead.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs-patterns:propertyIgnored',
+        "Property 'memoryLimitMiB' is ignored, use 'scheduledFargateTaskImageOptions.memoryLimitMiB' instead."
+      );
     }
     if (props.ephemeralStorageGiB) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'ephemeralStorageGiB\' is ignored, use \'scheduledFargateTaskImageOptions.ephemeralStorageGiB\' instead.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs-patterns:propertyIgnored',
+        "Property 'ephemeralStorageGiB' is ignored, use 'scheduledFargateTaskImageOptions.ephemeralStorageGiB' instead."
+      );
     }
     if (props.runtimePlatform) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'runtimePlatform\' is ignored.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs-patterns:propertyIgnored',
+        "Property 'runtimePlatform' is ignored."
+      );
     }
 
     // Use the EcsTask as the target of the EventRule
-    this.task = new EcsTask( {
+    this.task = new EcsTask({
       cluster: this.cluster,
       taskDefinition: this.taskDefinition,
       taskCount: this.desiredTaskCount,

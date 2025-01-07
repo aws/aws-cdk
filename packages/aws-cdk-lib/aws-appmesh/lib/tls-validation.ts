@@ -93,20 +93,23 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
    */
   readonly certificateAuthorities: acmpca.ICertificateAuthority[];
 
-  constructor (certificateAuthorities: acmpca.ICertificateAuthority[]) {
+  constructor(certificateAuthorities: acmpca.ICertificateAuthority[]) {
     super();
     this.certificateAuthorities = certificateAuthorities;
   }
 
   public bind(_scope: Construct): TlsValidationTrustConfig {
     if (this.certificateAuthorities.length === 0) {
-      throw new Error('you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy');
+      throw new Error(
+        'you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy'
+      );
     } else {
       return {
         tlsValidationTrust: {
           acm: {
-            certificateAuthorityArns: this.certificateAuthorities.map(certificateArn =>
-              certificateArn.certificateAuthorityArn),
+            certificateAuthorityArns: this.certificateAuthorities.map(
+              (certificateArn) => certificateArn.certificateAuthorityArn
+            ),
           },
         },
       };
@@ -120,7 +123,7 @@ class TlsValidationFileTrust extends MutualTlsValidationTrust {
    */
   readonly certificateChain: string;
 
-  constructor (certificateChain: string) {
+  constructor(certificateChain: string) {
     super();
     this.certificateChain = certificateChain;
   }
@@ -142,7 +145,7 @@ class TlsValidationSdsTrust extends MutualTlsValidationTrust {
    */
   readonly secretName: string;
 
-  constructor (secretName: string) {
+  constructor(secretName: string) {
     super();
     this.secretName = secretName;
   }
@@ -189,8 +192,10 @@ export abstract class SubjectAlternativeNames {
 
 class SubjectAlternativeNamesImpl extends SubjectAlternativeNames {
   constructor(
-    private readonly matchProperty: CfnVirtualNode.SubjectAlternativeNameMatchersProperty,
-  ) { super(); }
+    private readonly matchProperty: CfnVirtualNode.SubjectAlternativeNameMatchersProperty
+  ) {
+    super();
+  }
 
   public bind(_scope: Construct): SubjectAlternativeNamesMatcherConfig {
     return {

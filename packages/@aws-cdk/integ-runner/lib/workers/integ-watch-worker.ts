@@ -7,7 +7,10 @@ export interface IntegWatchOptions extends IntegTestInfo {
   readonly profile?: string;
   readonly verbosity?: number;
 }
-export async function watchIntegrationTest(pool: workerpool.WorkerPool, options: IntegWatchOptions): Promise<void> {
+export async function watchIntegrationTest(
+  pool: workerpool.WorkerPool,
+  options: IntegWatchOptions
+): Promise<void> {
   await pool.exec('watchTestWorker', [options], {
     on: printResults,
   });

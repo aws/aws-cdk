@@ -86,7 +86,6 @@ export enum CustomLayer {
  * @see https://docs.aws.amazon.com/location/latest/developerguide/what-is-data-provider.html
  */
 export enum Style {
-
   /**
    * The Esri Navigation map style, which provides a detailed basemap for the world symbolized
    * with a custom navigation map style that's designed for use during the day in mobile devices.
@@ -201,7 +200,6 @@ export enum Style {
    * and fewer features that aids in understanding overlaid data.
    */
   VECTOR_OPEN_DATA_VISUALIZATION_DARK = 'VectorOpenDataVisualizationDark',
-
 }
 
 /**
@@ -273,17 +271,27 @@ export class Map extends Resource implements IMap {
   public readonly mapUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: MapProps) {
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters, got: ${props.description.length} characters.`);
+    if (
+      props.description &&
+      !Token.isUnresolved(props.description) &&
+      props.description.length > 1000
+    ) {
+      throw new Error(
+        `\`description\` must be between 0 and 1000 characters, got: ${props.description.length} characters.`
+      );
     }
 
     if (props.mapName !== undefined && !Token.isUnresolved(props.mapName)) {
       if (props.mapName.length < 1 || props.mapName.length > 100) {
-        throw new Error(`\`mapName\` must be between 1 and 100 characters, got: ${props.mapName.length} characters.`);
+        throw new Error(
+          `\`mapName\` must be between 1 and 100 characters, got: ${props.mapName.length} characters.`
+        );
       }
 
       if (!/^[-._\w]+$/.test(props.mapName)) {
-        throw new Error(`\`mapName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.mapName}.`);
+        throw new Error(
+          `\`mapName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.mapName}.`
+        );
       }
     }
 
@@ -323,11 +331,12 @@ export class Map extends Resource implements IMap {
    * @See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-get-map-tiles
    */
   public grantRendering(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
+    return this.grant(
+      grantee,
       'geo:GetMapTile',
       'geo:GetMapSprites',
       'geo:GetMapGlyphs',
-      'geo:GetMapStyleDescriptor',
+      'geo:GetMapStyleDescriptor'
     );
   }
 }

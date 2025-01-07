@@ -41,7 +41,7 @@ export class LambdaIntegration extends AwsIntegration {
   private readonly handler: lambda.IFunction;
   private readonly enableTest: boolean;
 
-  constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = { }) {
+  constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = {}) {
     const proxy = options.proxy ?? true;
 
     super({

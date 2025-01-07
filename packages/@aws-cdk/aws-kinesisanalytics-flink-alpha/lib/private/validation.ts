@@ -30,11 +30,15 @@ function validateApplicationName(applicationName?: string) {
   }
 
   if (!/^[a-zA-Z0-9_.-]+$/.test(applicationName)) {
-    throw new Error(`applicationName may only contain letters, numbers, underscores, hyphens, and periods. Name: ${applicationName}`);
+    throw new Error(
+      `applicationName may only contain letters, numbers, underscores, hyphens, and periods. Name: ${applicationName}`
+    );
   }
 
   if (applicationName.length > 128) {
-    throw new Error(`applicationName max length is 128. Name: ${applicationName} is ${applicationName.length} characters.`);
+    throw new Error(
+      `applicationName max length is 128. Name: ${applicationName} is ${applicationName.length} characters.`
+    );
   }
 }
 

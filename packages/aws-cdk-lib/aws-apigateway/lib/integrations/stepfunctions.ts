@@ -111,7 +111,10 @@ export class StepFunctionsIntegration {
    *    });
    *    api.root.addMethod('GET', apigateway.StepFunctionsIntegration.startExecution(stateMachine));
    */
-  public static startExecution(stateMachine: sfn.IStateMachine, options?: StepFunctionsExecutionIntegrationOptions): AwsIntegration {
+  public static startExecution(
+    stateMachine: sfn.IStateMachine,
+    options?: StepFunctionsExecutionIntegrationOptions
+  ): AwsIntegration {
     return new StepFunctionsExecutionIntegration(stateMachine, options);
   }
 }
@@ -120,7 +123,10 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
   private readonly useDefaultMethodResponses: boolean;
 
-  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
+  constructor(
+    stateMachine: sfn.IStateMachine,
+    options: StepFunctionsExecutionIntegrationOptions = {}
+  ) {
     super({
       service: 'states',
       action: 'StartSyncExecution',
@@ -140,9 +146,11 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
   public bind(method: Method): IntegrationConfig {
     const bindResult = super.bind(method);
 
-    const credentialsRole = bindResult.options?.credentialsRole ?? new iam.Role(method, 'StartSyncExecutionRole', {
-      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-    });
+    const credentialsRole =
+      bindResult.options?.credentialsRole ??
+      new iam.Role(method, 'StartSyncExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+      });
     this.stateMachine.grantStartSyncExecution(credentialsRole);
 
     let stateMachineName;
@@ -150,12 +158,15 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
     if (this.stateMachine instanceof sfn.StateMachine) {
       const stateMachineType = (this.stateMachine as sfn.StateMachine).stateMachineType;
       if (stateMachineType !== sfn.StateMachineType.EXPRESS) {
-        throw new Error('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType');
+        throw new Error(
+          'State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType'
+        );
       }
 
       //if not imported, extract the name from the CFN layer to reach the
       //literal value if it is given (rather than a token)
-      stateMachineName = (this.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineName;
+      stateMachineName = (this.stateMachine.node.defaultChild as sfn.CfnStateMachine)
+        .stateMachineName;
     } else {
       //imported state machine
       stateMachineName = `StateMachine-${this.stateMachine.stack.node.addr}`;
@@ -224,17 +235,17 @@ function integrationResponse() {
       responseTemplates: {
         /* eslint-disable */
         'application/json': [
-          '#set($inputRoot = $input.path(\'$\'))',
+          "#set($inputRoot = $input.path('$'))",
           '#if($input.path(\'$.status\').toString().equals("FAILED"))',
-            '#set($context.responseOverride.status = 500)',
-            '{',
-              '"error": "$input.path(\'$.error\')",',
-              '"cause": "$input.path(\'$.cause\')"',
-            '}',
+          '#set($context.responseOverride.status = 500)',
+          '{',
+          '"error": "$input.path(\'$.error\')",',
+          '"cause": "$input.path(\'$.cause\')"',
+          '}',
           '#else',
-            '$input.path(\'$.output\')',
+          "$input.path('$.output')",
           '#end',
-        /* eslint-enable */
+          /* eslint-enable */
         ].join('\n'),
       },
     },
@@ -250,13 +261,15 @@ function integrationResponse() {
  * @param options
  * @returns requestTemplate
  */
-function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions) {
+function requestTemplates(
+  stateMachine: sfn.IStateMachine,
+  options: StepFunctionsExecutionIntegrationOptions
+) {
   const templateStr = templateString(stateMachine, options);
 
-  const requestTemplate: { [contentType:string] : string } =
-    {
-      'application/json': templateStr,
-    };
+  const requestTemplate: { [contentType: string]: string } = {
+    'application/json': templateStr,
+  };
 
   return requestTemplate;
 }
@@ -272,14 +285,15 @@ function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunction
  */
 function templateString(
   stateMachine: sfn.IStateMachine,
-  options: StepFunctionsExecutionIntegrationOptions): string {
+  options: StepFunctionsExecutionIntegrationOptions
+): string {
   let templateStr: string;
 
   let requestContextStr = '';
 
-  const includeHeader = options.headers?? false;
-  const includeQueryString = options.querystring?? true;
-  const includePath = options.path?? true;
+  const includeHeader = options.headers ?? false;
+  const includeQueryString = options.querystring ?? true;
+  const includePath = options.path ?? true;
   const includeAuthorizer = options.authorizer ?? false;
 
   if (options.requestContext && Object.keys(options.requestContext).length > 0) {
@@ -299,24 +313,34 @@ function templateString(
 
 function requestContext(requestContextObj: RequestContext | undefined): string {
   const context = {
-    accountId: requestContextObj?.accountId? '$context.identity.accountId': undefined,
-    apiId: requestContextObj?.apiId? '$context.apiId': undefined,
-    apiKey: requestContextObj?.apiKey? '$context.identity.apiKey': undefined,
-    authorizerPrincipalId: requestContextObj?.authorizerPrincipalId? '$context.authorizer.principalId': undefined,
-    caller: requestContextObj?.caller? '$context.identity.caller': undefined,
-    cognitoAuthenticationProvider: requestContextObj?.cognitoAuthenticationProvider? '$context.identity.cognitoAuthenticationProvider': undefined,
-    cognitoAuthenticationType: requestContextObj?.cognitoAuthenticationType? '$context.identity.cognitoAuthenticationType': undefined,
-    cognitoIdentityId: requestContextObj?.cognitoIdentityId? '$context.identity.cognitoIdentityId': undefined,
-    cognitoIdentityPoolId: requestContextObj?.cognitoIdentityPoolId? '$context.identity.cognitoIdentityPoolId': undefined,
-    httpMethod: requestContextObj?.httpMethod? '$context.httpMethod': undefined,
-    stage: requestContextObj?.stage? '$context.stage': undefined,
-    sourceIp: requestContextObj?.sourceIp? '$context.identity.sourceIp': undefined,
-    user: requestContextObj?.user? '$context.identity.user': undefined,
-    userAgent: requestContextObj?.userAgent? '$context.identity.userAgent': undefined,
-    userArn: requestContextObj?.userArn? '$context.identity.userArn': undefined,
-    requestId: requestContextObj?.requestId? '$context.requestId': undefined,
-    resourceId: requestContextObj?.resourceId? '$context.resourceId': undefined,
-    resourcePath: requestContextObj?.resourcePath? '$context.resourcePath': undefined,
+    accountId: requestContextObj?.accountId ? '$context.identity.accountId' : undefined,
+    apiId: requestContextObj?.apiId ? '$context.apiId' : undefined,
+    apiKey: requestContextObj?.apiKey ? '$context.identity.apiKey' : undefined,
+    authorizerPrincipalId: requestContextObj?.authorizerPrincipalId
+      ? '$context.authorizer.principalId'
+      : undefined,
+    caller: requestContextObj?.caller ? '$context.identity.caller' : undefined,
+    cognitoAuthenticationProvider: requestContextObj?.cognitoAuthenticationProvider
+      ? '$context.identity.cognitoAuthenticationProvider'
+      : undefined,
+    cognitoAuthenticationType: requestContextObj?.cognitoAuthenticationType
+      ? '$context.identity.cognitoAuthenticationType'
+      : undefined,
+    cognitoIdentityId: requestContextObj?.cognitoIdentityId
+      ? '$context.identity.cognitoIdentityId'
+      : undefined,
+    cognitoIdentityPoolId: requestContextObj?.cognitoIdentityPoolId
+      ? '$context.identity.cognitoIdentityPoolId'
+      : undefined,
+    httpMethod: requestContextObj?.httpMethod ? '$context.httpMethod' : undefined,
+    stage: requestContextObj?.stage ? '$context.stage' : undefined,
+    sourceIp: requestContextObj?.sourceIp ? '$context.identity.sourceIp' : undefined,
+    user: requestContextObj?.user ? '$context.identity.user' : undefined,
+    userAgent: requestContextObj?.userAgent ? '$context.identity.userAgent' : undefined,
+    userArn: requestContextObj?.userArn ? '$context.identity.userArn' : undefined,
+    requestId: requestContextObj?.requestId ? '$context.requestId' : undefined,
+    resourceId: requestContextObj?.resourceId ? '$context.resourceId' : undefined,
+    resourcePath: requestContextObj?.resourcePath ? '$context.resourcePath' : undefined,
   };
 
   const contextAsString = JSON.stringify(context);

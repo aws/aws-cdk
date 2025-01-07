@@ -7,7 +7,15 @@ import { checkTemplateForCyclicDependencies } from './private/cyclic';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
-import { allResources, allResourcesProperties, countResources, countResourcesProperties, findResources, hasResource, hasResourceProperties } from './private/resources';
+import {
+  allResources,
+  allResourcesProperties,
+  countResources,
+  countResourcesProperties,
+  findResources,
+  hasResource,
+  hasResourceProperties,
+} from './private/resources';
 import { Template as TemplateType } from './private/template';
 import { Stack, Stage } from '../../core';
 
@@ -17,7 +25,6 @@ import { Stack, Stage } from '../../core';
  * CloudFormation template has expected resources and properties.
  */
 export class Template {
-
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
@@ -35,7 +42,10 @@ export class Template {
    * @param templateParsingOptions Optional param to configure template parsing behavior, such as disregarding circular
    * dependencies.
    */
-  public static fromJSON(template: { [key: string] : any }, templateParsingOptions?: TemplateParsingOptions): Template {
+  public static fromJSON(
+    template: { [key: string]: any },
+    templateParsingOptions?: TemplateParsingOptions
+  ): Template {
     return new Template(template, templateParsingOptions);
   }
 
@@ -46,13 +56,19 @@ export class Template {
    * @param templateParsingOptions Optional param to configure template parsing behavior, such as disregarding circular
    * dependencies.
    */
-  public static fromString(template: string, templateParsingOptions?: TemplateParsingOptions): Template {
+  public static fromString(
+    template: string,
+    templateParsingOptions?: TemplateParsingOptions
+  ): Template {
     return new Template(JSON.parse(template), templateParsingOptions);
   }
 
   private readonly template: TemplateType;
 
-  private constructor(template: { [key: string]: any }, templateParsingOptions: TemplateParsingOptions = {}) {
+  private constructor(
+    template: { [key: string]: any },
+    templateParsingOptions: TemplateParsingOptions = {}
+  ) {
     this.template = template as TemplateType;
     if (!templateParsingOptions.skipCyclicalDependenciesCheck) {
       checkTemplateForCyclicDependencies(this.template);
@@ -185,7 +201,10 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findParameters(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+  public findParameters(
+    logicalId: string,
+    props: any = {}
+  ): { [key: string]: { [key: string]: any } } {
     return findParameters(this.template, logicalId, props);
   }
 
@@ -210,7 +229,10 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findOutputs(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+  public findOutputs(
+    logicalId: string,
+    props: any = {}
+  ): { [key: string]: { [key: string]: any } } {
     return findOutputs(this.template, logicalId, props);
   }
 
@@ -235,7 +257,10 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findMappings(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+  public findMappings(
+    logicalId: string,
+    props: any = {}
+  ): { [key: string]: { [key: string]: any } } {
     return findMappings(this.template, logicalId, props);
   }
 
@@ -260,7 +285,10 @@ export class Template {
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findConditions(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+  public findConditions(
+    logicalId: string,
+    props: any = {}
+  ): { [key: string]: { [key: string]: any } } {
     return findConditions(this.template, logicalId, props);
   }
 
@@ -273,10 +301,12 @@ export class Template {
     const result = matcher.test(this.template);
 
     if (result.hasFailed()) {
-      throw new Error([
-        'Template did not match as expected. The following mismatches were found:',
-        ...result.toHumanStrings().map(s => `\t${s}`),
-      ].join('\n'));
+      throw new Error(
+        [
+          'Template did not match as expected. The following mismatches were found:',
+          ...result.toHumanStrings().map((s) => `\t${s}`),
+        ].join('\n')
+      );
     }
   }
 }
@@ -304,7 +334,9 @@ function toTemplate(stack: Stack): any {
   const assembly = stage.synth();
   if (stack.nestedStackParent) {
     // if this is a nested stack (it has a parent), then just read the template as a string
-    return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
+    return JSON.parse(
+      fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8')
+    );
   }
   return assembly.getStackArtifact(stack.artifactId).template;
 }

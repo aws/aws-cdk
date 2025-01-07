@@ -14,7 +14,9 @@ class TestStack extends Stack {
       bundling: {
         image: DockerImage.fromBuild(path.join(__dirname, 'alpine-markdown')), // Build an image
         command: [
-          'sh', '-c', `
+          'sh',
+          '-c',
+          `
             markdown index.md > /asset-output/index.html
           `,
         ],

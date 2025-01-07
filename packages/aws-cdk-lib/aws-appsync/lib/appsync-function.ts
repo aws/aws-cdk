@@ -115,7 +115,11 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
   /**
    * Import Appsync Function from arn
    */
-  public static fromAppsyncFunctionAttributes(scope: Construct, id: string, attrs: AppsyncFunctionAttributes): IAppsyncFunction {
+  public static fromAppsyncFunctionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: AppsyncFunctionAttributes
+  ): IAppsyncFunction {
     class Import extends Resource {
       public readonly functionId = Lazy.stringValue({
         produce: () => Fn.select(3, Fn.split('/', attrs.functionArn)),
@@ -168,7 +172,9 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
     }
 
     if (props.maxBatchSize && !(props.dataSource instanceof LambdaDataSource)) {
-      throw new Error('maxBatchSize can only be set for the data source of type \LambdaDataSource\'');
+      throw new Error(
+        "maxBatchSize can only be set for the data source of type \LambdaDataSource'"
+      );
     }
 
     const code = props.code?.bind(this);

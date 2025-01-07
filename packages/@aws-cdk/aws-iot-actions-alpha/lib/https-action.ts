@@ -61,7 +61,7 @@ export class HttpsAction implements iot.IAction {
    * @param url The url to which to send post request.
    * @param props Optional properties to not use default.
    */
-  constructor( url: string, props: HttpsActionProps={}) {
+  constructor(url: string, props: HttpsActionProps = {}) {
     this.url = url;
     this.confirmationUrl = props.confirmationUrl;
     this.headers = props.headers;
@@ -74,13 +74,15 @@ export class HttpsAction implements iot.IAction {
    */
   public _bind(topicRule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(topicRule);
-    const sigV4 = this.auth ? {
-      sigv4: {
-        roleArn: role.roleArn,
-        serviceName: this.auth.serviceName,
-        signingRegion: this.auth.signingRegion,
-      },
-    } : this.auth;
+    const sigV4 = this.auth
+      ? {
+          sigv4: {
+            roleArn: role.roleArn,
+            serviceName: this.auth.serviceName,
+            signingRegion: this.auth.signingRegion,
+          },
+        }
+      : this.auth;
 
     return {
       configuration: {

@@ -6,7 +6,6 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
  * Parameters for the LambdaFunction target
  */
 export interface LambdaFunctionParameters {
-
   /**
    * The input transformation to apply to the message before sending it to the target.
    *
@@ -50,15 +49,11 @@ export class LambdaFunction implements ITarget {
   private readonly invocationType: LambdaFunctionInvocationType;
   private readonly inputTemplate?: IInputTransformation;
 
-  constructor(
-    lambdaFunction: lambda.IFunction,
-    parameters: LambdaFunctionParameters,
-  ) {
+  constructor(lambdaFunction: lambda.IFunction, parameters: LambdaFunctionParameters) {
     this.lambdaFunction = lambdaFunction;
     this.targetArn = lambdaFunction.functionArn;
     this.invocationType =
-      parameters.invocationType ??
-      LambdaFunctionInvocationType.REQUEST_RESPONSE;
+      parameters.invocationType ?? LambdaFunctionInvocationType.REQUEST_RESPONSE;
     this.inputTemplate = parameters.inputTransformation;
   }
 

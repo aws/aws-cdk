@@ -118,9 +118,11 @@ export class IntegTest {
     //
     // Looks either like `integ.mytest` or `package/test/integ.mytest`.
     const relDiscoveryRoot = path.relative(process.cwd(), info.discoveryRoot);
-    this.testName = this.directory === path.join(relDiscoveryRoot, 'test') || this.directory === path.join(relDiscoveryRoot)
-      ? parsed.name
-      : path.join(path.relative(this.info.discoveryRoot, parsed.dir), parsed.name);
+    this.testName =
+      this.directory === path.join(relDiscoveryRoot, 'test') ||
+      this.directory === path.join(relDiscoveryRoot)
+        ? parsed.name
+        : path.join(path.relative(this.info.discoveryRoot, parsed.dir), parsed.name);
 
     this.normalizedTestName = parsed.name;
     this.snapshotDir = path.join(parsed.dir, `${parsed.base}.snapshot`);
@@ -222,12 +224,16 @@ export class IntegrationTests {
     // Use the selected presets
     if (!options.app && !options.testRegex) {
       // Only case with multiple languages, i.e. the only time we need to check the special case
-      const ignoreUncompiledTypeScript = options.language?.includes('javascript') && options.language?.includes('typescript');
+      const ignoreUncompiledTypeScript =
+        options.language?.includes('javascript') && options.language?.includes('typescript');
 
-      return this.discover({
-        testCases: this.getLanguagePresets(options.language),
-        ...baseOptions,
-      }, ignoreUncompiledTypeScript);
+      return this.discover(
+        {
+          testCases: this.getLanguagePresets(options.language),
+          ...baseOptions,
+        },
+        ignoreUncompiledTypeScript
+      );
     }
 
     // Only one of app or test-regex is set, with a single preset selected
@@ -245,7 +251,9 @@ export class IntegrationTests {
     // Only one of app or test-regex is set, with multiple presets
     // => impossible to resolve
     const option = options.app ? '--app' : '--test-regex';
-    throw new Error(`Only a single "--language" can be used with "${option}". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.`);
+    throw new Error(
+      `Only a single "--language" can be used with "${option}". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.`
+    );
   }
 
   /**
@@ -269,9 +277,7 @@ export class IntegrationTests {
    */
   private getLanguagePresets(languages: string[] = []) {
     return Object.fromEntries(
-      languages
-        .map(language => this.getLanguagePreset(language))
-        .filter(Boolean),
+      languages.map((language) => this.getLanguagePreset(language)).filter(Boolean)
     );
   }
 
@@ -282,24 +288,32 @@ export class IntegrationTests {
    *   If they have provided a test name that we don't find, then we write out that error message.
    * - If it is a list of tests to exclude, then we discover all available tests and filter out the tests that were provided by the user.
    */
-  private filterTests(discoveredTests: IntegTest[], requestedTests?: string[], exclude?: boolean): IntegTest[] {
+  private filterTests(
+    discoveredTests: IntegTest[],
+    requestedTests?: string[],
+    exclude?: boolean
+  ): IntegTest[] {
     if (!requestedTests) {
       return discoveredTests;
     }
 
-    const allTests = discoveredTests.filter(t => {
-      const matches = requestedTests.some(pattern => t.matches(pattern));
+    const allTests = discoveredTests.filter((t) => {
+      const matches = requestedTests.some((pattern) => t.matches(pattern));
       return matches !== !!exclude; // Looks weird but is equal to (matches && !exclude) || (!matches && exclude)
     });
 
     // If not excluding, all patterns must have matched at least one test
     if (!exclude) {
-      const unmatchedPatterns = requestedTests.filter(pattern => !discoveredTests.some(t => t.matches(pattern)));
+      const unmatchedPatterns = requestedTests.filter(
+        (pattern) => !discoveredTests.some((t) => t.matches(pattern))
+      );
       for (const unmatched of unmatchedPatterns) {
         process.stderr.write(`No such integ test: ${unmatched}\n`);
       }
       if (unmatchedPatterns.length > 0) {
-        process.stderr.write(`Available tests: ${discoveredTests.map(t => t.discoveryRelativeFileName).join(' ')}\n`);
+        process.stderr.write(
+          `Available tests: ${discoveredTests.map((t) => t.discoveryRelativeFileName).join(' ')}\n`
+        );
         return [];
       }
     }
@@ -314,39 +328,51 @@ export class IntegrationTests {
    * @param tests Tests to include or exclude, undefined means include all tests.
    * @param exclude Whether the 'tests' list is inclusive or exclusive (inclusive by default).
    */
-  private async discover(options: IntegrationTestsDiscoveryOptions, ignoreUncompiledTypeScript: boolean = false): Promise<IntegTest[]> {
+  private async discover(
+    options: IntegrationTestsDiscoveryOptions,
+    ignoreUncompiledTypeScript: boolean = false
+  ): Promise<IntegTest[]> {
     const files = await this.readTree();
 
-    const testCases = Object.entries(options.testCases)
-      .flatMap(([appCommand, patterns]) => files
-        .filter(fileName => patterns.some((pattern) => {
-          const regex = new RegExp(pattern);
-          return regex.test(fileName) || regex.test(path.basename(fileName));
-        }))
-        .map(fileName => new IntegTest({
-          discoveryRoot: this.directory,
-          fileName,
-          appCommand,
-        })),
-      );
+    const testCases = Object.entries(options.testCases).flatMap(([appCommand, patterns]) =>
+      files
+        .filter((fileName) =>
+          patterns.some((pattern) => {
+            const regex = new RegExp(pattern);
+            return regex.test(fileName) || regex.test(path.basename(fileName));
+          })
+        )
+        .map(
+          (fileName) =>
+            new IntegTest({
+              discoveryRoot: this.directory,
+              fileName,
+              appCommand,
+            })
+        )
+    );
 
-    const discoveredTests = ignoreUncompiledTypeScript ? this.filterUncompiledTypeScript(testCases) : testCases;
+    const discoveredTests = ignoreUncompiledTypeScript
+      ? this.filterUncompiledTypeScript(testCases)
+      : testCases;
 
     return this.filterTests(discoveredTests, options.tests, options.exclude);
   }
 
   private filterUncompiledTypeScript(testCases: IntegTest[]): IntegTest[] {
-    const jsTestCases = testCases.filter(t => t.fileName.endsWith('.js'));
+    const jsTestCases = testCases.filter((t) => t.fileName.endsWith('.js'));
 
-    return testCases
-      // Remove all TypeScript test cases (ending in .ts)
-      // for which a compiled version is present (same name, ending in .js)
-      .filter((tsCandidate) => {
-        if (!tsCandidate.fileName.endsWith('.ts')) {
-          return true;
-        }
-        return jsTestCases.findIndex(jsTest => jsTest.testName === tsCandidate.testName) === -1;
-      });
+    return (
+      testCases
+        // Remove all TypeScript test cases (ending in .ts)
+        // for which a compiled version is present (same name, ending in .js)
+        .filter((tsCandidate) => {
+          if (!tsCandidate.fileName.endsWith('.ts')) {
+            return true;
+          }
+          return jsTestCases.findIndex((jsTest) => jsTest.testName === tsCandidate.testName) === -1;
+        })
+    );
   }
 
   private async readTree(): Promise<string[]> {
@@ -357,8 +383,12 @@ export class IntegrationTests {
       for (const file of files) {
         const fullPath = path.join(dir, file);
         const statf = await fs.stat(fullPath);
-        if (statf.isFile()) { ret.push(fullPath); }
-        if (statf.isDirectory()) { await recurse(fullPath); }
+        if (statf.isFile()) {
+          ret.push(fullPath);
+        }
+        if (statf.isDirectory()) {
+          await recurse(fullPath);
+        }
       }
     }
 

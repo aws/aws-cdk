@@ -157,8 +157,10 @@ export interface EcsTarget {
 /**
  * Interface for ECS load balancer target.
  */
-export interface IEcsLoadBalancerTarget extends elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
-}
+export interface IEcsLoadBalancerTarget
+  extends elbv2.IApplicationLoadBalancerTarget,
+    elbv2.INetworkLoadBalancerTarget,
+    elb.ILoadBalancerTarget {}
 
 /**
  * Interface for Service Connect configuration.
@@ -426,28 +428,41 @@ export abstract class ListenerConfig {
   /**
    * Create a config for adding target group to ALB listener.
    */
-  public static applicationListener(listener: elbv2.ApplicationListener, props?: elbv2.AddApplicationTargetsProps): ListenerConfig {
+  public static applicationListener(
+    listener: elbv2.ApplicationListener,
+    props?: elbv2.AddApplicationTargetsProps
+  ): ListenerConfig {
     return new ApplicationListenerConfig(listener, props);
   }
 
   /**
    * Create a config for adding target group to NLB listener.
    */
-  public static networkListener(listener: elbv2.NetworkListener, props?: elbv2.AddNetworkTargetsProps): ListenerConfig {
+  public static networkListener(
+    listener: elbv2.NetworkListener,
+    props?: elbv2.AddNetworkTargetsProps
+  ): ListenerConfig {
     return new NetworkListenerConfig(listener, props);
   }
 
   /**
    * Create and attach a target group to listener.
    */
-  public abstract addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService): void;
+  public abstract addTargets(
+    id: string,
+    target: LoadBalancerTargetOptions,
+    service: BaseService
+  ): void;
 }
 
 /**
  * Class for configuring application load balancer listener when registering targets.
  */
 class ApplicationListenerConfig extends ListenerConfig {
-  constructor(private readonly listener: elbv2.ApplicationListener, private readonly props?: elbv2.AddApplicationTargetsProps) {
+  constructor(
+    private readonly listener: elbv2.ApplicationListener,
+    private readonly props?: elbv2.AddApplicationTargetsProps
+  ) {
     super();
   }
 
@@ -459,7 +474,7 @@ class ApplicationListenerConfig extends ListenerConfig {
     const protocol = props.protocol;
     const port = props.port ?? (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80);
     this.listener.addTargets(id, {
-      ... props,
+      ...props,
       targets: [
         service.loadBalancerTarget({
           ...target,
@@ -474,7 +489,10 @@ class ApplicationListenerConfig extends ListenerConfig {
  * Class for configuring network load balancer listener when registering targets.
  */
 class NetworkListenerConfig extends ListenerConfig {
-  constructor(private readonly listener: elbv2.NetworkListener, private readonly props?: elbv2.AddNetworkTargetsProps) {
+  constructor(
+    private readonly listener: elbv2.NetworkListener,
+    private readonly props?: elbv2.AddNetworkTargetsProps
+  ) {
     super();
   }
 
@@ -484,7 +502,7 @@ class NetworkListenerConfig extends ListenerConfig {
   public addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService) {
     const port = this.props?.port ?? 80;
     this.listener.addTargets(id, {
-      ... this.props,
+      ...this.props,
       targets: [
         service.loadBalancerTarget({
           ...target,
@@ -508,14 +526,24 @@ export interface IBaseService extends IService {
 /**
  * The base class for Ec2Service and FargateService services.
  */
-export abstract class BaseService extends Resource
-  implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
+export abstract class BaseService
+  extends Resource
+  implements
+    IBaseService,
+    elbv2.IApplicationLoadBalancerTarget,
+    elbv2.INetworkLoadBalancerTarget,
+    elb.ILoadBalancerTarget
+{
   /**
    * Import an existing ECS/Fargate Service using the service cluster format.
    * The format is the "new" format "arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name".
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
    */
-  public static fromServiceArnWithCluster(scope: Construct, id: string, serviceArn: string): IBaseService {
+  public static fromServiceArnWithCluster(
+    scope: Construct,
+    id: string,
+    serviceArn: string
+  ): IBaseService {
     const stack = Stack.of(scope);
     const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = Arn.extractResourceName(serviceArn, 'service');
@@ -527,7 +555,9 @@ export abstract class BaseService extends Resource
     } else {
       const resourceNameParts = resourceName.split('/');
       if (resourceNameParts.length !== 2) {
-        throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
+        throw new Error(
+          `resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`
+        );
       }
       clusterName = resourceNameParts[0];
       serviceName = resourceNameParts[1];
@@ -636,23 +666,29 @@ export abstract class BaseService extends Resource
     id: string,
     props: BaseServiceProps,
     additionalProps: any,
-    taskDefinition: TaskDefinition) {
+    taskDefinition: TaskDefinition
+  ) {
     super(scope, id, {
       physicalName: props.serviceName,
     });
 
     if (props.propagateTags && props.propagateTaskTagsFrom) {
-      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+      throw new Error(
+        'You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank'
+      );
     }
 
     this.taskDefinition = taskDefinition;
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
-    const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
-      props.capacityProviderStrategies !== undefined ?
-      undefined : props.launchType;
+    const launchType =
+      props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
+      props.capacityProviderStrategies !== undefined
+        ? undefined
+        : props.launchType;
 
-    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
+    const propagateTagsFromSource =
+      props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
     const deploymentController = this.getDeploymentController(props);
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
@@ -661,13 +697,16 @@ export abstract class BaseService extends Resource
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
-        deploymentCircuitBreaker: props.circuitBreaker ? {
-          enable: props.circuitBreaker.enable ?? true,
-          rollback: props.circuitBreaker.rollback ?? false,
-        } : undefined,
+        deploymentCircuitBreaker: props.circuitBreaker
+          ? {
+              enable: props.circuitBreaker.enable ?? true,
+              rollback: props.circuitBreaker.rollback ?? false,
+            }
+          : undefined,
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
       },
-      propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
+      propagateTags:
+        propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
       deploymentController: deploymentController,
       launchType: launchType,
@@ -675,41 +714,67 @@ export abstract class BaseService extends Resource
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
-      serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
-      volumeConfigurations: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
+      networkConfiguration: Lazy.any(
+        { produce: () => this.networkConfiguration },
+        { omitEmptyArray: true }
+      ),
+      serviceRegistries: Lazy.any(
+        { produce: () => this.serviceRegistries },
+        { omitEmptyArray: true }
+      ),
+      serviceConnectConfiguration: Lazy.any(
+        { produce: () => this._serviceConnectConfig },
+        { omitEmptyArray: true }
+      ),
+      volumeConfigurations: Lazy.any(
+        { produce: () => this.renderVolumes() },
+        { omitEmptyArray: true }
+      ),
       ...additionalProps,
     });
 
     this.node.addDependency(this.taskDefinition.taskRole);
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:externalDeploymentController', 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs:externalDeploymentController',
+        'taskDefinition and launchType are blanked out when using external deployment controller.'
+      );
     }
 
-    if (props.circuitBreaker
-        && deploymentController
-        && deploymentController.type !== DeploymentControllerType.ECS) {
-      Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
+    if (
+      props.circuitBreaker &&
+      deploymentController &&
+      deploymentController.type !== DeploymentControllerType.ECS
+    ) {
+      Annotations.of(this).addError(
+        'Deployment circuit breaker requires the ECS deployment controller.'
+      );
     }
 
-    if (props.deploymentAlarms
-      && deploymentController
-      && deploymentController.type !== DeploymentControllerType.ECS) {
+    if (
+      props.deploymentAlarms &&
+      deploymentController &&
+      deploymentController.type !== DeploymentControllerType.ECS
+    ) {
       throw new Error('Deployment alarms requires the ECS deployment controller.');
     }
 
     if (
-      props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY
-      && props.taskDefinitionRevision
-      && props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
+      props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY &&
+      props.taskDefinitionRevision &&
+      props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
     ) {
-      throw new Error('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision');
+      throw new Error(
+        'CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision'
+      );
     }
 
     if (props.minHealthyPercent === undefined) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercent', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs:minHealthyPercent',
+        'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705'
+      );
     }
 
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
@@ -744,13 +809,14 @@ export abstract class BaseService extends Resource
     }
 
     if (props.volumeConfigurations) {
-      props.volumeConfigurations.forEach(v => this.addVolume(v));
+      props.volumeConfigurations.forEach((v) => this.addVolume(v));
     }
 
     if (props.enableExecuteCommand) {
       this.enableExecuteCommand();
 
-      const logging = this.cluster.executeCommandConfiguration?.logging ?? ExecuteCommandLogging.DEFAULT;
+      const logging =
+        this.cluster.executeCommandConfiguration?.logging ?? ExecuteCommandLogging.DEFAULT;
 
       if (this.cluster.executeCommandConfiguration?.kmsKey) {
         this.enableExecuteCommandEncryption(logging);
@@ -762,16 +828,21 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentAlarms) {
       if (props.deploymentAlarms.alarmNames.length === 0) {
-        throw new Error('at least one alarm name is required when specifying deploymentAlarms, received empty array');
+        throw new Error(
+          'at least one alarm name is required when specifying deploymentAlarms, received empty array'
+        );
       }
       this.deploymentAlarms = {
         alarmNames: props.deploymentAlarms.alarmNames,
         enable: true,
         rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
-    // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
-    } else if ((!props.deploymentController ||
-      props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
+      // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
+    } else if (
+      (!props.deploymentController ||
+        props.deploymentController?.type === DeploymentControllerType.ECS) &&
+      this.deploymentAlarmsAvailableInRegion()
+    ) {
       // Only set default deployment alarms settings when feature flag is not enabled.
       if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
         this.deploymentAlarms = {
@@ -794,18 +865,24 @@ export abstract class BaseService extends Resource
 
   private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
     if (this.volumes.length > 1) {
-      throw new Error(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`);
+      throw new Error(
+        `Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`
+      );
     }
     return this.volumes.map(renderVolume);
-    function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
-      const tagSpecifications = spec.config?.tagSpecifications?.map(ebsTagSpec => {
+    function renderVolume(
+      spec: ServiceManagedVolume
+    ): CfnService.ServiceVolumeConfigurationProperty {
+      const tagSpecifications = spec.config?.tagSpecifications?.map((ebsTagSpec) => {
         return {
           resourceType: 'volume',
           propagateTags: ebsTagSpec.propagateTags,
-          tags: ebsTagSpec.tags ? Object.entries(ebsTagSpec.tags).map(([key, value]) => ({
-            key: key,
-            value: value,
-          })) : undefined,
+          tags: ebsTagSpec.tags
+            ? Object.entries(ebsTagSpec.tags).map(([key, value]) => ({
+                key: key,
+                value: value,
+              }))
+            : undefined,
         } as CfnService.EBSTagSpecificationProperty;
       });
 
@@ -844,14 +921,16 @@ export abstract class BaseService extends Resource
    *
    */
   public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
-    if (alarmNames.length === 0 ) {
-      throw new Error('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array');
+    if (alarmNames.length === 0) {
+      throw new Error(
+        'at least one alarm name is required when calling enableDeploymentAlarms(), received empty array'
+      );
     }
 
-    alarmNames.forEach(alarmName => {
+    alarmNames.forEach((alarmName) => {
       if (Token.isUnresolved(alarmName)) {
         Annotations.of(this).addInfo(
-          `Deployment alarm (${JSON.stringify(this.stack.resolve(alarmName))}) enabled on ${this.node.id} may cause a circular dependency error when this stack deploys. The alarm name references the alarm's logical id, or another resource. See the 'Deployment alarms' section in the module README for more details.`,
+          `Deployment alarm (${JSON.stringify(this.stack.resolve(alarmName))}) enabled on ${this.node.id} may cause a circular dependency error when this stack deploys. The alarm name references the alarm's logical id, or another resource. See the 'Deployment alarms' section in the module README for more details.`
         );
       }
     });
@@ -861,7 +940,9 @@ export abstract class BaseService extends Resource
         (AlarmBehavior.ROLLBACK_ON_ALARM === options.behavior && !this.deploymentAlarms.rollback) ||
         (AlarmBehavior.FAIL_ON_ALARM === options.behavior && this.deploymentAlarms.rollback)
       ) {
-        throw new Error(`all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`);
+        throw new Error(
+          `all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`
+        );
       }
     }
 
@@ -895,7 +976,7 @@ export abstract class BaseService extends Resource
      * Resolve which namespace to use by picking:
      * 1. The namespace defined in service connect config.
      * 2. The namespace defined in the cluster's defaultCloudMapNamespace property.
-    */
+     */
     let namespace;
     if (this.cluster.defaultCloudMapNamespace) {
       namespace = this.cluster.defaultCloudMapNamespace.namespaceName;
@@ -910,8 +991,10 @@ export abstract class BaseService extends Resource
      * 1. Finding the correct port.
      * 2. Client alias enumeration
      */
-    const services = cfg.services?.map(svc => {
-      const containerPort = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
+    const services = cfg.services?.map((svc) => {
+      const containerPort = this.taskDefinition.findPortMappingByName(
+        svc.portMappingName
+      )?.containerPort;
       if (!containerPort) {
         throw new Error(`Port mapping with name ${svc.portMappingName} does not exist.`);
       }
@@ -942,19 +1025,23 @@ export abstract class BaseService extends Resource
       namespace: namespace,
       services: services,
     };
-  };
+  }
 
   /**
    * Validate Service Connect Configuration
    */
   private validateServiceConnectConfiguration(config?: ServiceConnectProps) {
     if (!this.taskDefinition.defaultContainer) {
-      throw new Error('Task definition must have at least one container to enable service connect.');
+      throw new Error(
+        'Task definition must have at least one container to enable service connect.'
+      );
     }
 
     // Check the implicit enable case; when config isn't specified or namespace isn't specified, we need to check that there is a namespace on the cluster.
     if ((!config || !config.namespace) && !this.cluster.defaultCloudMapNamespace) {
-      throw new Error('Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace');
+      throw new Error(
+        'Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace'
+      );
     }
 
     // When config isn't specified, return.
@@ -966,16 +1053,21 @@ export abstract class BaseService extends Resource
       return;
     }
     let portNames = new Map<string, string[]>();
-    config.services.forEach(serviceConnectService => {
+    config.services.forEach((serviceConnectService) => {
       // port must exist on the task definition
       if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
-        throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
-      };
+        throw new Error(
+          `Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`
+        );
+      }
 
       // Check that no two service connect services use the same discovery name.
-      const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
+      const discoveryName =
+        serviceConnectService.discoveryName || serviceConnectService.portMappingName;
       if (portNames.get(serviceConnectService.portMappingName)?.includes(discoveryName)) {
-        throw new Error(`Cannot create multiple services with the discoveryName '${discoveryName}'.`);
+        throw new Error(
+          `Cannot create multiple services with the discoveryName '${discoveryName}'.`
+        );
       }
 
       let currentDiscoveries = portNames.get(serviceConnectService.portMappingName);
@@ -987,13 +1079,17 @@ export abstract class BaseService extends Resource
       }
 
       // IngressPortOverride should be within the valid port range if it exists.
-      if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
-        throw new Error(`ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`);
+      if (
+        serviceConnectService.ingressPortOverride &&
+        !this.isValidPort(serviceConnectService.ingressPortOverride)
+      ) {
+        throw new Error(
+          `ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`
+        );
       }
 
       // clientAlias.port should be within the valid port range
-      if (serviceConnectService.port &&
-        !this.isValidPort(serviceConnectService.port)) {
+      if (serviceConnectService.port && !this.isValidPort(serviceConnectService.port)) {
         throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
       }
     });
@@ -1006,7 +1102,12 @@ export abstract class BaseService extends Resource
    * @returns boolean whether the port is valid
    */
   private isValidPort(port?: number): boolean {
-    return !!(port && Number.isInteger(port) && port >= BaseService.MIN_PORT && port <= BaseService.MAX_PORT);
+    return !!(
+      port &&
+      Number.isInteger(port) &&
+      port >= BaseService.MIN_PORT &&
+      port <= BaseService.MAX_PORT
+    );
   }
 
   /**
@@ -1021,8 +1122,9 @@ export abstract class BaseService extends Resource
       // The customer is always right
       return props.deploymentController;
     }
-    const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
-        FeatureFlags.of(this).isEnabled(cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER);
+    const disableCircuitBreakerEcsDeploymentControllerFeatureFlag = FeatureFlags.of(this).isEnabled(
+      cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER
+    );
 
     if (!disableCircuitBreakerEcsDeploymentControllerFeatureFlag && props.circuitBreaker) {
       // This is undesirable behavior (the controller is implicitly ECS anyway when left
@@ -1037,87 +1139,97 @@ export abstract class BaseService extends Resource
   }
 
   private executeCommandLogConfiguration() {
-    const reducePermissions = FeatureFlags.of(this).isEnabled(cxapi.REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS);
+    const reducePermissions = FeatureFlags.of(this).isEnabled(
+      cxapi.REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS
+    );
     const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
 
     // When Feature Flag is false, keep the previous behaviour for non-breaking changes.
     // When Feature Flag is true and when cloudwatch log group is specified in logConfiguration, then
     // append the necessary permissions to the task definition.
     if (!reducePermissions || logConfiguration?.cloudWatchLogGroup) {
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: [
-          'logs:DescribeLogGroups',
-        ],
-        resources: ['*'],
-      }));
+      this.taskDefinition.addToTaskRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['logs:DescribeLogGroups'],
+          resources: ['*'],
+        })
+      );
 
-      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: [
-          'logs:CreateLogStream',
-          'logs:DescribeLogStreams',
-          'logs:PutLogEvents',
-        ],
-        resources: [logGroupArn],
-      }));
+      const logGroupArn = logConfiguration?.cloudWatchLogGroup
+        ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*`
+        : '*';
+      this.taskDefinition.addToTaskRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
+          resources: [logGroupArn],
+        })
+      );
     }
 
     if (logConfiguration?.s3Bucket?.bucketName) {
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: [
-          's3:GetBucketLocation',
-        ],
-        resources: ['*'],
-      }));
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: [
-          's3:PutObject',
-        ],
-        resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
-      }));
+      this.taskDefinition.addToTaskRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['s3:GetBucketLocation'],
+          resources: ['*'],
+        })
+      );
+      this.taskDefinition.addToTaskRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['s3:PutObject'],
+          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
+        })
+      );
       if (logConfiguration.s3EncryptionEnabled) {
-        this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-          actions: [
-            's3:GetEncryptionConfiguration',
-          ],
-          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}`],
-        }));
+        this.taskDefinition.addToTaskRolePolicy(
+          new iam.PolicyStatement({
+            actions: ['s3:GetEncryptionConfiguration'],
+            resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}`],
+          })
+        );
       }
     }
   }
 
   private enableExecuteCommandEncryption(logging: ExecuteCommandLogging) {
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'kms:Decrypt',
-        'kms:GenerateDataKey',
-      ],
-      resources: [`${this.cluster.executeCommandConfiguration?.kmsKey?.keyArn}`],
-    }));
+    this.taskDefinition.addToTaskRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [`${this.cluster.executeCommandConfiguration?.kmsKey?.keyArn}`],
+      })
+    );
 
-    this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
-      actions: [
-        'kms:*',
-      ],
-      resources: ['*'],
-      principals: [new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.env.account}:root`)],
-    }));
-
-    if (logging === ExecuteCommandLogging.DEFAULT || this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled) {
-      this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
-        actions: [
-          'kms:Encrypt*',
-          'kms:Decrypt*',
-          'kms:ReEncrypt*',
-          'kms:GenerateDataKey*',
-          'kms:Describe*',
-        ],
+    this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(
+      new iam.PolicyStatement({
+        actions: ['kms:*'],
         resources: ['*'],
-        principals: [new iam.ServicePrincipal(`logs.${this.env.region}.amazonaws.com`)],
-        conditions: {
-          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:*` },
-        },
-      }));
+        principals: [
+          new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.env.account}:root`),
+        ],
+      })
+    );
+
+    if (
+      logging === ExecuteCommandLogging.DEFAULT ||
+      this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled
+    ) {
+      this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(
+        new iam.PolicyStatement({
+          actions: [
+            'kms:Encrypt*',
+            'kms:Decrypt*',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+            'kms:Describe*',
+          ],
+          resources: ['*'],
+          principals: [new iam.ServicePrincipal(`logs.${this.env.region}.amazonaws.com`)],
+          conditions: {
+            ArnLike: {
+              'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:*`,
+            },
+          },
+        })
+      );
     }
   }
 
@@ -1127,7 +1239,9 @@ export abstract class BaseService extends Resource
    * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(
+    targetGroup: elbv2.IApplicationTargetGroup
+  ): elbv2.LoadBalancerTargetProps {
     return this.defaultLoadBalancerTarget.attachToApplicationTargetGroup(targetGroup);
   }
 
@@ -1167,16 +1281,35 @@ export abstract class BaseService extends Resource
     const target = this.taskDefinition._validateTarget(options);
     const connections = self.connections;
     return {
-      attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-        targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
+      attachToApplicationTargetGroup(
+        targetGroup: elbv2.ApplicationTargetGroup
+      ): elbv2.LoadBalancerTargetProps {
+        targetGroup.registerConnectable(
+          self,
+          self.taskDefinition._portRangeFromPortMapping(target.portMapping)
+        );
+        return self.attachToELBv2(
+          targetGroup,
+          target.containerName,
+          target.portMapping.containerPort!
+        );
       },
-      attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-        return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!);
+      attachToNetworkTargetGroup(
+        targetGroup: elbv2.NetworkTargetGroup
+      ): elbv2.LoadBalancerTargetProps {
+        return self.attachToELBv2(
+          targetGroup,
+          target.containerName,
+          target.portMapping.containerPort!
+        );
       },
       connections,
       attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-        return self.attachToELB(loadBalancer, target.containerName, target.portMapping.containerPort!);
+        return self.attachToELB(
+          loadBalancer,
+          target.containerName,
+          target.portMapping.containerPort!
+        );
       },
     };
   }
@@ -1204,11 +1337,15 @@ export abstract class BaseService extends Resource
    */
   public registerLoadBalancerTargets(...targets: EcsTarget[]) {
     for (const target of targets) {
-      target.listener.addTargets(target.newTargetGroupId, {
-        containerName: target.containerName,
-        containerPort: target.containerPort,
-        protocol: target.protocol,
-      }, this);
+      target.listener.addTargets(
+        target.newTargetGroupId,
+        {
+          containerName: target.containerName,
+          containerPort: target.containerPort,
+          protocol: target.protocol,
+        },
+        this
+      );
     }
   }
 
@@ -1218,7 +1355,9 @@ export abstract class BaseService extends Resource
    * Don't call this function directly. Instead, call `listener.addTargets()`
    * to add this service to a load balancer.
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(
+    targetGroup: elbv2.INetworkTargetGroup
+  ): elbv2.LoadBalancerTargetProps {
     return this.defaultLoadBalancerTarget.attachToNetworkTargetGroup(targetGroup);
   }
 
@@ -1230,13 +1369,13 @@ export abstract class BaseService extends Resource
       throw new Error('AutoScaling of task count already enabled for this service');
     }
 
-    return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
+    return (this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
       serviceNamespace: appscaling.ServiceNamespace.ECS,
       resourceId: `service/${this.cluster.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
       ...props,
-    });
+    }));
   }
 
   /**
@@ -1247,7 +1386,9 @@ export abstract class BaseService extends Resource
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
     const sdNamespace = options.cloudMapNamespace ?? this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
-      throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
+      throw new Error(
+        'Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.'
+      );
     }
 
     if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
@@ -1257,7 +1398,9 @@ export abstract class BaseService extends Resource
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
     if (networkMode === NetworkMode.NONE) {
-      throw new Error('Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
+      throw new Error(
+        'Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.'
+      );
     }
 
     // Bridge or host network mode requires SRV records
@@ -1364,7 +1507,12 @@ export abstract class BaseService extends Resource
    * @deprecated use configureAwsVpcNetworkingWithSecurityGroups instead.
    */
   // eslint-disable-next-line max-len
-  protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
+  protected configureAwsVpcNetworking(
+    vpc: ec2.IVpc,
+    assignPublicIp?: boolean,
+    vpcSubnets?: ec2.SubnetSelection,
+    securityGroup?: ec2.ISecurityGroup
+  ) {
     if (vpcSubnets === undefined) {
       vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
     }
@@ -1386,7 +1534,12 @@ export abstract class BaseService extends Resource
    * This method is called to create a networkConfiguration.
    */
   // eslint-disable-next-line max-len
-  protected configureAwsVpcNetworkingWithSecurityGroups(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroups?: ec2.ISecurityGroup[]) {
+  protected configureAwsVpcNetworkingWithSecurityGroups(
+    vpc: ec2.IVpc,
+    assignPublicIp?: boolean,
+    vpcSubnets?: ec2.SubnetSelection,
+    securityGroups?: ec2.ISecurityGroup[]
+  ) {
     if (vpcSubnets === undefined) {
       vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
     }
@@ -1394,7 +1547,9 @@ export abstract class BaseService extends Resource
       securityGroups = [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })];
     }
 
-    securityGroups.forEach((sg) => { this.connections.addSecurityGroup(sg); }, this);
+    securityGroups.forEach((sg) => {
+      this.connections.addSecurityGroup(sg);
+    }, this);
 
     this.networkConfiguration = {
       awsvpcConfiguration: {
@@ -1416,12 +1571,20 @@ export abstract class BaseService extends Resource
   /**
    * Shared logic for attaching to an ELB
    */
-  private attachToELB(loadBalancer: elb.LoadBalancer, containerName: string, containerPort: number): void {
+  private attachToELB(
+    loadBalancer: elb.LoadBalancer,
+    containerName: string,
+    containerPort: number
+  ): void {
     if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.');
+      throw new Error(
+        'Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.'
+      );
     }
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error('Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.');
+      throw new Error(
+        'Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.'
+      );
     }
 
     this.loadBalancers.push({
@@ -1434,9 +1597,15 @@ export abstract class BaseService extends Resource
   /**
    * Shared logic for attaching to an ELBv2
    */
-  private attachToELBv2(targetGroup: elbv2.ITargetGroup, containerName: string, containerPort: number): elbv2.LoadBalancerTargetProps {
+  private attachToELBv2(
+    targetGroup: elbv2.ITargetGroup,
+    containerName: string,
+    containerPort: number
+  ): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new Error('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
+      throw new Error(
+        'Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.'
+      );
     }
 
     this.loadBalancers.push({
@@ -1449,7 +1618,10 @@ export abstract class BaseService extends Resource
     // been associated with our target group(s), so add ordering dependency.
     this.resource.node.addDependency(targetGroup.loadBalancerAttached);
 
-    const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
+    const targetType =
+      this.taskDefinition.networkMode === NetworkMode.AWS_VPC
+        ? elbv2.TargetType.IP
+        : elbv2.TargetType.INSTANCE;
     return { targetType };
   }
 
@@ -1464,12 +1636,16 @@ export abstract class BaseService extends Resource
    */
   private makeAutoScalingRole(): iam.IRole {
     // Use a Service Linked Role.
-    return iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
-      region: '',
-      service: 'iam',
-      resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
-      resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',
-    }));
+    return iam.Role.fromRoleArn(
+      this,
+      'ScalingRole',
+      Stack.of(this).formatArn({
+        region: '',
+        service: 'iam',
+        resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
+        resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',
+      })
+    );
   }
 
   /**
@@ -1477,7 +1653,9 @@ export abstract class BaseService extends Resource
    */
   private addServiceRegistry(registry: ServiceRegistry) {
     if (this.serviceRegistries.length >= 1) {
-      throw new Error('Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.');
+      throw new Error(
+        'Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.'
+      );
     }
 
     const sr = this.renderServiceRegistry(registry);
@@ -1490,20 +1668,24 @@ export abstract class BaseService extends Resource
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
     return Lazy.any({
-      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
+      produce: () =>
+        providedHealthCheckGracePeriod?.toSeconds() ??
+        (this.loadBalancers.length > 0 ? 60 : undefined),
     });
   }
 
   private enableExecuteCommand() {
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'ssmmessages:CreateControlChannel',
-        'ssmmessages:CreateDataChannel',
-        'ssmmessages:OpenControlChannel',
-        'ssmmessages:OpenDataChannel',
-      ],
-      resources: ['*'],
-    }));
+    this.taskDefinition.addToTaskRolePolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'ssmmessages:CreateControlChannel',
+          'ssmmessages:CreateDataChannel',
+          'ssmmessages:OpenControlChannel',
+          'ssmmessages:OpenDataChannel',
+        ],
+        resources: ['*'],
+      })
+    );
   }
 
   private deploymentAlarmsAvailableInRegion(): boolean {
@@ -1515,13 +1697,28 @@ export abstract class BaseService extends Resource
     return true;
   }
 
-  private renderTimeout(idleTimeout?: Duration, perRequestTimeout?: Duration): CfnService.TimeoutConfigurationProperty | undefined {
+  private renderTimeout(
+    idleTimeout?: Duration,
+    perRequestTimeout?: Duration
+  ): CfnService.TimeoutConfigurationProperty | undefined {
     if (!idleTimeout && !perRequestTimeout) return undefined;
-    if (idleTimeout && idleTimeout.toMilliseconds() > 0 && idleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new Error(`idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`);
+    if (
+      idleTimeout &&
+      idleTimeout.toMilliseconds() > 0 &&
+      idleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()
+    ) {
+      throw new Error(
+        `idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`
+      );
     }
-    if (perRequestTimeout && perRequestTimeout.toMilliseconds() > 0 && perRequestTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new Error(`perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`);
+    if (
+      perRequestTimeout &&
+      perRequestTimeout.toMilliseconds() > 0 &&
+      perRequestTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()
+    ) {
+      throw new Error(
+        `perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`
+      );
     }
     return {
       idleTimeoutSeconds: idleTimeout?.toSeconds(),
@@ -1720,13 +1917,17 @@ function determineContainerNameAndPort(options: DetermineContainerNameAndPortOpt
     const container = options.container ?? options.taskDefinition.defaultContainer!;
 
     // Ensure that any port given by the user is mapped.
-    if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
+    if (
+      options.containerPort &&
+      !container.portMappings.some((mapping) => mapping.containerPort === options.containerPort)
+    ) {
       throw new Error('Cannot add discovery for a container port that has not been mapped');
     }
 
     return {
       containerName: container.containerName,
-      containerPort: options.containerPort ?? options.taskDefinition.defaultContainer!.containerPort,
+      containerPort:
+        options.containerPort ?? options.taskDefinition.defaultContainer!.containerPort,
     };
   }
 

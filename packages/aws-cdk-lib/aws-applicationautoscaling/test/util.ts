@@ -23,7 +23,10 @@ export class ArbitraryInputIntervals extends fc.Arbitrary<appscaling.ScalingInte
     return false;
   }
 
-  public shrink(_value: appscaling.ScalingInterval[], _context: unknown): fc.Stream<fc.Value<appscaling.ScalingInterval[]>> {
+  public shrink(
+    _value: appscaling.ScalingInterval[],
+    _context: unknown
+  ): fc.Stream<fc.Value<appscaling.ScalingInterval[]>> {
     return fc.Stream.nil();
   }
 }

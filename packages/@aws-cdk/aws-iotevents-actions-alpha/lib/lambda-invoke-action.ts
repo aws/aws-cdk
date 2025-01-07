@@ -9,8 +9,7 @@ export class LambdaInvokeAction implements iotevents.IAction {
   /**
    * @param func the AWS Lambda function to be invoked by this action
    */
-  constructor(private readonly func: lambda.IFunction) {
-  }
+  constructor(private readonly func: lambda.IFunction) {}
 
   /**
    * @internal

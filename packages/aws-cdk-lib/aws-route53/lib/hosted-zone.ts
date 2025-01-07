@@ -105,7 +105,9 @@ export class HostedZone extends Resource implements IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
-        throw new Error('Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.');
+        throw new Error(
+          'Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.'
+        );
       }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
@@ -127,7 +129,11 @@ export class HostedZone extends Resource implements IHostedZone {
    * @param id  the logical name of this Construct
    * @param attrs the HostedZoneAttributes (hosted zone ID and hosted zone name)
    */
-  public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
+  public static fromHostedZoneAttributes(
+    scope: Construct,
+    id: string,
+    attrs: HostedZoneAttributes
+  ): IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
@@ -150,7 +156,11 @@ export class HostedZone extends Resource implements IHostedZone {
    *
    * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
-  public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
+  public static fromLookup(
+    scope: Construct,
+    id: string,
+    query: HostedZoneProviderProps
+  ): IHostedZone {
     if (!query.domainName) {
       throw new Error('Cannot use undefined value for attribute `domainName`');
     }
@@ -203,13 +213,18 @@ export class HostedZone extends Resource implements IHostedZone {
     validateZoneName(props.zoneName);
 
     // Add a dot at the end if the addTrailingDot property is not false.
-    const zoneName = (props.addTrailingDot === false || props.zoneName.endsWith('.')) ? props.zoneName : `${props.zoneName}.`;
+    const zoneName =
+      props.addTrailingDot === false || props.zoneName.endsWith('.')
+        ? props.zoneName
+        : `${props.zoneName}.`;
 
     const resource = new CfnHostedZone(this, 'Resource', {
       name: zoneName,
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
-      queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: Lazy.any({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs }),
+      queryLoggingConfig: props.queryLogsLogGroupArn
+        ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn }
+        : undefined,
+      vpcs: Lazy.any({ produce: () => (this.vpcs.length === 0 ? undefined : this.vpcs) }),
     });
 
     this.hostedZoneId = resource.ref;
@@ -310,7 +325,6 @@ export interface IPublicHostedZone extends IHostedZone {}
  * @resource AWS::Route53::HostedZone
  */
 export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
-
   /**
    * Import a Route 53 public hosted zone defined either outside the CDK, or in a different CDK stack
    *
@@ -321,10 +335,18 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
    * @param id the logical name of this Construct
    * @param publicHostedZoneId the ID of the public hosted zone to import
    */
-  public static fromPublicHostedZoneId(scope: Construct, id: string, publicHostedZoneId: string): IPublicHostedZone {
+  public static fromPublicHostedZoneId(
+    scope: Construct,
+    id: string,
+    publicHostedZoneId: string
+  ): IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
-      public get zoneName(): string { throw new Error('Cannot reference `zoneName` when using `PublicHostedZone.fromPublicHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromPublicHostedZoneAttributes()` instead'); }
+      public get zoneName(): string {
+        throw new Error(
+          'Cannot reference `zoneName` when using `PublicHostedZone.fromPublicHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromPublicHostedZoneAttributes()` instead'
+        );
+      }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
@@ -344,7 +366,11 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
    * @param id  the logical name of this Construct
    * @param attrs the PublicHostedZoneAttributes (hosted zone ID and hosted zone name)
    */
-  public static fromPublicHostedZoneAttributes(scope: Construct, id: string, attrs: PublicHostedZoneAttributes): IPublicHostedZone {
+  public static fromPublicHostedZoneAttributes(
+    scope: Construct,
+    id: string,
+    attrs: PublicHostedZoneAttributes
+  ): IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
@@ -373,7 +399,9 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     }
 
     if (!props.crossAccountZoneDelegationPrincipal && props.crossAccountZoneDelegationRoleName) {
-      throw Error('crossAccountZoneDelegationRoleName property is not supported without crossAccountZoneDelegationPrincipal');
+      throw Error(
+        'crossAccountZoneDelegationRoleName property is not supported without crossAccountZoneDelegationPrincipal'
+      );
     }
 
     if (props.crossAccountZoneDelegationPrincipal) {
@@ -471,7 +499,6 @@ export interface IPrivateHostedZone extends IHostedZone {}
  * @resource AWS::Route53::HostedZone
  */
 export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone {
-
   /**
    * Import a Route 53 private hosted zone defined either outside the CDK, or in a different CDK stack
    *
@@ -482,10 +509,18 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
    * @param id the logical name of this Construct
    * @param privateHostedZoneId the ID of the private hosted zone to import
    */
-  public static fromPrivateHostedZoneId(scope: Construct, id: string, privateHostedZoneId: string): IPrivateHostedZone {
+  public static fromPrivateHostedZoneId(
+    scope: Construct,
+    id: string,
+    privateHostedZoneId: string
+  ): IPrivateHostedZone {
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
-      public get zoneName(): string { throw new Error('Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`'); }
+      public get zoneName(): string {
+        throw new Error(
+          'Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`'
+        );
+      }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }

@@ -53,13 +53,17 @@ export class SfnStateMachine implements ITarget {
   constructor(stateMachine: sfn.IStateMachine, parameters: SfnStateMachineParameters) {
     this.stateMachine = stateMachine;
     this.targetArn = stateMachine.stateMachineArn;
-    this.invocationType = parameters.invocationType?? StateMachineInvocationType.FIRE_AND_FORGET;
+    this.invocationType = parameters.invocationType ?? StateMachineInvocationType.FIRE_AND_FORGET;
     this.inputTemplate = parameters.inputTransformation;
 
-    if (this.stateMachine instanceof StateMachine
-      && this.stateMachine.stateMachineType === StateMachineType.STANDARD
-      && this.invocationType === StateMachineInvocationType.REQUEST_RESPONSE) {
-      throw new Error('STANDARD state machine workflows do not support the REQUEST_RESPONSE invocation type. Use FIRE_AND_FORGET instead.');
+    if (
+      this.stateMachine instanceof StateMachine &&
+      this.stateMachine.stateMachineType === StateMachineType.STANDARD &&
+      this.invocationType === StateMachineInvocationType.REQUEST_RESPONSE
+    ) {
+      throw new Error(
+        'STANDARD state machine workflows do not support the REQUEST_RESPONSE invocation type. Use FIRE_AND_FORGET instead.'
+      );
     }
   }
 

@@ -36,11 +36,11 @@ export interface HelmChartOptions {
   readonly repository?: string;
 
   /**
-  * The chart in the form of an asset.
-  * Either this or `chart` must be specified.
-  *
-  * @default - No chart asset. Implies `chart` is used.
-  */
+   * The chart in the form of an asset.
+   * Either this or `chart` must be specified.
+   *
+   * @default - No chart asset. Implies `chart` is used.
+   */
   readonly chartAsset?: Asset;
 
   /**
@@ -58,7 +58,7 @@ export interface HelmChartOptions {
    * }
    * @default - No values are provided to the chart.
    */
-  readonly values?: {[key: string]: any};
+  readonly values?: { [key: string]: any };
 
   /**
    * Whether or not Helm should wait until all Pods, PVCs, Services, and minimum number of Pods of a
@@ -146,7 +146,7 @@ export class HelmChart extends Construct {
 
     if (this.chartAsset && (this.repository || this.version)) {
       throw new Error(
-        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
+        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'"
       );
     }
 
@@ -173,7 +173,7 @@ export class HelmChart extends Construct {
         Version: this.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined
         Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
-        Values: (props.values ? stack.toJsonString(props.values) : undefined),
+        Values: props.values ? stack.toJsonString(props.values) : undefined,
         Namespace: props.namespace ?? 'default',
         Repository: this.repository,
         CreateNamespace: createNamespace || undefined,

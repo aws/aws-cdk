@@ -4,7 +4,6 @@ import { Duration } from '../../core';
  * Schedule for canary runs
  */
 export class Schedule {
-
   /**
    * The canary will be executed once.
    */
@@ -47,7 +46,7 @@ export class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new Error("Cannot supply both 'day' and 'weekDay', use at most one");
     }
 
     const minute = fallback(options.minute, '*');
@@ -68,7 +67,8 @@ export class Schedule {
     /**
      * The Schedule expression
      */
-    public readonly expressionString: string) {}
+    public readonly expressionString: string
+  ) {}
 }
 
 /**

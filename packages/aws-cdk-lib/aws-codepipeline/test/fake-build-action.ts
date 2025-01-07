@@ -34,14 +34,17 @@ export class FakeBuildAction extends codepipeline.Action {
       category: codepipeline.ActionCategory.BUILD,
       provider: 'Fake',
       artifactBounds: { minInputs: 1, maxInputs: 3, minOutputs: 0, maxOutputs: 1 },
-      inputs: [props.input, ...props.extraInputs || []],
+      inputs: [props.input, ...(props.extraInputs || [])],
       outputs: props.output ? [props.output] : undefined,
     };
     this.customConfigKey = props.customConfigKey;
   }
 
-  public bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  public bound(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    _options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     return {
       configuration: {
         CustomConfigKey: this.customConfigKey,

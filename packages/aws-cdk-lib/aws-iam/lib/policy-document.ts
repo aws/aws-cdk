@@ -46,7 +46,6 @@ export interface PolicyDocumentProps {
  * A PolicyDocument is a collection of statements
  */
 export class PolicyDocument implements cdk.IResolvable {
-
   /**
    * Creates a new PolicyDocument based on the object provided.
    * This will accept an object created from the `.toJSON()` call
@@ -72,7 +71,7 @@ export class PolicyDocument implements cdk.IResolvable {
     this.autoAssignSids = !!props.assignSids;
     this.minimize = props.minimize;
 
-    this.addStatements(...props.statements || []);
+    this.addStatements(...(props.statements || []));
   }
 
   public resolve(context: cdk.IResolveContext): any {
@@ -208,13 +207,17 @@ export class PolicyDocument implements cdk.IResolvable {
    *
    * @internal
    */
-  public _splitDocument(scope: IConstruct, selfMaximumSize: number, splitMaximumSize: number): Map<PolicyDocument, PolicyStatement[]> {
+  public _splitDocument(
+    scope: IConstruct,
+    selfMaximumSize: number,
+    splitMaximumSize: number
+  ): Map<PolicyDocument, PolicyStatement[]> {
     const self = this;
     const newDocs: PolicyDocument[] = [];
 
     // Maps final statements to original statements
     this.freezeStatements();
-    let statementsToOriginals = new Map(this.statements.map(s => [s, [s]]));
+    let statementsToOriginals = new Map(this.statements.map((s) => [s, [s]]));
 
     // We always run 'mergeStatements' to minimize the policy before splitting.
     // However, we only 'merge' when the feature flag is on. If the flag is not
@@ -223,14 +226,20 @@ export class PolicyDocument implements cdk.IResolvable {
     // X, X, X, X] being split off into [[X, X, X], [X, X]] before being reduced
     // to [[X], [X]] (but should have been just [[X]]).
     const doActualMerging = this.shouldMerge(scope);
-    const result = mergeStatements(this.statements, { scope, limitSize: true, mergeIfCombinable: doActualMerging });
+    const result = mergeStatements(this.statements, {
+      scope,
+      limitSize: true,
+      mergeIfCombinable: doActualMerging,
+    });
     this.statements.splice(0, this.statements.length, ...result.mergedStatements);
     statementsToOriginals = result.originsMap;
 
     const sizeOptions = deriveEstimateSizeOptions(scope);
 
     // Cache statement sizes to avoid recomputing them based on the fields
-    const statementSizes = new Map<PolicyStatement, number>(this.statements.map(s => [s, s._estimateSize(sizeOptions)]));
+    const statementSizes = new Map<PolicyStatement, number>(
+      this.statements.map((s) => [s, s._estimateSize(sizeOptions)])
+    );
 
     // Keep some size counters so we can avoid recomputing them based on the statements in each
     let selfSize = 0;
@@ -260,9 +269,15 @@ export class PolicyDocument implements cdk.IResolvable {
 
     // Return the set of all policy document and original statements
     const ret = new Map<PolicyDocument, PolicyStatement[]>();
-    ret.set(this, this.statements.flatMap(s => statementsToOriginals.get(s) ?? [s]));
+    ret.set(
+      this,
+      this.statements.flatMap((s) => statementsToOriginals.get(s) ?? [s])
+    );
     for (const newDoc of newDocs) {
-      ret.set(newDoc, newDoc.statements.flatMap(s => statementsToOriginals.get(s) ?? [s]));
+      ret.set(
+        newDoc,
+        newDoc.statements.flatMap((s) => statementsToOriginals.get(s) ?? [s])
+      );
     }
     return ret;
 
@@ -290,7 +305,7 @@ export class PolicyDocument implements cdk.IResolvable {
     }
 
     const doc = {
-      Statement: this.statements.map(s => s.toStatementJson()),
+      Statement: this.statements.map((s) => s.toStatementJson()),
       Version: '2012-10-17',
     };
 
@@ -298,7 +313,9 @@ export class PolicyDocument implements cdk.IResolvable {
   }
 
   private shouldMerge(scope: IConstruct) {
-    return this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false;
+    return (
+      this.minimize ?? cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_MINIMIZE_POLICIES) ?? false
+    );
   }
 
   /**

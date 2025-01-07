@@ -53,7 +53,6 @@ export interface CfnResourceAutoScalingCreationPolicy {
  * the length of time that AWS CloudFormation waits for those signals.
  */
 export interface CfnResourceSignal {
-
   /**
    * The number of success signals AWS CloudFormation must receive before it sets the resource status as CREATE_COMPLETE.
    * If the resource receives a failure signal or doesn't receive the specified number of signals before the timeout period
@@ -115,7 +114,6 @@ export enum CfnDeletionPolicy {
  * scheduled action is associated with the Auto Scaling group.
  */
 export interface CfnUpdatePolicy {
-
   /**
    * Specifies whether an Auto Scaling group and the instances it contains are replaced during an update. During replacement,
    * AWS CloudFormation retains the old group until it finishes creating the new one. If the update fails, AWS CloudFormation
@@ -154,7 +152,6 @@ export interface CfnUpdatePolicy {
    * AWS::Elasticsearch::Domain resource, use the EnableVersionUpgrade update policy.
    */
   readonly enableVersionUpgrade?: boolean;
-
 }
 
 /**
@@ -163,7 +160,6 @@ export interface CfnUpdatePolicy {
  * group in batches or all at once.
  */
 export interface CfnAutoScalingRollingUpdate {
-
   /**
    * Specifies the maximum number of instances that AWS CloudFormation updates.
    */
@@ -254,11 +250,11 @@ export interface CfnAutoScalingReplacingUpdate {
  */
 export interface CfnAutoScalingScheduledAction {
   /*
-  * Specifies whether AWS CloudFormation ignores differences in group size properties between your current Auto Scaling
-  * group and the Auto Scaling group described in the AWS::AutoScaling::AutoScalingGroup resource of your template during
-  * a stack update. If you modify any of the group size property values in your template, AWS CloudFormation uses the modified
-  * values and updates your Auto Scaling group.
-  */
+   * Specifies whether AWS CloudFormation ignores differences in group size properties between your current Auto Scaling
+   * group and the Auto Scaling group described in the AWS::AutoScaling::AutoScalingGroup resource of your template during
+   * a stack update. If you modify any of the group size property values in your template, AWS CloudFormation uses the modified
+   * values and updates your Auto Scaling group.
+   */
   readonly ignoreUnmodifiedGroupSizeProperties?: boolean;
 }
 

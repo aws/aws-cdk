@@ -13,12 +13,10 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  *
  */
 export interface MediaConvertCreateJobProps extends sfn.TaskStateBaseProps {
-
   /**
    * The input data for the MediaConvert Create Job invocation
    */
   readonly createJobRequest: { [key: string]: any };
-
 }
 
 /**
@@ -32,7 +30,6 @@ export interface MediaConvertCreateJobProps extends sfn.TaskStateBaseProps {
  *
  */
 export class MediaConvertCreateJob extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -43,11 +40,18 @@ export class MediaConvertCreateJob extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: MediaConvertCreateJobProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: MediaConvertCreateJobProps
+  ) {
     super(scope, id, props);
 
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, MediaConvertCreateJob.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      MediaConvertCreateJob.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     cdk.requireProperty(props.createJobRequest, 'Role', this);
     cdk.requireProperty(props.createJobRequest, 'Settings', this);
@@ -75,7 +79,7 @@ export class MediaConvertCreateJob extends sfn.TaskStateBase {
         new iam.PolicyStatement({
           actions: ['mediaconvert:GetJob', 'mediaconvert:CancelJob'],
           resources: ['*'],
-        }),
+        })
       );
       policyStatements.push(
         new iam.PolicyStatement({
@@ -87,7 +91,7 @@ export class MediaConvertCreateJob extends sfn.TaskStateBase {
               resourceName: 'StepFunctionsGetEventsForMediaConvertJobRule',
             }),
           ],
-        }),
+        })
       );
     }
 

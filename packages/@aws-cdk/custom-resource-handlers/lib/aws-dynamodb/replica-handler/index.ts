@@ -1,7 +1,12 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
-import { OnEventResponse, OnEventRequest, IsCompleteRequest, IsCompleteResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
+import {
+  OnEventResponse,
+  OnEventRequest,
+  IsCompleteRequest,
+  IsCompleteResponse,
+} from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 
 export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
   console.log('Event: %j', { ...event, ResponseURL: '...' });
@@ -14,7 +19,8 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
   let updateTableAction: 'Create' | 'Update' | 'Delete' | undefined;
   if (event.RequestType === 'Create' || event.RequestType === 'Delete') {
     updateTableAction = event.RequestType;
-  } else { // Update
+  } else {
+    // Update
     // There are two cases where an Update can happen:
     // 1. A table replacement. In that case, we need to create the replica in the new Table
     // (the replica for the "old" Table will be deleted when CFN issues a Delete event on the old physical resource id).
@@ -25,7 +31,9 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
       TableName: tableName,
     });
     console.log('Describe table: %j', describeTableResult);
-    const replicaExists = describeTableResult.Table?.Replicas?.some(replica => replica.RegionName === region);
+    const replicaExists = describeTableResult.Table?.Replicas?.some(
+      (replica) => replica.RegionName === region
+    );
     updateTableAction = replicaExists ? undefined : 'Create';
   }
 
@@ -62,9 +70,10 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
 
   const tableActive = data.Table?.TableStatus === 'ACTIVE';
   const replicas = data.Table?.Replicas ?? [];
-  const regionReplica = replicas.find(r => r.RegionName === event.ResourceProperties.Region);
+  const regionReplica = replicas.find((r) => r.RegionName === event.ResourceProperties.Region);
   const replicaActive = regionReplica?.ReplicaStatus === 'ACTIVE';
-  const skipReplicationCompletedWait = event.ResourceProperties.SkipReplicationCompletedWait === 'true';
+  const skipReplicationCompletedWait =
+    event.ResourceProperties.SkipReplicationCompletedWait === 'true';
 
   switch (event.RequestType) {
     case 'Create':

@@ -10,9 +10,7 @@ import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from '../../cx-api';
  */
 export class LambdaAction implements cloudwatch.IAlarmAction {
   private lambdaFunction: lambda.IAlias | lambda.IVersion | lambda.IFunction;
-  constructor(
-    lambdaFunction: lambda.IAlias | lambda.IVersion | lambda.IFunction,
-  ) {
+  constructor(lambdaFunction: lambda.IAlias | lambda.IVersion | lambda.IFunction) {
     this.lambdaFunction = lambdaFunction;
   }
 
@@ -22,9 +20,15 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html
    */
   bind(scope: Construct, alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
-    const idPrefix = FeatureFlags.of(scope).isEnabled(LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION) ? alarm.node.id : '';
+    const idPrefix = FeatureFlags.of(scope).isEnabled(
+      LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION
+    )
+      ? alarm.node.id
+      : '';
     const permissionId = `${idPrefix}AlarmPermission`;
-    const permissionNode = this.lambdaFunction.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission | undefined;
+    const permissionNode = this.lambdaFunction.permissionsNode.tryFindChild(permissionId) as
+      | lambda.CfnPermission
+      | undefined;
 
     // If the Lambda permission has already been added to this function
     // we skip adding it to avoid an exception being thrown

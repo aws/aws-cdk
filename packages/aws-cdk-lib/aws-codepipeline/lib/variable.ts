@@ -50,14 +50,22 @@ export class Variable {
   private validate() {
     validatePipelineVariableName(this.variableName);
     if (
-      this.defaultValue !== undefined
-      && !Token.isUnresolved(this.defaultValue)
-      && (this.defaultValue.length < 1 || this.defaultValue.length > 1000)
+      this.defaultValue !== undefined &&
+      !Token.isUnresolved(this.defaultValue) &&
+      (this.defaultValue.length < 1 || this.defaultValue.length > 1000)
     ) {
-      throw new Error(`Default value for variable '${this.variableName}' must be between 1 and 1000 characters long, got ${this.defaultValue.length}`);
+      throw new Error(
+        `Default value for variable '${this.variableName}' must be between 1 and 1000 characters long, got ${this.defaultValue.length}`
+      );
     }
-    if (this.description !== undefined && !Token.isUnresolved(this.description) && this.description.length > 200) {
-      throw new Error(`Description for variable '${this.variableName}' must not be greater than 200 characters long, got ${this.description.length}`);
+    if (
+      this.description !== undefined &&
+      !Token.isUnresolved(this.description) &&
+      this.description.length > 200
+    ) {
+      throw new Error(
+        `Description for variable '${this.variableName}' must not be greater than 200 characters long, got ${this.description.length}`
+      );
     }
   }
 

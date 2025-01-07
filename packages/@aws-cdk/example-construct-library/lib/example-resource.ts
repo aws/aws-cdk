@@ -56,17 +56,14 @@ import { exampleResourceArnComponents } from './private/example-resource-common'
  *  It can also extend some other common interfaces that add various default behaviors -
  *  some examples are shown below.
  */
-export interface IExampleResource extends
+export interface IExampleResource
   // all L2 interfaces need to extend IResource
-  core.IResource,
-
-  // Only for resources that have an associated IAM Role.
-  // Allows this resource to be the target in calls like bucket.grantRead(exampleResource).
-  iam.IGrantable,
-
-  // only for resources that are in a VPC and have SecurityGroups controlling their traffic
-  ec2.IConnectable {
-
+  extends core.IResource,
+    // Only for resources that have an associated IAM Role.
+    // Allows this resource to be the target in calls like bucket.grantRead(exampleResource).
+    iam.IGrantable,
+    // only for resources that are in a VPC and have SecurityGroups controlling their traffic
+    ec2.IConnectable {
   /**
    * The ARN of example resource.
    * Equivalent to doing `{ 'Fn::GetAtt': ['LogicalId', 'Arn' ]}`
@@ -348,7 +345,11 @@ export class ExampleResource extends ExampleResourceBase {
    * or fromExampleResourceAttributes
    * (the last one if you want the importing behavior to be more customizable).
    */
-  public static fromExampleResourceName(scope: Construct, id: string, exampleResourceName: string): IExampleResource {
+  public static fromExampleResourceName(
+    scope: Construct,
+    id: string,
+    exampleResourceName: string
+  ): IExampleResource {
     // Imports are almost always implemented as a module-private
     // inline class in the method itself.
     // We extend ExampleResourceBase to reuse all of the logic inside it.
@@ -364,8 +365,9 @@ export class ExampleResource extends ExampleResourceBase {
       // using the Stack.formatArn helper method from the core library.
       // We have to know the ARN components of ExampleResource in a few places, so,
       // to avoid duplication, extract that into a module-private function
-      public readonly exampleResourceArn = core.Stack.of(scope)
-        .formatArn(exampleResourceArnComponents(exampleResourceName));
+      public readonly exampleResourceArn = core.Stack.of(scope).formatArn(
+        exampleResourceArnComponents(exampleResourceName)
+      );
     }
 
     return new Import(scope, id);
@@ -411,11 +413,15 @@ export class ExampleResource extends ExampleResourceBase {
     // and that sort of value would be also encoded as a string;
     // so, we need to use the Token.isUnresolved() method from the core library
     // to skip validation in that case.
-    if (props.waitConditionHandleName !== undefined &&
-        !core.Token.isUnresolved(props.waitConditionHandleName) &&
-        !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)) {
-      throw new Error('waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
-        `got: '${props.waitConditionHandleName}'`);
+    if (
+      props.waitConditionHandleName !== undefined &&
+      !core.Token.isUnresolved(props.waitConditionHandleName) &&
+      !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)
+    ) {
+      throw new Error(
+        'waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
+          `got: '${props.waitConditionHandleName}'`
+      );
     }
 
     // Inside the implementation of the L2,
@@ -460,7 +466,7 @@ export class ExampleResource extends ExampleResourceBase {
       // and the ARN for your resource is of the form 'arn:aws:<service>:<region>:<account>:resource/physical-name',
       // which is quite common,
       // you can use Fn::Select and Fn::Split to take out the part after the '/' from the ARN:
-      core.Fn.select(1, core.Fn.split('/', resource.ref)),
+      core.Fn.select(1, core.Fn.split('/', resource.ref))
     );
     this.exampleResourceArn = this.getResourceArnAttribute(
       // A lot of the L1 classes have an 'attrArn' property -
@@ -471,13 +477,16 @@ export class ExampleResource extends ExampleResourceBase {
       // Here, we assume resource.ref returns the physical name of the resource.
       core.Stack.of(this).formatArn(exampleResourceArnComponents(resource.ref)),
       // always use the protected physicalName property for this second argument
-      exampleResourceArnComponents(this.physicalName));
+      exampleResourceArnComponents(this.physicalName)
+    );
 
     // if a role wasn't passed, create one
-    const role = props.role || new iam.Role(this, 'Role', {
-      // of course, fill your correct service principal here
-      assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
-    });
+    const role =
+      props.role ||
+      new iam.Role(this, 'Role', {
+        // of course, fill your correct service principal here
+        assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+      });
     this.role = role;
     // we need this to correctly implement the iam.IGrantable interface
     this.grantPrincipal = role;
@@ -486,12 +495,15 @@ export class ExampleResource extends ExampleResourceBase {
     // by writing to the _connections field in ExampleResourceBase,
     // if a VPC was passed in props
     if (props.vpc) {
-      const securityGroups = (props.securityGroups ?? []).length === 0
-        // no security groups were provided - create one
-        ? [new ec2.SecurityGroup(this, 'SecurityGroup', {
-          vpc: props.vpc,
-        })]
-        : props.securityGroups;
+      const securityGroups =
+        (props.securityGroups ?? []).length === 0
+          ? // no security groups were provided - create one
+            [
+              new ec2.SecurityGroup(this, 'SecurityGroup', {
+                vpc: props.vpc,
+              }),
+            ]
+          : props.securityGroups;
       this._connections = new ec2.Connections({ securityGroups });
 
       // this is how you would use the VPC inputs to fill a subnetIds property of an L1:

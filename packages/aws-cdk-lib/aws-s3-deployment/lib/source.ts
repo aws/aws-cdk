@@ -209,5 +209,5 @@ export class Source {
     };
   }
 
-  private constructor() { }
+  private constructor() {}
 }

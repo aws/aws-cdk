@@ -85,8 +85,9 @@ export interface AuthenticateCognitoActionProps {
  * A Listener Action to authenticate with Cognito
  */
 export class AuthenticateCognitoAction extends elbv2.ListenerAction {
-
-  private static config(options: AuthenticateCognitoActionProps): elbv2.CfnListener.AuthenticateCognitoConfigProperty {
+  private static config(
+    options: AuthenticateCognitoActionProps
+  ): elbv2.CfnListener.AuthenticateCognitoConfigProperty {
     return {
       userPoolArn: options.userPool.userPoolArn,
       userPoolClientId: options.userPoolClient.userPoolClientId,
@@ -105,10 +106,13 @@ export class AuthenticateCognitoAction extends elbv2.ListenerAction {
    * Authenticate using an identity provide (IdP) that is compliant with OpenID Connect (OIDC)
    */
   constructor(options: AuthenticateCognitoActionProps) {
-    super({
-      type: 'authenticate-cognito',
-      authenticateCognitoConfig: AuthenticateCognitoAction.config(options),
-    }, options.next);
+    super(
+      {
+        type: 'authenticate-cognito',
+        authenticateCognitoConfig: AuthenticateCognitoAction.config(options),
+      },
+      options.next
+    );
 
     this.allowHttpsOutbound = options.allowHttpsOutbound ?? true;
     this.addRuleAction({
@@ -119,7 +123,11 @@ export class AuthenticateCognitoAction extends elbv2.ListenerAction {
       },
     });
   }
-  public bind(scope: Construct, listener: elbv2.IApplicationListener, associatingConstruct?: IConstruct | undefined): void {
+  public bind(
+    scope: Construct,
+    listener: elbv2.IApplicationListener,
+    associatingConstruct?: IConstruct | undefined
+  ): void {
     super.bind(scope, listener, associatingConstruct);
 
     if (!this.allowHttpsOutbound) return;

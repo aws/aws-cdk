@@ -61,6 +61,5 @@ export class ReferenceEvent {
     return events.EventField.fromPath('$.detail.commitId');
   }
 
-  private constructor() {
-  }
+  private constructor() {}
 }

@@ -23,8 +23,7 @@ export interface DestinationConfig {
 /**
  * Options when binding a destination to a delivery stream.
  */
-export interface DestinationBindOptions {
-}
+export interface DestinationBindOptions {}
 
 /**
  * A Kinesis Data Firehose delivery stream destination.

@@ -37,7 +37,9 @@ export class TagOptions extends cdk.Resource {
     this._cfnTagOptions = this.createUnderlyingTagOptions(props.allowedValuesForTags);
   }
 
-  private createUnderlyingTagOptions(allowedValuesForTags: { [tagKey: string]: string[] }): CfnTagOption[] {
+  private createUnderlyingTagOptions(allowedValuesForTags: {
+    [tagKey: string]: string[];
+  }): CfnTagOption[] {
     if (Object.keys(allowedValuesForTags).length === 0) {
       throw new Error(`No tag option keys or values were provided for resource ${this.node.path}`);
     }
@@ -48,7 +50,9 @@ export class TagOptions extends cdk.Resource {
 
       const uniqueTagValues = new Set(tagValues);
       if (uniqueTagValues.size === 0) {
-        throw new Error(`No tag option values were provided for tag option key ${tagKey} for resource ${this.node.path}`);
+        throw new Error(
+          `No tag option values were provided for tag option key ${tagKey} for resource ${this.node.path}`
+        );
       }
       uniqueTagValues.forEach((tagValue: string) => {
         InputValidator.validateLength(this.node.addr, 'TagOption value', 1, 256, tagValue);
@@ -64,4 +68,3 @@ export class TagOptions extends cdk.Resource {
     return tagOptions;
   }
 }
-

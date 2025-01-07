@@ -9,4 +9,3 @@ function integTestWorker(request: IntegTestBatchRequest): IntegTestInfo[] {
 workerpool.worker({
   integTestWorker,
 });
-

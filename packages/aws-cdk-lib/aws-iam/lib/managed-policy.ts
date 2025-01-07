@@ -3,7 +3,12 @@ import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import {
+  AddToPrincipalPolicyResult,
+  IGrantable,
+  IPrincipal,
+  PrincipalPolicyFragment,
+} from './principals';
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
@@ -108,7 +113,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * For this managed policy, you only need to know the name to be able to use it.
    *
    */
-  public static fromManagedPolicyName(scope: Construct, id: string, managedPolicyName: string): IManagedPolicy {
+  public static fromManagedPolicyName(
+    scope: Construct,
+    id: string,
+    managedPolicyName: string
+  ): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = Stack.of(scope).formatArn({
         service: 'iam',
@@ -140,7 +149,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * @param id construct id
    * @param managedPolicyArn the ARN of the managed policy to import
    */
-  public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
+  public static fromManagedPolicyArn(
+    scope: Construct,
+    id: string,
+    managedPolicyArn: string
+  ): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = managedPolicyArn;
     }
@@ -223,7 +236,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     }
 
     const config = getCustomizeRolesConfig(this);
-    const _precreatedPolicy = ManagedPolicy.fromManagedPolicyName(this, 'Imported'+id, id);
+    const _precreatedPolicy = ManagedPolicy.fromManagedPolicyName(this, 'Imported' + id, id);
     this.managedPolicyName = id;
     this.managedPolicyArn = _precreatedPolicy.managedPolicyArn;
     if (config.enabled) {
@@ -235,13 +248,15 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         managedPolicyName: this.physicalName,
         description: this.description,
         path: this.path,
-        roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
-        users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
-        groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
+        roles: undefinedIfEmpty(() => this.roles.map((r) => r.roleName)),
+        users: undefinedIfEmpty(() => this.users.map((u) => u.userName)),
+        groups: undefinedIfEmpty(() => this.groups.map((g) => g.groupName)),
       });
 
       // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
-      this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
+      this.managedPolicyName = this.getResourceNameAttribute(
+        Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!
+      );
       this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
         region: '', // IAM is global in each partition
         service: 'iam',
@@ -251,19 +266,19 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     }
 
     if (props.users) {
-      props.users.forEach(u => this.attachToUser(u));
+      props.users.forEach((u) => this.attachToUser(u));
     }
 
     if (props.groups) {
-      props.groups.forEach(g => this.attachToGroup(g));
+      props.groups.forEach((g) => this.attachToGroup(g));
     }
 
     if (props.roles) {
-      props.roles.forEach(r => this.attachToRole(r));
+      props.roles.forEach((r) => this.attachToRole(r));
     }
 
     if (props.statements) {
-      props.statements.forEach(p => this.addStatements(p));
+      props.statements.forEach((p) => this.addStatements(p));
     }
 
     this.grantPrincipal = new ManagedPolicyGrantPrincipal(this);
@@ -282,7 +297,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * Attaches this policy to a user.
    */
   public attachToUser(user: IUser) {
-    if (this.users.find(u => u.userArn === user.userArn)) { return; }
+    if (this.users.find((u) => u.userArn === user.userArn)) {
+      return;
+    }
     this.users.push(user);
   }
 
@@ -290,7 +307,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * Attaches this policy to a role.
    */
   public attachToRole(role: IRole) {
-    if (this.roles.find(r => r.roleArn === role.roleArn)) { return; }
+    if (this.roles.find((r) => r.roleArn === role.roleArn)) {
+      return;
+    }
     this.roles.push(role);
   }
 
@@ -298,7 +317,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * Attaches this policy to a group.
    */
   public attachToGroup(group: IGroup) {
-    if (this.groups.find(g => g.groupArn === group.groupArn)) { return; }
+    if (this.groups.find((g) => g.groupArn === group.groupArn)) {
+      return;
+    }
     this.groups.push(group);
   }
 
@@ -315,7 +336,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     if (result.length === 0 && this._precreatedPolicy) {
       PolicySynthesizer.getOrCreate(this).addManagedPolicy(this.node.path, {
         policyStatements: this.document.toJSON()?.Statement,
-        roles: this.roles.map(role => role.node.path),
+        roles: this.roles.map((role) => role.node.path),
       });
     }
     return result;
@@ -336,7 +357,9 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a resource-based policy.
     // We should fail because a managed policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new Error(`Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`);
+    throw new Error(
+      `Cannot use a ManagedPolicy '${this._managedPolicy.node.path}' as the 'Principal' or 'NotPrincipal' in an IAM Policy`
+    );
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

@@ -340,7 +340,7 @@ export interface FleetProps {
    *
    * @default true - Game sessions in `ACTIVE` status cannot be terminated during a scale-down event.
    */
-  readonly protectNewGameSession? : boolean;
+  readonly protectNewGameSession?: boolean;
 
   /**
    * A collection of server process configurations that describe the set of processes to run on each instance in a fleet.
@@ -414,19 +414,22 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     if (!attrs.fleetId && !attrs.fleetArn) {
       throw new Error('Either fleetId or fleetArn must be provided in FleetAttributes');
     }
-    const fleetId = attrs.fleetId ??
+    const fleetId =
+      attrs.fleetId ??
       cdk.Stack.of(scope).splitArn(attrs.fleetArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!fleetId) {
       throw new Error(`No fleet identifier found in ARN: '${attrs.fleetArn}'`);
     }
 
-    const fleetArn = attrs.fleetArn ?? cdk.Stack.of(scope).formatArn({
-      service: 'gamelift',
-      resource: 'fleet',
-      resourceName: attrs.fleetId,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    });
+    const fleetArn =
+      attrs.fleetArn ??
+      cdk.Stack.of(scope).formatArn({
+        service: 'gamelift',
+        resource: 'fleet',
+        resourceName: attrs.fleetId,
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      });
     class Import extends FleetBase {
       public readonly fleetId = fleetId!;
       public readonly fleetArn = fleetArn;
@@ -533,7 +536,10 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     return this.cannedMetric(GameLiftMetrics.minInstancesAverage, props);
   }
 
-  private cannedMetric(fn: (dims: { FleetId: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  private cannedMetric(
+    fn: (dims: { FleetId: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ FleetId: this.fleetId }),
       ...props,
@@ -576,10 +582,14 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     this.locations.push(location);
   }
 
-  protected parseResourceCreationLimitPolicy(props: FleetProps): CfnFleet.ResourceCreationLimitPolicyProperty | undefined {
-    if (!props.resourceCreationLimitPolicy ||
-        (!props.resourceCreationLimitPolicy.newGameSessionsPerCreator
-            && !props.resourceCreationLimitPolicy.policyPeriod)) {
+  protected parseResourceCreationLimitPolicy(
+    props: FleetProps
+  ): CfnFleet.ResourceCreationLimitPolicyProperty | undefined {
+    if (
+      !props.resourceCreationLimitPolicy ||
+      (!props.resourceCreationLimitPolicy.newGameSessionsPerCreator &&
+        !props.resourceCreationLimitPolicy.policyPeriod)
+    ) {
       return undefined;
     }
 
@@ -589,7 +599,7 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     };
   }
 
-  protected parseLocations(): CfnFleet.LocationConfigurationProperty[] | undefined {
+  protected parseLocations(): CfnFleet.LocationConfigurationProperty[] | undefined {
     if (!this.locations || this.locations.length === 0) {
       return undefined;
     }
@@ -606,11 +616,10 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     }
   }
 
-  protected parseLocationCapacity(capacity?: LocationCapacity): CfnFleet.LocationCapacityProperty | undefined {
-    if (!capacity ||
-        (!capacity.desiredCapacity
-            && !capacity.minSize
-            && !capacity.maxSize)) {
+  protected parseLocationCapacity(
+    capacity?: LocationCapacity
+  ): CfnFleet.LocationCapacityProperty | undefined {
+    if (!capacity || (!capacity.desiredCapacity && !capacity.minSize && !capacity.maxSize)) {
       return undefined;
     }
 
@@ -621,16 +630,22 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
     };
   }
 
-  protected parseRuntimeConfiguration(props: FleetProps): CfnFleet.RuntimeConfigurationProperty | undefined {
-    if (!props.runtimeConfiguration ||
-        (!props.runtimeConfiguration.gameSessionActivationTimeout
-            && !props.runtimeConfiguration.maxConcurrentGameSessionActivations
-            && props.runtimeConfiguration.serverProcesses.length == 0)) {
+  protected parseRuntimeConfiguration(
+    props: FleetProps
+  ): CfnFleet.RuntimeConfigurationProperty | undefined {
+    if (
+      !props.runtimeConfiguration ||
+      (!props.runtimeConfiguration.gameSessionActivationTimeout &&
+        !props.runtimeConfiguration.maxConcurrentGameSessionActivations &&
+        props.runtimeConfiguration.serverProcesses.length == 0)
+    ) {
       return undefined;
     }
     return {
-      gameSessionActivationTimeoutSeconds: props.runtimeConfiguration.gameSessionActivationTimeout?.toSeconds(),
-      maxConcurrentGameSessionActivations: props.runtimeConfiguration.maxConcurrentGameSessionActivations,
+      gameSessionActivationTimeoutSeconds:
+        props.runtimeConfiguration.gameSessionActivationTimeout?.toSeconds(),
+      maxConcurrentGameSessionActivations:
+        props.runtimeConfiguration.maxConcurrentGameSessionActivations,
       serverProcesses: props.runtimeConfiguration.serverProcesses.map(parseServerProcess),
     };
 
@@ -644,10 +659,13 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
   }
 
   protected warnVpcPeeringAuthorizations(scope: Construct): void {
-    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-gamelift:fleetAutorizeVpcPeering', [
-      'To authorize the VPC peering, call the GameLift service API CreateVpcPeeringAuthorization() or use the AWS CLI command create-vpc-peering-authorization.',
-      'Make this call using the account that manages your non-GameLift resources.',
-      'See: https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html',
-    ].join('\n'));
+    cdk.Annotations.of(scope).addWarningV2(
+      '@aws-cdk/aws-gamelift:fleetAutorizeVpcPeering',
+      [
+        'To authorize the VPC peering, call the GameLift service API CreateVpcPeeringAuthorization() or use the AWS CLI command create-vpc-peering-authorization.',
+        'Make this call using the account that manages your non-GameLift resources.',
+        'See: https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html',
+      ].join('\n')
+    );
   }
 }

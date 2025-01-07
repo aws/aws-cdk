@@ -19,7 +19,9 @@ export class TokenizedStringFragments {
 
   public get firstToken(): IResolvable | undefined {
     const first = this.fragments[0];
-    if (first.type === 'token') { return first.token; }
+    if (first.type === 'token') {
+      return first.token;
+    }
     return undefined;
   }
 
@@ -92,8 +94,12 @@ export class TokenizedStringFragments {
    * If there are any
    */
   public join(concat: IFragmentConcatenator): any {
-    if (this.fragments.length === 0) { return concat.join(undefined, undefined); }
-    if (this.fragments.length === 1) { return this.firstValue; }
+    if (this.fragments.length === 0) {
+      return concat.join(undefined, undefined);
+    }
+    if (this.fragments.length === 1) {
+      return this.firstValue;
+    }
 
     const values = this.fragments.map(fragmentValue);
 
@@ -125,8 +131,11 @@ export interface ITokenMapper {
  */
 function fragmentValue(fragment: Fragment): any {
   switch (fragment.type) {
-    case 'literal': return fragment.lit;
-    case 'token': return fragment.token.toString();
-    case 'intrinsic': return fragment.value;
+    case 'literal':
+      return fragment.lit;
+    case 'token':
+      return fragment.token.toString();
+    case 'intrinsic':
+      return fragment.value;
   }
 }

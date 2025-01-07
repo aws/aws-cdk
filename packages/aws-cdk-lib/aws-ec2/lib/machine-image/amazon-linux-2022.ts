@@ -1,4 +1,10 @@
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxImageSsmParameterBase } from './common';
+import {
+  AmazonLinuxCpuType,
+  AmazonLinuxEdition,
+  AmazonLinuxGeneration,
+  AmazonLinuxImageSsmParameterCommonOptions,
+  AmazonLinuxImageSsmParameterBase,
+} from './common';
 
 /**
  * Amazon Linux 2022 kernel versions
@@ -26,7 +32,7 @@ export class AmazonLinux2022Kernel {
    */
   public static readonly KERNEL_5_15 = new AmazonLinux2022Kernel('5.15');
 
-  constructor(private readonly version: string) { }
+  constructor(private readonly version: string) {}
 
   /**
    * Generate a string representation of the kernel
@@ -39,7 +45,8 @@ export class AmazonLinux2022Kernel {
 /**
  * Properties specific to al2022 images
  */
-export interface AmazonLinux2022ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
+export interface AmazonLinux2022ImageSsmParameterProps
+  extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
    * What kernel version of Amazon Linux to use
    *
@@ -69,13 +76,13 @@ export class AmazonLinux2022ImageSsmParameter extends AmazonLinuxImageSsmParamet
   public static ssmParameterName(props: AmazonLinux2022ImageSsmParameterProps): string {
     const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
 
-    const parts: Array<string|undefined> = [
+    const parts: Array<string | undefined> = [
       AmazonLinuxGeneration.AMAZON_LINUX_2022,
       'ami',
       edition !== AmazonLinuxEdition.STANDARD ? edition : undefined,
       props.kernel?.toString(),
       props.cpuType ?? AmazonLinuxCpuType.X86_64,
-    ].filter(x => !!x);
+    ].filter((x) => !!x);
 
     return '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
   }
@@ -87,5 +94,4 @@ export class AmazonLinux2022ImageSsmParameter extends AmazonLinuxImageSsmParamet
       userData: props.userData,
     });
   }
-
 }

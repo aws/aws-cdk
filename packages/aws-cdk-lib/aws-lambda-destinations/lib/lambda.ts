@@ -29,13 +29,19 @@ export interface LambdaDestinationOptions {
  * Use a Lambda function as a Lambda destination
  */
 export class LambdaDestination implements lambda.IDestination {
-  constructor(private readonly fn: lambda.IFunction, private readonly options: LambdaDestinationOptions = {}) {
-  }
+  constructor(
+    private readonly fn: lambda.IFunction,
+    private readonly options: LambdaDestinationOptions = {}
+  ) {}
 
   /**
    * Returns a destination configuration
    */
-  public bind(scope: Construct, fn: lambda.IFunction, options?: lambda.DestinationOptions): lambda.DestinationConfig {
+  public bind(
+    scope: Construct,
+    fn: lambda.IFunction,
+    options?: lambda.DestinationOptions
+  ): lambda.DestinationConfig {
     // Normal Lambda destination (full invocation record)
     if (!this.options.responseOnly) {
       // deduplicated automatically
@@ -48,7 +54,8 @@ export class LambdaDestination implements lambda.IDestination {
 
     // Otherwise add rule to extract the response payload and use EventBridge
     // as destination
-    if (!options) { // `options` added to bind() as optionnal to avoid breaking change
+    if (!options) {
+      // `options` added to bind() as optionnal to avoid breaking change
       throw new Error('Options must be defined when using `responseOnly`.');
     }
 

@@ -29,13 +29,18 @@ export interface SqsSendMessageProps extends ScheduleTargetBaseProps {
 export class SqsSendMessage extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly queue: sqs.IQueue,
-    private readonly props: SqsSendMessageProps = {},
+    private readonly props: SqsSendMessageProps = {}
   ) {
     super(props, queue.queueArn);
 
     if (props.messageGroupId !== undefined) {
-      if (!Token.isUnresolved(props.messageGroupId) && (props.messageGroupId.length < 1 || props.messageGroupId.length > 128)) {
-        throw new Error(`messageGroupId length must be between 1 and 128, got ${props.messageGroupId.length}`);
+      if (
+        !Token.isUnresolved(props.messageGroupId) &&
+        (props.messageGroupId.length < 1 || props.messageGroupId.length > 128)
+      ) {
+        throw new Error(
+          `messageGroupId length must be between 1 and 128, got ${props.messageGroupId.length}`
+        );
       }
       if (!queue.fifo) {
         throw new Error('target must be a FIFO queue if messageGroupId is specified');

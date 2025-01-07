@@ -3,12 +3,17 @@ import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
 import { FeatureFlags, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
+import {
+  ApplicationLoadBalancedServiceBase,
+  ApplicationLoadBalancedServiceBaseProps,
+} from '../base/application-load-balanced-service-base';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
 /**
  * The properties for the ApplicationLoadBalancedFargateService service.
  */
-export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationLoadBalancedServiceBaseProps, FargateServiceBaseProps {
+export interface ApplicationLoadBalancedFargateServiceProps
+  extends ApplicationLoadBalancedServiceBaseProps,
+    FargateServiceBaseProps {
   /**
    * Determines whether the service will be assigned a public IP address.
    *
@@ -42,7 +47,6 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
  * A Fargate service running on an ECS cluster fronted by an application load balancer.
  */
 export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalancedServiceBase {
-
   /**
    * Determines whether the service will be assigned a public IP address.
    */
@@ -60,7 +64,11 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
   /**
    * Constructs a new instance of the ApplicationLoadBalancedFargateService class.
    */
-  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedFargateServiceProps = {}) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: ApplicationLoadBalancedFargateServiceProps = {}
+  ) {
     super(scope, id, props);
 
     this.assignPublicIp = props.assignPublicIp ?? false;
@@ -83,9 +91,12 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
 
       // Create log driver if logging is enabled
       const enableLogging = taskImageOptions.enableLogging ?? true;
-      const logDriver = taskImageOptions.logDriver !== undefined
-        ? taskImageOptions.logDriver : enableLogging
-          ? this.createAWSLogDriver(this.node.id) : undefined;
+      const logDriver =
+        taskImageOptions.logDriver !== undefined
+          ? taskImageOptions.logDriver
+          : enableLogging
+            ? this.createAWSLogDriver(this.node.id)
+            : undefined;
 
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
@@ -118,7 +129,9 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
     }
 
-    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)
+      ? this.internalDesiredCount
+      : this.desiredCount;
 
     this.service = new FargateService(this, 'Service', {
       cluster: this.cluster,
@@ -147,7 +160,9 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
    * Throws an error if the specified percent is not an integer or negative.
    */
   private validateHealthyPercentage(name: string, value?: number) {
-    if (value === undefined || Token.isUnresolved(value)) { return; }
+    if (value === undefined || Token.isUnresolved(value)) {
+      return;
+    }
     if (!Number.isInteger(value) || value < 0) {
       throw new Error(`${name}: Must be a non-negative integer; received ${value}`);
     }

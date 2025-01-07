@@ -121,7 +121,7 @@ export interface ContainerDefinition {
    *
    * @default - none
    */
-  readonly environment?: {[key: string]: string};
+  readonly environment?: { [key: string]: string };
 
   /**
    * Hostname of the container within an inference pipeline. For single container models, this field
@@ -147,7 +147,6 @@ export interface ContainerDefinition {
  * Construction properties for a SageMaker Model.
  */
 export interface ModelProps {
-
   /**
    * The IAM role that the Amazon SageMaker service assumes.
    *
@@ -256,7 +255,10 @@ export class Model extends ModelBase {
    */
   public static fromModelAttributes(scope: Construct, id: string, attrs: ModelAttributes): IModel {
     const modelArn = attrs.modelArn;
-    const modelName = cdk.Stack.of(scope).splitArn(modelArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    const modelName = cdk.Stack.of(scope).splitArn(
+      modelArn,
+      cdk.ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName!;
     const role = attrs.role;
 
     class Import extends ModelBase {
@@ -309,13 +311,13 @@ export class Model extends ModelBase {
     });
 
     this._connections = this.configureNetworking(props);
-    this.subnets = (props.vpc) ? props.vpc.selectSubnets(props.vpcSubnets) : undefined;
+    this.subnets = props.vpc ? props.vpc.selectSubnets(props.vpcSubnets) : undefined;
 
     // set the sagemaker role or create new one
     this.role = props.role || this.createSageMakerRole();
     this.grantPrincipal = this.role;
 
-    (props.containers || []).map(c => this.addContainer(c));
+    (props.containers || []).map((c) => this.addContainer(c));
 
     const model = new CfnModel(this, 'Model', {
       executionRoleArn: this.role.roleArn,
@@ -360,12 +362,12 @@ export class Model extends ModelBase {
   }
 
   private renderPrimaryContainer(): CfnModel.ContainerDefinitionProperty | undefined {
-    return (this.containers.length === 1) ? this.containers[0] : undefined;
+    return this.containers.length === 1 ? this.containers[0] : undefined;
   }
 
   private renderContainers(): CfnModel.ContainerDefinitionProperty[] | undefined {
     this.validateContainers();
-    return (this.containers.length === 1) ? undefined : this.containers;
+    return this.containers.length === 1 ? undefined : this.containers;
   }
 
   private renderContainer(container: ContainerDefinition): CfnModel.ContainerDefinitionProperty {
@@ -379,13 +381,21 @@ export class Model extends ModelBase {
 
   private configureNetworking(props: ModelProps): ec2.Connections | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error('Cannot configure \'securityGroups\' or \'allowAllOutbound\' without configuring a VPC');
+      throw new Error(
+        "Cannot configure 'securityGroups' or 'allowAllOutbound' without configuring a VPC"
+      );
     }
 
-    if (!props.vpc) { return undefined; }
+    if (!props.vpc) {
+      return undefined;
+    }
 
-    if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups');
+    if (
+      props.securityGroups &&
+      props.securityGroups.length > 0 &&
+      props.allowAllOutbound !== undefined
+    ) {
+      throw new Error("Configure 'allowAllOutbound' directly on the supplied SecurityGroups");
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -403,11 +413,13 @@ export class Model extends ModelBase {
   }
 
   private renderVpcConfig(): CfnModel.VpcConfigProperty | undefined {
-    if (!this._connections) { return undefined; }
+    if (!this._connections) {
+      return undefined;
+    }
 
     return {
       subnets: this.subnets!.subnetIds,
-      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId),
+      securityGroupIds: this.connections.securityGroups.map((s) => s.securityGroupId),
     };
   }
 
@@ -416,7 +428,9 @@ export class Model extends ModelBase {
       assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
     });
     // Grant SageMaker FullAccess
-    sagemakerRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
+    sagemakerRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
+    );
 
     return sagemakerRole;
   }

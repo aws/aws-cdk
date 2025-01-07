@@ -82,14 +82,16 @@ export class Aspects {
    * @param options Options to apply on this aspect.
    */
   public add(aspect: IAspect, options?: AspectOptions) {
-    this._appliedAspects.push(new AspectApplication(this._scope, aspect, options?.priority ?? AspectPriority.DEFAULT));
+    this._appliedAspects.push(
+      new AspectApplication(this._scope, aspect, options?.priority ?? AspectPriority.DEFAULT)
+    );
   }
 
   /**
    * The list of aspects which were directly applied on this scope.
    */
   public get all(): IAspect[] {
-    return this._appliedAspects.map(application => application.aspect);
+    return this._appliedAspects.map((application) => application.aspect);
   }
 
   /**

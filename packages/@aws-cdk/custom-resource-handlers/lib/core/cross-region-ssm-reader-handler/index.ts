@@ -44,7 +44,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   return {
     Data: imports,
   };
-};
+}
 
 /**
  * Add tag to parameters for existing exports
@@ -52,20 +52,26 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 async function addTags(ssm: SSM, parameters: string[], keyName: string): Promise<void> {
   const limit = pLimit(10);
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-  await Promise.all(parameters.map((name) => limit(async () => {
-    try {
-      return await ssm.addTagsToResource({
-        ResourceId: name,
-        ResourceType: 'Parameter',
-        Tags: [{
-          Key: keyName,
-          Value: 'true',
-        }],
-      });
-    } catch (e) {
-      throw new Error(`Error importing ${name}: ${e}`);
-    }
-  })));
+  await Promise.all(
+    parameters.map((name) =>
+      limit(async () => {
+        try {
+          return await ssm.addTagsToResource({
+            ResourceId: name,
+            ResourceType: 'Parameter',
+            Tags: [
+              {
+                Key: keyName,
+                Value: 'true',
+              },
+            ],
+          });
+        } catch (e) {
+          throw new Error(`Error importing ${name}: ${e}`);
+        }
+      })
+    )
+  );
 }
 
 /**
@@ -74,21 +80,25 @@ async function addTags(ssm: SSM, parameters: string[], keyName: string): Promise
 async function removeTags(ssm: SSM, parameters: string[], keyName: string): Promise<void> {
   const limit = pLimit(10);
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-  await Promise.all(parameters.map(name => limit(async() => {
-    try {
-      return await ssm.removeTagsFromResource({
-        TagKeys: [keyName],
-        ResourceType: 'Parameter',
-        ResourceId: name,
-      });
-    } catch (e: any) {
-      if (e.name === 'InvalidResourceId') {
-        return;
-      } else {
-        throw new Error(`Error releasing import ${name}: ${e}`);
-      }
-    }
-  })));
+  await Promise.all(
+    parameters.map((name) =>
+      limit(async () => {
+        try {
+          return await ssm.removeTagsFromResource({
+            TagKeys: [keyName],
+            ResourceType: 'Parameter',
+            ResourceId: name,
+          });
+        } catch (e: any) {
+          if (e.name === 'InvalidResourceId') {
+            return;
+          } else {
+            throw new Error(`Error releasing import ${name}: ${e}`);
+          }
+        }
+      })
+    )
+  );
 }
 
 /**
@@ -98,5 +108,5 @@ async function removeTags(ssm: SSM, parameters: string[], keyName: string): Prom
  * @param filter filter out items that exist in this object
  */
 function except(source: string[], filter: string[]): string[] {
-  return source.filter(key => !filter.includes(key));
+  return source.filter((key) => !filter.includes(key));
 }

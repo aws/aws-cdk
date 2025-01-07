@@ -19,17 +19,18 @@ export class Fact {
    * All facts will be present in at least one region.
    */
   public static get names(): string[] {
-    return [...new Set(Object.values(this.database).flatMap(regionFacts => Object.keys(regionFacts)))];
+    return [
+      ...new Set(Object.values(this.database).flatMap((regionFacts) => Object.keys(regionFacts))),
+    ];
   }
 
   /**
    * Return all pairs of (region, factName) that are defined
    */
   public static definedFacts(): Array<string[]> {
-    return Object.entries(this.database)
-      .flatMap(([regionName, regionFacts]) =>
-        Object.keys(regionFacts).map((factName) =>
-          [regionName, factName] satisfies [string, string]));
+    return Object.entries(this.database).flatMap(([regionName, regionFacts]) =>
+      Object.keys(regionFacts).map((factName) => [regionName, factName] satisfies [string, string])
+    );
   }
 
   /**
@@ -71,7 +72,9 @@ export class Fact {
   public static register(fact: IFact, allowReplacing = false): void {
     const regionFacts = this.database[fact.region] || (this.database[fact.region] = {});
     if (fact.name in regionFacts && regionFacts[fact.name] !== fact.value && !allowReplacing) {
-      throw new Error(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
+      throw new Error(
+        `Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`
+      );
     }
     if (fact.value !== undefined) {
       regionFacts[fact.name] = fact.value;
@@ -88,7 +91,9 @@ export class Fact {
   public static unregister(region: string, name: string, value?: string): void {
     const regionFacts = this.database[region] || {};
     if (name in regionFacts && value && regionFacts[name] !== value) {
-      throw new Error(`Attempted to remove ${name} from ${region} with value ${value}, but the fact's value is ${regionFacts[name]}`);
+      throw new Error(
+        `Attempted to remove ${name} from ${region} with value ${value}, but the fact's value is ${regionFacts[name]}`
+      );
     }
     delete regionFacts[name];
   }
@@ -154,12 +159,14 @@ export class FactName {
   /**
    * The endpoint used for aliasing S3 static websites in Route 53
    */
-  public static readonly S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID = 's3-static-website:route-53-hosted-zone-id';
+  public static readonly S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID =
+    's3-static-website:route-53-hosted-zone-id';
 
   /**
    * The hosted zone ID used by Route 53 to alias a EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
    */
-  public static readonly EBS_ENV_ENDPOINT_HOSTED_ZONE_ID = 'ebs-environment:route-53-hosted-zone-id';
+  public static readonly EBS_ENV_ENDPOINT_HOSTED_ZONE_ID =
+    'ebs-environment:route-53-hosted-zone-id';
 
   /**
    * The prefix for VPC Endpoint Service names,

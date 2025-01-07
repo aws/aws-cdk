@@ -57,9 +57,7 @@ const bucket = new Bucket(stack, 'Bucket', {
 });
 const deployment = new BucketDeployment(stack, 'BucketDeployment', {
   destinationBucket: bucket,
-  sources: [
-    Source.data('key', 'test'),
-  ],
+  sources: [Source.data('key', 'test')],
 });
 const pipeline = new Pipeline(stack, 'Pipeline', {
   crossAccountKeys: true,
@@ -92,21 +90,29 @@ new scheduler.Schedule(stack, 'Schedule', {
   target: new CodePipelineStartPipelineExecution(pipeline),
 });
 
-const integrationTest = new IntegTest(app, 'integrationtest-codepipeline-start-pipeline-execution', {
-  testCases: [stack],
-  stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
-});
+const integrationTest = new IntegTest(
+  app,
+  'integrationtest-codepipeline-start-pipeline-execution',
+  {
+    testCases: [stack],
+    stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
+  }
+);
 
 const getParameter = integrationTest.assertions.awsApiCall('SSM', 'getParameter', {
   Name: payload.Name,
 });
 
 // Verifies that expected parameter is created by the invoked step function
-getParameter.expect(ExpectedResult.objectLike({
-  Parameter: {
-    Name: payload.Name,
-    Value: payload.Value,
-  },
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(1),
-});
+getParameter
+  .expect(
+    ExpectedResult.objectLike({
+      Parameter: {
+        Name: payload.Name,
+        Value: payload.Value,
+      },
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(1),
+  });

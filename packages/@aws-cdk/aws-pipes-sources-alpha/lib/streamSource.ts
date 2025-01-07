@@ -115,7 +115,9 @@ function validateMaximumBatchingWindow(window?: number) {
 function validateMaximumRecordAge(age?: number) {
   if (age !== undefined) {
     if (age < 60 || age > 604800) {
-      throw new Error(`Maximum record age in seconds must be between 60 and 604800 (leave undefined for infinite), received ${age}`);
+      throw new Error(
+        `Maximum record age in seconds must be between 60 and 604800 (leave undefined for infinite), received ${age}`
+      );
     }
   }
 }

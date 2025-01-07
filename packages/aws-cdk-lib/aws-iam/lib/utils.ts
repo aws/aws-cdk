@@ -11,7 +11,9 @@ import { Resource } from '../../core';
  *   Additionally, the type of the principal will now also be IConstruct
  *   (because a newly created resource must be a construct)
  */
-export function principalIsOwnedResource(principal: IPrincipal): principal is IPrincipal & IConstruct {
+export function principalIsOwnedResource(
+  principal: IPrincipal
+): principal is IPrincipal & IConstruct {
   // a newly created resource will for sure be a construct
   if (!isConstruct(principal)) {
     return false;
@@ -31,8 +33,11 @@ export function principalIsOwnedResource(principal: IPrincipal): principal is IP
  */
 function isConstruct(x: any): x is IConstruct {
   const sym = Symbol.for('constructs.Construct.node');
-  return (typeof x === 'object' && x &&
-    (x instanceof Construct // happy fast case
-      || !!(x as any).node // constructs v10
-      || !!(x as any)[sym])); // constructs v3
+  return (
+    typeof x === 'object' &&
+    x &&
+    (x instanceof Construct || // happy fast case
+      !!(x as any).node || // constructs v10
+      !!(x as any)[sym])
+  ); // constructs v3
 }

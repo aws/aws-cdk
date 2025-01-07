@@ -5,8 +5,10 @@ import { httpRequest } from './outbound';
 import { log, withRetries } from './util';
 import { OnEventResponse } from '../types';
 
-export const CREATE_FAILED_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED';
-export const MISSING_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID';
+export const CREATE_FAILED_PHYSICAL_ID_MARKER =
+  'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED';
+export const MISSING_PHYSICAL_ID_MARKER =
+  'AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID';
 
 export interface CloudFormationResponseOptions {
   readonly reason?: string;
@@ -22,7 +24,11 @@ export interface CloudFormationEventContext {
   Data?: any;
 }
 
-export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudFormationEventContext, options: CloudFormationResponseOptions = { }) {
+export async function submitResponse(
+  status: 'SUCCESS' | 'FAILED',
+  event: CloudFormationEventContext,
+  options: CloudFormationResponseOptions = {}
+) {
   const json: AWSLambda.CloudFormationCustomResourceResponse = {
     Status: status,
     Reason: options.reason || status,
@@ -48,26 +54,31 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
     attempts: 5,
     sleep: 1000,
   };
-  await withRetries(retryOptions, httpRequest)({
-    hostname: parsedUrl.hostname,
-    path: parsedUrl.path,
-    method: 'PUT',
-    headers: {
-      'content-type': '',
-      'content-length': Buffer.byteLength(responseBody, 'utf8'),
+  await withRetries(retryOptions, httpRequest)(
+    {
+      hostname: parsedUrl.hostname,
+      path: parsedUrl.path,
+      method: 'PUT',
+      headers: {
+        'content-type': '',
+        'content-length': Buffer.byteLength(responseBody, 'utf8'),
+      },
     },
-  }, responseBody);
+    responseBody
+  );
 }
 
 export let includeStackTraces = true; // for unit tests
 
 export function safeHandler(block: (event: any) => Promise<void>) {
   return async (event: any) => {
-
     // ignore DELETE event when the physical resource ID is the marker that
     // indicates that this DELETE is a subsequent DELETE to a failed CREATE
     // operation.
-    if (event.RequestType === 'Delete' && event.PhysicalResourceId === CREATE_FAILED_PHYSICAL_ID_MARKER) {
+    if (
+      event.RequestType === 'Delete' &&
+      event.PhysicalResourceId === CREATE_FAILED_PHYSICAL_ID_MARKER
+    ) {
       log('ignoring DELETE event caused by a failed CREATE event');
       await submitResponse('SUCCESS', event);
       return;
@@ -89,12 +100,16 @@ export function safeHandler(block: (event: any) => Promise<void>) {
         // address this, we use a marker so the provider framework can simply
         // ignore the subsequent DELETE.
         if (event.RequestType === 'Create') {
-          log('CREATE failed, responding with a marker physical resource id so that the subsequent DELETE will be ignored');
+          log(
+            'CREATE failed, responding with a marker physical resource id so that the subsequent DELETE will be ignored'
+          );
           event.PhysicalResourceId = CREATE_FAILED_PHYSICAL_ID_MARKER;
         } else {
           // otherwise, if PhysicalResourceId is not specified, something is
           // terribly wrong because all other events should have an ID.
-          log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify({ ...event, ResponseURL: '...' })}`);
+          log(
+            `ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify({ ...event, ResponseURL: '...' })}`
+          );
         }
       }
 
@@ -120,4 +135,4 @@ export function redactDataFromPayload(payload: OnEventResponse) {
   return redactedPayload;
 }
 
-export class Retry extends Error { }
+export class Retry extends Error {}

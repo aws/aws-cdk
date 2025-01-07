@@ -7,8 +7,7 @@ import { singletonActionRole } from './private/role';
 /**
  * Configuration properties of an action for CloudWatch Logs.
  */
-export interface CloudWatchLogsActionProps extends CommonActionProps {
-}
+export interface CloudWatchLogsActionProps extends CommonActionProps {}
 
 /**
  * The action to send data to Amazon CloudWatch Logs
@@ -22,7 +21,7 @@ export class CloudWatchLogsAction implements iot.IAction {
    */
   constructor(
     private readonly logGroup: logs.ILogGroup,
-    props: CloudWatchLogsActionProps = {},
+    props: CloudWatchLogsActionProps = {}
   ) {
     this.role = props.role;
   }

@@ -1,10 +1,20 @@
 import * as path from 'path';
 import { Writable, WritableOptions } from 'stream';
 import { StringDecoder } from 'string_decoder';
-import { fullDiff, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
+import {
+  fullDiff,
+  formatDifferences,
+  ResourceDifference,
+  ResourceImpact,
+} from '@aws-cdk/cloudformation-diff';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
-import { Diagnostic, DiagnosticReason, DestructiveChange, SnapshotVerificationOptions } from '../workers/common';
+import {
+  Diagnostic,
+  DiagnosticReason,
+  DestructiveChange,
+  SnapshotVerificationOptions,
+} from '../workers/common';
 
 interface SnapshotAssembly {
   /**
@@ -40,10 +50,16 @@ export class IntegSnapshotRunner extends IntegRunner {
    *
    * @returns any diagnostics and any destructive changes
    */
-  public testSnapshot(options: SnapshotVerificationOptions = {}): { diagnostics: Diagnostic[]; destructiveChanges: DestructiveChange[] } {
+  public testSnapshot(options: SnapshotVerificationOptions = {}): {
+    diagnostics: Diagnostic[];
+    destructiveChanges: DestructiveChange[];
+  } {
     let doClean = true;
     try {
-      const expectedSnapshotAssembly = this.getSnapshotAssembly(this.snapshotDir, this.expectedTestSuite?.stacks);
+      const expectedSnapshotAssembly = this.getSnapshotAssembly(
+        this.snapshotDir,
+        this.expectedTestSuite?.stacks
+      );
 
       // synth the integration test
       // FIXME: ideally we should not need to run this again if
@@ -52,9 +68,11 @@ export class IntegSnapshotRunner extends IntegRunner {
       // to produce the "correct" snapshot
       const env = {
         ...DEFAULT_SYNTH_OPTIONS.env,
-        CDK_CONTEXT_JSON: JSON.stringify(this.getContext({
-          ...this.actualTestSuite.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {},
-        })),
+        CDK_CONTEXT_JSON: JSON.stringify(
+          this.getContext({
+            ...(this.actualTestSuite.enableLookups ? DEFAULT_SYNTH_OPTIONS.context : {}),
+          })
+        ),
       };
       this.cdk.synthFast({
         execCmd: this.cdkApp.split(' '),
@@ -63,7 +81,10 @@ export class IntegSnapshotRunner extends IntegRunner {
       });
 
       // read the "actual" snapshot
-      const actualSnapshotAssembly = this.getSnapshotAssembly(this.cdkOutDir, this.actualTestSuite.stacks);
+      const actualSnapshotAssembly = this.getSnapshotAssembly(
+        this.cdkOutDir,
+        this.actualTestSuite.stacks
+      );
 
       // diff the existing snapshot (expected) with the integration test (actual)
       const diagnostics = this.diffAssembly(expectedSnapshotAssembly, actualSnapshotAssembly);
@@ -75,9 +96,9 @@ export class IntegSnapshotRunner extends IntegRunner {
         if (options.retain) {
           additionalMessages.push(
             `(Failure retained) Expected: ${path.relative(process.cwd(), this.snapshotDir)}`,
-            `                   Actual:   ${path.relative(process.cwd(), this.cdkOutDir)}`,
+            `                   Actual:   ${path.relative(process.cwd(), this.cdkOutDir)}`
           ),
-          doClean = false;
+            (doClean = false);
         }
 
         if (options.verbose) {
@@ -89,8 +110,7 @@ export class IntegSnapshotRunner extends IntegRunner {
 
           additionalMessages.push(
             'Repro:',
-            `  ${[...envCmd, 'cdk synth', `-a '${this.cdkApp}'`, `-o '${this.cdkOutDir}'`, ...Object.entries(this.getContext()).flatMap(([k, v]) => typeof v !== 'object' ? [`-c '${k}=${v}'`] : [])].join(' ')}`,
-
+            `  ${[...envCmd, 'cdk synth', `-a '${this.cdkApp}'`, `-o '${this.cdkOutDir}'`, ...Object.entries(this.getContext()).flatMap(([k, v]) => (typeof v !== 'object' ? [`-c '${k}=${v}'`] : []))].join(' ')}`
           );
         }
 
@@ -118,7 +138,10 @@ export class IntegSnapshotRunner extends IntegRunner {
    * @param pickStacks Pick only these stacks from the cloud assembly
    * @returns A SnapshotAssembly, the collection of all templates in this snapshot and required meta data
    */
-  private getSnapshotAssembly(cloudAssemblyDir: string, pickStacks: string[] = []): SnapshotAssembly {
+  private getSnapshotAssembly(
+    cloudAssemblyDir: string,
+    pickStacks: string[] = []
+  ): SnapshotAssembly {
     const assembly = this.readAssembly(cloudAssemblyDir);
     const stacks = assembly.stacks;
     const snapshots: SnapshotAssembly = {};
@@ -165,7 +188,7 @@ export class IntegSnapshotRunner extends IntegRunner {
    */
   private diffAssembly(
     expected: SnapshotAssembly,
-    actual: SnapshotAssembly,
+    actual: SnapshotAssembly
   ): { diagnostics: Diagnostic[]; destructiveChanges: DestructiveChange[] } {
     const failures: Diagnostic[] = [];
     const destructiveChanges: DestructiveChange[] = [];
@@ -187,8 +210,8 @@ export class IntegSnapshotRunner extends IntegRunner {
 
     for (const [stackId, stack] of Object.entries(actual)) {
       for (const templateId of Object.keys(stack.templates)) {
-      // check if there is a CFN template in the "actual" snapshot
-      // that does not exist in the current snapshot
+        // check if there is a CFN template in the "actual" snapshot
+        // that does not exist in the current snapshot
         if (!expected[stackId]?.templates[templateId]) {
           failures.push({
             testName: this.testName,
@@ -209,7 +232,10 @@ export class IntegSnapshotRunner extends IntegRunner {
           // comparison
           if (!config.diffAssets) {
             actualTemplate = this.canonicalizeTemplate(actualTemplate, actual[stackId].assets);
-            expectedTemplate = this.canonicalizeTemplate(expectedTemplate, expected[stackId].assets);
+            expectedTemplate = this.canonicalizeTemplate(
+              expectedTemplate,
+              expected[stackId].assets
+            );
           }
           const templateDiff = fullDiff(expectedTemplate, actualTemplate);
           if (!templateDiff.isEmpty) {
@@ -217,35 +243,37 @@ export class IntegSnapshotRunner extends IntegRunner {
 
             // go through all the resource differences and check for any
             // "destructive" changes
-            templateDiff.resources.forEachDifference((logicalId: string, change: ResourceDifference) => {
-            // if the change is a removal it will not show up as a 'changeImpact'
-            // so need to check for it separately, unless it is a resourceType that
-            // has been "allowed" to be destroyed
-              const resourceType = change.oldValue?.Type ?? change.newValue?.Type;
-              if (resourceType && allowedDestroyTypes.includes(resourceType)) {
-                return;
-              }
-              if (change.isRemoval) {
-                destructiveChanges.push({
-                  impact: ResourceImpact.WILL_DESTROY,
-                  logicalId,
-                  stackName: templateId,
-                });
-              } else {
-                switch (change.changeImpact) {
-                  case ResourceImpact.MAY_REPLACE:
-                  case ResourceImpact.WILL_ORPHAN:
-                  case ResourceImpact.WILL_DESTROY:
-                  case ResourceImpact.WILL_REPLACE:
-                    destructiveChanges.push({
-                      impact: change.changeImpact,
-                      logicalId,
-                      stackName: templateId,
-                    });
-                    break;
+            templateDiff.resources.forEachDifference(
+              (logicalId: string, change: ResourceDifference) => {
+                // if the change is a removal it will not show up as a 'changeImpact'
+                // so need to check for it separately, unless it is a resourceType that
+                // has been "allowed" to be destroyed
+                const resourceType = change.oldValue?.Type ?? change.newValue?.Type;
+                if (resourceType && allowedDestroyTypes.includes(resourceType)) {
+                  return;
+                }
+                if (change.isRemoval) {
+                  destructiveChanges.push({
+                    impact: ResourceImpact.WILL_DESTROY,
+                    logicalId,
+                    stackName: templateId,
+                  });
+                } else {
+                  switch (change.changeImpact) {
+                    case ResourceImpact.MAY_REPLACE:
+                    case ResourceImpact.WILL_ORPHAN:
+                    case ResourceImpact.WILL_DESTROY:
+                    case ResourceImpact.WILL_REPLACE:
+                      destructiveChanges.push({
+                        impact: change.changeImpact,
+                        logicalId,
+                        stackName: templateId,
+                      });
+                      break;
+                  }
                 }
               }
-            });
+            );
             const writable = new StringWritable({});
             formatDifferences(writable, templateDiff);
             failures.push({
@@ -271,21 +299,26 @@ export class IntegSnapshotRunner extends IntegRunner {
   }
 
   /**
-  * Reduce template to a normal form where asset references have been normalized
-  *
-  * This makes it possible to compare templates if all that's different between
-  * them is the hashes of the asset values.
-  */
+   * Reduce template to a normal form where asset references have been normalized
+   *
+   * This makes it possible to compare templates if all that's different between
+   * them is the hashes of the asset values.
+   */
   private canonicalizeTemplate(template: any, assets: string[]): any {
     const assetsSeen = new Set<string>();
     const stringSubstitutions = new Array<[RegExp, string]>();
 
     // Find assets via parameters (for LegacyStackSynthesizer)
-    const paramRe = /^AssetParameters([a-zA-Z0-9]{64})(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})$/;
+    const paramRe =
+      /^AssetParameters([a-zA-Z0-9]{64})(S3Bucket|S3VersionKey|ArtifactHash)([a-zA-Z0-9]{8})$/;
     for (const paramName of Object.keys(template?.Parameters || {})) {
       const m = paramRe.exec(paramName);
-      if (!m) { continue; }
-      if (assetsSeen.has(m[1])) { continue; }
+      if (!m) {
+        continue;
+      }
+      if (assetsSeen.has(m[1])) {
+        continue;
+      }
 
       assetsSeen.add(m[1]);
       const ix = assetsSeen.size;
@@ -296,22 +329,16 @@ export class IntegSnapshotRunner extends IntegRunner {
         `Asset${ix}$1`,
       ]);
       // Substring asset hash reference
-      stringSubstitutions.push([
-        new RegExp(`${m[1]}`),
-        `Asset${ix}Hash`,
-      ]);
+      stringSubstitutions.push([new RegExp(`${m[1]}`), `Asset${ix}Hash`]);
     }
 
     // find assets defined in the asset manifest
     try {
-      assets.forEach(asset => {
+      assets.forEach((asset) => {
         if (!assetsSeen.has(asset)) {
           assetsSeen.add(asset);
           const ix = assetsSeen.size;
-          stringSubstitutions.push([
-            new RegExp(asset),
-            `Asset${ix}$1`,
-          ]);
+          stringSubstitutions.push([new RegExp(asset), `Asset${ix}$1`]);
         }
       });
     } catch {

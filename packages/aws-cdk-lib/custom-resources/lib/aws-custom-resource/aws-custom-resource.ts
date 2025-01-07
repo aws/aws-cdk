@@ -38,7 +38,6 @@ export class PhysicalResourceIdReference implements cdk.IResolvable {
  * Physical ID of the custom resource.
  */
 export class PhysicalResourceId {
-
   /**
    * Extract the physical resource id from the path (dot notation) to the data in the API call response.
    */
@@ -57,7 +56,10 @@ export class PhysicalResourceId {
    * @param responsePath Path to a response data element to be used as the physical id.
    * @param id Literal string to be used as the physical id.
    */
-  private constructor(public readonly responsePath?: string, public readonly id?: string) { }
+  private constructor(
+    public readonly responsePath?: string,
+    public readonly id?: string
+  ) {}
 }
 
 /**
@@ -210,7 +212,6 @@ export interface AwsSdkCall {
  * Options for the auto-generation of policies based on the configured SDK calls.
  */
 export interface SdkCallsPolicyOptions {
-
   /**
    * The resources that the calls will have access to.
    *
@@ -221,14 +222,12 @@ export interface SdkCallsPolicyOptions {
    * Note that will apply to ALL SDK calls.
    */
   readonly resources: string[];
-
 }
 
 /**
  * The IAM Policy that will be applied to the different calls.
  */
 export class AwsCustomResourcePolicy {
-
   /**
    * Use this constant to configure access to any resource.
    */
@@ -265,7 +264,10 @@ export class AwsCustomResourcePolicy {
    * @param statements statements for explicit policy.
    * @param resources resources for auto-generated from SDK calls.
    */
-  private constructor(public readonly statements: iam.PolicyStatement[], public readonly resources?: string[]) { }
+  private constructor(
+    public readonly statements: iam.PolicyStatement[],
+    public readonly resources?: string[]
+  ) {}
 }
 
 /**
@@ -448,13 +450,13 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   public static readonly PROVIDER_FUNCTION_UUID = '679f53fa-c002-430c-b0da-5b7982bd2287';
 
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
-
     for (const call of sdkCalls) {
       if (call?.ignoreErrorCodesMatching) {
-        throw new Error(`\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.');
+        throw new Error(
+          `\`${caller}\`` + ' cannot be called along with `ignoreErrorCodesMatching`.'
+        );
       }
     }
-
   }
 
   public readonly grantPrincipal: iam.IPrincipal;
@@ -480,7 +482,9 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     }
 
     if (!props.onCreate && props.onUpdate && !props.onUpdate.physicalResourceId) {
-      throw new Error("'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted.");
+      throw new Error(
+        "'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted."
+      );
     }
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
@@ -490,7 +494,9 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     }
 
     if (includesPhysicalResourceIdRef(props.onCreate?.parameters)) {
-      throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
+      throw new Error(
+        '`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.'
+      );
     }
 
     this.props = props;
@@ -517,17 +523,21 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     });
     this.grantPrincipal = provider.grantPrincipal;
 
-    const installLatestAwsSdk = (props.installLatestAwsSdk
-      ?? this.node.tryGetContext(cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT)
-      ?? true);
+    const installLatestAwsSdk =
+      props.installLatestAwsSdk ??
+      this.node.tryGetContext(cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT) ??
+      true;
 
     if (installLatestAwsSdk && props.installLatestAwsSdk === undefined) {
       // This is dangerous. Add a warning.
-      Annotations.of(this).addWarningV2('@aws-cdk/custom-resources:installLatestAwsSdkNotSpecified', [
-        'installLatestAwsSdk was not specified, and defaults to true. You probably do not want this.',
-        `Set the global context flag \'${cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT}\' to false to switch this behavior off project-wide,`,
-        'or set the property explicitly to true if you know you need to call APIs that are not in Lambda\'s built-in SDK version.',
-      ].join(' '));
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/custom-resources:installLatestAwsSdkNotSpecified',
+        [
+          'installLatestAwsSdk was not specified, and defaults to true. You probably do not want this.',
+          `Set the global context flag \'${cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT}\' to false to switch this behavior off project-wide,`,
+          "or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version.",
+        ].join(' ')
+      );
     }
 
     const create = props.onCreate || props.onUpdate;
@@ -599,7 +609,10 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getResponseFieldReference(dataPath: string) {
-    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getData');
+    AwsCustomResource.breakIgnoreErrorsCircuit(
+      [this.props.onCreate, this.props.onUpdate],
+      'getData'
+    );
     return this.customResource.getAtt(dataPath);
   }
 
@@ -615,7 +628,10 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
    * @param dataPath the path to the data
    */
   public getResponseField(dataPath: string): string {
-    AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getDataString');
+    AwsCustomResource.breakIgnoreErrorsCircuit(
+      [this.props.onCreate, this.props.onUpdate],
+      'getDataString'
+    );
     return this.customResource.getAttString(dataPath);
   }
 

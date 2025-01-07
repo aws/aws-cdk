@@ -12,4 +12,3 @@ export enum AssetType {
    */
   DOCKER_IMAGE = 'docker-image',
 }
-

@@ -12,7 +12,7 @@ export class Errors {
    * Test whether the given errors is a ConstructionError
    */
   public static isConstructError(x: any): x is ConstructError {
-    return x !== null && typeof(x) === 'object' && CONSTRUCT_ERROR_SYMBOL in x;
+    return x !== null && typeof x === 'object' && CONSTRUCT_ERROR_SYMBOL in x;
   }
 
   /**
@@ -87,9 +87,7 @@ abstract class ConstructError extends Error {
       }
     }
 
-    const stack = [
-      `${this.name}: ${this.message}`,
-    ];
+    const stack = [`${this.name}: ${this.message}`];
 
     if (this.constructInfo) {
       stack.push(`in ${this.constructInfo?.fqn} at [${this.constructPath}]`);
@@ -110,9 +108,7 @@ abstract class ConstructError extends Error {
   private constructStack(prev?: string) {
     const indent = ' '.repeat(4);
 
-    const stack = [
-      `${this.name}: ${this.message}`,
-    ];
+    const stack = [`${this.name}: ${this.message}`];
 
     if (this.constructInfo) {
       stack.push(`${indent}at path [${this.constructPath}] in ${this.constructInfo?.fqn}`);

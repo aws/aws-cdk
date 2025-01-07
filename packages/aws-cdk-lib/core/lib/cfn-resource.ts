@@ -37,7 +37,7 @@ export class CfnResource extends CfnRefElement {
    * Check whether the given object is a CfnResource
    */
   public static isCfnResource(x: any): x is CfnResource {
-    return x !== null && typeof(x) === 'object' && x.cfnResourceType !== undefined;
+    return x !== null && typeof x === 'object' && x.cfnResourceType !== undefined;
   }
 
   // MAINTAINERS NOTE: this class serves as the base class for the generated L1
@@ -152,12 +152,17 @@ export class CfnResource extends CfnRefElement {
         ];
 
         // error if flag is set, warn if flag is not
-        const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
+        const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(
+          this.cfnResourceType
+        );
         if (problematicSnapshotPolicy) {
-          if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
+          if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY)) {
             throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
           } else {
-            Annotations.of(this).addWarningV2(`@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
+            Annotations.of(this).addWarningV2(
+              `@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`,
+              `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`
+            );
           }
         }
 
@@ -242,7 +247,8 @@ export class CfnResource extends CfnRefElement {
 
       // if we can't recurse further or the previous value is not an
       // object overwrite it with an object.
-      const isObject = curr[key] != null && typeof(curr[key]) === 'object' && !Array.isArray(curr[key]);
+      const isObject =
+        curr[key] != null && typeof curr[key] === 'object' && !Array.isArray(curr[key]);
       if (!isObject) {
         curr[key] = {};
       }
@@ -314,7 +320,7 @@ export class CfnResource extends CfnRefElement {
    * This can be used for resources across stacks (including nested stacks)
    * and the dependency will automatically be removed from the relevant scope.
    */
-  public removeDependency(target: CfnResource) : void {
+  public removeDependency(target: CfnResource): void {
     // skip this dependency if the target is not part of the output
     if (!target.shouldSynthesize()) {
       return;
@@ -338,7 +344,7 @@ export class CfnResource extends CfnRefElement {
    * @param target The dependency to replace
    * @param newTarget The new dependency to add
    */
-  public replaceDependency(target: CfnResource, newTarget: CfnResource) : void {
+  public replaceDependency(target: CfnResource, newTarget: CfnResource): void {
     if (this.obtainDependencies().includes(target)) {
       this.removeDependency(target);
       this.addDependency(newTarget);
@@ -420,7 +426,7 @@ export class CfnResource extends CfnRefElement {
    */
   public _toCloudFormation(): object {
     if (!this.shouldSynthesize()) {
-      return { };
+      return {};
     }
 
     try {
@@ -428,31 +434,40 @@ export class CfnResource extends CfnRefElement {
         Resources: {
           // Post-Resolve operation since otherwise deepMerge is going to mix values into
           // the Token objects returned by ignoreEmpty.
-          [this.logicalId]: new PostResolveToken({
-            Type: this.cfnResourceType,
-            Properties: ignoreEmpty(this.cfnProperties),
-            DependsOn: ignoreEmpty(renderDependsOn(this.dependsOn)),
-            CreationPolicy: capitalizePropertyNames(this, renderCreationPolicy(this.cfnOptions.creationPolicy)),
-            UpdatePolicy: capitalizePropertyNames(this, this.cfnOptions.updatePolicy),
-            UpdateReplacePolicy: capitalizePropertyNames(this, this.cfnOptions.updateReplacePolicy),
-            DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),
-            Version: this.cfnOptions.version,
-            Description: this.cfnOptions.description,
-            Metadata: ignoreEmpty(this.cfnOptions.metadata),
-            Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
-          }, (resourceDef, context) => {
-            const renderedProps = this.renderProperties(resourceDef.Properties || {});
-            if (renderedProps) {
-              const hasDefined = Object.values(renderedProps).find(v => v !== undefined);
-              resourceDef.Properties = hasDefined !== undefined ? renderedProps : undefined;
+          [this.logicalId]: new PostResolveToken(
+            {
+              Type: this.cfnResourceType,
+              Properties: ignoreEmpty(this.cfnProperties),
+              DependsOn: ignoreEmpty(renderDependsOn(this.dependsOn)),
+              CreationPolicy: capitalizePropertyNames(
+                this,
+                renderCreationPolicy(this.cfnOptions.creationPolicy)
+              ),
+              UpdatePolicy: capitalizePropertyNames(this, this.cfnOptions.updatePolicy),
+              UpdateReplacePolicy: capitalizePropertyNames(
+                this,
+                this.cfnOptions.updateReplacePolicy
+              ),
+              DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),
+              Version: this.cfnOptions.version,
+              Description: this.cfnOptions.description,
+              Metadata: ignoreEmpty(this.cfnOptions.metadata),
+              Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
+            },
+            (resourceDef, context) => {
+              const renderedProps = this.renderProperties(resourceDef.Properties || {});
+              if (renderedProps) {
+                const hasDefined = Object.values(renderedProps).find((v) => v !== undefined);
+                resourceDef.Properties = hasDefined !== undefined ? renderedProps : undefined;
+              }
+              const resolvedRawOverrides = context.resolve(this.rawOverrides, {
+                // we need to preserve the empty elements here,
+                // as that's how removing overrides are represented as
+                removeEmpty: false,
+              });
+              return deepMerge(resourceDef, resolvedRawOverrides);
             }
-            const resolvedRawOverrides = context.resolve(this.rawOverrides, {
-              // we need to preserve the empty elements here,
-              // as that's how removing overrides are represented as
-              removeEmpty: false,
-            });
-            return deepMerge(resourceDef, resolvedRawOverrides);
-          }),
+          ),
         },
       };
       return ret;
@@ -474,14 +489,15 @@ export class CfnResource extends CfnRefElement {
     // returns the set of logical ID (tokens) this resource depends on
     // sorted by construct paths to ensure test determinism
     function renderDependsOn(dependsOn: Set<CfnResource>) {
-      return Array
-        .from(dependsOn)
+      return Array.from(dependsOn)
         .sort((x, y) => x.node.path.localeCompare(y.node.path))
-        .map(r => r.logicalId);
+        .map((r) => r.logicalId);
     }
 
     function renderCreationPolicy(policy: CfnCreationPolicy | undefined): any {
-      if (!policy) { return undefined; }
+      if (!policy) {
+        return undefined;
+      }
       const result: any = { ...policy };
       if (policy.resourceSignal && policy.resourceSignal.timeout) {
         result.resourceSignal = policy.resourceSignal;
@@ -503,7 +519,7 @@ export class CfnResource extends CfnRefElement {
     return props;
   }
 
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+  protected renderProperties(props: { [key: string]: any }): { [key: string]: any } {
     return props;
   }
 
@@ -647,8 +663,10 @@ const MERGE_EXCLUDE_KEYS: string[] = [
  */
 function deepMerge(target: any, ...sources: any[]) {
   for (const source of sources) {
-    if (typeof(source) !== 'object' || typeof(target) !== 'object') {
-      throw new Error(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
+    if (typeof source !== 'object' || typeof target !== 'object') {
+      throw new Error(
+        `Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`
+      );
     }
 
     for (const key of Object.keys(source)) {
@@ -657,10 +675,10 @@ function deepMerge(target: any, ...sources: any[]) {
       }
 
       const value = source[key];
-      if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
+      if (typeof value === 'object' && value != null && !Array.isArray(value)) {
         // if the value at the target is not an object, override it with an
         // object so we can continue the recursion
-        if (typeof(target[key]) !== 'object') {
+        if (typeof target[key] !== 'object') {
           target[key] = {};
 
           /**
@@ -725,7 +743,7 @@ function deepMerge(target: any, ...sources: any[]) {
         // eventual value we assigned is `undefined`, and there are no
         // sibling concrete values alongside, so we can delete this tree.
         const output = target[key];
-        if (typeof(output) === 'object' && Object.keys(output).length === 0) {
+        if (typeof output === 'object' && Object.keys(output).length === 0) {
           delete target[key];
         }
       } else if (value === undefined) {

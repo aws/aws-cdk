@@ -53,11 +53,19 @@ export class CallApiGatewayRestApiEndpoint extends CallApiGatewayEndpointBase {
   protected readonly arnForExecuteApi: string;
   protected readonly stageName?: string;
 
-  constructor(scope: Construct, id: string, private readonly props: CallApiGatewayRestApiEndpointProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: CallApiGatewayRestApiEndpointProps
+  ) {
     super(scope, id, props);
 
     this.apiEndpoint = this.getApiEndpoint();
-    this.arnForExecuteApi = props.api.arnForExecuteApi(props.method, props.apiPath, props.stageName);
+    this.arnForExecuteApi = props.api.arnForExecuteApi(
+      props.method,
+      props.apiPath,
+      props.stageName
+    );
     this.stageName = props.stageName;
 
     this.taskPolicies = this.createPolicyStatements();

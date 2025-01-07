@@ -1,4 +1,12 @@
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterBase, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxStorage, AmazonLinuxVirt } from './common';
+import {
+  AmazonLinuxCpuType,
+  AmazonLinuxEdition,
+  AmazonLinuxGeneration,
+  AmazonLinuxImageSsmParameterBase,
+  AmazonLinuxImageSsmParameterCommonOptions,
+  AmazonLinuxStorage,
+  AmazonLinuxVirt,
+} from './common';
 
 /**
  * Amazon Linux 2 kernel versions
@@ -27,22 +35,21 @@ export class AmazonLinux2Kernel {
    */
   public static readonly KERNEL_5_10 = new AmazonLinux2Kernel('5.10');
 
-  constructor(private readonly version: string) { }
+  constructor(private readonly version: string) {}
 
   /**
    * Generate a string representation of the kernel
    */
   public toString(): string | undefined {
-    return this.version === 'default'
-      ? undefined
-      : `kernel-${this.version}`;
+    return this.version === 'default' ? undefined : `kernel-${this.version}`;
   }
 }
 
 /**
  * Properties specific to amzn2 images
  */
-export interface AmazonLinux2ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
+export interface AmazonLinux2ImageSsmParameterProps
+  extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
    * What storage backed image to use
    *
@@ -86,7 +93,7 @@ export class AmazonLinux2ImageSsmParameter extends AmazonLinuxImageSsmParameterB
   public static ssmParameterName(props: AmazonLinux2ImageSsmParameterProps): string {
     const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
 
-    const parts: Array<string|undefined> = [
+    const parts: Array<string | undefined> = [
       AmazonLinuxGeneration.AMAZON_LINUX_2,
       'ami',
       edition !== AmazonLinuxEdition.STANDARD ? edition : undefined,
@@ -94,7 +101,7 @@ export class AmazonLinux2ImageSsmParameter extends AmazonLinuxImageSsmParameterB
       props.virtualization ?? AmazonLinuxVirt.HVM,
       props.cpuType ?? AmazonLinuxCpuType.X86_64,
       props.storage ?? AmazonLinuxStorage.GENERAL_PURPOSE,
-    ].filter(x => !!x);
+    ].filter((x) => !!x);
 
     return '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
   }

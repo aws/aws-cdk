@@ -68,7 +68,11 @@ abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseIns
   /**
    * Import an existing database instance.
    */
-  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
+  public static fromDatabaseInstanceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DatabaseInstanceAttributes
+  ): IDatabaseInstance {
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly instanceIdentifier = attrs.instanceIdentifier;

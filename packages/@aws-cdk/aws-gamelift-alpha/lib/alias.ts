@@ -154,19 +154,22 @@ export class Alias extends AliasBase {
     if (!attrs.aliasId && !attrs.aliasArn) {
       throw new Error('Either aliasId or aliasArn must be provided in AliasAttributes');
     }
-    const aliasId = attrs.aliasId ??
+    const aliasId =
+      attrs.aliasId ??
       cdk.Stack.of(scope).splitArn(attrs.aliasArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!aliasId) {
       throw new Error(`No alias identifier found in ARN: '${attrs.aliasArn}'`);
     }
 
-    const aliasArn = attrs.aliasArn ?? cdk.Stack.of(scope).formatArn({
-      service: 'gamelift',
-      resource: 'alias',
-      resourceName: attrs.aliasId,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    });
+    const aliasArn =
+      attrs.aliasArn ??
+      cdk.Stack.of(scope).formatArn({
+        service: 'gamelift',
+        resource: 'alias',
+        resourceName: attrs.aliasId,
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      });
     class Import extends AliasBase {
       public readonly aliasId = aliasId!;
       public readonly aliasArn = aliasArn;
@@ -202,13 +205,17 @@ export class Alias extends AliasBase {
 
     if (!cdk.Token.isUnresolved(props.aliasName)) {
       if (props.aliasName.length > 1024) {
-        throw new Error(`Alias name can not be longer than 1024 characters but has ${props.aliasName.length} characters.`);
+        throw new Error(
+          `Alias name can not be longer than 1024 characters but has ${props.aliasName.length} characters.`
+        );
       }
     }
 
     if (props.description && !cdk.Token.isUnresolved(props.description)) {
       if (props.description.length > 1024) {
-        throw new Error(`Alias description can not be longer than 1024 characters but has ${props.description.length} characters.`);
+        throw new Error(
+          `Alias description can not be longer than 1024 characters but has ${props.description.length} characters.`
+        );
       }
     }
 
@@ -217,7 +224,9 @@ export class Alias extends AliasBase {
     }
 
     if (props.terminalMessage && props.fleet) {
-      throw new Error('Either a terminal message or a fleet must be binded to this Alias, not both.');
+      throw new Error(
+        'Either a terminal message or a fleet must be binded to this Alias, not both.'
+      );
     }
 
     const resource = new CfnAlias(this, 'Resource', {
@@ -236,7 +245,7 @@ export class Alias extends AliasBase {
   }
 
   private parseRoutingStrategy(props: AliasProps): CfnAlias.RoutingStrategyProperty {
-    if (props.fleet ) {
+    if (props.fleet) {
       return {
         fleetId: props.fleet.fleetId,
         type: 'SIMPLE',

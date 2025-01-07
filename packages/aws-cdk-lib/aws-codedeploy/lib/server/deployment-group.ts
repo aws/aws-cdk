@@ -56,7 +56,10 @@ export interface ServerDeploymentGroupAttributes {
   readonly deploymentConfig?: IServerDeploymentConfig;
 }
 
-class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implements IServerDeploymentGroup {
+class ImportedServerDeploymentGroup
+  extends ImportedDeploymentGroupBase
+  implements IServerDeploymentGroup
+{
   public readonly application: IServerApplication;
   public readonly role?: iam.Role = undefined;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
@@ -69,7 +72,9 @@ class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implemen
     });
 
     this.application = props.application;
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
+    this.deploymentConfig = this._bindDeploymentConfig(
+      props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME
+    );
   }
 }
 
@@ -84,7 +89,7 @@ class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implemen
  * If the key is an empty string, any tag,
  * regardless of its key, with any of the given values, will match.
  */
-export type InstanceTagGroup = {[key: string]: string[]};
+export type InstanceTagGroup = { [key: string]: string[] };
 
 /**
  * Represents a set of instance tag groups.
@@ -97,8 +102,10 @@ export class InstanceTagSet {
 
   constructor(...instanceTagGroups: InstanceTagGroup[]) {
     if (instanceTagGroups.length > 3) {
-      throw new Error('An instance tag set can have a maximum of 3 instance tag groups, ' +
-        `but ${instanceTagGroups.length} were provided`);
+      throw new Error(
+        'An instance tag set can have a maximum of 3 instance tag groups, ' +
+          `but ${instanceTagGroups.length} were provided`
+      );
     }
     this._instanceTagGroups = instanceTagGroups;
   }
@@ -255,7 +262,8 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
   public static fromServerDeploymentGroupAttributes(
     scope: Construct,
     id: string,
-    attrs: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
+    attrs: ServerDeploymentGroupAttributes
+  ): IServerDeploymentGroup {
     return new ImportedServerDeploymentGroup(scope, id, attrs);
   }
 
@@ -280,16 +288,30 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     });
     this.role = this._role;
 
-    this.application = props.application || new ServerApplication(this, 'Application', {
-      applicationName: props.deploymentGroupName === cdk.PhysicalName.GENERATE_IF_NEEDED ? cdk.PhysicalName.GENERATE_IF_NEEDED : undefined,
-    });
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
+    this.application =
+      props.application ||
+      new ServerApplication(this, 'Application', {
+        applicationName:
+          props.deploymentGroupName === cdk.PhysicalName.GENERATE_IF_NEEDED
+            ? cdk.PhysicalName.GENERATE_IF_NEEDED
+            : undefined,
+      });
+    this.deploymentConfig = this._bindDeploymentConfig(
+      props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME
+    );
 
-    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
+    this.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole')
+    );
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent ?? true;
-    this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
-    this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);
+    this.codeDeployBucket = s3.Bucket.fromBucketName(
+      this,
+      'Bucket',
+      `aws-codedeploy-${cdk.Stack.of(this).region}`
+    );
+    this.loadBalancers =
+      props.loadBalancers || (props.loadBalancer ? [props.loadBalancer] : undefined);
 
     if (this.loadBalancers && this.loadBalancers.length === 0) {
       throw new Error('loadBalancers must be a non-empty array');
@@ -301,32 +323,40 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
 
     this.alarms = props.alarms || [];
 
-    const removeAlarmsFromDeploymentGroup = cdk.FeatureFlags.of(this).isEnabled(CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP);
+    const removeAlarmsFromDeploymentGroup = cdk.FeatureFlags.of(this).isEnabled(
+      CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP
+    );
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
       deploymentGroupName: this.physicalName,
       serviceRoleArn: this.role.roleArn,
-      deploymentConfigName: props.deploymentConfig &&
-        props.deploymentConfig.deploymentConfigName,
-      autoScalingGroups: cdk.Lazy.list({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
+      deploymentConfigName: props.deploymentConfig && props.deploymentConfig.deploymentConfigName,
+      autoScalingGroups: cdk.Lazy.list(
+        { produce: () => this._autoScalingGroups.map((asg) => asg.autoScalingGroupName) },
+        { omitEmpty: true }
+      ),
       loadBalancerInfo: this.loadBalancersInfo(this.loadBalancers),
-      deploymentStyle: this.loadBalancers === undefined
-        ? undefined
-        : {
-          deploymentOption: 'WITH_TRAFFIC_CONTROL',
-        },
+      deploymentStyle:
+        this.loadBalancers === undefined
+          ? undefined
+          : {
+              deploymentOption: 'WITH_TRAFFIC_CONTROL',
+            },
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
       alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration({
-          alarms: this.alarms,
-          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
-          removeAlarms: removeAlarmsFromDeploymentGroup,
-          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
-        }),
+        produce: () =>
+          renderAlarmConfiguration({
+            alarms: this.alarms,
+            ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+            removeAlarms: removeAlarmsFromDeploymentGroup,
+            ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+          }),
       }),
-      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      autoRollbackConfiguration: cdk.Lazy.any({
+        produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback),
+      }),
       terminationHookEnabled: props.terminationHook,
     });
 
@@ -394,7 +424,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
           `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/install . --region ${cdk.Stack.of(this).region}`,
           'chmod +x ./install',
           './install auto',
-          'rm -fr $TMP_DIR',
+          'rm -fr $TMP_DIR'
         );
         break;
       case ec2.OperatingSystemType.WINDOWS:
@@ -402,57 +432,65 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
           `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
           'cd $TEMPDIR',
-          '.\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
+          '.\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt'
         );
         break;
     }
   }
 
-  private loadBalancersInfo(loadBalancers?: LoadBalancer[]):
-  CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
-    return loadBalancers?.reduce((accumulator : {
-      elbInfoList?: {name: string}[];
-      targetGroupInfoList?: {name: string}[];
-    }, loadBalancer: LoadBalancer) => {
-      switch (loadBalancer.generation) {
-        case LoadBalancerGeneration.FIRST:
-          if (!accumulator.elbInfoList) accumulator.elbInfoList = [];
-          accumulator.elbInfoList.push({ name: loadBalancer.name });
-          return accumulator;
-        case LoadBalancerGeneration.SECOND:
-          if (!accumulator.targetGroupInfoList) accumulator.targetGroupInfoList = [];
-          accumulator.targetGroupInfoList.push({ name: loadBalancer.name });
-          return accumulator;
-        default:
-          return accumulator;
-      }
-    }, {});
+  private loadBalancersInfo(
+    loadBalancers?: LoadBalancer[]
+  ): CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
+    return loadBalancers?.reduce(
+      (
+        accumulator: {
+          elbInfoList?: { name: string }[];
+          targetGroupInfoList?: { name: string }[];
+        },
+        loadBalancer: LoadBalancer
+      ) => {
+        switch (loadBalancer.generation) {
+          case LoadBalancerGeneration.FIRST:
+            if (!accumulator.elbInfoList) accumulator.elbInfoList = [];
+            accumulator.elbInfoList.push({ name: loadBalancer.name });
+            return accumulator;
+          case LoadBalancerGeneration.SECOND:
+            if (!accumulator.targetGroupInfoList) accumulator.targetGroupInfoList = [];
+            accumulator.targetGroupInfoList.push({ name: loadBalancer.name });
+            return accumulator;
+          default:
+            return accumulator;
+        }
+      },
+      {}
+    );
   }
 
-  private ec2TagSet(tagSet?: InstanceTagSet):
-  CfnDeploymentGroup.EC2TagSetProperty | undefined {
+  private ec2TagSet(tagSet?: InstanceTagSet): CfnDeploymentGroup.EC2TagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
 
     return {
-      ec2TagSetList: tagSet.instanceTagGroups.map(tagGroup => {
+      ec2TagSetList: tagSet.instanceTagGroups.map((tagGroup) => {
         return {
-          ec2TagGroup: this.tagGroup2TagsArray(tagGroup) as
-            CfnDeploymentGroup.EC2TagFilterProperty[],
+          ec2TagGroup: this.tagGroup2TagsArray(
+            tagGroup
+          ) as CfnDeploymentGroup.EC2TagFilterProperty[],
         };
       }),
     };
   }
 
-  private onPremiseTagSet(tagSet?: InstanceTagSet):
-  CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
+  private onPremiseTagSet(
+    tagSet?: InstanceTagSet
+  ): CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
 
     return {
-      onPremisesTagSetList: tagSet.instanceTagGroups.map(tagGroup => {
+      onPremisesTagSetList: tagSet.instanceTagGroups.map((tagGroup) => {
         return {
           onPremisesTagGroup: this.tagGroup2TagsArray(tagGroup),
         };
@@ -489,7 +527,9 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
               });
             }
           } else {
-            throw new Error('Cannot specify both an empty key and no values for an instance tag filter');
+            throw new Error(
+              'Cannot specify both an empty key and no values for an instance tag filter'
+            );
           }
         }
       }

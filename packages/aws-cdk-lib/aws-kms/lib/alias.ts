@@ -94,7 +94,10 @@ abstract class AliasBase extends Resource implements IAlias {
     return this.aliasTargetKey.addAlias(alias);
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(
+    statement: iam.PolicyStatement,
+    allowNoOp?: boolean
+  ): iam.AddToResourcePolicyResult {
     return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
   }
 
@@ -171,8 +174,12 @@ export class Alias extends AliasBase {
    */
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
     class _Alias extends AliasBase {
-      public get aliasName() { return attrs.aliasName; }
-      public get aliasTargetKey() { return attrs.aliasTargetKey; }
+      public get aliasName() {
+        return attrs.aliasName;
+      }
+      public get aliasTargetKey() {
+        return attrs.aliasTargetKey;
+      }
     }
     return new _Alias(scope, id);
   }
@@ -191,20 +198,47 @@ export class Alias extends AliasBase {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
       public readonly aliasName = aliasName;
-      public get aliasTargetKey(): IKey { throw new Error('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().'); }
-      public addAlias(_alias: string): Alias { throw new Error('Cannot call addAlias on an Alias imported by Alias.fromAliasName().'); }
-      public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
+      public get aliasTargetKey(): IKey {
+        throw new Error(
+          'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().'
+        );
+      }
+      public addAlias(_alias: string): Alias {
+        throw new Error('Cannot call addAlias on an Alias imported by Alias.fromAliasName().');
+      }
+      public addToResourcePolicy(
+        _statement: iam.PolicyStatement,
+        _allowNoOp?: boolean
+      ): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
       }
-      public grant(grantee: iam.IGrantable, ..._actions: string[]): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantEncrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantSign(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantVerify(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantSignVerify(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantGenerateMac(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
-      public grantVerifyMac(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
+      public grant(grantee: iam.IGrantable, ..._actions: string[]): iam.Grant {
+        return iam.Grant.drop(grantee, '');
+      }
+      public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(grantee, '');
+      }
+      public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(grantee, '');
+      }
+      public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(grantee, '');
+      }
+      public grantSign(grantee: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(grantee, '');
+      }
+      public grantVerify(grantee: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(grantee, '');
+      }
+      public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(grantee, '');
+      }
+      public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(grantee, '');
+      }
+      public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(grantee, '');
+      }
     }
 
     return new Import(scope, id);
@@ -222,7 +256,9 @@ export class Alias extends AliasBase {
       }
 
       if (aliasName === REQUIRED_ALIAS_PREFIX) {
-        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`);
+        throw new Error(
+          `Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`
+        );
       }
 
       if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
@@ -232,7 +268,10 @@ export class Alias extends AliasBase {
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
         throw new Error('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-');
       }
-    } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
+    } else if (
+      Tokenization.reverseString(aliasName).firstValue &&
+      Tokenization.reverseString(aliasName).firstToken === undefined
+    ) {
       const valueInToken = Tokenization.reverseString(aliasName).firstValue;
 
       if (!valueInToken.startsWith(REQUIRED_ALIAS_PREFIX)) {

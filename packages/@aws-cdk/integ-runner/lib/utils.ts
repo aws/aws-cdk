@@ -4,7 +4,10 @@ import { spawnSync } from 'child_process';
 /**
  * Our own execute function which doesn't use shells and strings.
  */
-export function exec(commandLine: string[], options: { cwd?: string; verbose?: boolean; env?: any } = { }): any {
+export function exec(
+  commandLine: string[],
+  options: { cwd?: string; verbose?: boolean; env?: any } = {}
+): any {
   const proc = spawnSync(commandLine[0], commandLine.slice(1), {
     stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
     env: {
@@ -14,12 +17,17 @@ export function exec(commandLine: string[], options: { cwd?: string; verbose?: b
     cwd: options.cwd,
   });
 
-  if (proc.error) { throw proc.error; }
+  if (proc.error) {
+    throw proc.error;
+  }
   if (proc.status !== 0) {
-    if (process.stderr) { // will be 'null' in verbose mode
+    if (process.stderr) {
+      // will be 'null' in verbose mode
       process.stderr.write(proc.stderr);
     }
-    throw new Error(`Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`);
+    throw new Error(
+      `Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`
+    );
   }
 
   const output = proc.stdout.toString('utf-8').trim();
@@ -38,7 +46,7 @@ export function flatten<T>(xs: T[][]): T[] {
  * Chain commands
  */
 export function chain(commands: string[]): string {
-  return commands.filter(c => !!c).join(' && ');
+  return commands.filter((c) => !!c).join(' && ');
 }
 
 /**
@@ -59,7 +67,10 @@ export class WorkList<A> {
   private readonly timeout: number;
   private timer?: NodeJS.Timeout;
 
-  constructor(private readonly items: A[], private readonly options: WorkListOptions<A> = {}) {
+  constructor(
+    private readonly items: A[],
+    private readonly options: WorkListOptions<A> = {}
+  ) {
     this.timeout = options.timeout ?? 60_000;
     this.scheduleTimer();
   }

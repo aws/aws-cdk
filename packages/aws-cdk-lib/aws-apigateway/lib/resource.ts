@@ -173,7 +173,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   public abstract readonly defaultMethodOptions?: MethodOptions;
   public abstract readonly defaultCorsPreflightOptions?: CorsOptions;
 
-  private readonly children: { [pathPart: string]: Resource } = { };
+  private readonly children: { [pathPart: string]: Resource } = {};
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -192,7 +192,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   }
 
   public addCorsPreflight(options: CorsOptions) {
-    const headers: { [name: string]: string } = { };
+    const headers: { [name: string]: string } = {};
 
     //
     // Access-Control-Allow-Headers
@@ -208,7 +208,9 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     }
 
     if (options.allowOrigins.includes('*') && options.allowOrigins.length > 1) {
-      throw new Error(`Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`);
+      throw new Error(
+        `Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`
+      );
     }
 
     // we use the first origin here and if there are more origins in the list, we
@@ -219,7 +221,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // the "Vary" header is required if we allow a specific origin
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin#CORS_and_caching
     if (initialOrigin !== '*') {
-      headers.Vary = '\'Origin\'';
+      headers.Vary = "'Origin'";
     }
 
     //
@@ -229,7 +231,9 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (allowMethods.includes('ANY')) {
       if (allowMethods.length > 1) {
-        throw new Error(`ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`);
+        throw new Error(
+          `ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`
+        );
       }
 
       allowMethods = Cors.ALL_METHODS;
@@ -241,7 +245,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // Access-Control-Allow-Credentials
 
     if (options.allowCredentials) {
-      headers['Access-Control-Allow-Credentials'] = '\'true\'';
+      headers['Access-Control-Allow-Credentials'] = "'true'";
     }
 
     //
@@ -281,8 +285,8 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     //
     // prepare responseParams
 
-    const integrationResponseParams: { [p: string]: string } = { };
-    const methodResponseParams: { [p: string]: boolean } = { };
+    const integrationResponseParams: { [p: string]: string } = {};
+    const methodResponseParams: { [p: string]: boolean } = {};
 
     for (const [name, value] of Object.entries(headers)) {
       const key = `method.response.header.${name}`;
@@ -290,22 +294,30 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       methodResponseParams[key] = true;
     }
 
-    return this.addMethod('OPTIONS', new MockIntegration({
-      requestTemplates: { 'application/json': '{ statusCode: 200 }' },
-      integrationResponses: [
-        { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() },
-      ],
-    }), {
-      authorizer: {
-        authorizerId: '',
+    return this.addMethod(
+      'OPTIONS',
+      new MockIntegration({
+        requestTemplates: { 'application/json': '{ statusCode: 200 }' },
+        integrationResponses: [
+          {
+            statusCode: `${statusCode}`,
+            responseParameters: integrationResponseParams,
+            responseTemplates: renderResponseTemplate(),
+          },
+        ],
+      }),
+      {
+        authorizer: {
+          authorizerId: '',
+          authorizationType: AuthorizationType.NONE,
+        },
+        apiKeyRequired: false,
         authorizationType: AuthorizationType.NONE,
-      },
-      apiKeyRequired: false,
-      authorizationType: AuthorizationType.NONE,
-      methodResponses: [
-        { statusCode: `${statusCode}`, responseParameters: methodResponseParams },
-      ],
-    });
+        methodResponses: [
+          { statusCode: `${statusCode}`, responseParameters: methodResponseParams },
+        ],
+      }
+    );
 
     // renders the response template to match all possible origins (if we have more than one)
     function renderResponseTemplate() {
@@ -321,12 +333,15 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
         '#set($origin = $input.params().header.get("Origin"))',
         '#if($origin == "")',
         '  #set($origin = $input.params().header.get("origin"))',
-        '#end');
+        '#end'
+      );
 
-      const condition = origins.map(o => `$origin == "${o}"`).join(' || ');
+      const condition = origins.map((o) => `$origin == "${o}"`).join(' || ');
 
       template.push(`#if(${condition})`);
-      template.push('  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)');
+      template.push(
+        '  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)'
+      );
       template.push('#end');
 
       return {
@@ -353,7 +368,9 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (path.startsWith('/')) {
       if (this.path !== '/') {
-        throw new Error(`Path may start with "/" only for the resource, but we are at: ${this.path}`);
+        throw new Error(
+          `Path may start with "/" only for the resource, but we are at: ${this.path}`
+        );
       }
 
       // trim trailing "/"
@@ -406,7 +423,11 @@ export class Resource extends ResourceBase {
   /**
    * Import an existing resource
    */
-  public static fromResourceAttributes(scope: Construct, id: string, attrs: ResourceAttributes): IResource {
+  public static fromResourceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ResourceAttributes
+  ): IResource {
     class Import extends ResourceBase {
       public readonly api = attrs.restApi;
       public readonly resourceId = attrs.resourceId;
@@ -459,7 +480,9 @@ export class Resource extends ResourceBase {
 
     // render resource path (special case for root)
     this.path = props.parent.path;
-    if (!this.path.endsWith('/')) { this.path += '/'; }
+    if (!this.path.endsWith('/')) {
+      this.path += '/';
+    }
     this.path += props.pathPart;
 
     const deployment = props.parent.api.latestDeployment;
@@ -475,7 +498,8 @@ export class Resource extends ResourceBase {
       ...props.parent.defaultMethodOptions,
       ...props.defaultMethodOptions,
     };
-    this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions || props.parent.defaultCorsPreflightOptions;
+    this.defaultCorsPreflightOptions =
+      props.defaultCorsPreflightOptions || props.parent.defaultCorsPreflightOptions;
 
     if (this.defaultCorsPreflightOptions) {
       this.addCorsPreflight(this.defaultCorsPreflightOptions);

@@ -6,12 +6,27 @@ import * as ec2 from '../../../aws-ec2';
 import { Aws, Annotations, Duration, Token } from '../../../core';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
-  BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+  BaseTargetGroupProps,
+  ITargetGroup,
+  loadBalancerNameFromListenerArn,
+  LoadBalancerTargetProps,
+  TargetGroupAttributes,
+  TargetGroupBase,
+  TargetGroupImportProps,
 } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType, TargetGroupLoadBalancingAlgorithmType } from '../shared/enums';
+import {
+  ApplicationProtocol,
+  ApplicationProtocolVersion,
+  Protocol,
+  TargetType,
+  TargetGroupLoadBalancingAlgorithmType,
+} from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
-import { determineProtocolAndPort, parseLoadBalancerFullName, parseTargetGroupFullName } from '../shared/util';
+import {
+  determineProtocolAndPort,
+  parseLoadBalancerFullName,
+  parseTargetGroupFullName,
+} from '../shared/util';
 
 /**
  * Properties for defining an Application Target Group
@@ -276,7 +291,8 @@ class ApplicationTargetGroupMetrics implements IApplicationTargetGroupMetrics {
 
   private cannedMetric(
     fn: (dims: { LoadBalancer: string; TargetGroup: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({
         LoadBalancer: this.loadBalancerFullName,
@@ -294,7 +310,11 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   /**
    * Import an existing target group
    */
-  public static fromTargetGroupAttributes(scope: Construct, id: string, attrs: TargetGroupAttributes): IApplicationTargetGroup {
+  public static fromTargetGroupAttributes(
+    scope: Construct,
+    id: string,
+    attrs: TargetGroupAttributes
+  ): IApplicationTargetGroup {
     return new ImportedApplicationTargetGroup(scope, id, attrs);
   }
 
@@ -303,7 +323,11 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @deprecated Use `fromTargetGroupAttributes` instead
    */
-  public static import(scope: Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
+  public static import(
+    scope: Construct,
+    id: string,
+    props: TargetGroupImportProps
+  ): IApplicationTargetGroup {
     return ApplicationTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
@@ -316,11 +340,16 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     const { protocolVersion } = props;
-    super(scope, id, { ...props }, {
-      protocol,
-      protocolVersion,
-      port,
-    });
+    super(
+      scope,
+      id,
+      { ...props },
+      {
+        protocol,
+        protocolVersion,
+        port,
+      }
+    );
 
     this.protocol = protocol;
     this.port = port;
@@ -340,18 +369,26 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     this.listeners = [];
 
     if (props) {
-      const isWeightedRandomAlgorithm = !Token.isUnresolved(props.loadBalancingAlgorithmType) &&
-        (props.loadBalancingAlgorithmType === TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM);
+      const isWeightedRandomAlgorithm =
+        !Token.isUnresolved(props.loadBalancingAlgorithmType) &&
+        props.loadBalancingAlgorithmType === TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM;
 
       if (props.slowStart !== undefined) {
         // 0 is allowed and disables slow start
-        if ((props.slowStart.toSeconds() < 30 && props.slowStart.toSeconds() !== 0) || props.slowStart.toSeconds() > 900) {
-          throw new Error('Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.');
+        if (
+          (props.slowStart.toSeconds() < 30 && props.slowStart.toSeconds() !== 0) ||
+          props.slowStart.toSeconds() > 900
+        ) {
+          throw new Error(
+            'Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.'
+          );
         }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
 
         if (isWeightedRandomAlgorithm) {
-          throw new Error('The weighted random routing algorithm can not be used with slow start mode.');
+          throw new Error(
+            'The weighted random routing algorithm can not be used with slow start mode.'
+          );
         }
       }
 
@@ -368,16 +405,25 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
       if (props.enableAnomalyMitigation !== undefined) {
         if (props.enableAnomalyMitigation && !isWeightedRandomAlgorithm) {
-          throw new Error('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
+          throw new Error(
+            'Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.'
+          );
         }
-        this.setAttribute('load_balancing.algorithm.anomaly_mitigation', props.enableAnomalyMitigation ? 'on' : 'off');
+        this.setAttribute(
+          'load_balancing.algorithm.anomaly_mitigation',
+          props.enableAnomalyMitigation ? 'on' : 'off'
+        );
       }
     }
   }
 
   public get metrics(): IApplicationTargetGroupMetrics {
     if (!this._metrics) {
-      this._metrics = new ApplicationTargetGroupMetrics(this, this.targetGroupFullName, this.firstLoadBalancerFullName);
+      this._metrics = new ApplicationTargetGroupMetrics(
+        this,
+        this.targetGroupFullName,
+        this.firstLoadBalancerFullName
+      );
     }
     return this._metrics;
   }
@@ -406,11 +452,20 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public enableCookieStickiness(duration: Duration, cookieName?: string) {
     if (duration.toSeconds() < 1 || duration.toSeconds() > 604800) {
-      throw new Error('Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).');
+      throw new Error(
+        'Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).'
+      );
     }
     if (cookieName !== undefined) {
-      if (!Token.isUnresolved(cookieName) && (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG'))) {
-        throw new Error('App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.');
+      if (
+        !Token.isUnresolved(cookieName) &&
+        (cookieName.startsWith('AWSALB') ||
+          cookieName.startsWith('AWSALBAPP') ||
+          cookieName.startsWith('AWSALBTG'))
+      ) {
+        throw new Error(
+          "App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer."
+        );
       }
       if (cookieName === '') {
         throw new Error('App cookie name cannot be an empty string.');
@@ -463,7 +518,9 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public get firstLoadBalancerFullName(): string {
     if (this.listeners.length === 0) {
-      throw new Error('The TargetGroup needs to be attached to a LoadBalancer before you can call this method');
+      throw new Error(
+        'The TargetGroup needs to be attached to a LoadBalancer before you can call this method'
+      );
     }
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
@@ -583,23 +640,33 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   protected validateTargetGroup(): string[] {
     const ret = super.validateTargetGroup();
 
-    if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
-      && (this.protocol === undefined || this.port === undefined)) {
-      ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
+    if (
+      this.targetType !== undefined &&
+      this.targetType !== TargetType.LAMBDA &&
+      (this.protocol === undefined || this.port === undefined)
+    ) {
+      ret.push("At least one of 'port' or 'protocol' is required for a non-Lambda TargetGroup");
     }
 
     if (this.healthCheck) {
-      if (this.healthCheck.interval && this.healthCheck.timeout &&
-        this.healthCheck.interval.toMilliseconds() <= this.healthCheck.timeout.toMilliseconds()) {
-        ret.push(`Healthcheck interval ${this.healthCheck.interval.toHumanString()} must be greater than the timeout ${this.healthCheck.timeout.toHumanString()}`);
+      if (
+        this.healthCheck.interval &&
+        this.healthCheck.timeout &&
+        this.healthCheck.interval.toMilliseconds() <= this.healthCheck.timeout.toMilliseconds()
+      ) {
+        ret.push(
+          `Healthcheck interval ${this.healthCheck.interval.toHumanString()} must be greater than the timeout ${this.healthCheck.timeout.toHumanString()}`
+        );
       }
 
       if (this.healthCheck.protocol) {
         if (!ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
-          ret.push([
-            `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
-            `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
-          ].join(''));
+          ret.push(
+            [
+              `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
+              `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
+            ].join('')
+          );
         }
       }
     }
@@ -655,7 +722,10 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 /**
  * An imported application target group
  */
-class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
+class ImportedApplicationTargetGroup
+  extends ImportedTargetGroupBase
+  implements IApplicationTargetGroup
+{
   private readonly _metrics?: IApplicationTargetGroupMetrics;
 
   public constructor(scope: Construct, id: string, props: TargetGroupAttributes) {
@@ -663,17 +733,30 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
     if (this.loadBalancerArns != Aws.NO_VALUE) {
       const targetGroupFullName = parseTargetGroupFullName(this.targetGroupArn);
       const firstLoadBalancerFullName = parseLoadBalancerFullName(this.loadBalancerArns);
-      this._metrics = new ApplicationTargetGroupMetrics(this, targetGroupFullName, firstLoadBalancerFullName);
+      this._metrics = new ApplicationTargetGroupMetrics(
+        this,
+        targetGroupFullName,
+        firstLoadBalancerFullName
+      );
     }
   }
 
   public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterListener', 'Cannot register listener on imported target group -- security groups might need to be updated manually');
+    Annotations.of(this).addWarningV2(
+      '@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterListener',
+      'Cannot register listener on imported target group -- security groups might need to be updated manually'
+    );
   }
 
-  public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterConnectable', 'Cannot register connectable on imported target group -- security groups might need to be updated manually');
+  public registerConnectable(
+    _connectable: ec2.IConnectable,
+    _portRange?: ec2.Port | undefined
+  ): void {
+    Annotations.of(this).addWarningV2(
+      '@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterConnectable',
+      'Cannot register connectable on imported target group -- security groups might need to be updated manually'
+    );
   }
 
   public addTarget(...targets: IApplicationLoadBalancerTarget[]) {
@@ -681,7 +764,9 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
       const result = target.attachToApplicationTargetGroup(this);
 
       if (result.targetJson !== undefined) {
-        throw new Error('Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.');
+        throw new Error(
+          'Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.'
+        );
       }
     }
   }
@@ -690,7 +775,8 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
     if (!this._metrics) {
       throw new Error(
         'The imported ApplicationTargetGroup needs the associated ApplicationBalancer to be able to provide metrics. ' +
-        'Please specify the ARN value when importing it.');
+          'Please specify the ARN value when importing it.'
+      );
     }
     return this._metrics;
   }

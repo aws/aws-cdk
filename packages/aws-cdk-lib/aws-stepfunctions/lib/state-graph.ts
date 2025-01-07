@@ -61,7 +61,10 @@ export class StateGraph {
    * @param startState state that gets executed when the state machine is launched
    * @param graphDescription description of the state machine
    */
-  constructor(public readonly startState: State, private readonly graphDescription: string) {
+  constructor(
+    public readonly startState: State,
+    private readonly graphDescription: string
+  ) {
     this.allStates.add(startState);
     startState.bindToGraph(this);
   }
@@ -93,7 +96,9 @@ export class StateGraph {
    * Resource changes will be bubbled up to the given graph.
    */
   public registerSuperGraph(graph: StateGraph) {
-    if (this.superGraph === graph) { return; }
+    if (this.superGraph === graph) {
+      return;
+    }
     if (this.superGraph) {
       throw new Error('Every StateGraph can only be registered into one other StateGraph');
     }
@@ -122,8 +127,12 @@ export class StateGraph {
    * Return a string description of this graph
    */
   public toString() {
-    const someNodes = Array.from(this.allStates).slice(0, 3).map(x => x.stateId);
-    if (this.allStates.size > 3) { someNodes.push('...'); }
+    const someNodes = Array.from(this.allStates)
+      .slice(0, 3)
+      .map((x) => x.stateId);
+    if (this.allStates.size > 3) {
+      someNodes.push('...');
+    }
     return `${this.graphDescription} (${someNodes.join(', ')})`;
   }
 
@@ -136,7 +145,9 @@ export class StateGraph {
     } else {
       const existingGraph = this.allContainedStates.get(stateId);
       if (existingGraph) {
-        throw new Error(`State with name '${stateId}' occurs in both ${graph} and ${existingGraph}. All states must have unique names.`);
+        throw new Error(
+          `State with name '${stateId}' occurs in both ${graph} and ${existingGraph}. All states must have unique names.`
+        );
       }
 
       this.allContainedStates.set(stateId, graph);
@@ -167,20 +178,22 @@ export class StateGraph {
   public bind(stateMachine: StateMachine) {
     for (const state of this.allStates) {
       if (DistributedMap.isDistributedMap(state)) {
-        stateMachine.role.attachInlinePolicy(new iam.Policy(stateMachine, 'DistributedMapPolicy', {
-          document: new iam.PolicyDocument({
-            statements: [
-              new iam.PolicyStatement({
-                actions: ['states:StartExecution'],
-                resources: [stateMachine.stateMachineArn],
-              }),
-              new iam.PolicyStatement({
-                actions: ['states:DescribeExecution', 'states:StopExecution'],
-                resources: [`${stateMachine.stateMachineArn}:*`],
-              }),
-            ],
-          }),
-        }));
+        stateMachine.role.attachInlinePolicy(
+          new iam.Policy(stateMachine, 'DistributedMapPolicy', {
+            document: new iam.PolicyDocument({
+              statements: [
+                new iam.PolicyStatement({
+                  actions: ['states:StartExecution'],
+                  resources: [stateMachine.stateMachineArn],
+                }),
+                new iam.PolicyStatement({
+                  actions: ['states:DescribeExecution', 'states:StopExecution'],
+                  resources: [`${stateMachine.stateMachineArn}:*`],
+                }),
+              ],
+            }),
+          })
+        );
 
         break;
       }

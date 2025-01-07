@@ -8,76 +8,76 @@ import { Resource } from '../../core';
  */
 export interface QueryStringProps {
   /**
-  * Retrieves the specified fields from log events for display.
-  *
-  * @default - no fields in QueryString
-  */
+   * Retrieves the specified fields from log events for display.
+   *
+   * @default - no fields in QueryString
+   */
   readonly fields?: string[];
 
   /**
-  * A single statement for parsing data from a log field and creating ephemeral fields that can
-  * be processed further in the query.
-  *
-  * @deprecated Use `parseStatements` instead
-  * @default - no parse in QueryString
-  */
+   * A single statement for parsing data from a log field and creating ephemeral fields that can
+   * be processed further in the query.
+   *
+   * @deprecated Use `parseStatements` instead
+   * @default - no parse in QueryString
+   */
   readonly parse?: string;
 
   /**
-  * An array of one or more statements for parsing data from a log field and creating ephemeral
-  * fields that can be processed further in the query. Each provided statement generates a separate
-  * parse line in the query string.
-  *
-  * Note: If provided, this property overrides any value provided for the `parse` property.
-  *
-  * @default - no parse in QueryString
-  */
+   * An array of one or more statements for parsing data from a log field and creating ephemeral
+   * fields that can be processed further in the query. Each provided statement generates a separate
+   * parse line in the query string.
+   *
+   * Note: If provided, this property overrides any value provided for the `parse` property.
+   *
+   * @default - no parse in QueryString
+   */
   readonly parseStatements?: string[];
 
   /**
-  * A single statement for filtering the results of a query based on a boolean expression.
-  *
-  * @deprecated Use `filterStatements` instead
-  * @default - no filter in QueryString
-  */
+   * A single statement for filtering the results of a query based on a boolean expression.
+   *
+   * @deprecated Use `filterStatements` instead
+   * @default - no filter in QueryString
+   */
   readonly filter?: string;
 
   /**
-  * An array of one or more statements for filtering the results of a query based on a boolean
-  * expression. Each provided statement generates a separate filter line in the query string.
-  *
-  * Note: If provided, this property overrides any value provided for the `filter` property.
-  *
-  * @default - no filter in QueryString
-  */
+   * An array of one or more statements for filtering the results of a query based on a boolean
+   * expression. Each provided statement generates a separate filter line in the query string.
+   *
+   * Note: If provided, this property overrides any value provided for the `filter` property.
+   *
+   * @default - no filter in QueryString
+   */
   readonly filterStatements?: string[];
 
   /**
-  * Uses log field values to calculate aggregate statistics.
-  *
-  * @default - no stats in QueryString
-  */
+   * Uses log field values to calculate aggregate statistics.
+   *
+   * @default - no stats in QueryString
+   */
   readonly stats?: string;
 
   /**
-  * Sorts the retrieved log events.
-  *
-  * @default - no sort in QueryString
-  */
+   * Sorts the retrieved log events.
+   *
+   * @default - no sort in QueryString
+   */
   readonly sort?: string;
 
   /**
-  * Specifies the number of log events returned by the query.
-  *
-  * @default - no limit in QueryString
-  */
+   * Specifies the number of log events returned by the query.
+   *
+   * @default - no limit in QueryString
+   */
   readonly limit?: Number;
 
   /**
-  * Specifies which fields to display in the query results.
-  *
-  * @default - no display in QueryString
-  */
+   * Specifies which fields to display in the query results.
+   *
+   * @default - no display in QueryString
+   */
   readonly display?: string;
 }
 
@@ -120,8 +120,8 @@ export class QueryString {
   }
 
   /**
-  * String representation of this QueryString.
-  */
+   * String representation of this QueryString.
+   */
   public toString(): string {
     return [
       this.buildQueryLine('fields', this.fields?.join(', ')),
@@ -131,9 +131,9 @@ export class QueryString {
       this.buildQueryLine('sort', this.sort),
       this.buildQueryLine('limit', this.limit?.toString()),
       this.buildQueryLine('display', this.display),
-    ].filter(
-      (queryLine) => queryLine !== undefined && queryLine.length > 0,
-    ).join('\n| ');
+    ]
+      .filter((queryLine) => queryLine !== undefined && queryLine.length > 0)
+      .join('\n| ');
   }
 
   /**
@@ -148,9 +148,7 @@ export class QueryString {
       return [];
     }
 
-    return statements.map(
-      (statement: string): string => this.buildQueryLine(command, statement),
-    );
+    return statements.map((statement: string): string => this.buildQueryLine(command, statement));
   }
 
   /**
@@ -170,8 +168,8 @@ export class QueryString {
  */
 export interface QueryDefinitionProps {
   /**
-  * Name of the query definition.
-  */
+   * Name of the query definition.
+   */
   readonly queryDefinitionName: string;
 
   /**
@@ -180,10 +178,10 @@ export interface QueryDefinitionProps {
   readonly queryString: QueryString;
 
   /**
-  * Specify certain log groups for the query definition.
-  *
-  * @default - no specified log groups
-  */
+   * Specify certain log groups for the query definition.
+   *
+   * @default - no specified log groups
+   */
   readonly logGroups?: ILogGroup[];
 }
 
@@ -206,7 +204,10 @@ export class QueryDefinition extends Resource {
     const queryDefinition = new CfnQueryDefinition(this, 'Resource', {
       name: props.queryDefinitionName,
       queryString: props.queryString.toString(),
-      logGroupNames: typeof props.logGroups === 'undefined' ? [] : props.logGroups.flatMap(logGroup => logGroup.logGroupName),
+      logGroupNames:
+        typeof props.logGroups === 'undefined'
+          ? []
+          : props.logGroups.flatMap((logGroup) => logGroup.logGroupName),
     });
 
     this.queryDefinitionId = queryDefinition.attrQueryDefinitionId;

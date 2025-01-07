@@ -48,21 +48,30 @@ export class PlaybackKeyPair extends PlaybackKeyPairBase {
   public readonly playbackKeyPairArn: string;
 
   /**
-  * Key-pair identifier. For example: 98:0d:1a:a0:19:96:1e:ea:0a:0a:2c:9a:42:19:2b:e7
-  *
-  * @attribute
-  */
+   * Key-pair identifier. For example: 98:0d:1a:a0:19:96:1e:ea:0a:0a:2c:9a:42:19:2b:e7
+   *
+   * @attribute
+   */
   public readonly playbackKeyPairFingerprint: string;
 
   constructor(scope: Construct, id: string, props: PlaybackKeyPairProps) {
     super(scope, id, {
-      physicalName: props.playbackKeyPairName ?? Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
-      }),
+      physicalName:
+        props.playbackKeyPairName ??
+        Lazy.string({
+          produce: () =>
+            Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
+        }),
     });
 
-    if (props.playbackKeyPairName && !core.Token.isUnresolved(props.playbackKeyPairName) && !/^[a-zA-Z0-9-_]*$/.test(props.playbackKeyPairName)) {
-      throw new Error(`playbackKeyPairName must contain only numbers, letters, hyphens and underscores, got: '${props.playbackKeyPairName}'`);
+    if (
+      props.playbackKeyPairName &&
+      !core.Token.isUnresolved(props.playbackKeyPairName) &&
+      !/^[a-zA-Z0-9-_]*$/.test(props.playbackKeyPairName)
+    ) {
+      throw new Error(
+        `playbackKeyPairName must contain only numbers, letters, hyphens and underscores, got: '${props.playbackKeyPairName}'`
+      );
     }
 
     const resource = new CfnPlaybackKeyPair(this, 'Resource', {

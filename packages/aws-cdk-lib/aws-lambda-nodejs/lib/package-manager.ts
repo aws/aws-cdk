@@ -34,13 +34,33 @@ export class PackageManager {
       case LockFile.YARN:
         return new PackageManager({
           lockFile: LockFile.YARN,
-          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['yarn', 'install', '--no-immutable', '--silent'] : ['yarn', 'install', '--no-immutable'],
+          installCommand:
+            logLevel && logLevel !== LogLevel.INFO
+              ? ['yarn', 'install', '--no-immutable', '--silent']
+              : ['yarn', 'install', '--no-immutable'],
           runCommand: ['yarn', 'run'],
         });
       case LockFile.PNPM:
         return new PackageManager({
           lockFile: LockFile.PNPM,
-          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['pnpm', 'install', '--reporter', 'silent', '--config.node-linker=hoisted', '--config.package-import-method=clone-or-copy', '--no-prefer-frozen-lockfile'] : ['pnpm', 'install', '--config.node-linker=hoisted', '--config.package-import-method=clone-or-copy', '--no-prefer-frozen-lockfile'],
+          installCommand:
+            logLevel && logLevel !== LogLevel.INFO
+              ? [
+                  'pnpm',
+                  'install',
+                  '--reporter',
+                  'silent',
+                  '--config.node-linker=hoisted',
+                  '--config.package-import-method=clone-or-copy',
+                  '--no-prefer-frozen-lockfile',
+                ]
+              : [
+                  'pnpm',
+                  'install',
+                  '--config.node-linker=hoisted',
+                  '--config.package-import-method=clone-or-copy',
+                  '--no-prefer-frozen-lockfile',
+                ],
           // --config.node-linker=hoisted to create flat node_modules without symlinks
           // --config.package-import-method=clone-or-copy to avoid hardlinking packages from the store
           // --no-prefer-frozen-lockfile (works the same as yarn's --no-immutable) Disable --frozen-lockfile that is enabled by default in CI environments (https://github.com/pnpm/pnpm/issues/1994).
@@ -50,7 +70,10 @@ export class PackageManager {
       case LockFile.BUN:
         return new PackageManager({
           lockFile: LockFile.BUN,
-          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile', '--silent'] : ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile'],
+          installCommand:
+            logLevel && logLevel !== LogLevel.INFO
+              ? ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile', '--silent']
+              : ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile'],
           runCommand: ['bun', 'run'],
         });
       default:

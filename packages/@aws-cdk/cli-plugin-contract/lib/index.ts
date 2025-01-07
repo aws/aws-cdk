@@ -112,14 +112,17 @@ export interface CredentialProviderSource {
    * While it is possible for the plugin to return a static set of credentials, it is
    * recommended to return a provider.
    */
-  getProvider(accountId: string, mode: ForReading | ForWriting, options?: PluginProviderOptions): Promise<PluginProviderResult>;
+  getProvider(
+    accountId: string,
+    mode: ForReading | ForWriting,
+    options?: PluginProviderOptions
+  ): Promise<PluginProviderResult>;
 }
 
 /**
  * A list of credential provider sources
  */
 export interface IPluginHost {
-
   /**
    * Registers a credential provider source. If, in the authentication process,
    * the CLI decides to try credentials from the plugins, it will go through the
@@ -144,7 +147,10 @@ export interface PluginProviderOptions {
   readonly supportsV3Providers?: boolean;
 }
 
-export type PluginProviderResult = SDKv2CompatibleCredentials | SDKv3CompatibleCredentialProvider | SDKv3CompatibleCredentials;
+export type PluginProviderResult =
+  | SDKv2CompatibleCredentials
+  | SDKv3CompatibleCredentialProvider
+  | SDKv3CompatibleCredentials;
 
 /**
  * SDKv2-compatible credential provider.
@@ -191,7 +197,9 @@ export interface SDKv2CompatibleCredentials {
  * calling the provider twice may do 2 API requests, or it may do one
  * if the result from the first call can be reused.
  */
-export type SDKv3CompatibleCredentialProvider = (identityProperties?: Record<string, any>) => Promise<SDKv3CompatibleCredentials>;
+export type SDKv3CompatibleCredentialProvider = (
+  identityProperties?: Record<string, any>
+) => Promise<SDKv3CompatibleCredentials>;
 
 /**
  * Based on the `AwsCredentialIdentity` type from SDKv3.

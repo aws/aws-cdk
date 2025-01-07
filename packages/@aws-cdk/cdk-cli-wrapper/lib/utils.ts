@@ -4,7 +4,10 @@ import { spawn, spawnSync } from 'child_process';
 /**
  * Our own execute function which doesn't use shells and strings.
  */
-export function exec(commandLine: string[], options: { cwd?: string; json?: boolean; verbose?: boolean; env?: any } = { }): any {
+export function exec(
+  commandLine: string[],
+  options: { cwd?: string; json?: boolean; verbose?: boolean; env?: any } = {}
+): any {
   const proc = spawnSync(commandLine[0], commandLine.slice(1), {
     stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
     env: {
@@ -14,19 +17,26 @@ export function exec(commandLine: string[], options: { cwd?: string; json?: bool
     cwd: options.cwd,
   });
 
-  if (proc.error) { throw proc.error; }
+  if (proc.error) {
+    throw proc.error;
+  }
   if (proc.status !== 0) {
-    if (process.stderr) { // will be 'null' in verbose mode
+    if (process.stderr) {
+      // will be 'null' in verbose mode
       process.stderr.write(proc.stderr);
     }
-    throw new Error(`Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`);
+    throw new Error(
+      `Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`
+    );
   }
 
   const output = proc.stdout.toString('utf-8').trim();
 
   try {
     if (options.json) {
-      if (output.length === 0) { return {}; }
+      if (output.length === 0) {
+        return {};
+      }
 
       return JSON.parse(output);
     }
@@ -41,7 +51,10 @@ export function exec(commandLine: string[], options: { cwd?: string; json?: bool
 /**
  * For use with `cdk deploy --watch`
  */
-export function watch(commandLine: string[], options: { cwd?: string; verbose?: boolean; env?: any } = { }) {
+export function watch(
+  commandLine: string[],
+  options: { cwd?: string; verbose?: boolean; env?: any } = {}
+) {
   const proc = spawn(commandLine[0], commandLine.slice(1), {
     stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
     env: {

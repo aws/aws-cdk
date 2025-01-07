@@ -192,27 +192,44 @@ export interface MatchmakingConfigurationProps {
 /**
  * Base class for new and imported GameLift Matchmaking configuration.
  */
-export abstract class MatchmakingConfigurationBase extends cdk.Resource implements IMatchmakingConfiguration {
+export abstract class MatchmakingConfigurationBase
+  extends cdk.Resource
+  implements IMatchmakingConfiguration
+{
   /**
    * Import an existing matchmaking configuration from its attributes.
    */
-  static fromMatchmakingConfigurationAttributes(scope: Construct, id: string, attrs: MatchmakingConfigurationAttributes): IMatchmakingConfiguration {
+  static fromMatchmakingConfigurationAttributes(
+    scope: Construct,
+    id: string,
+    attrs: MatchmakingConfigurationAttributes
+  ): IMatchmakingConfiguration {
     if (!attrs.matchmakingConfigurationName && !attrs.matchmakingConfigurationArn) {
-      throw new Error('Either matchmakingConfigurationName or matchmakingConfigurationArn must be provided in MatchmakingConfigurationAttributes');
+      throw new Error(
+        'Either matchmakingConfigurationName or matchmakingConfigurationArn must be provided in MatchmakingConfigurationAttributes'
+      );
     }
-    const matchmakingConfigurationName = attrs.matchmakingConfigurationName ??
-     cdk.Stack.of(scope).splitArn(attrs.matchmakingConfigurationArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    const matchmakingConfigurationName =
+      attrs.matchmakingConfigurationName ??
+      cdk.Stack.of(scope).splitArn(
+        attrs.matchmakingConfigurationArn!,
+        cdk.ArnFormat.SLASH_RESOURCE_NAME
+      ).resourceName;
 
     if (!matchmakingConfigurationName) {
-      throw new Error(`No matchmaking configuration name found in ARN: '${attrs.matchmakingConfigurationArn}'`);
+      throw new Error(
+        `No matchmaking configuration name found in ARN: '${attrs.matchmakingConfigurationArn}'`
+      );
     }
 
-    const matchmakingConfigurationArn = attrs.matchmakingConfigurationArn ?? cdk.Stack.of(scope).formatArn({
-      service: 'gamelift',
-      resource: 'matchmakingconfiguration',
-      resourceName: attrs.matchmakingConfigurationName,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    });
+    const matchmakingConfigurationArn =
+      attrs.matchmakingConfigurationArn ??
+      cdk.Stack.of(scope).formatArn({
+        service: 'gamelift',
+        resource: 'matchmakingconfiguration',
+        resourceName: attrs.matchmakingConfigurationName,
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      });
     class Import extends MatchmakingConfigurationBase {
       public readonly matchmakingConfigurationName = matchmakingConfigurationName!;
       public readonly matchmakingConfigurationArn = matchmakingConfigurationArn;

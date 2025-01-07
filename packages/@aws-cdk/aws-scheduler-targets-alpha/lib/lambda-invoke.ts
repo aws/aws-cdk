@@ -9,10 +9,7 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 export class LambdaInvoke extends ScheduleTargetBase implements IScheduleTarget {
   private readonly func: lambda.IFunction;
 
-  constructor(
-    func: lambda.IFunction,
-    props: ScheduleTargetBaseProps = {},
-  ) {
+  constructor(func: lambda.IFunction, props: ScheduleTargetBaseProps = {}) {
     super(props, func.functionArn);
     this.func = func;
   }

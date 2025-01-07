@@ -37,8 +37,7 @@ export interface SnsProps {
  * Publishes the email content within a notification to Amazon SNS.
  */
 export class Sns implements ses.IReceiptRuleAction {
-  constructor(private readonly props: SnsProps) {
-  }
+  constructor(private readonly props: SnsProps) {}
 
   public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
     return {

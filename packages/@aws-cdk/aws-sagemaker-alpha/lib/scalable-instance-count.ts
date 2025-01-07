@@ -4,8 +4,7 @@ import { Construct } from 'constructs';
 /**
  * The properties of a scalable attribute representing task count.
  */
-export interface ScalableInstanceCountProps extends appscaling.BaseScalableAttributeProps {
-}
+export interface ScalableInstanceCountProps extends appscaling.BaseScalableAttributeProps {}
 
 /**
  * A scalable sagemaker endpoint attribute
@@ -43,7 +42,9 @@ export class ScalableInstanceCount extends appscaling.BaseScalableAttribute {
   private calculateScalingTarget(props: InvocationsScalingProps): number {
     const safetyFactor = props.safetyFactor ?? 0.5;
     if (safetyFactor <= 0.0 || safetyFactor > 1.0) {
-      throw new Error(`Safety factor (${safetyFactor}) must be greater than 0.0 and less than or equal 1.0`);
+      throw new Error(
+        `Safety factor (${safetyFactor}) must be greater than 0.0 and less than or equal 1.0`
+      );
     }
     return safetyFactor * props.maxRequestsPerSecond * 60;
   }

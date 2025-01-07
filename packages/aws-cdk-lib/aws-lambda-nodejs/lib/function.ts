@@ -120,9 +120,9 @@ export class NodejsFunction extends lambda.Function {
     if (props.code !== undefined) {
       if (props.handler === undefined) {
         throw new Error(
-          'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
-          + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
-          + 'For example, handler should be specified in the form `myFile.myFunction`',
+          'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n' +
+            'The handler should be the name of the exported function to be invoked and the file containing that function.\n' +
+            'For example, handler should be specified in the form `myFile.myFunction`'
         );
       }
 
@@ -144,7 +144,7 @@ export class NodejsFunction extends lambda.Function {
         ...props,
         runtime,
         code: Bundling.bundle(scope, {
-          ...props.bundling ?? {},
+          ...(props.bundling ?? {}),
           entry,
           runtime,
           architecture,
@@ -162,12 +162,14 @@ export class NodejsFunction extends lambda.Function {
       }
     } else {
       if (props.awsSdkConnectionReuse) {
-        Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-lambda-nodejs:unusedSdkEvironmentVariable', 'The AWS_NODEJS_CONNECTION_REUSE_ENABLED environment variable does not exist in SDK v3. You have explicitly set `awsSdkConnectionReuse`; please make sure this is intentional.');
+        Annotations.of(scope).addWarningV2(
+          'aws-cdk-lib/aws-lambda-nodejs:unusedSdkEvironmentVariable',
+          'The AWS_NODEJS_CONNECTION_REUSE_ENABLED environment variable does not exist in SDK v3. You have explicitly set `awsSdkConnectionReuse`; please make sure this is intentional.'
+        );
         this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
       }
     }
   }
-
 }
 
 /**
@@ -197,18 +199,17 @@ function findLockFile(depsLockFilePath?: string): string {
     return path.resolve(depsLockFilePath);
   }
 
-  const lockFiles = findUpMultiple([
-    LockFile.PNPM,
-    LockFile.YARN,
-    LockFile.BUN,
-    LockFile.NPM,
-  ]);
+  const lockFiles = findUpMultiple([LockFile.PNPM, LockFile.YARN, LockFile.BUN, LockFile.NPM]);
 
   if (lockFiles.length === 0) {
-    throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb` or `package-lock.json`). Please specify it with `depsLockFilePath`.');
+    throw new Error(
+      'Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb` or `package-lock.json`). Please specify it with `depsLockFilePath`.'
+    );
   }
   if (lockFiles.length > 1) {
-    throw new Error(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsLockFilePath\`.`);
+    throw new Error(
+      `Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsLockFilePath\`.`
+    );
   }
 
   return lockFiles[0];
@@ -268,7 +269,9 @@ function findEntry(id: string, entry?: string): string {
     return cjsHandlerFile;
   }
 
-  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`);
+  throw new Error(
+    `Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`
+  );
 }
 
 /**

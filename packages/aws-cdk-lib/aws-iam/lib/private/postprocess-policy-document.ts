@@ -11,8 +11,10 @@ import { LITERAL_STRING_KEY } from '../util';
  * into a predictable CloudFormation form.
  */
 export class PostProcessPolicyDocument implements cdk.IPostProcessor {
-  constructor(private readonly autoAssignSids: boolean, private readonly sort: boolean) {
-  }
+  constructor(
+    private readonly autoAssignSids: boolean,
+    private readonly sort: boolean
+  ) {}
 
   public postProcess(input: any, _context: cdk.IResolveContext): any {
     if (!input || !input.Statement) {
@@ -42,9 +44,15 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
 
       if (this.sort) {
         // Don't act on the values if they are 'undefined'
-        if (s.Action) { s.Action = sortByJson(s.Action); }
-        if (s.Resource) { s.Resource = sortByJson(s.Resource); }
-        if (s.Principal) { s.Principal = sortPrincipals(s.Principal); }
+        if (s.Action) {
+          s.Action = sortByJson(s.Action);
+        }
+        if (s.Resource) {
+          s.Resource = sortByJson(s.Resource);
+        }
+        if (s.Principal) {
+          s.Principal = sortPrincipals(s.Principal);
+        }
       }
 
       return s;
@@ -86,7 +94,6 @@ export function normalizeStatement(s: StatementSchema) {
   });
 
   function _norm(values: any, { unique = false }: { unique: boolean } = { unique: false }) {
-
     if (values == null) {
       return undefined;
     }
@@ -107,7 +114,7 @@ export function normalizeStatement(s: StatementSchema) {
       return unique ? Array.from(new Set(values)) : values;
     }
 
-    if (values && typeof(values) === 'object') {
+    if (values && typeof values === 'object') {
       if (Object.keys(values).length === 0) {
         return undefined;
       }
@@ -117,10 +124,14 @@ export function normalizeStatement(s: StatementSchema) {
   }
 
   function _normPrincipal(principal?: string | string[] | { [key: string]: any }) {
-    if (!principal || Array.isArray(principal) || typeof principal !== 'object') { return undefined; }
+    if (!principal || Array.isArray(principal) || typeof principal !== 'object') {
+      return undefined;
+    }
 
     const keys = Object.keys(principal);
-    if (keys.length === 0) { return undefined; }
+    if (keys.length === 0) {
+      return undefined;
+    }
 
     // This is handling a special case for round-tripping a literal
     // string principal loaded from JSON.
@@ -150,7 +161,9 @@ function noUndef(x: any): any {
 }
 
 function sortPrincipals<A>(xs?: string | string[] | Record<string, A | A[]>): typeof xs {
-  if (!xs || Array.isArray(xs) || typeof xs !== 'object') { return xs; }
+  if (!xs || Array.isArray(xs) || typeof xs !== 'object') {
+    return xs;
+  }
 
   const ret: NonNullable<typeof xs> = {};
   for (const k of Object.keys(xs).sort()) {
@@ -166,14 +179,18 @@ function sortPrincipals<A>(xs?: string | string[] | Record<string, A | A[]>): ty
  * Mutates in place AND returns the mutated list.
  */
 function sortByJson<B, A extends B | B[] | undefined>(xs: A): A {
-  if (!Array.isArray(xs)) { return xs; }
+  if (!Array.isArray(xs)) {
+    return xs;
+  }
 
   const intermediate = new Map<string, A>();
   for (const x of xs) {
     intermediate.set(JSON.stringify(x), x);
   }
 
-  const sorted = Array.from(intermediate.keys()).sort().map(k => intermediate.get(k)!);
+  const sorted = Array.from(intermediate.keys())
+    .sort()
+    .map((k) => intermediate.get(k)!);
   xs.splice(0, xs.length, ...sorted);
   return xs.length !== 1 ? xs : xs[0];
 }

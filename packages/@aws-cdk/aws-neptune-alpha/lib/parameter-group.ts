@@ -6,7 +6,6 @@ import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from 'aws-cdk-lib/aws
  * The DB parameter group family that a DB parameter group is compatible with
  */
 export class ParameterGroupFamily {
-
   /**
    * Family used by Neptune engine versions before 1.2.0.0
    */
@@ -94,7 +93,11 @@ export class ClusterParameterGroup extends Resource implements IClusterParameter
   /**
    * Imports a parameter group
    */
-  public static fromClusterParameterGroupName(scope: Construct, id: string, clusterParameterGroupName: string): IClusterParameterGroup {
+  public static fromClusterParameterGroupName(
+    scope: Construct,
+    id: string,
+    clusterParameterGroupName: string
+  ): IClusterParameterGroup {
     class Import extends Resource implements IClusterParameterGroup {
       public readonly clusterParameterGroupName = clusterParameterGroupName;
     }
@@ -139,7 +142,11 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   /**
    * Imports a parameter group
    */
-  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
+  public static fromParameterGroupName(
+    scope: Construct,
+    id: string,
+    parameterGroupName: string
+  ): IParameterGroup {
     class Import extends Resource implements IParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
     }

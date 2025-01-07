@@ -4,15 +4,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as ssm from '../../../aws-ssm';
-import {
-  CfnResource,
-  CustomResource,
-  Lazy,
-  Resource,
-  Stack,
-  Stage,
-  Token,
-} from '../../../core';
+import { CfnResource, CustomResource, Lazy, Resource, Stack, Stage, Token } from '../../../core';
 import { CrossRegionStringParamReaderProvider } from '../../../custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated';
 
 /**
@@ -39,7 +31,6 @@ export interface EdgeFunctionProps extends lambda.FunctionProps {
  * @resource AWS::Lambda::Function
  */
 export class EdgeFunction extends Resource implements lambda.IVersion {
-
   private static readonly EDGE_REGION: string = 'us-east-1';
 
   public readonly edgeArn: string;
@@ -107,7 +98,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     throw new Error('$LATEST function version cannot be used for Lambda@Edge');
   }
 
-  public addEventSourceMapping(id: string, options: lambda.EventSourceMappingOptions): lambda.EventSourceMapping {
+  public addEventSourceMapping(
+    id: string,
+    options: lambda.EventSourceMappingOptions
+  ): lambda.EventSourceMapping {
     return this.lambda.addEventSourceMapping(id, options);
   }
   public addPermission(id: string, permission: lambda.Permission): void {
@@ -191,7 +185,11 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     return { edgeFunction, edgeArn };
   }
 
-  private createCrossRegionArnReader(parameterNamePrefix: string, parameterName: string, version: lambda.Version): string {
+  private createCrossRegionArnReader(
+    parameterNamePrefix: string,
+    parameterName: string,
+    version: lambda.Version
+  ): string {
     // Prefix of the parameter ARN that applies to all EdgeFunctions.
     // This is necessary because the `CustomResourceProvider` is a singleton, and the `policyStatement`
     // must work for multiple EdgeFunctions.
@@ -204,11 +202,13 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';
     const serviceToken = CrossRegionStringParamReaderProvider.getOrCreate(this, resourceType, {
-      policyStatements: [{
-        Effect: 'Allow',
-        Resource: parameterArnPrefix,
-        Action: ['ssm:GetParameter'],
-      }],
+      policyStatements: [
+        {
+          Effect: 'Allow',
+          Resource: parameterArnPrefix,
+          Action: ['ssm:GetParameter'],
+        },
+      ],
     });
     const resource = new CustomResource(this, 'ArnReader', {
       resourceType: resourceType,

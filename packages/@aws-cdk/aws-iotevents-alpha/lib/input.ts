@@ -84,14 +84,14 @@ export class Input extends InputBase {
    * Import an existing input.
    */
   public static fromInputName(scope: Construct, id: string, inputName: string): IInput {
-    return new class Import extends InputBase {
+    return new (class Import extends InputBase {
       public readonly inputName = inputName;
       public readonly inputArn = this.stack.formatArn({
         service: 'iotevents',
         resource: 'input',
         resourceName: inputName,
       });
-    }(scope, id);
+    })(scope, id);
   }
 
   public readonly inputName: string;
@@ -110,7 +110,7 @@ export class Input extends InputBase {
     const resource = new CfnInput(this, 'Resource', {
       inputName: this.physicalName,
       inputDefinition: {
-        attributes: props.attributeJsonPaths.map(path => ({ jsonPath: path })),
+        attributes: props.attributeJsonPaths.map((path) => ({ jsonPath: path })),
       },
     });
 

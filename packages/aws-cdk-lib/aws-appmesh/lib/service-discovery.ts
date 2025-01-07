@@ -96,7 +96,11 @@ export abstract class ServiceDiscovery {
    *  The default is `DnsResponseType.LOAD_BALANCER`.
    * @param ipPreference No IP preference is applied to the Virtual Node.
    */
-  public static dns(hostname: string, responseType?: DnsResponseType, ipPreference?: IpPreference): ServiceDiscovery {
+  public static dns(
+    hostname: string,
+    responseType?: DnsResponseType,
+    ipPreference?: IpPreference
+  ): ServiceDiscovery {
     return new DnsServiceDiscovery(hostname, responseType, ipPreference);
   }
 
@@ -110,7 +114,11 @@ export abstract class ServiceDiscovery {
    *  key/value pairs will be returned.
    * @param ipPreference No IP preference is applied to the Virtual Node.
    */
-  public static cloudMap(service: cloudmap.IService, instanceAttributes?: {[key: string]: string}, ipPreference?: IpPreference): ServiceDiscovery {
+  public static cloudMap(
+    service: cloudmap.IService,
+    instanceAttributes?: { [key: string]: string },
+    ipPreference?: IpPreference
+  ): ServiceDiscovery {
     return new CloudMapServiceDiscovery(service, instanceAttributes, ipPreference);
   }
 
@@ -145,10 +153,14 @@ class DnsServiceDiscovery extends ServiceDiscovery {
 
 class CloudMapServiceDiscovery extends ServiceDiscovery {
   private readonly service: cloudmap.IService;
-  private readonly instanceAttributes?: {[key: string]: string};
+  private readonly instanceAttributes?: { [key: string]: string };
   private readonly ipPreference?: IpPreference;
 
-  constructor(service: cloudmap.IService, instanceAttributes?: {[key: string]: string}, ipPreference?: IpPreference) {
+  constructor(
+    service: cloudmap.IService,
+    instanceAttributes?: { [key: string]: string },
+    ipPreference?: IpPreference
+  ) {
     super();
     this.service = service;
     this.instanceAttributes = instanceAttributes;
@@ -167,7 +179,9 @@ class CloudMapServiceDiscovery extends ServiceDiscovery {
   }
 }
 
-function renderAttributes(attrs?: {[key: string]: string}) {
-  if (attrs === undefined) { return undefined; }
+function renderAttributes(attrs?: { [key: string]: string }) {
+  if (attrs === undefined) {
+    return undefined;
+  }
   return Object.entries(attrs).map(([key, value]) => ({ key, value }));
 }

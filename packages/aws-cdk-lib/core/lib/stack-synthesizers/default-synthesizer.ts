@@ -3,7 +3,12 @@ import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 import * as cxapi from '../../../cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import {
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+} from '../assets';
 import { StringSpecializer } from '../helpers-internal/string-specializer';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -284,7 +289,10 @@ export interface DefaultStackSynthesizerProps {
  * check to the template, to make sure the bootstrap stack is recent enough
  * to support all features expected by this synthesizer.
  */
-export class DefaultStackSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer, IBoundStackSynthesizer {
+export class DefaultStackSynthesizer
+  extends StackSynthesizer
+  implements IReusableStackSynthesizer, IBoundStackSynthesizer
+{
   /**
    * Default ARN qualifier
    */
@@ -293,42 +301,50 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   /**
    * Default CloudFormation role ARN.
    */
-  public static readonly DEFAULT_CLOUDFORMATION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_CLOUDFORMATION_ROLE_ARN =
+    'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default deploy role ARN.
    */
-  public static readonly DEFAULT_DEPLOY_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_DEPLOY_ROLE_ARN =
+    'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default asset publishing role ARN for file (S3) assets.
    */
-  public static readonly DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN =
+    'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default asset publishing role ARN for image (ECR) assets.
    */
-  public static readonly DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN =
+    'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default lookup role ARN for missing values.
    */
-  public static readonly DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_LOOKUP_ROLE_ARN =
+    'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default image assets repository name
    */
-  public static readonly DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME = 'cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME =
+    'cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default file assets bucket name
    */
-  public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME = 'cdk-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_FILE_ASSETS_BUCKET_NAME =
+    'cdk-${Qualifier}-assets-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Name of the CloudFormation Export with the asset key name
    */
-  public static readonly DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME = 'CdkBootstrap-${Qualifier}-FileAssetKeyArn';
+  public static readonly DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME =
+    'CdkBootstrap-${Qualifier}-FileAssetKeyArn';
 
   /**
    * Default file asset prefix
@@ -342,7 +358,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   /**
    * Default bootstrap stack version SSM parameter.
    */
-  public static readonly DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER = '/cdk-bootstrap/${Qualifier}/version';
+  public static readonly DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER =
+    '/cdk-bootstrap/${Qualifier}/version';
 
   private bucketName?: string;
   private repositoryName?: string;
@@ -371,12 +388,15 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     function validateNoToken<A extends keyof DefaultStackSynthesizerProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
-        throw new Error(`DefaultStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
-          '${Qualifier}',
-          cxapi.EnvironmentPlaceholders.CURRENT_REGION,
-          cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
-          cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
-        ].join(', '));
+        throw new Error(
+          `DefaultStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` +
+            [
+              '${Qualifier}',
+              cxapi.EnvironmentPlaceholders.CURRENT_REGION,
+              cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
+              cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
+            ].join(', ')
+        );
       }
     }
   }
@@ -410,22 +430,50 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   public bind(stack: Stack): void {
     super.bind(stack);
 
-    const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    const qualifier =
+      this.props.qualifier ??
+      stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ??
+      DefaultStackSynthesizer.DEFAULT_QUALIFIER;
     this.qualifier = qualifier;
 
     const spec = new StringSpecializer(stack, qualifier);
 
     /* eslint-disable max-len */
-    this.bucketName = spec.specialize(this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME);
-    this.repositoryName = spec.specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
-    this._deployRoleArn = spec.specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
-    this._cloudFormationExecutionRoleArn = spec.specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
-    this.fileAssetPublishingRoleArn = spec.specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
-    this.imageAssetPublishingRoleArn = spec.specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
-    this.lookupRoleArn = spec.specialize(this.props.lookupRoleArn ?? DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
-    this.bucketPrefix = spec.specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
-    this.dockerTagPrefix = spec.specialize(this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX);
-    this.bootstrapStackVersionSsmParameter = spec.qualifierOnly(this.props.bootstrapStackVersionSsmParameter ?? DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER);
+    this.bucketName = spec.specialize(
+      this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME
+    );
+    this.repositoryName = spec.specialize(
+      this.props.imageAssetsRepositoryName ??
+        DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
+    );
+    this._deployRoleArn = spec.specialize(
+      this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN
+    );
+    this._cloudFormationExecutionRoleArn = spec.specialize(
+      this.props.cloudFormationExecutionRole ??
+        DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN
+    );
+    this.fileAssetPublishingRoleArn = spec.specialize(
+      this.props.fileAssetPublishingRoleArn ??
+        DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN
+    );
+    this.imageAssetPublishingRoleArn = spec.specialize(
+      this.props.imageAssetPublishingRoleArn ??
+        DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN
+    );
+    this.lookupRoleArn = spec.specialize(
+      this.props.lookupRoleArn ?? DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN
+    );
+    this.bucketPrefix = spec.specialize(
+      this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
+    );
+    this.dockerTagPrefix = spec.specialize(
+      this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX
+    );
+    this.bootstrapStackVersionSsmParameter = spec.qualifierOnly(
+      this.props.bootstrapStackVersionSsmParameter ??
+        DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER
+    );
     /* eslint-enable max-len */
   }
 
@@ -435,11 +483,13 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: this.bucketName,
       bucketPrefix: this.bucketPrefix,
-      role: this.fileAssetPublishingRoleArn ? {
-        assumeRoleArn: this.fileAssetPublishingRoleArn,
-        assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
-        assumeRoleAdditionalOptions: this.props.fileAssetPublishingRoleAdditionalOptions,
-      } : undefined,
+      role: this.fileAssetPublishingRoleArn
+        ? {
+            assumeRoleArn: this.fileAssetPublishingRoleArn,
+            assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
+            assumeRoleAdditionalOptions: this.props.fileAssetPublishingRoleAdditionalOptions,
+          }
+        : undefined,
     });
     return this.cloudFormationLocationFromFileAsset(location);
   }
@@ -450,11 +500,13 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
       repositoryName: this.repositoryName,
       dockerTagPrefix: this.dockerTagPrefix,
-      role: this.imageAssetPublishingRoleArn ? {
-        assumeRoleArn: this.imageAssetPublishingRoleArn,
-        assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
-        assumeRoleAdditionalOptions: this.props.imageAssetPublishingRoleAdditionalOptions,
-      } : undefined,
+      role: this.imageAssetPublishingRoleArn
+        ? {
+            assumeRoleArn: this.imageAssetPublishingRoleArn,
+            assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
+            assumeRoleAdditionalOptions: this.props.imageAssetPublishingRoleAdditionalOptions,
+          }
+        : undefined,
     });
     return this.cloudFormationLocationFromDockerImageAsset(location);
   }
@@ -463,7 +515,12 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
    * Synthesize the stack template to the given session, passing the configured lookup role ARN
    */
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession) {
-    stack._synthesizeTemplate(session, this.lookupRoleArn, this.props.lookupRoleExternalId, this.props.lookupRoleAdditionalOptions);
+    stack._synthesizeTemplate(
+      session,
+      this.lookupRoleArn,
+      this.props.lookupRoleExternalId,
+      this.props.lookupRoleAdditionalOptions
+    );
   }
 
   /**
@@ -487,11 +544,18 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
     // right constructs.
     if (this.props.generateBootstrapVersionRule ?? true) {
-      this.addBootstrapVersionRule(this._requiredBootstrapVersionForDeployment, this.bootstrapStackVersionSsmParameter!);
+      this.addBootstrapVersionRule(
+        this._requiredBootstrapVersionForDeployment,
+        this.bootstrapStackVersionSsmParameter!
+      );
     }
 
-    const templateAssetSource = this.synthesizeTemplate(session, this.lookupRoleArn,
-      this.props.lookupRoleExternalId, this.props.lookupRoleAdditionalOptions);
+    const templateAssetSource = this.synthesizeTemplate(
+      session,
+      this.lookupRoleArn,
+      this.props.lookupRoleExternalId,
+      this.props.lookupRoleAdditionalOptions
+    );
     const templateAsset = this.addFileAsset(templateAssetSource);
 
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {
@@ -508,18 +572,24 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
       requiresBootstrapStackVersion: this._requiredBootstrapVersionForDeployment,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [assetManifestId],
-      lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
-        arn: this.lookupRoleArn,
-        assumeRoleExternalId: this.props.lookupRoleExternalId,
-        assumeRoleAdditionalOptions: this.props.lookupRoleAdditionalOptions,
-        requiresBootstrapStackVersion: this._requiredBootstrapVersionForLookup,
-        bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
-      } : undefined,
+      lookupRole:
+        this.useLookupRoleForStackOperations && this.lookupRoleArn
+          ? {
+              arn: this.lookupRoleArn,
+              assumeRoleExternalId: this.props.lookupRoleExternalId,
+              assumeRoleAdditionalOptions: this.props.lookupRoleAdditionalOptions,
+              requiresBootstrapStackVersion: this._requiredBootstrapVersionForLookup,
+              bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
+            }
+          : undefined,
     });
   }
 
   private get _requiredBoostrapVersionForAssets() {
-    if (this.props.fileAssetPublishingRoleAdditionalOptions?.Tags || this.props.imageAssetPublishingRoleAdditionalOptions?.Tags) {
+    if (
+      this.props.fileAssetPublishingRoleAdditionalOptions?.Tags ||
+      this.props.imageAssetPublishingRoleAdditionalOptions?.Tags
+    ) {
       return MIN_SESSION_TAGS_BOOTSTRAP_STACK_VERSION;
     }
     return MIN_BOOTSTRAP_STACK_VERSION;
@@ -544,7 +614,9 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
    */
   public get deployRoleArn(): string {
     if (!this._deployRoleArn) {
-      throw new Error('deployRoleArn getter can only be called after the synthesizer has been bound to a Stack');
+      throw new Error(
+        'deployRoleArn getter can only be called after the synthesizer has been bound to a Stack'
+      );
     }
     return this._deployRoleArn;
   }
@@ -554,7 +626,9 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
    */
   public get cloudFormationExecutionRoleArn(): string {
     if (!this._cloudFormationExecutionRoleArn) {
-      throw new Error('cloudFormationExecutionRoleArn getter can only be called after the synthesizer has been bound to a Stack');
+      throw new Error(
+        'cloudFormationExecutionRoleArn getter can only be called after the synthesizer has been bound to a Stack'
+      );
     }
     return this._cloudFormationExecutionRoleArn;
   }

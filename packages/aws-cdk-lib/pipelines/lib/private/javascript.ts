@@ -26,7 +26,9 @@ export function* enumerate<A>(xs: Iterable<A>): IterableIterator<[number, A]> {
 }
 
 export function expectProp<A extends object, B extends keyof A>(obj: A, key: B): NonNullable<A[B]> {
-  if (!obj[key]) { throw new Error(`Expecting '${String(key)}' to be set!`); }
+  if (!obj[key]) {
+    throw new Error(`Expecting '${String(key)}' to be set!`);
+  }
   return obj[key] as any;
 }
 
@@ -39,7 +41,7 @@ export function* flatten<A>(xs: Iterable<A[]>): IterableIterator<A> {
 }
 
 export function filterEmpty(xs: Array<string | undefined>): string[] {
-  return xs.filter(x => x) as any;
+  return xs.filter((x) => x) as any;
 }
 
 export function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B): Record<string, B> {
@@ -59,7 +61,9 @@ export function mkdict<A>(xs: Array<readonly [string, A]>): Record<string, A> {
 }
 
 export function noEmptyObject<A>(xs: Record<string, A>): Record<string, A> | undefined {
-  if (Object.keys(xs).length === 0) { return undefined; }
+  if (Object.keys(xs).length === 0) {
+    return undefined;
+  }
   return xs;
 }
 
@@ -68,7 +72,9 @@ export function noUndefined<A>(xs: Record<string, A>): Record<string, NonNullabl
 }
 
 export function maybeSuffix(x: string | undefined, suffix: string): string | undefined {
-  if (x === undefined) { return undefined; }
+  if (x === undefined) {
+    return undefined;
+  }
   return `${x}${suffix}`;
 }
 

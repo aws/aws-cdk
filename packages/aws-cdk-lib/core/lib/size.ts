@@ -206,7 +206,10 @@ class StorageUnit {
   public static readonly Tebibytes = new StorageUnit('tebibytes', 1024 * 1024 * 1024 * 1024);
   public static readonly Pebibytes = new StorageUnit('pebibytes', 1024 * 1024 * 1024 * 1024 * 1024);
 
-  private constructor(public readonly label: string, public readonly inBytes: number) {
+  private constructor(
+    public readonly label: string,
+    public readonly inBytes: number
+  ) {
     // MAX_SAFE_INTEGER is 2^53, so by representing storage in kibibytes,
     // the highest storage we can represent is 8 exbibytes.
   }
@@ -216,11 +219,20 @@ class StorageUnit {
   }
 }
 
-function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, options: SizeConversionOptions = {}) {
+function convert(
+  amount: number,
+  fromUnit: StorageUnit,
+  toUnit: StorageUnit,
+  options: SizeConversionOptions = {}
+) {
   const rounding = options.rounding ?? SizeRoundingBehavior.FAIL;
-  if (fromUnit.inBytes === toUnit.inBytes) { return amount; }
+  if (fromUnit.inBytes === toUnit.inBytes) {
+    return amount;
+  }
   if (Token.isUnresolved(amount)) {
-    throw new Error(`Size must be specified as 'Size.${toUnit}()' here since its value comes from a token and cannot be converted (got Size.${fromUnit})`);
+    throw new Error(
+      `Size must be specified as 'Size.${toUnit}()' here since its value comes from a token and cannot be converted (got Size.${fromUnit})`
+    );
   }
 
   const multiplier = fromUnit.inBytes / toUnit.inBytes;
@@ -233,7 +245,9 @@ function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, opt
     default:
     case SizeRoundingBehavior.FAIL:
       if (!Number.isInteger(value)) {
-        throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
+        throw new Error(
+          `'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`
+        );
       }
       return value;
   }

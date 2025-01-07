@@ -30,8 +30,7 @@ export class TokenComparison {
   /** This means both components are Tokens. */
   public static readonly BOTH_UNRESOLVED = new TokenComparison();
 
-  private constructor() {
-  }
+  private constructor() {}
 }
 
 /**
@@ -75,7 +74,9 @@ export class Token {
    * on the string.
    */
   public static asString(value: any, options: EncodingOptions = {}): string {
-    if (typeof value === 'string') { return value; }
+    if (typeof value === 'string') {
+      return value;
+    }
     return TokenMap.instance().registerString(Token.asAny(value), options.displayHint);
   }
 
@@ -83,7 +84,9 @@ export class Token {
    * Return a reversible number representation of this token
    */
   public static asNumber(value: any): number {
-    if (typeof value === 'number') { return value; }
+    if (typeof value === 'number') {
+      return value;
+    }
     return TokenMap.instance().registerNumber(Token.asAny(value));
   }
 
@@ -91,7 +94,9 @@ export class Token {
    * Return a reversible list representation of this token
    */
   public static asList(value: any, options: EncodingOptions = {}): string[] {
-    if (Array.isArray(value) && value.every(x => typeof x === 'string')) { return value; }
+    if (Array.isArray(value) && value.every((x) => typeof x === 'string')) {
+      return value;
+    }
     return TokenMap.instance().registerList(Token.asAny(value), options.displayHint);
   }
 
@@ -121,8 +126,7 @@ export class Token {
     return possibleToken1 === possibleToken2 ? TokenComparison.SAME : TokenComparison.DIFFERENT;
   }
 
-  private constructor() {
-  }
+  private constructor() {}
 }
 
 /**
@@ -144,7 +148,9 @@ export class Tokenization {
   public static reverseCompleteString(s: string): IResolvable | undefined {
     const fragments = Tokenization.reverseString(s);
     if (fragments.length !== 1) {
-      throw new Error(`Tokenzation.reverseCompleteString: argument must not be a concatentation, got '${s}'`);
+      throw new Error(
+        `Tokenzation.reverseCompleteString: argument must not be a concatentation, got '${s}'`
+      );
     }
     return fragments.firstToken;
   }
@@ -169,7 +175,9 @@ export class Tokenization {
    * In case of a string, the string must not be a concatenation.
    */
   public static reverse(x: any, options: ReverseOptions = {}): IResolvable | undefined {
-    if (Tokenization.isResolvable(x)) { return x; }
+    if (Tokenization.isResolvable(x)) {
+      return x;
+    }
     if (typeof x === 'string') {
       if (options.failConcat === false) {
         // Handle this specially because reverseCompleteString might fail
@@ -178,8 +186,12 @@ export class Tokenization {
       }
       return Tokenization.reverseCompleteString(x);
     }
-    if (Array.isArray(x)) { return Tokenization.reverseList(x); }
-    if (typeof x === 'number') { return Tokenization.reverseNumber(x); }
+    if (Array.isArray(x)) {
+      return Tokenization.reverseList(x);
+    }
+    if (typeof x === 'number') {
+      return Tokenization.reverseNumber(x);
+    }
     return undefined;
   }
 
@@ -194,7 +206,7 @@ export class Tokenization {
     return resolve(obj, {
       scope: options.scope,
       resolver: options.resolver,
-      preparing: (options.preparing ?? false),
+      preparing: options.preparing ?? false,
       removeEmpty: options.removeEmpty,
     });
   }
@@ -218,7 +230,7 @@ export class Tokenization {
 
     if (Token.isUnresolved(x)) {
       return Lazy.uncachedString({
-        produce: context => {
+        produce: (context) => {
           const resolved = context.resolve(x);
           return typeof resolved !== 'number' ? resolved : `${resolved}`;
         },
@@ -228,8 +240,7 @@ export class Tokenization {
     }
   }
 
-  private constructor() {
-  }
+  private constructor() {}
 }
 
 /**
@@ -242,7 +253,7 @@ export class JsonNull implements IResolvable {
 
   public readonly creationStack: string[] = [];
 
-  private constructor() { }
+  private constructor() {}
 
   public resolve(_ctx: IResolveContext): any {
     return null;
@@ -317,7 +328,7 @@ export interface EncodingOptions {
 }
 
 export function isResolvableObject(x: any): x is IResolvable {
-  return typeof(x) === 'object' && x !== null && typeof x.resolve === 'function';
+  return typeof x === 'object' && x !== null && typeof x.resolve === 'function';
 }
 
 /**
@@ -330,8 +341,12 @@ export function withResolved<A>(a: A, fn: (a: A) => void): void;
 export function withResolved<A, B>(a: A, b: B, fn: (a: A, b: B) => void): void;
 export function withResolved<A, B, C>(a: A, b: B, c: C, fn: (a: A, b: B, c: C) => void): void;
 export function withResolved(...args: any[]) {
-  if (args.length < 2) { return; }
+  if (args.length < 2) {
+    return;
+  }
   const argArray = args.slice(0, args.length - 1);
-  if (argArray.some(Token.isUnresolved)) { return; }
+  if (argArray.some(Token.isUnresolved)) {
+    return;
+  }
   args[args.length - 1].apply(arguments, argArray);
 }

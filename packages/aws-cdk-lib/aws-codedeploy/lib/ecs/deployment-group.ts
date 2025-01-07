@@ -203,9 +203,10 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromEcsDeploymentGroupAttributes(
-    scope:Construct,
+    scope: Construct,
     id: string,
-    attrs: EcsDeploymentGroupAttributes): IEcsDeploymentGroup {
+    attrs: EcsDeploymentGroupAttributes
+  ): IEcsDeploymentGroup {
     return new ImportedEcsDeploymentGroup(scope, id, attrs);
   }
 
@@ -229,26 +230,35 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     this.application = props.application || new EcsApplication(this, 'Application');
     this.alarms = props.alarms || [];
 
-    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
+    this.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS')
+    );
+    this.deploymentConfig = this._bindDeploymentConfig(
+      props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE
+    );
 
     if (cdk.Resource.isOwnedResource(props.service)) {
       const cfnSvc = (props.service as ecs.BaseService).node.defaultChild as ecs.CfnService;
-      if (cfnSvc.deploymentController === undefined ||
-        (cfnSvc.deploymentController! as ecs.CfnService.DeploymentControllerProperty).type !== ecs.DeploymentControllerType.CODE_DEPLOY) {
+      if (
+        cfnSvc.deploymentController === undefined ||
+        (cfnSvc.deploymentController! as ecs.CfnService.DeploymentControllerProperty).type !==
+          ecs.DeploymentControllerType.CODE_DEPLOY
+      ) {
         throw new Error(
-          'The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type',
+          'The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type'
         );
       }
 
       if (cfnSvc.taskDefinition !== (props.service as ecs.BaseService).taskDefinition.family) {
         throw new Error(
-          'The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack',
+          'The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack'
         );
       }
     }
 
-    const removeAlarmsFromDeploymentGroup = cdk.FeatureFlags.of(this).isEnabled(CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP);
+    const removeAlarmsFromDeploymentGroup = cdk.FeatureFlags.of(this).isEnabled(
+      CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP
+    );
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
@@ -259,23 +269,30 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
         deploymentType: 'BLUE_GREEN',
         deploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
-      ecsServices: [{
-        clusterName: props.service.cluster.clusterName,
-        serviceName: props.service.serviceName,
-      }],
+      ecsServices: [
+        {
+          clusterName: props.service.cluster.clusterName,
+          serviceName: props.service.serviceName,
+        },
+      ],
       blueGreenDeploymentConfiguration: cdk.Lazy.any({
         produce: () => this.renderBlueGreenDeploymentConfiguration(props.blueGreenDeploymentConfig),
       }),
-      loadBalancerInfo: cdk.Lazy.any({ produce: () => this.renderLoadBalancerInfo(props.blueGreenDeploymentConfig) }),
-      alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration({
-          alarms: this.alarms,
-          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
-          removeAlarms: removeAlarmsFromDeploymentGroup,
-          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
-        }),
+      loadBalancerInfo: cdk.Lazy.any({
+        produce: () => this.renderLoadBalancerInfo(props.blueGreenDeploymentConfig),
       }),
-      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      alarmConfiguration: cdk.Lazy.any({
+        produce: () =>
+          renderAlarmConfiguration({
+            alarms: this.alarms,
+            ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+            removeAlarms: removeAlarmsFromDeploymentGroup,
+            ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+          }),
+      }),
+      autoRollbackConfiguration: cdk.Lazy.any({
+        produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback),
+      }),
     });
 
     this._setNameAndArn(resource, this.application);
@@ -296,11 +313,14 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     this.alarms.push(alarm);
   }
 
-  private renderBlueGreenDeploymentConfiguration(options: EcsBlueGreenDeploymentConfig):
-  CfnDeploymentGroup.BlueGreenDeploymentConfigurationProperty {
+  private renderBlueGreenDeploymentConfiguration(
+    options: EcsBlueGreenDeploymentConfig
+  ): CfnDeploymentGroup.BlueGreenDeploymentConfigurationProperty {
     return {
       deploymentReadyOption: {
-        actionOnTimeout: options.deploymentApprovalWaitTime ? 'STOP_DEPLOYMENT' : 'CONTINUE_DEPLOYMENT',
+        actionOnTimeout: options.deploymentApprovalWaitTime
+          ? 'STOP_DEPLOYMENT'
+          : 'CONTINUE_DEPLOYMENT',
         waitTimeInMinutes: options.deploymentApprovalWaitTime?.toMinutes() ?? 0,
       },
       terminateBlueInstancesOnDeploymentSuccess: {
@@ -310,7 +330,9 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     };
   }
 
-  private renderLoadBalancerInfo(options: EcsBlueGreenDeploymentConfig): CfnDeploymentGroup.LoadBalancerInfoProperty {
+  private renderLoadBalancerInfo(
+    options: EcsBlueGreenDeploymentConfig
+  ): CfnDeploymentGroup.LoadBalancerInfoProperty {
     return {
       targetGroupPairInfoList: [
         {
@@ -323,15 +345,13 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
             },
           ],
           prodTrafficRoute: {
-            listenerArns: [
-              options.listener.listenerArn,
-            ],
+            listenerArns: [options.listener.listenerArn],
           },
-          testTrafficRoute: options.testListener ? {
-            listenerArns: [
-              options.testListener.listenerArn,
-            ],
-          } : undefined,
+          testTrafficRoute: options.testListener
+            ? {
+                listenerArns: [options.testListener.listenerArn],
+              }
+            : undefined,
         },
       ],
     };
@@ -364,7 +384,10 @@ export interface EcsDeploymentGroupAttributes {
   readonly deploymentConfig?: IEcsDeploymentConfig;
 }
 
-class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements IEcsDeploymentGroup {
+class ImportedEcsDeploymentGroup
+  extends ImportedDeploymentGroupBase
+  implements IEcsDeploymentGroup
+{
   public readonly application: IEcsApplication;
   public readonly deploymentConfig: IEcsDeploymentConfig;
 
@@ -375,6 +398,8 @@ class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements 
     });
 
     this.application = props.application;
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
+    this.deploymentConfig = this._bindDeploymentConfig(
+      props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE
+    );
   }
 }

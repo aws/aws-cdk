@@ -87,7 +87,6 @@ enum UsagePlanKeyType {
  * Represents the API stages that a usage plan applies to.
  */
 export interface UsagePlanPerApiStage {
-
   /**
    * @default none
    */
@@ -173,7 +172,6 @@ export interface IUsagePlan extends IResource {
    * @param options options that control the behaviour of this method
    */
   addApiKey(apiKey: IApiKey, options?: AddApiKeyOptions): void;
-
 }
 
 abstract class UsagePlanBase extends Resource implements IUsagePlan {
@@ -209,11 +207,9 @@ abstract class UsagePlanBase extends Resource implements IUsagePlan {
       resource.overrideLogicalId(options?.overrideLogicalId);
     }
   }
-
 }
 
 export class UsagePlan extends UsagePlanBase {
-
   /**
    * Import an externally defined usage plan using its ARN.
    *
@@ -239,7 +235,7 @@ export class UsagePlan extends UsagePlanBase {
 
   private readonly apiStages = new Array<UsagePlanPerApiStage>();
 
-  constructor(scope: Construct, id: string, props: UsagePlanProps = { }) {
+  constructor(scope: Construct, id: string, props: UsagePlanProps = {}) {
     super(scope, id);
     let resource: CfnUsagePlan;
 
@@ -273,7 +269,9 @@ export class UsagePlan extends UsagePlanBase {
    *
    * @param props
    */
-  private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
+  private renderApiStages(
+    apiStages: UsagePlanPerApiStage[] | undefined
+  ): CfnUsagePlan.ApiStageProperty[] | undefined {
     if (apiStages && apiStages.length > 0) {
       const stages: CfnUsagePlan.ApiStageProperty[] = [];
       apiStages.forEach((apiStage: UsagePlanPerApiStage) => {
@@ -310,7 +308,9 @@ export class UsagePlan extends UsagePlanBase {
     }
   }
 
-  private renderThrottle(props: ThrottleSettings | undefined): (CfnUsagePlan.ThrottleSettingsProperty | Token) {
+  private renderThrottle(
+    props: ThrottleSettings | undefined
+  ): CfnUsagePlan.ThrottleSettingsProperty | Token {
     let ret: CfnUsagePlan.ThrottleSettingsProperty | Token;
     if (props !== undefined) {
       const burstLimit = props.burstLimit;
@@ -327,7 +327,7 @@ export class UsagePlan extends UsagePlanBase {
   }
 
   private renderThrottlePerMethod(throttlePerMethod?: ThrottlingPerMethod[]) {
-    const ret: { [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token) } = {};
+    const ret: { [key: string]: CfnUsagePlan.ThrottleSettingsProperty | Token } = {};
     if (throttlePerMethod && throttlePerMethod.length > 0) {
       throttlePerMethod.forEach((value: ThrottlingPerMethod) => {
         const method: Method = value.method;

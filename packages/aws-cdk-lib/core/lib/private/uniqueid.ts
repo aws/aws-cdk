@@ -30,16 +30,18 @@ const MAX_ID_LEN = 255;
  * @returns a unique alpha-numeric identifier with a maximum length of 255
  */
 export function makeUniqueId(components: string[]) {
-  components = components.filter(x => x !== HIDDEN_ID);
+  components = components.filter((x) => x !== HIDDEN_ID);
 
   if (components.length === 0) {
     throw new Error('Unable to calculate a unique id for an empty set of components');
   }
 
   // Lazy require in order to break a module dependency cycle
-  const unresolvedTokens = components.filter(c => unresolved(c));
+  const unresolvedTokens = components.filter((c) => unresolved(c));
   if (unresolvedTokens.length > 0) {
-    throw new Error(`ID components may not include unresolved tokens: ${unresolvedTokens.join(',')}`);
+    throw new Error(
+      `ID components may not include unresolved tokens: ${unresolvedTokens.join(',')}`
+    );
   }
 
   // top-level resources will simply use the `name` as-is in order to support
@@ -62,7 +64,7 @@ export function makeUniqueId(components: string[]) {
 
   const hash = pathHash(components);
   const human = removeDupes(components)
-    .filter(x => x !== HIDDEN_FROM_HUMAN_ID)
+    .filter((x) => x !== HIDDEN_FROM_HUMAN_ID)
     .map(removeNonAlphanumeric)
     .join('')
     .slice(0, MAX_HUMAN_LEN);

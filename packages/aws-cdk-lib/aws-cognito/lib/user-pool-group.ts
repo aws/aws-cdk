@@ -20,10 +20,10 @@ export interface IUserPoolGroup extends IResource {
  */
 export interface UserPoolGroupOptions {
   /**
-    * A string containing the description of the group.
-    *
-    * @default - no description
-    */
+   * A string containing the description of the group.
+   *
+   * @default - no description
+   */
   readonly description?: string;
 
   /**
@@ -87,15 +87,21 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
   constructor(scope: Construct, id: string, props: UserPoolGroupProps) {
     super(scope, id);
 
-    if (props.description !== undefined &&
+    if (
+      props.description !== undefined &&
       !Token.isUnresolved(props.description) &&
-      (props.description.length > 2048)) {
-      throw new Error(`\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`);
+      props.description.length > 2048
+    ) {
+      throw new Error(
+        `\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`
+      );
     }
 
-    if (props.precedence !== undefined &&
+    if (
+      props.precedence !== undefined &&
       !Token.isUnresolved(props.precedence) &&
-      (props.precedence < 0 || props.precedence > 2 ** 31 - 1)) {
+      (props.precedence < 0 || props.precedence > 2 ** 31 - 1)
+    ) {
       throw new Error(`\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`);
     }
 
@@ -104,7 +110,9 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       !Token.isUnresolved(props.groupName) &&
       !/^[\p{L}\p{M}\p{S}\p{N}\p{P}]{1,128}$/u.test(props.groupName)
     ) {
-      throw new Error('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.');
+      throw new Error(
+        '\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.'
+      );
     }
 
     const resource = new CfnUserPoolGroup(this, 'Resource', {

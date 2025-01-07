@@ -140,7 +140,9 @@ export class CfnInclude extends core.CfnElement {
 
     for (const logicalId of this.dehydratedResources) {
       if (!Object.keys(this.template.Resources).includes(logicalId)) {
-        throw new Error(`Logical ID '${logicalId}' was specified in 'dehydratedResources', but does not belong to a resource in the template.`);
+        throw new Error(
+          `Logical ID '${logicalId}' was specified in 'dehydratedResources', but does not belong to a resource in the template.`
+        );
       }
     }
 
@@ -182,7 +184,9 @@ export class CfnInclude extends core.CfnElement {
     // verify that all nestedStacks have been instantiated
     for (const nestedStackId of Object.keys(props.loadNestedStacks || {})) {
       if (!(nestedStackId in this.resources)) {
-        throw new Error(`Nested Stack with logical ID '${nestedStackId}' was not found in the template`);
+        throw new Error(
+          `Nested Stack with logical ID '${nestedStackId}' was not found in the template`
+        );
       }
     }
 
@@ -340,12 +344,16 @@ export class CfnInclude extends core.CfnElement {
   public getNestedStack(logicalId: string): IncludedNestedStack {
     if (!this.nestedStacks[logicalId]) {
       if (!this.template.Resources[logicalId]) {
-        throw new Error(`Nested Stack with logical ID '${logicalId}' was not found in the template`);
+        throw new Error(
+          `Nested Stack with logical ID '${logicalId}' was not found in the template`
+        );
       } else if (this.template.Resources[logicalId].Type !== 'AWS::CloudFormation::Stack') {
         throw new Error(`Resource with logical ID '${logicalId}' is not a CloudFormation Stack`);
       } else {
-        throw new Error(`Nested Stack '${logicalId}' was not included in the parent template. ` +
-          'To retrieve an included nested stack, it must be specified either in the `loadNestedStacks` property, or through the `loadNestedStack` method');
+        throw new Error(
+          `Nested Stack '${logicalId}' was not included in the parent template. ` +
+            'To retrieve an included nested stack, it must be specified either in the `loadNestedStacks` property, or through the `loadNestedStack` method'
+        );
       }
     }
     return this.nestedStacks[logicalId];
@@ -362,7 +370,10 @@ export class CfnInclude extends core.CfnElement {
    * @param nestedStackProps the properties of the included child Stack
    * @returns the same `IncludedNestedStack` object that `getNestedStack` returns for this logical ID
    */
-  public loadNestedStack(logicalId: string, nestedStackProps: CfnIncludeProps): IncludedNestedStack {
+  public loadNestedStack(
+    logicalId: string,
+    nestedStackProps: CfnIncludeProps
+  ): IncludedNestedStack {
     if (logicalId in this.nestedStacks) {
       throw new Error(`Nested Stack '${logicalId}' was already included in its parent template`);
     }
@@ -381,7 +392,9 @@ export class CfnInclude extends core.CfnElement {
       this.getOrCreateResource(logicalId);
       return this.nestedStacks[logicalId];
     } else {
-      throw new Error(`Nested Stack with logical ID '${logicalId}' is not an AWS::CloudFormation::Stack resource`);
+      throw new Error(
+        `Nested Stack with logical ID '${logicalId}' is not an AWS::CloudFormation::Stack resource`
+      );
     }
   }
 
@@ -431,10 +444,18 @@ export class CfnInclude extends core.CfnElement {
   private createMapping(mappingName: string): void {
     const cfnParser = new cfn_parse.CfnParser({
       finder: {
-        findCondition() { throw new Error('Referring to Conditions in Mapping definitions is not allowed'); },
-        findMapping() { throw new Error('Referring to other Mappings in Mapping definitions is not allowed'); },
-        findRefTarget() { throw new Error('Using Ref expressions in Mapping definitions is not allowed'); },
-        findResource() { throw new Error('Using GetAtt expressions in Mapping definitions is not allowed'); },
+        findCondition() {
+          throw new Error('Referring to Conditions in Mapping definitions is not allowed');
+        },
+        findMapping() {
+          throw new Error('Referring to other Mappings in Mapping definitions is not allowed');
+        },
+        findRefTarget() {
+          throw new Error('Using Ref expressions in Mapping definitions is not allowed');
+        },
+        findResource() {
+          throw new Error('Using GetAtt expressions in Mapping definitions is not allowed');
+        },
       },
       parameters: {},
     });
@@ -452,10 +473,18 @@ export class CfnInclude extends core.CfnElement {
 
     const expression = new cfn_parse.CfnParser({
       finder: {
-        findResource() { throw new Error('Using GetAtt expressions in Parameter definitions is not allowed'); },
-        findRefTarget() { throw new Error('Using Ref expressions in Parameter definitions is not allowed'); },
-        findCondition() { throw new Error('Referring to Conditions in Parameter definitions is not allowed'); },
-        findMapping() { throw new Error('Referring to Mappings in Parameter definitions is not allowed'); },
+        findResource() {
+          throw new Error('Using GetAtt expressions in Parameter definitions is not allowed');
+        },
+        findRefTarget() {
+          throw new Error('Using Ref expressions in Parameter definitions is not allowed');
+        },
+        findCondition() {
+          throw new Error('Referring to Conditions in Parameter definitions is not allowed');
+        },
+        findMapping() {
+          throw new Error('Referring to Mappings in Parameter definitions is not allowed');
+        },
       },
       parameters: {},
     }).parseValue(this.template.Parameters[logicalId]);
@@ -485,7 +514,9 @@ export class CfnInclude extends core.CfnElement {
           // only parameters can be referenced in Rules
           return self.parameters[refTarget];
         },
-        findResource() { throw new Error('Using GetAtt expressions in Rule definitions is not allowed'); },
+        findResource() {
+          throw new Error('Using GetAtt expressions in Rule definitions is not allowed');
+        },
         findCondition(conditionName: string): core.CfnCondition | undefined {
           return self.conditions[conditionName];
         },
@@ -529,9 +560,14 @@ export class CfnInclude extends core.CfnElement {
     let hook: core.CfnHook;
     switch (hookAttributes.Type) {
       case 'AWS::CodeDeploy::BlueGreen':
-        hook = (core.CfnCodeDeployBlueGreenHook as any)._fromCloudFormation(this.hooksScope, hookName, hookAttributes, {
-          parser: cfnParser,
-        });
+        hook = (core.CfnCodeDeployBlueGreenHook as any)._fromCloudFormation(
+          this.hooksScope,
+          hookName,
+          hookAttributes,
+          {
+            parser: cfnParser,
+          }
+        );
         break;
       default: {
         const hookProperties = cfnParser.parseValue(hookAttributes.Properties) ?? {};
@@ -575,8 +611,10 @@ export class CfnInclude extends core.CfnElement {
           return self.getCondition(outputAttributes.Condition);
         }
 
-        throw new Error(`Output with name '${logicalId}' refers to a Condition with name ` +
-          `'${outputAttributes.Condition}' which was not found in this template`);
+        throw new Error(
+          `Output with name '${logicalId}' refers to a Condition with name ` +
+            `'${outputAttributes.Condition}' which was not found in this template`
+        );
       })(),
     });
 
@@ -592,7 +630,9 @@ export class CfnInclude extends core.CfnElement {
     const self = this;
     const cfnParser = new cfn_parse.CfnParser({
       finder: {
-        findResource() { throw new Error('Using GetAtt in Condition definitions is not allowed'); },
+        findResource() {
+          throw new Error('Using GetAtt in Condition definitions is not allowed');
+        },
         findRefTarget(elementName: string): core.CfnElement | undefined {
           // only Parameters can be referenced in the 'Conditions' section
           return self.parameters[elementName];
@@ -626,7 +666,9 @@ export class CfnInclude extends core.CfnElement {
     cycleChain = cycleChain.concat([logicalId]);
     if (cycleChain.length !== new Set(cycleChain).size) {
       if (!this.allowCyclicalReferences) {
-        throw new Error(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`);
+        throw new Error(
+          `Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`
+        );
       }
       //only allow one placeholder per logical id
       if (this.logicalIdToPlaceholderMap.get(logicalId)) {
@@ -683,11 +725,12 @@ export class CfnInclude extends core.CfnElement {
     const resourceAttributes: any = this.template.Resources[logicalId];
     let l1Instance: core.CfnResource;
     if (this.nestedStacksToInclude[logicalId] && this.dehydratedResources.includes(logicalId)) {
-      throw new Error(`nested stack '${logicalId}' was marked as dehydrated - nested stacks cannot be dehydrated`);
+      throw new Error(
+        `nested stack '${logicalId}' was marked as dehydrated - nested stacks cannot be dehydrated`
+      );
     } else if (this.nestedStacksToInclude[logicalId]) {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
     } else if (this.dehydratedResources.includes(logicalId)) {
-
       l1Instance = new core.CfnResource(this, logicalId, {
         type: resourceAttributes.Type,
         properties: resourceAttributes.Properties,
@@ -716,7 +759,12 @@ export class CfnInclude extends core.CfnElement {
         const [moduleName, ...className] = l1ClassFqn.split('.');
         const module = require(moduleName); // eslint-disable-line @typescript-eslint/no-require-imports
         const jsClassFromModule = module[className.join('.')];
-        l1Instance = jsClassFromModule._fromCloudFormation(this, logicalId, resourceAttributes, options);
+        l1Instance = jsClassFromModule._fromCloudFormation(
+          this,
+          logicalId,
+          resourceAttributes,
+          options
+        );
       } else {
         l1Instance = new core.CfnResource(this, logicalId, {
           type: resourceAttributes.Type,
@@ -742,8 +790,17 @@ export class CfnInclude extends core.CfnElement {
 
     // handle any unknown attributes using overrides
     const knownAttributes = [
-      'Condition', 'DependsOn', 'Description', 'Metadata', 'Properties', 'Type', 'Version',
-      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy',
+      'Condition',
+      'DependsOn',
+      'Description',
+      'Metadata',
+      'Properties',
+      'Type',
+      'Version',
+      'CreationPolicy',
+      'DeletionPolicy',
+      'UpdatePolicy',
+      'UpdateReplacePolicy',
     ];
     for (const [attrName, attrValue] of Object.entries(resourceAttributes)) {
       if (!knownAttributes.includes(attrName)) {
@@ -754,12 +811,17 @@ export class CfnInclude extends core.CfnElement {
     return l1Instance;
   }
 
-  private createNestedStack(nestedStackId: string, cfnParser: cfn_parse.CfnParser): core.CfnResource {
+  private createNestedStack(
+    nestedStackId: string,
+    cfnParser: cfn_parse.CfnParser
+  ): core.CfnResource {
     const templateResources = this.template.Resources || {};
     const nestedStackAttributes = templateResources[nestedStackId] || {};
 
     if (nestedStackAttributes.Type !== 'AWS::CloudFormation::Stack') {
-      throw new Error(`Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`);
+      throw new Error(
+        `Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`
+      );
     }
     if (nestedStackAttributes.CreationPolicy) {
       throw new Error('CreationPolicy is not supported by the AWS::CloudFormation::Stack resource');
@@ -771,10 +833,16 @@ export class CfnInclude extends core.CfnElement {
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);
     const nestedStack = new core.NestedStack(this, nestedStackId, {
       parameters: this.parametersForNestedStack(nestedStackProps.Parameters, nestedStackId),
-      notificationArns: cfn_parse.FromCloudFormation.getStringArray(nestedStackProps.NotificationARNs).value,
+      notificationArns: cfn_parse.FromCloudFormation.getStringArray(
+        nestedStackProps.NotificationARNs
+      ).value,
       timeout: this.timeoutForNestedStack(nestedStackProps.TimeoutInMinutes),
     });
-    const template = new CfnInclude(nestedStack, nestedStackId, this.nestedStacksToInclude[nestedStackId]);
+    const template = new CfnInclude(
+      nestedStack,
+      nestedStackId,
+      this.nestedStacksToInclude[nestedStackId]
+    );
     this.nestedStacks[nestedStackId] = { stack: nestedStack, includedTemplate: template };
 
     // we know this is never undefined for nested stacks
@@ -783,7 +851,10 @@ export class CfnInclude extends core.CfnElement {
     return nestedStackResource;
   }
 
-  private parametersForNestedStack(parameters: any, nestedStackId: string): { [key: string]: string } | undefined {
+  private parametersForNestedStack(
+    parameters: any,
+    nestedStackId: string
+  ): { [key: string]: string } | undefined {
     if (parameters == null) {
       return undefined;
     }

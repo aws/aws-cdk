@@ -118,13 +118,15 @@ export class ElasticsearchVersion {
    * Custom Elasticsearch version
    * @param version custom version number
    */
-  public static of(version: string) { return new ElasticsearchVersion(version); }
+  public static of(version: string) {
+    return new ElasticsearchVersion(version);
+  }
 
   /**
    *
    * @param version Elasticsearch version number
    */
-  private constructor(public readonly version: string) { }
+  private constructor(public readonly version: string) {}
 }
 
 /**
@@ -191,7 +193,6 @@ export interface CapacityConfig {
    * @deprecated use opensearchservice module instead
    */
   readonly warmInstanceType?: string;
-
 }
 
 /**
@@ -505,7 +506,7 @@ export interface DomainProps {
    * @default - no advanced options are specified
    * @deprecated use opensearchservice module instead
    */
-  readonly advancedOptions?: { [key: string]: (string) };
+  readonly advancedOptions?: { [key: string]: string };
 
   /**
    * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
@@ -958,12 +959,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grant(identity, perms.ES_READ_ACTIONS, this.domainArn, `${this.domainArn}/*`);
   }
 
   /**
@@ -974,12 +970,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grant(identity, perms.ES_WRITE_ACTIONS, this.domainArn, `${this.domainArn}/*`);
   }
 
   /**
@@ -990,12 +981,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grant(identity, perms.ES_READ_WRITE_ACTIONS, this.domainArn, `${this.domainArn}/*`);
   }
 
   /**
@@ -1011,7 +997,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       identity,
       perms.ES_READ_ACTIONS,
       `${this.domainArn}/${index}`,
-      `${this.domainArn}/${index}/*`,
+      `${this.domainArn}/${index}/*`
     );
   }
 
@@ -1028,7 +1014,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       identity,
       perms.ES_WRITE_ACTIONS,
       `${this.domainArn}/${index}`,
-      `${this.domainArn}/${index}/*`,
+      `${this.domainArn}/${index}/*`
     );
   }
 
@@ -1045,7 +1031,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       identity,
       perms.ES_READ_WRITE_ACTIONS,
       `${this.domainArn}/${index}`,
-      `${this.domainArn}/${index}/*`,
+      `${this.domainArn}/${index}/*`
     );
   }
 
@@ -1058,11 +1044,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantPathRead(path: string, identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_ACTIONS,
-      `${this.domainArn}/${path}`,
-    );
+    return this.grant(identity, perms.ES_READ_ACTIONS, `${this.domainArn}/${path}`);
   }
 
   /**
@@ -1074,11 +1056,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantPathWrite(path: string, identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_WRITE_ACTIONS,
-      `${this.domainArn}/${path}`,
-    );
+    return this.grant(identity, perms.ES_WRITE_ACTIONS, `${this.domainArn}/${path}`);
   }
 
   /**
@@ -1090,11 +1068,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantPathReadWrite(path: string, identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_WRITE_ACTIONS,
-      `${this.domainArn}/${path}`,
-    );
+    return this.grant(identity, perms.ES_READ_WRITE_ACTIONS, `${this.domainArn}/${path}`);
   }
 
   /**
@@ -1322,7 +1296,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
-
 }
 
 /**
@@ -1360,11 +1333,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @param domainEndpoint The domain's endpoint.
    * @deprecated use opensearchservice module instead
    */
-  public static fromDomainEndpoint(
-    scope: Construct,
-    id: string,
-    domainEndpoint: string,
-  ): IDomain {
+  public static fromDomainEndpoint(scope: Construct, id: string, domainEndpoint: string): IDomain {
     const stack = cdk.Stack.of(scope);
     const domainName = extractNameFromEndpoint(domainEndpoint);
     const domainArn = stack.formatArn({
@@ -1387,18 +1356,25 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @param attrs A `DomainAttributes` object.
    * @deprecated use opensearchservice module instead
    */
-  public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
+  public static fromDomainAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DomainAttributes
+  ): IDomain {
     const { domainArn, domainEndpoint } = attrs;
-    const domainName = cdk.Stack.of(scope).splitArn(domainArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName
-      ?? extractNameFromEndpoint(domainEndpoint);
+    const domainName =
+      cdk.Stack.of(scope).splitArn(domainArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName ??
+      extractNameFromEndpoint(domainEndpoint);
 
-    return new class extends DomainBase {
+    return new (class extends DomainBase {
       public readonly domainArn = domainArn;
       public readonly domainName = domainName;
       public readonly domainEndpoint = domainEndpoint.replace(/^https?:\/\//, '');
 
-      constructor() { super(scope, id); }
-    };
+      constructor() {
+        super(scope, id);
+      }
+    })();
   }
 
   /**
@@ -1470,47 +1446,73 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const defaultInstanceType = 'r5.large.elasticsearch';
     const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';
 
-    const dedicatedMasterType = initializeInstanceType(defaultInstanceType, props.capacity?.masterNodeInstanceType);
+    const dedicatedMasterType = initializeInstanceType(
+      defaultInstanceType,
+      props.capacity?.masterNodeInstanceType
+    );
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
-    const dedicatedMasterEnabled = cdk.Token.isUnresolved(dedicatedMasterCount) ? true : dedicatedMasterCount > 0;
+    const dedicatedMasterEnabled = cdk.Token.isUnresolved(dedicatedMasterCount)
+      ? true
+      : dedicatedMasterCount > 0;
 
-    const instanceType = initializeInstanceType(defaultInstanceType, props.capacity?.dataNodeInstanceType);
+    const instanceType = initializeInstanceType(
+      defaultInstanceType,
+      props.capacity?.dataNodeInstanceType
+    );
     const instanceCount = props.capacity?.dataNodes ?? 1;
 
-    const warmType = initializeInstanceType(warmDefaultInstanceType, props.capacity?.warmInstanceType);
+    const warmType = initializeInstanceType(
+      warmDefaultInstanceType,
+      props.capacity?.warmInstanceType
+    );
     const warmCount = props.capacity?.warmNodes ?? 0;
     const warmEnabled = cdk.Token.isUnresolved(warmCount) ? true : warmCount > 0;
 
-    const availabilityZoneCount =
-      props.zoneAwareness?.availabilityZoneCount ?? 2;
+    const availabilityZoneCount = props.zoneAwareness?.availabilityZoneCount ?? 2;
 
     if (![2, 3].includes(availabilityZoneCount)) {
       throw new Error('Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3');
     }
 
     const zoneAwarenessEnabled =
-      props.zoneAwareness?.enabled ??
-      props.zoneAwareness?.availabilityZoneCount != null;
+      props.zoneAwareness?.enabled ?? props.zoneAwareness?.availabilityZoneCount != null;
 
     let securityGroups: ec2.ISecurityGroup[] | undefined;
     let subnets: ec2.ISubnet[] | undefined;
 
     if (props.vpc) {
-      subnets = selectSubnets(props.vpc, props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]);
-      securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
-        vpc: props.vpc,
-        description: `Security group for domain ${this.node.id}`,
-      })];
+      subnets = selectSubnets(
+        props.vpc,
+        props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]
+      );
+      securityGroups = props.securityGroups ?? [
+        new ec2.SecurityGroup(this, 'SecurityGroup', {
+          vpc: props.vpc,
+          description: `Security group for domain ${this.node.id}`,
+        }),
+      ];
       this._connections = new ec2.Connections({ securityGroups });
     }
 
     // If VPC options are supplied ensure that the number of subnets matches the number AZ
-    if (subnets && zoneAwarenessEnabled && new Set(subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount) {
-      throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
+    if (
+      subnets &&
+      zoneAwarenessEnabled &&
+      new Set(subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount
+    ) {
+      throw new Error(
+        'When providing vpc options you need to provide a subnet for each AZ you are using'
+      );
     }
 
-    if ([dedicatedMasterType, instanceType, warmType].some(t => (!cdk.Token.isUnresolved(t) && !t.endsWith('.elasticsearch')))) {
-      throw new Error('Master, data and UltraWarm node instance types must end with ".elasticsearch".');
+    if (
+      [dedicatedMasterType, instanceType, warmType].some(
+        (t) => !cdk.Token.isUnresolved(t) && !t.endsWith('.elasticsearch')
+      )
+    ) {
+      throw new Error(
+        'Master, data and UltraWarm node instance types must end with ".elasticsearch".'
+      );
     }
 
     if (!cdk.Token.isUnresolved(warmType) && !warmType.startsWith('ultrawarm')) {
@@ -1522,11 +1524,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (
       elasticsearchVersionNum <= 7.7 &&
-      ![
-        1.5, 2.3, 5.1, 5.3, 5.5, 5.6, 6.0,
-        6.2, 6.3, 6.4, 6.5, 6.7, 6.8, 7.1, 7.4,
-        7.7,
-      ].includes(elasticsearchVersionNum)
+      ![1.5, 2.3, 5.1, 5.3, 5.5, 5.6, 6.0, 6.2, 6.3, 6.4, 6.5, 6.7, 6.8, 7.1, 7.4, 7.7].includes(
+        elasticsearchVersionNum
+      )
     ) {
       throw new Error(`Unknown Elasticsearch version: ${elasticsearchVersion}`);
     }
@@ -1556,11 +1556,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const masterUserNameProps = props.fineGrainedAccessControl?.masterUserName;
     // If basic auth is enabled set the user name to admin if no other user info is supplied.
     const masterUserName = unsignedBasicAuthEnabled
-      ? (masterUserArn == null ? (masterUserNameProps ?? 'admin') : undefined)
+      ? masterUserArn == null
+        ? (masterUserNameProps ?? 'admin')
+        : undefined
       : masterUserNameProps;
 
     if (masterUserArn != null && masterUserName != null) {
-      throw new Error('Invalid fine grained access control settings. Only provide one of master user ARN or master user name. Not both.');
+      throw new Error(
+        'Invalid fine grained access control settings. Only provide one of master user ARN or master user name. Not both.'
+      );
     }
 
     const advancedSecurityEnabled = (masterUserArn ?? masterUserName) != null;
@@ -1575,15 +1579,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           generateStringKey: 'password',
           excludeCharacters: "{}'\\*[]()`",
         },
-      })
-        .secretValueFromJson('password');
+      }).secretValueFromJson('password');
     };
-    this.masterUserPassword = internalUserDatabaseEnabled ?
-      (masterUserPasswordProp ?? createMasterUserPassword())
+    this.masterUserPassword = internalUserDatabaseEnabled
+      ? (masterUserPasswordProp ?? createMasterUserPassword())
       : undefined;
 
     const encryptionAtRestEnabled =
-      props.encryptionAtRest?.enabled ?? (props.encryptionAtRest?.kmsKey != null || unsignedBasicAuthEnabled);
+      props.encryptionAtRest?.enabled ??
+      (props.encryptionAtRest?.kmsKey != null || unsignedBasicAuthEnabled);
     const nodeToNodeEncryptionEnabled = props.nodeToNodeEncryption ?? unsignedBasicAuthEnabled;
     const volumeSize = props.ebs?.volumeSize ?? 10;
     const volumeType = props.ebs?.volumeType ?? ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
@@ -1592,15 +1596,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
-    };
+    }
 
     function isSomeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(isInstanceType);
-    };
+    }
 
     function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
-      return instanceTypes.some(t => instanceType.startsWith(t));
-    };
+      return instanceTypes.some((t) => instanceType.startsWith(t));
+    }
 
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
@@ -1612,10 +1616,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later.');
       }
       if (props.cognitoKibanaAuth != null) {
-        throw new Error('Cognito authentication for Kibana requires Elasticsearch version 5.1 or later.');
+        throw new Error(
+          'Cognito authentication for Kibana requires Elasticsearch version 5.1 or later.'
+        );
       }
       if (isSomeInstanceType('c5', 'i3', 'm5', 'r5')) {
-        throw new Error('C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later.');
+        throw new Error(
+          'C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later.'
+        );
       }
     }
 
@@ -1649,7 +1657,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     if (isInstanceType('t2.micro') && elasticsearchVersionNum > 2.3) {
-      throw new Error('The t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3.');
+      throw new Error(
+        'The t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3.'
+      );
     }
 
     if (isSomeInstanceType('t2', 't3') && warmEnabled) {
@@ -1659,17 +1669,23 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Only R3, I3 and r6gd support instance storage, per
     // https://aws.amazon.com/elasticsearch-service/pricing/
     if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd')) {
-      throw new Error('EBS volumes are required when using instance types other than r3, i3 or r6gd.');
+      throw new Error(
+        'EBS volumes are required when using instance types other than r3, i3 or r6gd.'
+      );
     }
 
     // Fine-grained access control requires node-to-node encryption, encryption at rest,
     // and enforced HTTPS.
     if (advancedSecurityEnabled) {
       if (!nodeToNodeEncryptionEnabled) {
-        throw new Error('Node-to-node encryption is required when fine-grained access control is enabled.');
+        throw new Error(
+          'Node-to-node encryption is required when fine-grained access control is enabled.'
+        );
       }
       if (!encryptionAtRestEnabled) {
-        throw new Error('Encryption-at-rest is required when fine-grained access control is enabled.');
+        throw new Error(
+          'Encryption-at-rest is required when fine-grained access control is enabled.'
+        );
       }
       if (!enforceHttps) {
         throw new Error('Enforce HTTPS is required when fine-grained access control is enabled.');
@@ -1679,7 +1695,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Validate fine grained access control enabled for audit logs, per
     // https://aws.amazon.com/about-aws/whats-new/2020/09/elasticsearch-audit-logs-now-available-on-amazon-elasticsearch-service/
     if (props.logging?.auditLogEnabled && !advancedSecurityEnabled) {
-      throw new Error('Fine-grained access control is required when audit logs publishing is enabled.');
+      throw new Error(
+        'Fine-grained access control is required when audit logs publishing is enabled.'
+      );
     }
 
     // Validate UltraWarm requirement for dedicated master nodes, per
@@ -1701,40 +1719,44 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const logGroups: logs.ILogGroup[] = [];
 
     if (props.logging?.slowSearchLogEnabled) {
-      this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
+      this.slowSearchLogGroup =
+        props.logging.slowSearchLogGroup ??
         new logs.LogGroup(this, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
       logGroups.push(this.slowSearchLogGroup);
-    };
+    }
 
     if (props.logging?.slowIndexLogEnabled) {
-      this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
+      this.slowIndexLogGroup =
+        props.logging.slowIndexLogGroup ??
         new logs.LogGroup(this, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
       logGroups.push(this.slowIndexLogGroup);
-    };
+    }
 
     if (props.logging?.appLogEnabled) {
-      this.appLogGroup = props.logging.appLogGroup ??
+      this.appLogGroup =
+        props.logging.appLogGroup ??
         new logs.LogGroup(this, 'AppLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
       logGroups.push(this.appLogGroup);
-    };
+    }
 
     if (props.logging?.auditLogEnabled) {
-      this.auditLogGroup = props.logging.auditLogGroup ??
+      this.auditLogGroup =
+        props.logging.auditLogGroup ??
         new logs.LogGroup(this, 'AuditLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
       logGroups.push(this.auditLogGroup);
-    };
+    }
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
     if (logGroups.length > 0) {
@@ -1747,11 +1769,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
       // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
       // https://github.com/aws/aws-cdk/issues/5343
-      logGroupResourcePolicy = new LogGroupResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
-        // create a cloudwatch logs resource policy name that is unique to this domain instance
-        policyName: `ESLogPolicy${this.node.addr}`,
-        policyStatements: [logPolicyStatement],
-      });
+      logGroupResourcePolicy = new LogGroupResourcePolicy(
+        this,
+        `ESLogGroupPolicy${this.node.addr}`,
+        {
+          // create a cloudwatch logs resource policy name that is unique to this domain instance
+          policyName: `ESLogPolicy${this.node.addr}`,
+          policyStatements: [logPolicyStatement],
+        }
+      );
     }
 
     const logPublishing: Record<string, any> = {};
@@ -1791,7 +1817,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       } else {
         customEndpointCertificate = new acm.Certificate(this, 'CustomEndpointCertificate', {
           domainName: props.customEndpoint.domainName,
-          validation: props.customEndpoint.hostedZone ? acm.CertificateValidation.fromDns(props.customEndpoint.hostedZone) : undefined,
+          validation: props.customEndpoint.hostedZone
+            ? acm.CertificateValidation.fromDns(props.customEndpoint.hostedZone)
+            : undefined,
         });
       }
     }
@@ -1802,27 +1830,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       elasticsearchVersion,
       elasticsearchClusterConfig: {
         dedicatedMasterEnabled,
-        dedicatedMasterCount: dedicatedMasterEnabled
-          ? dedicatedMasterCount
-          : undefined,
-        dedicatedMasterType: dedicatedMasterEnabled
-          ? dedicatedMasterType
-          : undefined,
+        dedicatedMasterCount: dedicatedMasterEnabled ? dedicatedMasterCount : undefined,
+        dedicatedMasterType: dedicatedMasterEnabled ? dedicatedMasterType : undefined,
         instanceCount,
         instanceType,
-        warmEnabled: warmEnabled
-          ? warmEnabled
-          : undefined,
-        warmCount: warmEnabled
-          ? warmCount
-          : undefined,
-        warmType: warmEnabled
-          ? warmType
-          : undefined,
+        warmEnabled: warmEnabled ? warmEnabled : undefined,
+        warmCount: warmEnabled ? warmCount : undefined,
+        warmType: warmEnabled ? warmType : undefined,
         zoneAwarenessEnabled,
-        zoneAwarenessConfig: zoneAwarenessEnabled
-          ? { availabilityZoneCount }
-          : undefined,
+        zoneAwarenessConfig: zoneAwarenessEnabled ? { availabilityZoneCount } : undefined,
       },
       ebsOptions: {
         ebsEnabled,
@@ -1832,9 +1848,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       },
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
-        kmsKeyId: encryptionAtRestEnabled
-          ? props.encryptionAtRest?.kmsKey?.keyId
-          : undefined,
+        kmsKeyId: encryptionAtRestEnabled ? props.encryptionAtRest?.kmsKey?.keyId : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
       logPublishingOptions: logPublishing,
@@ -1851,22 +1865,22 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       domainEndpointOptions: {
         enforceHttps,
         tlsSecurityPolicy: props.tlsSecurityPolicy ?? TLSSecurityPolicy.TLS_1_0,
-        ...props.customEndpoint && {
+        ...(props.customEndpoint && {
           customEndpointEnabled: true,
           customEndpoint: props.customEndpoint.domainName,
           customEndpointCertificateArn: customEndpointCertificate!.certificateArn,
-        },
+        }),
       },
       advancedSecurityOptions: advancedSecurityEnabled
         ? {
-          enabled: true,
-          internalUserDatabaseEnabled,
-          masterUserOptions: {
-            masterUserArn: masterUserArn,
-            masterUserName: masterUserName,
-            masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
-          },
-        }
+            enabled: true,
+            internalUserDatabaseEnabled,
+            masterUserOptions: {
+              masterUserArn: masterUserArn,
+              masterUserName: masterUserName,
+              masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
+            },
+          }
         : undefined,
       advancedOptions: props.advancedOptions,
     });
@@ -1879,19 +1893,27 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       };
     }
 
-    if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
+    if (logGroupResourcePolicy) {
+      this.domain.node.addDependency(logGroupResourcePolicy);
+    }
 
     if (props.domainName) {
       if (!cdk.Token.isUnresolved(props.domainName)) {
         // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname
         if (!props.domainName.match(/^[a-z0-9\-]+$/)) {
-          throw new Error(`Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`);
+          throw new Error(
+            `Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`
+          );
         }
         if (props.domainName.length < 3 || props.domainName.length > 28) {
-          throw new Error(`Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`);
+          throw new Error(
+            `Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`
+          );
         }
         if (props.domainName[0] < 'a' || props.domainName[0] > 'z') {
-          throw new Error(`Invalid domainName '${props.domainName}'. It must start with a lowercase letter`);
+          throw new Error(
+            `Invalid domainName '${props.domainName}'. It must start with a lowercase letter`
+          );
         }
       }
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
@@ -1932,7 +1954,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new Error("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+      throw new Error(
+        "Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC"
+      );
     }
     return this._connections;
   }
@@ -1959,11 +1983,13 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           // while not strictly documented for updates as well, it stands to reason that an update
           // operation might require these in case the cluster uses a kms key.
           // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
-          this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-            actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-            resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
-            effect: iam.Effect.ALLOW,
-          }));
+          this.accessPolicy.grantPrincipal.addToPrincipalPolicy(
+            new iam.PolicyStatement({
+              actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
+              resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
+              effect: iam.Effect.ALLOW,
+            })
+          );
         }
       } else {
         this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
@@ -2003,7 +2029,9 @@ function parseVersion(version: ElasticsearchVersion): number {
   const firstDot = versionStr.indexOf('.');
 
   if (firstDot < 1) {
-    throw new Error(`Invalid Elasticsearch version: ${versionStr}. Version string needs to start with major and minor version (x.y).`);
+    throw new Error(
+      `Invalid Elasticsearch version: ${versionStr}. Version string needs to start with major and minor version (x.y).`
+    );
   }
 
   const secondDot = versionStr.indexOf('.', firstDot + 1);
@@ -2015,7 +2043,9 @@ function parseVersion(version: ElasticsearchVersion): number {
       return parseFloat(versionStr.substring(0, secondDot));
     }
   } catch {
-    throw new Error(`Invalid Elasticsearch version: ${versionStr}. Version string needs to start with major and minor version (x.y).`);
+    throw new Error(
+      `Invalid Elasticsearch version: ${versionStr}. Version string needs to start with major and minor version (x.y).`
+    );
   }
 }
 

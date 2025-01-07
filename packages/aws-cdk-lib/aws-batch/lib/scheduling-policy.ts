@@ -188,15 +188,25 @@ export interface FairshareSchedulingPolicyProps extends SchedulingPolicyProps {
  *
  * @resource AWS::Batch::SchedulingPolicy
  */
-export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements IFairshareSchedulingPolicy {
+export class FairshareSchedulingPolicy
+  extends SchedulingPolicyBase
+  implements IFairshareSchedulingPolicy
+{
   /**
    * Reference an exisiting Scheduling Policy by its ARN
    */
-  public static fromFairshareSchedulingPolicyArn(scope: Construct, id: string, fairshareSchedulingPolicyArn: string): IFairshareSchedulingPolicy {
+  public static fromFairshareSchedulingPolicyArn(
+    scope: Construct,
+    id: string,
+    fairshareSchedulingPolicyArn: string
+  ): IFairshareSchedulingPolicy {
     const stack = Stack.of(scope);
     class Import extends SchedulingPolicyBase implements IFairshareSchedulingPolicy {
       public readonly schedulingPolicyArn = fairshareSchedulingPolicyArn;
-      public readonly schedulingPolicyName = stack.splitArn(fairshareSchedulingPolicyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+      public readonly schedulingPolicyName = stack.splitArn(
+        fairshareSchedulingPolicyArn,
+        ArnFormat.SLASH_RESOURCE_NAME
+      ).resourceName!;
       public readonly shares = [];
     }
 
@@ -219,10 +229,11 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
         computeReservation: this.computeReservation,
         shareDecaySeconds: this.shareDecay?.toSeconds(),
         shareDistribution: Lazy.any({
-          produce: () => this.shares?.map((share) => ({
-            shareIdentifier: share.shareIdentifier,
-            weightFactor: share.weightFactor,
-          })),
+          produce: () =>
+            this.shares?.map((share) => ({
+              shareIdentifier: share.shareIdentifier,
+              weightFactor: share.weightFactor,
+            })),
         }),
       },
       name: props?.schedulingPolicyName,

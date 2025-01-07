@@ -20,7 +20,7 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
     case 'Delete':
       return onDelete(event.ResourceProperties?.BucketName);
   }
-};
+}
 
 async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
@@ -43,7 +43,8 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
  */
 async function denyWrites(bucketName: string) {
   try {
-    const prevPolicyJson = (await s3.getBucketPolicy({ Bucket: bucketName }))?.Policy ?? S3_POLICY_STUB;
+    const prevPolicyJson =
+      (await s3.getBucketPolicy({ Bucket: bucketName }))?.Policy ?? S3_POLICY_STUB;
     const policy = JSON.parse(prevPolicyJson);
     policy.Statement.push(
       // Prevent any more objects from being created in the bucket
@@ -52,7 +53,7 @@ async function denyWrites(bucketName: string) {
         Effect: 'Deny',
         Action: ['s3:PutObject'],
         Resource: [`arn:aws:s3:::${bucketName}/*`],
-      },
+      }
     );
 
     await s3.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(policy) });
@@ -65,7 +66,9 @@ async function denyWrites(bucketName: string) {
     // (and likely will succeed). The object and bucket deletion are most important,
     // not this policy assignment, which only acts as extra insurance against object
     // writing race conditions. This error is non-fatal, but should be logged.
-    console.log(`Could not set new object deny policy on bucket '${bucketName}' prior to deletion.`);
+    console.log(
+      `Could not set new object deny policy on bucket '${bucketName}' prior to deletion.`
+    );
   }
 }
 
@@ -78,14 +81,14 @@ async function emptyBucket(bucketName: string) {
   let listedObjects;
   do {
     listedObjects = await s3.listObjectVersions({ Bucket: bucketName });
-    const contents = [...listedObjects.Versions ?? [], ...listedObjects.DeleteMarkers ?? []];
+    const contents = [...(listedObjects.Versions ?? []), ...(listedObjects.DeleteMarkers ?? [])];
     if (contents.length === 0) {
       return;
     }
 
     const records = contents.map((record) => ({ Key: record.Key, VersionId: record.VersionId }));
     await s3.deleteObjects({ Bucket: bucketName, Delete: { Objects: records } });
-  } while (listedObjects?.IsTruncated)
+  } while (listedObjects?.IsTruncated);
 }
 
 async function onDelete(bucketName?: string) {
@@ -93,7 +96,7 @@ async function onDelete(bucketName?: string) {
     throw new Error('No BucketName was provided.');
   }
   try {
-    if (!await isBucketTaggedForDeletion(bucketName)) {
+    if (!(await isBucketTaggedForDeletion(bucketName))) {
       console.log(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.`);
       return;
     }
@@ -119,5 +122,7 @@ async function onDelete(bucketName?: string) {
  */
 async function isBucketTaggedForDeletion(bucketName: string) {
   const response = await s3.getBucketTagging({ Bucket: bucketName });
-  return response.TagSet?.some(tag => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === 'true');
+  return response.TagSet?.some(
+    (tag) => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === 'true'
+  );
 }

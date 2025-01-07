@@ -19,8 +19,7 @@ export class PermissionsBoundary {
     return new PermissionsBoundary(scope);
   }
 
-  private constructor(private readonly scope: IConstruct) {
-  }
+  private constructor(private readonly scope: IConstruct) {}
 
   /**
    * Apply the given policy as Permissions Boundary to all Roles and Users in
@@ -31,31 +30,39 @@ export class PermissionsBoundary {
    * closest to the Role wins.
    */
   public apply(boundaryPolicy: IManagedPolicy) {
-    Aspects.of(this.scope).add({
-      visit(node: IConstruct) {
-        if (
-          CfnResource.isCfnResource(node) &&
-            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
-        ) {
-          node.addPropertyOverride('PermissionsBoundary', boundaryPolicy.managedPolicyArn);
-        }
+    Aspects.of(this.scope).add(
+      {
+        visit(node: IConstruct) {
+          if (
+            CfnResource.isCfnResource(node) &&
+            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME ||
+              node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
+          ) {
+            node.addPropertyOverride('PermissionsBoundary', boundaryPolicy.managedPolicyArn);
+          }
+        },
       },
-    }, { priority: AspectPriority.MUTATING });
+      { priority: AspectPriority.MUTATING }
+    );
   }
 
   /**
    * Remove previously applied Permissions Boundaries
    */
   public clear() {
-    Aspects.of(this.scope).add({
-      visit(node: IConstruct) {
-        if (
-          CfnResource.isCfnResource(node) &&
-            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
-        ) {
-          node.addPropertyDeletionOverride('PermissionsBoundary');
-        }
+    Aspects.of(this.scope).add(
+      {
+        visit(node: IConstruct) {
+          if (
+            CfnResource.isCfnResource(node) &&
+            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME ||
+              node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
+          ) {
+            node.addPropertyDeletionOverride('PermissionsBoundary');
+          }
+        },
       },
-    }, { priority: AspectPriority.MUTATING });
+      { priority: AspectPriority.MUTATING }
+    );
   }
 }

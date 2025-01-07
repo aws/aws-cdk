@@ -56,13 +56,17 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
 });
 
 // This queue receives the payload from the event bus
-const message = putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
-  QueueUrl: resultQueue.queueUrl,
-}));
+const message = putMessageOnQueue.next(
+  test.assertions.awsApiCall('SQS', 'receiveMessage', {
+    QueueUrl: resultQueue.queueUrl,
+  })
+);
 
-message.assertAtPath('Messages.0.Body.detail.body', ExpectedResult.stringLikeRegexp(body)).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(1),
-  interval: cdk.Duration.seconds(10),
-});
+message
+  .assertAtPath('Messages.0.Body.detail.body', ExpectedResult.stringLikeRegexp(body))
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(1),
+    interval: cdk.Duration.seconds(10),
+  });
 
 app.synth();

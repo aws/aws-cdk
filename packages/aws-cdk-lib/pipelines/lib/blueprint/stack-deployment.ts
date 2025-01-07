@@ -2,7 +2,11 @@ import * as path from 'path';
 import { AssetType } from './asset-type';
 import { Step } from './step';
 import * as cxapi from '../../../cx-api';
-import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
+import {
+  AssetManifestReader,
+  DockerImageManifestEntry,
+  FileManifestEntry,
+} from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
 
 /**
@@ -216,7 +220,9 @@ export class StackDeployment {
     this.executionRoleArn = props.executionRoleArn;
     this.stackName = props.stackName;
     this.absoluteTemplatePath = props.absoluteTemplatePath;
-    this.templateUrl = props.templateS3Uri ? s3UrlFromUri(props.templateS3Uri, props.region) : undefined;
+    this.templateUrl = props.templateS3Uri
+      ? s3UrlFromUri(props.templateS3Uri, props.region)
+      : undefined;
 
     this.assets = new Array<StackAsset>();
 
@@ -305,7 +311,8 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
       if (entry instanceof DockerImageManifestEntry) {
         assetType = AssetType.DOCKER_IMAGE;
       } else if (entry instanceof FileManifestEntry) {
-        isTemplate = entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile;
+        isTemplate =
+          entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile;
         assetType = AssetType.FILE;
       } else {
         throw new Error(`Unrecognized asset type: ${entry.type}`);
@@ -333,7 +340,6 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
  * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html#virtual-hosted-style-access
  */
 function s3UrlFromUri(uri: string, region: string | undefined) {
-
   // will return something like this
   //[
   //  's3:',

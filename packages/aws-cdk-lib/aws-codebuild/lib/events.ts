@@ -31,8 +31,7 @@ export class StateChangeEvent {
     return events.EventField.fromPath('$.detail.current-phase');
   }
 
-  private constructor() {
-  }
+  private constructor() {}
 }
 
 /**
@@ -83,6 +82,5 @@ export class PhaseChangeEvent {
     return events.EventField.fromPath('$.detail.build-complete');
   }
 
-  private constructor() {
-  }
+  private constructor() {}
 }

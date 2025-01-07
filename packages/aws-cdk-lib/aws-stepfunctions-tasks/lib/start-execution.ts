@@ -47,8 +47,12 @@ export interface StartExecutionProps {
 export class StartExecution implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly stateMachine: sfn.IStateMachine, private readonly props: StartExecutionProps = {}) {
-    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+  constructor(
+    private readonly stateMachine: sfn.IStateMachine,
+    private readonly props: StartExecutionProps = {}
+  ) {
+    this.integrationPattern =
+      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -57,12 +61,18 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Step Functions.`);
+      throw new Error(
+        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Step Functions.`
+      );
     }
 
-    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
-      && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      throw new Error('Task Token is missing in input (pass JsonPath.taskToken somewhere in input)');
+    if (
+      this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN &&
+      !sfn.FieldUtils.containsTaskToken(props.input)
+    ) {
+      throw new Error(
+        'Task Token is missing in input (pass JsonPath.taskToken somewhere in input)'
+      );
     }
   }
 
@@ -97,25 +107,33 @@ export class StartExecution implements sfn.IStepFunctionsTask {
 
     // Step Functions use Cloud Watch managed rules to deal with synchronous tasks.
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['states:DescribeExecution', 'states:StopExecution'],
-        // https://docs.aws.amazon.com/step-functions/latest/dg/concept-create-iam-advanced.html#concept-create-iam-advanced-execution
-        resources: [stack.formatArn({
-          service: 'states',
-          resource: 'execution',
-          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-          resourceName: `${stack.splitArn(this.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
-        })],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['states:DescribeExecution', 'states:StopExecution'],
+          // https://docs.aws.amazon.com/step-functions/latest/dg/concept-create-iam-advanced.html#concept-create-iam-advanced-execution
+          resources: [
+            stack.formatArn({
+              service: 'states',
+              resource: 'execution',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+              resourceName: `${stack.splitArn(this.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
+            }),
+          ],
+        })
+      );
 
-      policyStatements.push(new iam.PolicyStatement({
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-        resources: [stack.formatArn({
-          service: 'events',
-          resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForStepFunctionsExecutionRule',
-        })],
-      }));
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          resources: [
+            stack.formatArn({
+              service: 'events',
+              resource: 'rule',
+              resourceName: 'StepFunctionsGetEventsForStepFunctionsExecutionRule',
+            }),
+          ],
+        })
+      );
     }
 
     return policyStatements;

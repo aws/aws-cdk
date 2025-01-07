@@ -1,14 +1,22 @@
 import { Construct } from 'constructs';
-import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import {
+  Ec2Service,
+  Ec2TaskDefinition,
+  PlacementConstraint,
+  PlacementStrategy,
+} from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
+import {
+  ApplicationLoadBalancedServiceBase,
+  ApplicationLoadBalancedServiceBaseProps,
+} from '../base/application-load-balanced-service-base';
 
 /**
  * The properties for the ApplicationLoadBalancedEc2Service service.
  */
-export interface ApplicationLoadBalancedEc2ServiceProps extends ApplicationLoadBalancedServiceBaseProps {
-
+export interface ApplicationLoadBalancedEc2ServiceProps
+  extends ApplicationLoadBalancedServiceBaseProps {
   /**
    * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both..
    *
@@ -78,7 +86,7 @@ export interface ApplicationLoadBalancedEc2ServiceProps extends ApplicationLoadB
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 
@@ -86,7 +94,6 @@ export interface ApplicationLoadBalancedEc2ServiceProps extends ApplicationLoadB
  * An EC2 service running on an ECS cluster fronted by an application load balancer.
  */
 export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedServiceBase {
-
   /**
    * The EC2 service in this construct.
    */
@@ -116,7 +123,9 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
 
       // Create log driver if logging is enabled
       const enableLogging = taskImageOptions.enableLogging ?? true;
-      const logDriver = taskImageOptions.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
+      const logDriver =
+        taskImageOptions.logDriver ??
+        (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
@@ -138,7 +147,9 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
-    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)
+      ? this.internalDesiredCount
+      : this.desiredCount;
 
     this.service = new Ec2Service(this, 'Service', {
       cluster: this.cluster,

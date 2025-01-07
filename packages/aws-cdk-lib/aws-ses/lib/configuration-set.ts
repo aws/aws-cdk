@@ -1,5 +1,8 @@
 import { Construct } from 'constructs';
-import { ConfigurationSetEventDestination, ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
+import {
+  ConfigurationSetEventDestination,
+  ConfigurationSetEventDestinationOptions,
+} from './configuration-set-event-destination';
 import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
@@ -161,7 +164,11 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
   /**
    * Use an existing configuration set
    */
-  public static fromConfigurationSetName(scope: Construct, id: string, configurationSetName: string): IConfigurationSet {
+  public static fromConfigurationSetName(
+    scope: Construct,
+    id: string,
+    configurationSetName: string
+  ): IConfigurationSet {
     class Import extends Resource implements IConfigurationSet {
       public readonly configurationSetName = configurationSetName;
     }
@@ -176,14 +183,20 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     });
 
     if (props.disableSuppressionList && props.suppressionReasons) {
-      throw new Error('When disableSuppressionList is true, suppressionReasons must not be specified.');
+      throw new Error(
+        'When disableSuppressionList is true, suppressionReasons must not be specified.'
+      );
     }
     if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
       if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
-        throw new Error(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`);
+        throw new Error(
+          `The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`
+        );
       }
       if (props.maxDeliveryDuration.toSeconds() > Duration.hours(14).toSeconds()) {
-        throw new Error(`The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`);
+        throw new Error(
+          `The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`
+        );
       }
     }
 
@@ -201,18 +214,28 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         sendingEnabled: props.sendingEnabled,
       }),
       suppressionOptions: undefinedIfNoKeys({
-        suppressedReasons: props.disableSuppressionList ? [] : renderSuppressedReasons(props.suppressionReasons),
+        suppressedReasons: props.disableSuppressionList
+          ? []
+          : renderSuppressedReasons(props.suppressionReasons),
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
       }),
       vdmOptions: undefinedIfNoKeys({
-        dashboardOptions: props.vdmOptions?.engagementMetrics !== undefined ? {
-          engagementMetrics: booleanToEnabledDisabled(props.vdmOptions?.engagementMetrics),
-        } : undefined,
-        guardianOptions: props.vdmOptions?.optimizedSharedDelivery !== undefined ? {
-          optimizedSharedDelivery: booleanToEnabledDisabled(props.vdmOptions?.optimizedSharedDelivery),
-        } : undefined,
+        dashboardOptions:
+          props.vdmOptions?.engagementMetrics !== undefined
+            ? {
+                engagementMetrics: booleanToEnabledDisabled(props.vdmOptions?.engagementMetrics),
+              }
+            : undefined,
+        guardianOptions:
+          props.vdmOptions?.optimizedSharedDelivery !== undefined
+            ? {
+                optimizedSharedDelivery: booleanToEnabledDisabled(
+                  props.vdmOptions?.optimizedSharedDelivery
+                ),
+              }
+            : undefined,
       }),
     });
 
@@ -222,7 +245,10 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
   /**
    * Adds an event destination to this configuration set
    */
-  public addEventDestination(id: string, options: ConfigurationSetEventDestinationOptions): ConfigurationSetEventDestination {
+  public addEventDestination(
+    id: string,
+    options: ConfigurationSetEventDestinationOptions
+  ): ConfigurationSetEventDestination {
     return new ConfigurationSetEventDestination(this, id, {
       ...options,
       configurationSet: this,
@@ -246,7 +272,5 @@ function renderSuppressedReasons(suppressionReasons?: SuppressionReasons): strin
 }
 
 function booleanToEnabledDisabled(value: boolean): 'ENABLED' | 'DISABLED' {
-  return value === true
-    ? 'ENABLED'
-    : 'DISABLED';
+  return value === true ? 'ENABLED' : 'DISABLED';
 }

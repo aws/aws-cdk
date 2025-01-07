@@ -54,11 +54,12 @@ export class SageMakerTarget implements ITarget {
       targetParameters: {
         inputTemplate: this.sageMakerParameters.inputTransformation?.bind(pipe).inputTemplate,
         sageMakerPipelineParameters: {
-          pipelineParameterList: this.pipelineParameters ?
-            Object.entries(this.pipelineParameters).map(([key, value]) => ({
-              name: key,
-              value: value,
-            })) : undefined,
+          pipelineParameterList: this.pipelineParameters
+            ? Object.entries(this.pipelineParameters).map(([key, value]) => ({
+                name: key,
+                value: value,
+              }))
+            : undefined,
         },
       },
     };

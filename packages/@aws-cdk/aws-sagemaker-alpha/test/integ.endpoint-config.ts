@@ -44,7 +44,9 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-sagemaker-endpointconfig');
 
 const image = sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image'));
-const modelData = sagemaker.ModelData.fromAsset(path.join(__dirname, 'test-artifacts', 'valid-artifact.tar.gz'));
+const modelData = sagemaker.ModelData.fromAsset(
+  path.join(__dirname, 'test-artifacts', 'valid-artifact.tar.gz')
+);
 
 const modelWithArtifactAndVpc = new sagemaker.Model(stack, 'ModelWithArtifactAndVpc', {
   containers: [{ image, modelData }],

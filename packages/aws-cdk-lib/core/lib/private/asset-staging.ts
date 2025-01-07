@@ -55,8 +55,7 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
       user: this.determineUser(),
       environment: this.options.environment,
       entrypoint: this.options.entrypoint,
-      workingDirectory:
-        this.options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
+      workingDirectory: this.options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
       securityOpt: this.options.securityOpt ?? '',
       volumesFrom: this.options.volumesFrom,
       volumes: [
@@ -181,14 +180,10 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
       user: user,
       environment: this.options.environment,
       entrypoint: this.options.entrypoint,
-      workingDirectory:
-        this.options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
+      workingDirectory: this.options.workingDirectory ?? AssetStaging.BUNDLING_INPUT_DIR,
       securityOpt: this.options.securityOpt ?? '',
       volumes: this.options.volumes,
-      volumesFrom: [
-        this.copyContainerName,
-        ...(this.options.volumesFrom ?? []),
-      ],
+      volumesFrom: [this.copyContainerName, ...(this.options.volumesFrom ?? [])],
     });
 
     this.copyOutputTo(this.options.bundleDir);
@@ -199,39 +194,50 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
 
 export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
-  const proc = spawnSync(prog, args, options ?? {
-    encoding: 'utf-8',
-    stdio: [ // show Docker output
-      'ignore', // ignore stdio
-      process.stderr, // redirect stdout to stderr
-      'inherit', // inherit stderr
-    ],
-  });
+  const proc = spawnSync(
+    prog,
+    args,
+    options ?? {
+      encoding: 'utf-8',
+      stdio: [
+        // show Docker output
+        'ignore', // ignore stdio
+        process.stderr, // redirect stdout to stderr
+        'inherit', // inherit stderr
+      ],
+    }
+  );
 
   if (proc.error) {
     throw proc.error;
   }
 
   if (proc.status !== 0) {
-    const reason = proc.signal != null
-      ? `signal ${proc.signal}`
-      : `status ${proc.status}`;
-    const command = [prog, ...args.map((arg) => /[^a-z0-9_-]/i.test(arg) ? JSON.stringify(arg) : arg)].join(' ');
+    const reason = proc.signal != null ? `signal ${proc.signal}` : `status ${proc.status}`;
+    const command = [
+      prog,
+      ...args.map((arg) => (/[^a-z0-9_-]/i.test(arg) ? JSON.stringify(arg) : arg)),
+    ].join(' ');
 
     function prependLines(firstLine: string, text: Buffer | string | undefined): string[] {
       if (!text || text.length === 0) {
         return [];
       }
       const padding = ' '.repeat(firstLine.length);
-      return text.toString('utf-8').split('\n').map((line, idx) => `${idx === 0 ? firstLine : padding}${line}`);
+      return text
+        .toString('utf-8')
+        .split('\n')
+        .map((line, idx) => `${idx === 0 ? firstLine : padding}${line}`);
     }
 
-    throw new Error([
-      `${prog} exited with ${reason}`,
-      ...prependLines('--> STDOUT:  ', proc.stdout ) ?? [],
-      ...prependLines('--> STDERR:  ', proc.stderr ) ?? [],
-      `--> Command: ${command}`,
-    ].join('\n'));
+    throw new Error(
+      [
+        `${prog} exited with ${reason}`,
+        ...(prependLines('--> STDOUT:  ', proc.stdout) ?? []),
+        ...(prependLines('--> STDERR:  ', proc.stderr) ?? []),
+        `--> Command: ${command}`,
+      ].join('\n')
+    );
   }
 
   return proc;

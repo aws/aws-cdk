@@ -101,10 +101,16 @@ export class OptionGroup extends Resource implements IOptionGroup {
   /**
    * Import an existing option group.
    */
-  public static fromOptionGroupName(scope: Construct, id: string, optionGroupName: string): IOptionGroup {
+  public static fromOptionGroupName(
+    scope: Construct,
+    id: string,
+    optionGroupName: string
+  ): IOptionGroup {
     class Import extends Resource {
       public readonly optionGroupName = optionGroupName;
-      public addConfiguration(_: OptionConfiguration) { return false; }
+      public addConfiguration(_: OptionConfiguration) {
+        return false;
+      }
     }
     return new Import(scope, id);
   }
@@ -129,13 +135,16 @@ export class OptionGroup extends Resource implements IOptionGroup {
       throw new Error("OptionGroup cannot be used with an engine that doesn't specify a version");
     }
 
-    props.configurations.forEach(config => this.addConfiguration(config));
+    props.configurations.forEach((config) => this.addConfiguration(config));
 
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
       engineName: props.engine.engineType,
       majorEngineVersion,
-      optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
-      optionConfigurations: Lazy.any({ produce: () => this.renderConfigurations(this.configurations) }),
+      optionGroupDescription:
+        props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
+      optionConfigurations: Lazy.any({
+        produce: () => this.renderConfigurations(this.configurations),
+      }),
     });
 
     this.optionGroupName = optionGroup.ref;
@@ -149,12 +158,15 @@ export class OptionGroup extends Resource implements IOptionGroup {
         throw new Error('`port` and `vpc` must be specified together.');
       }
 
-      const securityGroups = configuration.securityGroups && configuration.securityGroups.length > 0
-        ? configuration.securityGroups
-        : [new ec2.SecurityGroup(this, `SecurityGroup${configuration.name}`, {
-          description: `Security group for ${configuration.name} option`,
-          vpc: configuration.vpc,
-        })];
+      const securityGroups =
+        configuration.securityGroups && configuration.securityGroups.length > 0
+          ? configuration.securityGroups
+          : [
+              new ec2.SecurityGroup(this, `SecurityGroup${configuration.name}`, {
+                description: `Security group for ${configuration.name} option`,
+                vpc: configuration.vpc,
+              }),
+            ];
 
       this.optionConnections[configuration.name] = new ec2.Connections({
         securityGroups: securityGroups,
@@ -168,16 +180,20 @@ export class OptionGroup extends Resource implements IOptionGroup {
   /**
    * Renders the option configurations specifications.
    */
-  private renderConfigurations(configurations: OptionConfiguration[]): CfnOptionGroup.OptionConfigurationProperty[] {
+  private renderConfigurations(
+    configurations: OptionConfiguration[]
+  ): CfnOptionGroup.OptionConfigurationProperty[] {
     const configs: CfnOptionGroup.OptionConfigurationProperty[] = [];
     for (const config of configurations) {
       const securityGroups = config.vpc
-        ? this.optionConnections[config.name].securityGroups.map(sg => sg.securityGroupId)
+        ? this.optionConnections[config.name].securityGroups.map((sg) => sg.securityGroupId)
         : undefined;
 
       configs.push({
         optionName: config.name,
-        optionSettings: config.settings && Object.entries(config.settings).map(([name, value]) => ({ name, value })),
+        optionSettings:
+          config.settings &&
+          Object.entries(config.settings).map(([name, value]) => ({ name, value })),
         optionVersion: config.version,
         port: config.port,
         vpcSecurityGroupMemberships: securityGroups,

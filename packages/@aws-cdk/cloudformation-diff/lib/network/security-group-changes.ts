@@ -22,12 +22,20 @@ export class SecurityGroupChanges {
   constructor(props: SecurityGroupChangesProps) {
     // Group rules
     for (const ingressProp of props.ingressRulePropertyChanges) {
-      this.ingress.addOld(...this.readInlineRules(ingressProp.oldValue, ingressProp.resourceLogicalId));
-      this.ingress.addNew(...this.readInlineRules(ingressProp.newValue, ingressProp.resourceLogicalId));
+      this.ingress.addOld(
+        ...this.readInlineRules(ingressProp.oldValue, ingressProp.resourceLogicalId)
+      );
+      this.ingress.addNew(
+        ...this.readInlineRules(ingressProp.newValue, ingressProp.resourceLogicalId)
+      );
     }
     for (const egressProp of props.egressRulePropertyChanges) {
-      this.egress.addOld(...this.readInlineRules(egressProp.oldValue, egressProp.resourceLogicalId));
-      this.egress.addNew(...this.readInlineRules(egressProp.newValue, egressProp.resourceLogicalId));
+      this.egress.addOld(
+        ...this.readInlineRules(egressProp.oldValue, egressProp.resourceLogicalId)
+      );
+      this.egress.addNew(
+        ...this.readInlineRules(egressProp.newValue, egressProp.resourceLogicalId)
+      );
     }
 
     // Rule resources
@@ -60,13 +68,10 @@ export class SecurityGroupChanges {
     const outWord = 'Out';
 
     // Render a single rule to the table (curried function so we can map it across rules easily--thank you JavaScript!)
-    const renderRule = (plusMin: string, inOut: string) => (rule: SecurityGroupRule) => [
-      plusMin,
-      rule.groupId,
-      inOut,
-      rule.describeProtocol(),
-      rule.describePeer(),
-    ].map(s => plusMin === '+' ? chalk.green(s) : chalk.red(s));
+    const renderRule = (plusMin: string, inOut: string) => (rule: SecurityGroupRule) =>
+      [plusMin, rule.groupId, inOut, rule.describeProtocol(), rule.describePeer()].map((s) =>
+        plusMin === '+' ? chalk.green(s) : chalk.red(s)
+      );
 
     // First generate all lines, sort later
     ret.push(...this.ingress.additions.map(renderRule('+', inWord)));
@@ -84,20 +89,21 @@ export class SecurityGroupChanges {
 
   public toJson(): SecurityGroupChangesJson {
     return deepRemoveUndefined({
-      ingressRuleAdditions: dropIfEmpty(this.ingress.additions.map(s => s.toJson())),
-      ingressRuleRemovals: dropIfEmpty(this.ingress.removals.map(s => s.toJson())),
-      egressRuleAdditions: dropIfEmpty(this.egress.additions.map(s => s.toJson())),
-      egressRuleRemovals: dropIfEmpty(this.egress.removals.map(s => s.toJson())),
+      ingressRuleAdditions: dropIfEmpty(this.ingress.additions.map((s) => s.toJson())),
+      ingressRuleRemovals: dropIfEmpty(this.ingress.removals.map((s) => s.toJson())),
+      egressRuleAdditions: dropIfEmpty(this.egress.additions.map((s) => s.toJson())),
+      egressRuleRemovals: dropIfEmpty(this.egress.removals.map((s) => s.toJson())),
     });
   }
 
   public get rulesAdded(): boolean {
-    return this.ingress.hasAdditions
-        || this.egress.hasAdditions;
+    return this.ingress.hasAdditions || this.egress.hasAdditions;
   }
 
   private readInlineRules(rules: any, logicalId: string): SecurityGroupRule[] {
-    if (!rules || !Array.isArray(rules)) { return []; }
+    if (!rules || !Array.isArray(rules)) {
+      return [];
+    }
 
     // UnCloudFormation so the parser works in an easier domain
 
@@ -110,7 +116,9 @@ export class SecurityGroupChanges {
   }
 
   private readRuleResource(resource: any): SecurityGroupRule[] {
-    if (!resource) { return []; }
+    if (!resource) {
+      return [];
+    }
 
     // UnCloudFormation so the parser works in an easier domain
 

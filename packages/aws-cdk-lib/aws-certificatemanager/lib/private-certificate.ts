@@ -51,7 +51,11 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
   /**
    * Import a certificate
    */
-  public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
+  public static fromCertificateArn(
+    scope: Construct,
+    id: string,
+    certificateArn: string
+  ): ICertificate {
     class Import extends CertificateBase {
       public readonly certificateArn = certificateArn;
     }

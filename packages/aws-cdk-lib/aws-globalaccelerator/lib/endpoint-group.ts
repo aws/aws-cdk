@@ -156,7 +156,11 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   /**
    * import from ARN
    */
-  public static fromEndpointGroupArn(scope: Construct, id: string, endpointGroupArn: string): IEndpointGroup {
+  public static fromEndpointGroupArn(
+    scope: Construct,
+    id: string,
+    endpointGroupArn: string
+  ): IEndpointGroup {
     class Import extends cdk.Resource implements IEndpointGroup {
       public readonly endpointGroupArn = endpointGroupArn;
     }
@@ -181,15 +185,19 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
 
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
-      endpointGroupRegion: props.region ?? cdk.Lazy.string({ produce: () => this.firstEndpointRegion() }),
-      endpointConfigurations: cdk.Lazy.any({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
+      endpointGroupRegion:
+        props.region ?? cdk.Lazy.string({ produce: () => this.firstEndpointRegion() }),
+      endpointConfigurations: cdk.Lazy.any(
+        { produce: () => this.renderEndpoints() },
+        { omitEmptyArray: true }
+      ),
       healthCheckIntervalSeconds: props.healthCheckInterval?.toSeconds({ integral: true }),
       healthCheckPath: props.healthCheckPath,
       healthCheckPort: props.healthCheckPort,
       healthCheckProtocol: props.healthCheckProtocol,
       thresholdCount: props.healthCheckThreshold,
       trafficDialPercentage: props.trafficDialPercentage,
-      portOverrides: props.portOverrides?.map(o => ({
+      portOverrides: props.portOverrides?.map((o) => ({
         endpointPort: o.endpointPort,
         listenerPort: o.listenerPort,
       })),
@@ -228,7 +236,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   }
 
   private renderEndpoints() {
-    return this.endpoints.map(e => e.renderEndpointConfiguration());
+    return this.endpoints.map((e) => e.renderEndpointConfiguration());
   }
 
   /**

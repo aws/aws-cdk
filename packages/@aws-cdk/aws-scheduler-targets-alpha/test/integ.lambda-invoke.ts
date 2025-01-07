@@ -10,7 +10,7 @@ const LAMBDA_TAGGING_PERMISSION = new iam.PolicyStatement(
   new iam.PolicyStatement({
     actions: ['lambda:TagResource'],
     resources: ['*'],
-  }),
+  })
 );
 
 /*
@@ -54,10 +54,14 @@ const scheduleStack = new cdk.Stack(app, 'aws-cdk-schedule');
 scheduleStack.addDependency(lambdaStack);
 
 // 1st case with imported lambda
-const importedFunc = lambda.Function.fromFunctionAttributes(scheduleStack, 'importedFromFirstStack', {
-  functionArn: funcToBeImportedStaticArn,
-  skipPermissions: true,
-});
+const importedFunc = lambda.Function.fromFunctionAttributes(
+  scheduleStack,
+  'importedFromFirstStack',
+  {
+    functionArn: funcToBeImportedStaticArn,
+    skipPermissions: true,
+  }
+);
 const importedLambdaTagValue = 'importedLambdaTagValue';
 new scheduler.Schedule(scheduleStack, 'ScheduleWithImportedLambda', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
@@ -95,7 +99,10 @@ new scheduler.Schedule(scheduleStack, 'ScheduleWithSameStackLambda', {
 // 3rd case testing reusing target lambda, static date and target props
 new scheduler.Schedule(scheduleStack, 'ScheduleWithStaticDate', {
   schedule: scheduler.ScheduleExpression.at(new Date('2000-01-01T00:00:00Z')),
-  target: new LambdaInvoke(sameStackFunc, { maxEventAge: cdk.Duration.minutes(1), retryAttempts: 1 }),
+  target: new LambdaInvoke(sameStackFunc, {
+    maxEventAge: cdk.Duration.minutes(1),
+    retryAttempts: 1,
+  }),
 });
 
 const integ = new IntegTest(app, 'integtest-lambda-invoke', {
@@ -108,25 +115,33 @@ const listTagsOnImportedLambda = integ.assertions.awsApiCall('Lambda', 'listTags
 });
 
 // Verifies that expected tag is created for the lambda function
-listTagsOnImportedLambda.expect(ExpectedResult.objectLike({
-  Tags: {
-    OutputValue: Buffer.from(JSON.stringify(importedLambdaTagValue)).toString('base64'),
-  },
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(10),
-  interval: cdk.Duration.seconds(10),
-});
+listTagsOnImportedLambda
+  .expect(
+    ExpectedResult.objectLike({
+      Tags: {
+        OutputValue: Buffer.from(JSON.stringify(importedLambdaTagValue)).toString('base64'),
+      },
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(10),
+    interval: cdk.Duration.seconds(10),
+  });
 
 const listTagsOnSameStackLambda = integ.assertions.awsApiCall('Lambda', 'listTags', {
   Resource: sameStackFuncStaticArn,
 });
 
 // Verifies that expected tag is created for the lambda function
-listTagsOnSameStackLambda.expect(ExpectedResult.objectLike({
-  Tags: {
-    OutputValue: Buffer.from(JSON.stringify(sameStackLambdaTagValue)).toString('base64'),
-  },
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(10),
-  interval: cdk.Duration.seconds(10),
-});
+listTagsOnSameStackLambda
+  .expect(
+    ExpectedResult.objectLike({
+      Tags: {
+        OutputValue: Buffer.from(JSON.stringify(sameStackLambdaTagValue)).toString('base64'),
+      },
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(10),
+    interval: cdk.Duration.seconds(10),
+  });

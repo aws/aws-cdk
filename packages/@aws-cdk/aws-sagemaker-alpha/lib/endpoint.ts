@@ -42,7 +42,11 @@ interface IEndpointProductionVariant {
    *
    * @default - sum over 5 minutes
    */
-  metric(namespace: string, metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metric(
+    namespace: string,
+    metricName: string,
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric;
 }
 
 /**
@@ -82,7 +86,10 @@ export interface IEndpointInstanceProductionVariant extends IEndpointProductionV
    *
    * @default - sum over 5 minutes
    */
-  metricInvocationResponseCode(responseCode: InvocationHttpResponseCode, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricInvocationResponseCode(
+    responseCode: InvocationHttpResponseCode,
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric;
 
   /**
    * Metric for disk utilization
@@ -144,7 +151,8 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
   public metric(
     namespace: string,
     metricName: string,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace,
       metricName,
@@ -181,7 +189,8 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
 
   public metricInvocationResponseCode(
     responseCode: InvocationHttpResponseCode,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return this.metric('AWS/SageMaker', responseCode, props);
   }
 
@@ -220,16 +229,28 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
     });
   }
 
-  public autoScaleInstanceCount(scalingProps: appscaling.EnableScalingProps): ScalableInstanceCount {
+  public autoScaleInstanceCount(
+    scalingProps: appscaling.EnableScalingProps
+  ): ScalableInstanceCount {
     const errors: string[] = [];
     if (scalingProps.minCapacity && scalingProps.minCapacity > this.initialInstanceCount) {
-      errors.push(`minCapacity cannot be greater than initial instance count: ${this.initialInstanceCount}`);
+      errors.push(
+        `minCapacity cannot be greater than initial instance count: ${this.initialInstanceCount}`
+      );
     }
     if (scalingProps.maxCapacity && scalingProps.maxCapacity < this.initialInstanceCount) {
-      errors.push(`maxCapacity cannot be less than initial instance count: ${this.initialInstanceCount}`);
+      errors.push(
+        `maxCapacity cannot be less than initial instance count: ${this.initialInstanceCount}`
+      );
     }
-    if (BURSTABLE_INSTANCE_TYPE_PREFIXES.some(prefix => this.instanceType.toString().startsWith(prefix))) {
-      errors.push(`AutoScaling not supported for burstable instance types like ${this.instanceType}`);
+    if (
+      BURSTABLE_INSTANCE_TYPE_PREFIXES.some((prefix) =>
+        this.instanceType.toString().startsWith(prefix)
+      )
+    ) {
+      errors.push(
+        `AutoScaling not supported for burstable instance types like ${this.instanceType}`
+      );
     }
     if (this.scalableInstanceCount) {
       errors.push('AutoScaling of task count already enabled for this service');
@@ -239,14 +260,14 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
       throw new Error(`Invalid Application Auto Scaling configuration: ${errors.join(EOL)}`);
     }
 
-    return this.scalableInstanceCount = new ScalableInstanceCount(this.endpoint, 'InstanceCount', {
+    return (this.scalableInstanceCount = new ScalableInstanceCount(this.endpoint, 'InstanceCount', {
       serviceNamespace: appscaling.ServiceNamespace.SAGEMAKER,
       resourceId: `endpoint/${this.endpoint.endpointName}/variant/${this.variantName}`,
       dimension: 'sagemaker:variant:DesiredInstanceCount',
       role: this.makeScalingRole(),
       minCapacity: scalingProps.minCapacity || this.initialInstanceCount,
       maxCapacity: scalingProps.maxCapacity || this.initialInstanceCount,
-    });
+    }));
   }
 
   /**
@@ -257,12 +278,16 @@ class EndpointInstanceProductionVariant implements IEndpointInstanceProductionVa
    */
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
-    return iam.Role.fromRoleArn(this.endpoint, 'ScalingRole', cdk.Stack.of(this.endpoint).formatArn({
-      service: 'iam',
-      region: '',
-      resource: 'role/aws-service-role/sagemaker.application-autoscaling.amazonaws.com',
-      resourceName: 'AWSServiceRoleForApplicationAutoScaling_SageMakerEndpoint',
-    }));
+    return iam.Role.fromRoleArn(
+      this.endpoint,
+      'ScalingRole',
+      cdk.Stack.of(this.endpoint).formatArn({
+        service: 'iam',
+        region: '',
+        resource: 'role/aws-service-role/sagemaker.application-autoscaling.amazonaws.com',
+        resourceName: 'AWSServiceRoleForApplicationAutoScaling_SageMakerEndpoint',
+      })
+    );
   }
 }
 
@@ -372,9 +397,16 @@ export class Endpoint extends EndpointBase {
    * @param id the resource id.
    * @param attrs the attributes of the endpoint to import.
    */
-  public static fromEndpointAttributes(scope: Construct, id: string, attrs: EndpointAttributes): IEndpoint {
+  public static fromEndpointAttributes(
+    scope: Construct,
+    id: string,
+    attrs: EndpointAttributes
+  ): IEndpoint {
     const endpointArn = attrs.endpointArn;
-    const endpointName = cdk.Stack.of(scope).splitArn(endpointArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    const endpointName = cdk.Stack.of(scope).splitArn(
+      endpointArn,
+      cdk.ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName!;
 
     class Import extends EndpointBase {
       public readonly endpointArn = endpointArn;
@@ -427,9 +459,13 @@ export class Endpoint extends EndpointBase {
 
   private validateEnvironmentCompatibility(endpointConfig: IEndpointConfig): void {
     if (!sameEnv(endpointConfig.env.account, this.env.account)) {
-      throw new Error(`Cannot use endpoint configuration in account ${endpointConfig.env.account} for endpoint in account ${this.env.account}`);
+      throw new Error(
+        `Cannot use endpoint configuration in account ${endpointConfig.env.account} for endpoint in account ${this.env.account}`
+      );
     } else if (!sameEnv(endpointConfig.env.region, this.env.region)) {
-      throw new Error(`Cannot use endpoint configuration in region ${endpointConfig.env.region} for endpoint in region ${this.env.region}`);
+      throw new Error(
+        `Cannot use endpoint configuration in region ${endpointConfig.env.region} for endpoint in region ${this.env.region}`
+      );
     }
   }
 
@@ -438,7 +474,9 @@ export class Endpoint extends EndpointBase {
    */
   public get instanceProductionVariants(): IEndpointInstanceProductionVariant[] {
     if (this.endpointConfig instanceof EndpointConfig) {
-      return this.endpointConfig._instanceProductionVariants.map(v => new EndpointInstanceProductionVariant(this, v));
+      return this.endpointConfig._instanceProductionVariants.map(
+        (v) => new EndpointInstanceProductionVariant(this, v)
+      );
     }
 
     throw new Error('Production variant lookup is not supported for an imported IEndpointConfig');

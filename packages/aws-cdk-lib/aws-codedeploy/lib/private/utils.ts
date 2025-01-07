@@ -58,12 +58,15 @@ export interface renderAlarmConfigProps {
   ignoreAlarmConfiguration?: boolean;
 }
 
-export function renderAlarmConfiguration(props: renderAlarmConfigProps): CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
+export function renderAlarmConfiguration(
+  props: renderAlarmConfigProps
+): CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
   const ignoreAlarmConfiguration = props.ignoreAlarmConfiguration ?? false;
   const removeAlarms = props.removeAlarms ?? true;
   if (removeAlarms) {
     return {
-      alarms: props.alarms.length > 0 ? props.alarms.map(a => ({ name: a.alarmName })) : undefined,
+      alarms:
+        props.alarms.length > 0 ? props.alarms.map((a) => ({ name: a.alarmName })) : undefined,
       enabled: !ignoreAlarmConfiguration && props.alarms.length > 0,
       ignorePollAlarmFailure: props.ignorePollAlarmFailure,
     };
@@ -72,13 +75,15 @@ export function renderAlarmConfiguration(props: renderAlarmConfigProps): CfnDepl
   return props.alarms.length === 0
     ? undefined
     : {
-      alarms: props.alarms.map(a => ({ name: a.alarmName })),
-      enabled: !ignoreAlarmConfiguration,
-      ignorePollAlarmFailure: props.ignorePollAlarmFailure,
-    };
+        alarms: props.alarms.map((a) => ({ name: a.alarmName })),
+        enabled: !ignoreAlarmConfiguration,
+        ignorePollAlarmFailure: props.ignorePollAlarmFailure,
+      };
 }
 
-export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
+export function deploymentConfig(
+  name: string
+): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
   return {
     deploymentConfigName: name,
     deploymentConfigArn: arnForDeploymentConfig(name),
@@ -95,8 +100,10 @@ enum AutoRollbackEvent {
   DEPLOYMENT_STOP_ON_REQUEST = 'DEPLOYMENT_STOP_ON_REQUEST',
 }
 
-export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], autoRollbackConfig: AutoRollbackConfig = {}):
-CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
+export function renderAutoRollbackConfiguration(
+  alarms: cloudwatch.IAlarm[],
+  autoRollbackConfig: AutoRollbackConfig = {}
+): CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
   const events = new Array<string>();
 
   // we roll back failed deployments by default
@@ -117,13 +124,16 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
     } else if (autoRollbackConfig.deploymentInAlarm === true) {
       throw new Error(
         "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +
-        'at least one CloudWatch alarm with the Deployment Group');
+          'at least one CloudWatch alarm with the Deployment Group'
+      );
     }
   }
 
-  if (autoRollbackConfig.failedDeployment === false
-    && autoRollbackConfig.stoppedDeployment !== true
-    && autoRollbackConfig.deploymentInAlarm === false) {
+  if (
+    autoRollbackConfig.failedDeployment === false &&
+    autoRollbackConfig.stoppedDeployment !== true &&
+    autoRollbackConfig.deploymentInAlarm === false
+  ) {
     return {
       enabled: false,
     };
@@ -131,13 +141,16 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
 
   return events.length > 0
     ? {
-      enabled: true,
-      events,
-    }
+        enabled: true,
+        events,
+      }
     : undefined;
 }
 
-export function validateName(type: 'Application' | 'Deployment group' | 'Deployment config', name: string): string[] {
+export function validateName(
+  type: 'Application' | 'Deployment group' | 'Deployment config',
+  name: string
+): string[] {
   const ret = [];
 
   if (!Token.isUnresolved(name) && name !== undefined) {
@@ -145,7 +158,9 @@ export function validateName(type: 'Application' | 'Deployment group' | 'Deploym
       ret.push(`${type} name: "${name}" can be a max of 100 characters.`);
     }
     if (!/^[a-z0-9._+=,@-]+$/i.test(name)) {
-      ret.push(`${type} name: "${name}" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).`);
+      ret.push(
+        `${type} name: "${name}" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).`
+      );
     }
   }
 

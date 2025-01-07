@@ -37,7 +37,10 @@ export class ListenerAction implements IListenerAction {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#forward-actions
    */
-  public static forward(targetGroups: IApplicationTargetGroup[], options: ForwardOptions = {}): ListenerAction {
+  public static forward(
+    targetGroups: IApplicationTargetGroup[],
+    options: ForwardOptions = {}
+  ): ListenerAction {
     if (targetGroups.length === 0) {
       throw new Error('Need at least one targetGroup in a ListenerAction.forward()');
     }
@@ -49,7 +52,10 @@ export class ListenerAction implements IListenerAction {
       });
     }
 
-    return ListenerAction.weightedForward(targetGroups.map(g => ({ targetGroup: g, weight: 1 })), options);
+    return ListenerAction.weightedForward(
+      targetGroups.map((g) => ({ targetGroup: g, weight: 1 })),
+      options
+    );
   }
 
   /**
@@ -57,21 +63,32 @@ export class ListenerAction implements IListenerAction {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#forward-actions
    */
-  public static weightedForward(targetGroups: WeightedTargetGroup[], options: ForwardOptions = {}): ListenerAction {
+  public static weightedForward(
+    targetGroups: WeightedTargetGroup[],
+    options: ForwardOptions = {}
+  ): ListenerAction {
     if (targetGroups.length === 0) {
       throw new Error('Need at least one targetGroup in a ListenerAction.weightedForward()');
     }
 
-    return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
-      type: 'forward',
-      forwardConfig: {
-        targetGroups: targetGroups.map(g => ({ targetGroupArn: g.targetGroup.targetGroupArn, weight: g.weight })),
-        targetGroupStickinessConfig: options.stickinessDuration ? {
-          durationSeconds: options.stickinessDuration.toSeconds(),
-          enabled: true,
-        } : undefined,
-      },
-    });
+    return new TargetGroupListenerAction(
+      targetGroups.map((g) => g.targetGroup),
+      {
+        type: 'forward',
+        forwardConfig: {
+          targetGroups: targetGroups.map((g) => ({
+            targetGroupArn: g.targetGroup.targetGroupArn,
+            weight: g.weight,
+          })),
+          targetGroupStickinessConfig: options.stickinessDuration
+            ? {
+                durationSeconds: options.stickinessDuration.toSeconds(),
+                enabled: true,
+              }
+            : undefined,
+        },
+      }
+    );
   }
 
   /**
@@ -79,7 +96,10 @@ export class ListenerAction implements IListenerAction {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#fixed-response-actions
    */
-  public static fixedResponse(statusCode: number, options: FixedResponseOptions = {}): ListenerAction {
+  public static fixedResponse(
+    statusCode: number,
+    options: FixedResponseOptions = {}
+  ): ListenerAction {
     return new ListenerAction({
       type: 'fixed-response',
       fixedResponseConfig: {
@@ -112,8 +132,14 @@ export class ListenerAction implements IListenerAction {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#redirect-actions
    */
   public static redirect(options: RedirectOptions): ListenerAction {
-    if ([options.host, options.path, options.port, options.protocol, options.query].findIndex(x => x !== undefined) === -1) {
-      throw new Error('To prevent redirect loops, set at least one of \'protocol\', \'host\', \'port\', \'path\', or \'query\'.');
+    if (
+      [options.host, options.path, options.port, options.protocol, options.query].findIndex(
+        (x) => x !== undefined
+      ) === -1
+    ) {
+      throw new Error(
+        "To prevent redirect loops, set at least one of 'protocol', 'host', 'port', 'path', or 'query'."
+      );
     }
     if (options.path && !Token.isUnresolved(options.path) && !options.path.startsWith('/')) {
       throw new Error(`Redirect path must start with a \'/\', got: ${options.path}`);
@@ -146,22 +172,25 @@ export class ListenerAction implements IListenerAction {
    * should be created by using one of the static factory functions,
    * but allow overriding to make sure we allow flexibility for the future.
    */
-  protected constructor(private readonly defaultActionJson: CfnListener.ActionProperty, protected readonly next?: ListenerAction) {
-  }
+  protected constructor(
+    private readonly defaultActionJson: CfnListener.ActionProperty,
+    protected readonly next?: ListenerAction
+  ) {}
 
   /**
    * Render the listener rule actions in this chain
    */
   public renderRuleActions(): CfnListenerRule.ActionProperty[] {
-    const actionJson = this._actionJson ?? this.defaultActionJson as CfnListenerRule.ActionProperty;
-    return this._renumber([actionJson, ...this.next?.renderRuleActions() ?? []]);
+    const actionJson =
+      this._actionJson ?? (this.defaultActionJson as CfnListenerRule.ActionProperty);
+    return this._renumber([actionJson, ...(this.next?.renderRuleActions() ?? [])]);
   }
 
   /**
    * Render the listener default actions in this chain
    */
   public renderActions(): CfnListener.ActionProperty[] {
-    return this._renumber([this.defaultActionJson, ...this.next?.renderActions() ?? []]);
+    return this._renumber([this.defaultActionJson, ...(this.next?.renderActions() ?? [])]);
   }
 
   /**
@@ -171,9 +200,14 @@ export class ListenerAction implements IListenerAction {
     this.next?.bind(scope, listener, associatingConstruct);
   }
 
-  private _renumber<ActionProperty extends CfnListener.ActionProperty | CfnListenerRule.ActionProperty = CfnListener.ActionProperty>
-  (actions: ActionProperty[]): ActionProperty[] {
-    if (actions.length < 2) { return actions; }
+  private _renumber<
+    ActionProperty extends
+      | CfnListener.ActionProperty
+      | CfnListenerRule.ActionProperty = CfnListener.ActionProperty,
+  >(actions: ActionProperty[]): ActionProperty[] {
+    if (actions.length < 2) {
+      return actions;
+    }
 
     return actions.map((action, i) => ({ ...action, order: i + 1 }));
   }
@@ -456,11 +490,18 @@ export enum UnauthenticatedAction {
  * Listener Action that calls "registerListener" on TargetGroups
  */
 class TargetGroupListenerAction extends ListenerAction {
-  constructor(private readonly targetGroups: IApplicationTargetGroup[], defaultActionJson: CfnListener.ActionProperty) {
+  constructor(
+    private readonly targetGroups: IApplicationTargetGroup[],
+    defaultActionJson: CfnListener.ActionProperty
+  ) {
     super(defaultActionJson);
   }
 
-  public bind(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
+  public bind(
+    _scope: Construct,
+    listener: IApplicationListener,
+    associatingConstruct?: IConstruct
+  ) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener, associatingConstruct);
     }
@@ -487,10 +528,13 @@ class AuthenticateOidcAction extends ListenerAction {
       sessionCookieName: options.sessionCookieName,
       sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
     };
-    super({
-      type: 'authenticate-oidc',
-      authenticateOidcConfig: defaultActionConfig,
-    }, options.next);
+    super(
+      {
+        type: 'authenticate-oidc',
+        authenticateOidcConfig: defaultActionConfig,
+      },
+      options.next
+    );
 
     this.allowHttpsOutbound = options.allowHttpsOutbound ?? true;
     this.addRuleAction({
@@ -501,7 +545,11 @@ class AuthenticateOidcAction extends ListenerAction {
       },
     });
   }
-  public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct | undefined): void {
+  public bind(
+    scope: Construct,
+    listener: IApplicationListener,
+    associatingConstruct?: IConstruct | undefined
+  ): void {
     super.bind(scope, listener, associatingConstruct);
 
     if (!this.allowHttpsOutbound) return;

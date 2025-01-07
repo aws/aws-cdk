@@ -76,7 +76,7 @@ export class ApiCall {
 
     // Command must pass input value https://github.com/aws/aws-sdk-js-v3/issues/424
     const response = await this.client.send(
-      new Command(coerceApiParameters(this.service, this.action, options.parameters ?? {})),
+      new Command(coerceApiParameters(this.service, this.action, options.parameters ?? {}))
     );
 
     delete response.$metadata;
@@ -100,7 +100,9 @@ export class ApiCall {
       /* eslint-disable-next-line @typescript-eslint/no-require-imports */ // esbuild-disable unsupported-require-call
       this.v3Package = require(this.v3PackageName);
     } catch (e) {
-      throw Error(`Service ${this.service} client package with name '${this.v3PackageName}' does not exist.`);
+      throw Error(
+        `Service ${this.service} client package with name '${this.v3PackageName}' does not exist.`
+      );
     }
   }
 
@@ -124,10 +126,12 @@ export class ApiCall {
     }
     const commandName = `${this.action}Command`;
     const Command = Object.entries(this.v3Package ?? {}).find(
-      ([name]) => name.toLowerCase() === commandName.toLowerCase(),
+      ([name]) => name.toLowerCase() === commandName.toLowerCase()
     )?.[1] as { new (input: any): any };
     if (!Command) {
-      throw new Error(`Unable to find command named: ${commandName} for action: ${this.action} in service package ${this.v3PackageName}`);
+      throw new Error(
+        `Unable to find command named: ${commandName} for action: ${this.action} in service package ${this.v3PackageName}`
+      );
     }
     return Command;
   }
@@ -145,7 +149,6 @@ export class ApiCall {
       throw Error(`No client constructor found within package: ${this.v3PackageName}`);
     }
   }
-
 }
 
 /**
@@ -177,7 +180,11 @@ export function flatten(root: unknown): { [key: string]: any } {
 const decoder = new TextDecoder();
 
 export async function coerceSdkv3Response(value: unknown): Promise<unknown> {
-  if (value && typeof(value) === 'object' && typeof((value as any).transformToString) === 'function') {
+  if (
+    value &&
+    typeof value === 'object' &&
+    typeof (value as any).transformToString === 'function'
+  ) {
     // in sdk v3 some return types are now adapters that we need to explicitly
     // convert to strings. see example: https://github.com/aws/aws-sdk-js-v3/blob/main/UPGRADING.md?plain=1#L573-L576
     // note we don't use 'instanceof Unit8Array' because observations show this won't always return true, even though

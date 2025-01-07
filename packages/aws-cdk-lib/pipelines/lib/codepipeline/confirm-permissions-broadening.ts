@@ -1,6 +1,10 @@
 import { Node } from 'constructs';
 import { CodePipeline } from './codepipeline';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory, ProduceActionOptions } from './codepipeline-action-factory';
+import {
+  CodePipelineActionFactoryResult,
+  ICodePipelineActionFactory,
+  ProduceActionOptions,
+} from './codepipeline-action-factory';
 import { IStage } from '../../../aws-codepipeline';
 import * as cpa from '../../../aws-codepipeline-actions';
 import * as sns from '../../../aws-sns';
@@ -33,40 +37,54 @@ export interface PermissionsBroadeningCheckProps {
  * This step is only supported in CodePipeline pipelines.
  */
 export class ConfirmPermissionsBroadening extends Step implements ICodePipelineActionFactory {
-  constructor(id: string, private readonly props: PermissionsBroadeningCheckProps) {
+  constructor(
+    id: string,
+    private readonly props: PermissionsBroadeningCheckProps
+  ) {
     super(id);
   }
 
-  public produceAction(stage: IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
+  public produceAction(
+    stage: IStage,
+    options: ProduceActionOptions
+  ): CodePipelineActionFactoryResult {
     const sec = this.getOrCreateSecCheck(options.pipeline);
     this.props.notificationTopic?.grantPublish(sec.cdkDiffProject);
 
     const variablesNamespace = Node.of(this.props.stage).addr;
 
     const approveActionName = `${options.actionName}.Confirm`;
-    stage.addAction(new cpa.CodeBuildAction({
-      runOrder: options.runOrder,
-      actionName: `${options.actionName}.Check`,
-      input: options.artifacts.toCodePipeline(options.pipeline.cloudAssemblyFileSet),
-      project: sec.cdkDiffProject,
-      variablesNamespace,
-      environmentVariables: {
-        STAGE_PATH: { value: Node.of(this.props.stage).path },
-        STAGE_NAME: { value: stage.stageName },
-        ACTION_NAME: { value: approveActionName },
-        ...this.props.notificationTopic ? {
-          NOTIFICATION_ARN: { value: this.props.notificationTopic.topicArn },
-          NOTIFICATION_SUBJECT: { value: `Confirm permission broadening in ${this.props.stage.stageName}` },
-        } : {},
-      },
-    }));
+    stage.addAction(
+      new cpa.CodeBuildAction({
+        runOrder: options.runOrder,
+        actionName: `${options.actionName}.Check`,
+        input: options.artifacts.toCodePipeline(options.pipeline.cloudAssemblyFileSet),
+        project: sec.cdkDiffProject,
+        variablesNamespace,
+        environmentVariables: {
+          STAGE_PATH: { value: Node.of(this.props.stage).path },
+          STAGE_NAME: { value: stage.stageName },
+          ACTION_NAME: { value: approveActionName },
+          ...(this.props.notificationTopic
+            ? {
+                NOTIFICATION_ARN: { value: this.props.notificationTopic.topicArn },
+                NOTIFICATION_SUBJECT: {
+                  value: `Confirm permission broadening in ${this.props.stage.stageName}`,
+                },
+              }
+            : {}),
+        },
+      })
+    );
 
-    stage.addAction(new cpa.ManualApprovalAction({
-      actionName: approveActionName,
-      runOrder: options.runOrder + 1,
-      additionalInformation: `#{${variablesNamespace}.MESSAGE}`,
-      externalEntityLink: `#{${variablesNamespace}.LINK}`,
-    }));
+    stage.addAction(
+      new cpa.ManualApprovalAction({
+        actionName: approveActionName,
+        runOrder: options.runOrder + 1,
+        additionalInformation: `#{${variablesNamespace}.MESSAGE}`,
+        externalEntityLink: `#{${variablesNamespace}.LINK}`,
+      })
+    );
 
     return { runOrdersConsumed: 2 };
   }
@@ -76,7 +94,9 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
     const existing = Node.of(pipeline).tryFindChild(id);
     if (existing) {
       if (!(existing instanceof ApplicationSecurityCheck)) {
-        throw new Error(`Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`);
+        throw new Error(
+          `Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`
+        );
       }
       return existing;
     }

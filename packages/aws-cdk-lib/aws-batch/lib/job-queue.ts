@@ -237,7 +237,8 @@ export class JobQueue extends Resource implements IJobQueue {
       public readonly computeEnvironments = [];
       public readonly priority = 1;
       public readonly jobQueueArn = jobQueueArn;
-      public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+      public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME)
+        .resourceName!;
 
       public addComputeEnvironment(_computeEnvironment: IComputeEnvironment, _order: number): void {
         throw new Error(`cannot add ComputeEnvironments to imported JobQueue '${id}'`);
@@ -267,18 +268,21 @@ export class JobQueue extends Resource implements IJobQueue {
 
     const resource = new CfnJobQueue(this, 'Resource', {
       computeEnvironmentOrder: Lazy.any({
-        produce: () => this.computeEnvironments.map((ce) => {
-          return {
-            computeEnvironment: ce.computeEnvironment.computeEnvironmentArn,
-            order: ce.order,
-          };
-        }),
+        produce: () =>
+          this.computeEnvironments.map((ce) => {
+            return {
+              computeEnvironment: ce.computeEnvironment.computeEnvironmentArn,
+              order: ce.order,
+            };
+          }),
       }),
       priority: this.priority,
       jobQueueName: props?.jobQueueName,
       state: (this.enabled ?? true) ? 'ENABLED' : 'DISABLED',
       schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
-      jobStateTimeLimitActions: this.renderJobStateTimeLimitActions(props?.jobStateTimeLimitActions),
+      jobStateTimeLimitActions: this.renderJobStateTimeLimitActions(
+        props?.jobStateTimeLimitActions
+      ),
     });
 
     this.jobQueueArn = this.getResourceArnAttribute(resource.attrJobQueueArn, {
@@ -286,9 +290,14 @@ export class JobQueue extends Resource implements IJobQueue {
       resource: 'job-queue',
       resourceName: this.physicalName,
     });
-    this.jobQueueName = Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    this.jobQueueName = Stack.of(this).splitArn(
+      this.jobQueueArn,
+      ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName!;
 
-    this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
+    this.node.addValidation({
+      validate: () => validateOrderedComputeEnvironments(this.computeEnvironments),
+    });
   }
 
   addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void {
@@ -299,22 +308,26 @@ export class JobQueue extends Resource implements IJobQueue {
   }
 
   private renderJobStateTimeLimitActions(
-    jobStateTimeLimitActions?: JobStateTimeLimitAction[],
+    jobStateTimeLimitActions?: JobStateTimeLimitAction[]
   ): CfnJobQueue.JobStateTimeLimitActionProperty[] | undefined {
     if (!jobStateTimeLimitActions || jobStateTimeLimitActions.length === 0) {
       return;
     }
 
-    return jobStateTimeLimitActions.map((action, index) => renderJobStateTimeLimitAction(action, index));
+    return jobStateTimeLimitActions.map((action, index) =>
+      renderJobStateTimeLimitAction(action, index)
+    );
 
     function renderJobStateTimeLimitAction(
       jobStateTimeLimitAction: JobStateTimeLimitAction,
-      index: number,
+      index: number
     ): CfnJobQueue.JobStateTimeLimitActionProperty {
       const maxTimeSeconds = jobStateTimeLimitAction.maxTime.toSeconds();
 
       if (maxTimeSeconds < 600 || maxTimeSeconds > 86400) {
-        throw new Error(`maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`);
+        throw new Error(
+          `maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`
+        );
       }
 
       return {
@@ -327,7 +340,9 @@ export class JobQueue extends Resource implements IJobQueue {
   }
 }
 
-function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeEnvironment[]): string[] {
+function validateOrderedComputeEnvironments(
+  computeEnvironments: OrderedComputeEnvironment[]
+): string[] {
   const seenOrders: number[] = [];
 
   for (const ce of computeEnvironments) {

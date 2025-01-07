@@ -283,12 +283,15 @@ export class CodeBuildStep extends ShellStep {
   public get partialBuildSpec(): codebuild.BuildSpec | undefined {
     this.exportedVarsRendered = true;
 
-    const varsBuildSpec = this.exportedVariables.size > 0 ? codebuild.BuildSpec.fromObject({
-      version: '0.2',
-      env: {
-        'exported-variables': Array.from(this.exportedVariables),
-      },
-    }) : undefined;
+    const varsBuildSpec =
+      this.exportedVariables.size > 0
+        ? codebuild.BuildSpec.fromObject({
+            version: '0.2',
+            env: {
+              'exported-variables': Array.from(this.exportedVariables),
+            },
+          })
+        : undefined;
 
     return mergeBuildSpecs(varsBuildSpec, this._partialBuildSpec);
   }
@@ -317,7 +320,9 @@ export class CodeBuildStep extends ShellStep {
    */
   public exportedVariable(variableName: string): string {
     if (this.exportedVarsRendered && !this.exportedVariables.has(variableName)) {
-      throw new Error('exportVariable(): Pipeline has already been produced, cannot call this function anymore');
+      throw new Error(
+        'exportVariable(): Pipeline has already been produced, cannot call this function anymore'
+      );
     }
 
     this.exportedVariables.add(variableName);

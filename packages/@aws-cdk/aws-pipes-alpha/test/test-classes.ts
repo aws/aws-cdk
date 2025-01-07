@@ -65,13 +65,13 @@ export class TestTarget implements ITarget {
       this.targetParameters = parameters;
     }
   }
-  public bind = (_pipe: IPipe)=>({
+  public bind = (_pipe: IPipe) => ({
     targetParameters: this.targetParameters,
   });
 }
 
 export class TestEnrichment implements IEnrichment {
-  readonly enrichmentArn= 'enrichment-arn';
+  readonly enrichmentArn = 'enrichment-arn';
   private enrichmentParameters = {};
   public grantInvoke = jest.fn();
 
@@ -80,7 +80,7 @@ export class TestEnrichment implements IEnrichment {
       this.enrichmentParameters = parameters;
     }
   }
-  bind = (_pipe: IPipe)=>({
+  bind = (_pipe: IPipe) => ({
     enrichmentParameters: this.enrichmentParameters,
   });
 }

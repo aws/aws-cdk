@@ -82,12 +82,12 @@ export interface AcceleratorProps {
   readonly ipAddresses?: string[];
 
   /**
-  * The IP address type that an accelerator supports.
-  *
-  * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
-  *
-  * @default - "IPV4"
-  */
+   * The IP address type that an accelerator supports.
+   *
+   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   *
+   * @default - "IPV4"
+   */
   readonly ipAddressType?: IpAddressType;
 }
 
@@ -149,7 +149,11 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   /**
    * import from attributes
    */
-  public static fromAcceleratorAttributes(scope: Construct, id: string, attrs: AcceleratorAttributes): IAccelerator {
+  public static fromAcceleratorAttributes(
+    scope: Construct,
+    id: string,
+    attrs: AcceleratorAttributes
+  ): IAccelerator {
     class Import extends cdk.Resource implements IAccelerator {
       public readonly acceleratorArn = attrs.acceleratorArn;
       public readonly dnsName = attrs.dnsName;
@@ -192,9 +196,11 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
     this.validateAcceleratorName(props.acceleratorName);
     this.validateIpAddresses(props.ipAddresses);
 
-    const name = props.acceleratorName ?? cdk.Names.uniqueResourceName(this, {
-      maxLength: 64,
-    });
+    const name =
+      props.acceleratorName ??
+      cdk.Names.uniqueResourceName(this, {
+        maxLength: 64,
+      });
     const resource = new ga.CfnAccelerator(this, 'Resource', {
       enabled: props.enabled ?? true,
       name,
@@ -220,14 +226,22 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   }
 
   private validateAcceleratorName(name?: string) {
-    if (!cdk.Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 64)) {
-      throw new Error(`Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`);
+    if (
+      !cdk.Token.isUnresolved(name) &&
+      name !== undefined &&
+      (name.length < 1 || name.length > 64)
+    ) {
+      throw new Error(
+        `Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`
+      );
     }
   }
 
   private validateIpAddresses(ipAddresses?: string[]) {
     if (ipAddresses !== undefined && (ipAddresses.length < 1 || ipAddresses.length > 2)) {
-      throw new Error(`Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`);
+      throw new Error(
+        `Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`
+      );
     }
   }
 }

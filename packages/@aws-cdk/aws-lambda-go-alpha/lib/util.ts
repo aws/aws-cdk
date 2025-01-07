@@ -33,7 +33,9 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 
   if (proc.status !== 0) {
     if (proc.stdout || proc.stderr) {
-      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+      throw new Error(
+        `[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`
+      );
     }
     throw new Error(`${cmd} exited with status ${proc.status}`);
   }

@@ -26,11 +26,16 @@ export abstract class CallApiGatewayEndpointBase extends sfn.TaskStateBase {
 
     this.baseProps = props;
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, CallApiGatewayEndpointBase.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      CallApiGatewayEndpointBase.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(this.baseProps.headers)) {
-        throw new Error('Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token.');
+        throw new Error(
+          'Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token.'
+        );
       }
     }
   }

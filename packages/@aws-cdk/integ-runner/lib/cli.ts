@@ -5,7 +5,13 @@ import * as chalk from 'chalk';
 import * as workerpool from 'workerpool';
 import * as logger from './logger';
 import { IntegrationTests, IntegTest, IntegTestInfo } from './runner/integration-tests';
-import { runSnapshotTests, runIntegrationTests, IntegRunnerMetrics, IntegTestWorkerConfig, DestructiveChange } from './workers';
+import {
+  runSnapshotTests,
+  runIntegrationTests,
+  IntegRunnerMetrics,
+  IntegTestWorkerConfig,
+  DestructiveChange,
+} from './workers';
 import { watchIntegrationTest } from './workers/integ-watch-worker';
 
 // https://github.com/yargs/yargs/issues/1929
@@ -24,19 +30,72 @@ export function parseCliArgs(args: string[] = []) {
     })
     .option('watch', { type: 'boolean', default: false, desc: 'Perform integ tests in watch mode' })
     .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
-    .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
-    .option('verbose', { type: 'boolean', default: false, alias: 'v', count: true, desc: 'Verbose logs and metrics on integration tests durations (specify multiple times to increase verbosity)' })
-    .option('dry-run', { type: 'boolean', default: false, desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)' })
-    .option('update-on-failed', { type: 'boolean', default: false, desc: 'rerun integration tests and update snapshots for failed tests.' })
-    .option('force', { type: 'boolean', default: false, desc: 'Rerun all integration tests even if tests are passing' })
-    .option('parallel-regions', { type: 'array', desc: 'Tests are run in parallel across these regions. To prevent tests from running in parallel, provide only a single region', default: [] })
-    .options('directory', { type: 'string', default: 'test', desc: 'starting directory to discover integration tests. Tests will be discovered recursively from this directory' })
-    .options('profiles', { type: 'array', desc: 'list of AWS profiles to use. Tests will be run in parallel across each profile+regions', default: [] })
-    .options('max-workers', { type: 'number', desc: 'The max number of workerpool workers to use when running integration tests in parallel', default: 16 })
-    .options('exclude', { type: 'boolean', desc: 'Run all tests in the directory, except the specified TESTs', default: false })
-    .options('from-file', { type: 'string', desc: 'Read TEST names from a file (one TEST per line)' })
-    .option('inspect-failures', { type: 'boolean', desc: 'Keep the integ test cloud assembly if a failure occurs for inspection', default: false })
-    .option('disable-update-workflow', { type: 'boolean', default: false, desc: 'If this is "true" then the stack update workflow will be disabled' })
+    .option('clean', {
+      type: 'boolean',
+      default: true,
+      desc: 'Skips stack clean up after test is completed (use --no-clean to negate)',
+    })
+    .option('verbose', {
+      type: 'boolean',
+      default: false,
+      alias: 'v',
+      count: true,
+      desc: 'Verbose logs and metrics on integration tests durations (specify multiple times to increase verbosity)',
+    })
+    .option('dry-run', {
+      type: 'boolean',
+      default: false,
+      desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)',
+    })
+    .option('update-on-failed', {
+      type: 'boolean',
+      default: false,
+      desc: 'rerun integration tests and update snapshots for failed tests.',
+    })
+    .option('force', {
+      type: 'boolean',
+      default: false,
+      desc: 'Rerun all integration tests even if tests are passing',
+    })
+    .option('parallel-regions', {
+      type: 'array',
+      desc: 'Tests are run in parallel across these regions. To prevent tests from running in parallel, provide only a single region',
+      default: [],
+    })
+    .options('directory', {
+      type: 'string',
+      default: 'test',
+      desc: 'starting directory to discover integration tests. Tests will be discovered recursively from this directory',
+    })
+    .options('profiles', {
+      type: 'array',
+      desc: 'list of AWS profiles to use. Tests will be run in parallel across each profile+regions',
+      default: [],
+    })
+    .options('max-workers', {
+      type: 'number',
+      desc: 'The max number of workerpool workers to use when running integration tests in parallel',
+      default: 16,
+    })
+    .options('exclude', {
+      type: 'boolean',
+      desc: 'Run all tests in the directory, except the specified TESTs',
+      default: false,
+    })
+    .options('from-file', {
+      type: 'string',
+      desc: 'Read TEST names from a file (one TEST per line)',
+    })
+    .option('inspect-failures', {
+      type: 'boolean',
+      desc: 'Keep the integ test cloud assembly if a failure occurs for inspection',
+      default: false,
+    })
+    .option('disable-update-workflow', {
+      type: 'boolean',
+      default: false,
+      desc: 'If this is "true" then the stack update workflow will be disabled',
+    })
     .option('language', {
       alias: 'l',
       default: ['javascript', 'typescript', 'python', 'go'],
@@ -45,8 +104,16 @@ export function parseCliArgs(args: string[] = []) {
       nargs: 1,
       desc: 'Use these presets to run integration tests for the selected languages',
     })
-    .option('app', { type: 'string', default: undefined, desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".' })
-    .option('test-regex', { type: 'array', desc: 'Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.', default: [] })
+    .option('app', {
+      type: 'string',
+      default: undefined,
+      desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".',
+    })
+    .option('test-regex', {
+      type: 'array',
+      desc: 'Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.',
+      default: [],
+    })
     .strict()
     .parse(args);
 
@@ -61,19 +128,28 @@ export function parseCliArgs(args: string[] = []) {
 
   const numTests = testRegions.length * (profiles ?? [1]).length;
   if (maxWorkers < numTests) {
-    logger.warning('You are attempting to run %s tests in parallel, but only have %s workers. Not all of your profiles+regions will be utilized', numTests, maxWorkers);
+    logger.warning(
+      'You are attempting to run %s tests in parallel, but only have %s workers. Not all of your profiles+regions will be utilized',
+      numTests,
+      maxWorkers
+    );
   }
 
   if (tests.length > 0 && fromFile) {
     throw new Error('A list of tests cannot be provided if "--from-file" is provided');
   }
   const requestedTests = fromFile
-    ? (fs.readFileSync(fromFile, { encoding: 'utf8' })).split('\n').filter(x => x)
-    : (tests.length > 0 ? tests : undefined); // 'undefined' means no request
+    ? fs
+        .readFileSync(fromFile, { encoding: 'utf8' })
+        .split('\n')
+        .filter((x) => x)
+    : tests.length > 0
+      ? tests
+      : undefined; // 'undefined' means no request
 
   return {
     tests: requestedTests,
-    app: argv.app as (string | undefined),
+    app: argv.app as string | undefined,
     testRegex: arrayFromYargs(argv['test-regex']),
     testRegions,
     originalRegions: parallelRegions,
@@ -99,17 +175,22 @@ export function parseCliArgs(args: string[] = []) {
 export async function main(args: string[]) {
   const options = parseCliArgs(args);
 
-  const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliOptions(options);
+  const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliOptions(
+    options
+  );
 
   // List only prints the discovered tests
   if (options.list) {
-    process.stdout.write(testsFromArgs.map(t => t.discoveryRelativeFileName).join('\n') + '\n');
+    process.stdout.write(testsFromArgs.map((t) => t.discoveryRelativeFileName).join('\n') + '\n');
     return;
   }
 
-  const pool = workerpool.pool(path.join(__dirname, '..', 'lib', 'workers', 'extract', 'index.js'), {
-    maxWorkers: options.watch ? 1 : options.maxWorkers,
-  });
+  const pool = workerpool.pool(
+    path.join(__dirname, '..', 'lib', 'workers', 'extract', 'index.js'),
+    {
+      maxWorkers: options.watch ? 1 : options.maxWorkers,
+    }
+  );
 
   const testsToRun: IntegTestWorkerConfig[] = [];
   let destructiveChanges: boolean = false;
@@ -142,10 +223,15 @@ export async function main(args: string[]) {
       } else {
         // if any of the test failed snapshot tests, keep those results
         // and merge with the rest of the tests from args
-        testsToRun.push(...mergeTests(testsFromArgs.map(t => t.info), failedSnapshots));
+        testsToRun.push(
+          ...mergeTests(
+            testsFromArgs.map((t) => t.info),
+            failedSnapshots
+          )
+        );
       }
     } else {
-      testsToRun.push(...testsFromArgs.map(t => t.info));
+      testsToRun.push(...testsFromArgs.map((t) => t.info));
     }
 
     // run integration tests if `--update-on-failed` OR `--force` is used
@@ -199,7 +285,6 @@ export async function main(args: string[]) {
       throw new Error(`Some tests failed!\n${message}`);
     }
   }
-
 }
 
 function validateWatchArgs(args: {
@@ -215,15 +300,20 @@ function validateWatchArgs(args: {
 }) {
   if (args.watch) {
     if (
-      (args.testRegions && args.testRegions.length > 1)
-        || (args.profiles && args.profiles.length > 1)
-        || args.tests.length > 1) {
-      throw new Error('Running with watch only supports a single test. Only provide a single option'+
-        'to `--profiles` `--parallel-regions` `--max-workers');
+      (args.testRegions && args.testRegions.length > 1) ||
+      (args.profiles && args.profiles.length > 1) ||
+      args.tests.length > 1
+    ) {
+      throw new Error(
+        'Running with watch only supports a single test. Only provide a single option' +
+          'to `--profiles` `--parallel-regions` `--max-workers'
+      );
     }
 
     if (args.runUpdateOnFailed || args.disableUpdateWorkflow || args.force || args.dryRun) {
-      logger.warning('args `--update-on-failed`, `--disable-update-workflow`, `--force`, `--dry-run` have no effect when running with `--watch`');
+      logger.warning(
+        'args `--update-on-failed`, `--disable-update-workflow`, `--force`, `--dry-run` have no effect when running with `--watch`'
+      );
     }
   }
 }
@@ -231,20 +321,32 @@ function validateWatchArgs(args: {
 function printDestructiveChanges(changes: DestructiveChange[]): void {
   if (changes.length > 0) {
     logger.warning('!!! This test contains %s !!!', chalk.bold('destructive changes'));
-    changes.forEach(change => {
-      logger.warning('    Stack: %s - Resource: %s - Impact: %s', change.stackName, change.logicalId, change.impact);
+    changes.forEach((change) => {
+      logger.warning(
+        '    Stack: %s - Resource: %s - Impact: %s',
+        change.stackName,
+        change.logicalId,
+        change.impact
+      );
     });
-    logger.warning('!!! If these destructive changes are necessary, please indicate this on the PR !!!');
+    logger.warning(
+      '!!! If these destructive changes are necessary, please indicate this on the PR !!!'
+    );
   }
 }
 
 function printMetrics(metrics: IntegRunnerMetrics[]): void {
   logger.highlight('   --- Integration test metrics ---');
   const sortedMetrics = metrics.sort((a, b) => a.duration - b.duration);
-  sortedMetrics.forEach(metric => {
-    logger.print('Profile %s + Region %s total time: %s', metric.profile, metric.region, metric.duration);
+  sortedMetrics.forEach((metric) => {
+    logger.print(
+      'Profile %s + Region %s total time: %s',
+      metric.profile,
+      metric.region,
+      metric.duration
+    );
     const sortedTests = Object.entries(metric.tests).sort((a, b) => a[1] - b[1]);
-    sortedTests.forEach(test => logger.print('  %s: %s', test[0], test[1]));
+    sortedTests.forEach((test) => logger.print('  %s: %s', test[0], test[1]));
   });
 }
 
@@ -258,8 +360,10 @@ function printMetrics(metrics: IntegRunnerMetrics[]): void {
  *   take to mean they passed an empty array.
  */
 function arrayFromYargs(xs: string[]): string[] | undefined {
-  if (xs.length === 0) { return undefined; }
-  return xs.filter(x => x !== '');
+  if (xs.length === 0) {
+    return undefined;
+  }
+  return xs.filter((x) => x !== '');
 }
 
 /**
@@ -267,18 +371,23 @@ function arrayFromYargs(xs: string[]): string[] | undefined {
  * tests that failed snapshot tests. The failed snapshot tests have additional
  * information that we want to keep so this should override any test from args
  */
-function mergeTests(testFromArgs: IntegTestInfo[], failedSnapshotTests: IntegTestWorkerConfig[]): IntegTestWorkerConfig[] {
-  const failedTestNames = new Set(failedSnapshotTests.map(test => test.fileName));
+function mergeTests(
+  testFromArgs: IntegTestInfo[],
+  failedSnapshotTests: IntegTestWorkerConfig[]
+): IntegTestWorkerConfig[] {
+  const failedTestNames = new Set(failedSnapshotTests.map((test) => test.fileName));
   const final: IntegTestWorkerConfig[] = failedSnapshotTests;
-  final.push(...testFromArgs.filter(test => !failedTestNames.has(test.fileName)));
+  final.push(...testFromArgs.filter((test) => !failedTestNames.has(test.fileName)));
   return final;
 }
 
 export function cli(args: string[] = process.argv.slice(2)) {
-  main(args).then().catch(err => {
-    logger.error(err);
-    process.exitCode = 1;
-  });
+  main(args)
+    .then()
+    .catch((err) => {
+      logger.error(err);
+      process.exitCode = 1;
+    });
 }
 
 /**

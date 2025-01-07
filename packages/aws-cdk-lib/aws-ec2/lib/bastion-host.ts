@@ -19,7 +19,6 @@ import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
  *
  */
 export interface BastionHostLinuxProps {
-
   /**
    * In which AZ to place the instance within the VPC
    *
@@ -107,22 +106,22 @@ export interface BastionHostLinuxProps {
   readonly requireImdsv2?: boolean;
 
   /**
-  * Determines whether changes to the UserData will force instance replacement.
-  *
-  * Depending on the EC2 instance type, modifying the UserData may either restart
-  * or replace the instance:
-  *
-  * - Instance store-backed instances are replaced.
-  * - EBS-backed instances are restarted.
-  *
-  * Note that by default, restarting does not execute the updated UserData, so an alternative
-  * mechanism is needed to ensure the instance re-executes the UserData.
-  *
-  * When set to `true`, the instance's Logical ID will depend on the UserData, causing
-  * CloudFormation to replace the instance if the UserData changes.
-  *
-  * @default - `true` if `initOptions` is specified, otherwise `false`.
-  */
+   * Determines whether changes to the UserData will force instance replacement.
+   *
+   * Depending on the EC2 instance type, modifying the UserData may either restart
+   * or replace the instance:
+   *
+   * - Instance store-backed instances are replaced.
+   * - EBS-backed instances are restarted.
+   *
+   * Note that by default, restarting does not execute the updated UserData, so an alternative
+   * mechanism is needed to ensure the instance re-executes the UserData.
+   *
+   * When set to `true`, the instance's Logical ID will depend on the UserData, causing
+   * CloudFormation to replace the instance if the UserData changes.
+   *
+   * @default - `true` if `initOptions` is specified, otherwise `false`.
+   */
   readonly userDataCausesReplacement?: boolean;
 }
 
@@ -208,14 +207,12 @@ export class BastionHostLinux extends Resource implements IInstance {
       requireImdsv2: props.requireImdsv2 ?? false,
       userDataCausesReplacement: props.userDataCausesReplacement,
     });
-    this.instance.addToRolePolicy(new PolicyStatement({
-      actions: [
-        'ssmmessages:*',
-        'ssm:UpdateInstanceInformation',
-        'ec2messages:*',
-      ],
-      resources: ['*'],
-    }));
+    this.instance.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['ssmmessages:*', 'ssm:UpdateInstanceInformation', 'ec2messages:*'],
+        resources: ['*'],
+      })
+    );
     this.connections = this.instance.connections;
     this.role = this.instance.role;
     this.grantPrincipal = this.instance.role;
@@ -253,7 +250,7 @@ export class BastionHostLinux extends Resource implements IInstance {
    * called, you should use SSM Session Manager to connect to the instance.
    */
   public allowSshAccessFrom(...peer: IPeer[]): void {
-    peer.forEach(p => {
+    peer.forEach((p) => {
       this.connections.allowFrom(p, Port.tcp(22), 'SSH access');
     });
   }
@@ -262,14 +259,20 @@ export class BastionHostLinux extends Resource implements IInstance {
    * Returns the machine image to use for the bastion host, respecting the feature flag
    * to default to Amazon Linux 2023 if enabled, otherwise defaulting to Amazon Linux 2.
    */
-  private getMachineImage(scope: Construct, instanceType: InstanceType, props: BastionHostLinuxProps): IMachineImage {
-    const defaultMachineImage = FeatureFlags.of(scope).isEnabled(BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT)
+  private getMachineImage(
+    scope: Construct,
+    instanceType: InstanceType,
+    props: BastionHostLinuxProps
+  ): IMachineImage {
+    const defaultMachineImage = FeatureFlags.of(scope).isEnabled(
+      BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT
+    )
       ? MachineImage.latestAmazonLinux2023({
-        cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
-      })
+          cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
+        })
       : MachineImage.latestAmazonLinux2({
-        cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
-      });
+          cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
+        });
     return props.machineImage ?? defaultMachineImage;
   }
 }

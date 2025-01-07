@@ -9,8 +9,8 @@ export enum TextWidgetBackground {
    */
   SOLID = 'solid',
   /**
-  * Transparent background
-  */
+   * Transparent background
+   */
   TRANSPARENT = 'transparent',
 }
 
@@ -64,16 +64,18 @@ export class TextWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-    return [{
-      type: 'text',
-      width: this.width,
-      height: this.height,
-      x: this.x,
-      y: this.y,
-      properties: {
-        markdown: this.markdown,
-        background: this.background,
+    return [
+      {
+        type: 'text',
+        width: this.width,
+        height: this.height,
+        x: this.x,
+        y: this.y,
+        properties: {
+          markdown: this.markdown,
+          background: this.background,
+        },
       },
-    }];
+    ];
   }
 }

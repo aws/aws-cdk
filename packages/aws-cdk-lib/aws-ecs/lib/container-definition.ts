@@ -40,7 +40,7 @@ export abstract class Secret {
   public static fromSsmParameter(parameter: ssm.IParameter): Secret {
     return {
       arn: parameter.parameterArn,
-      grantRead: grantee => parameter.grantRead(grantee),
+      grantRead: (grantee) => parameter.grantRead(grantee),
     };
   }
 
@@ -58,7 +58,7 @@ export abstract class Secret {
     return {
       arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
       hasField: !!field,
-      grantRead: grantee => secret.grantRead(grantee),
+      grantRead: (grantee) => secret.grantRead(grantee),
     };
   }
 
@@ -73,11 +73,15 @@ export abstract class Secret {
    * If you do not specify a JSON field, then the full content of the secret is
    * used.
    */
-  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+  public static fromSecretsManagerVersion(
+    secret: secretsmanager.ISecret,
+    versionInfo: SecretVersionInfo,
+    field?: string
+  ): Secret {
     return {
       arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
       hasField: !!field,
-      grantRead: grantee => secret.grantRead(grantee),
+      grantRead: (grantee) => secret.grantRead(grantee),
     };
   }
 
@@ -551,7 +555,11 @@ export class ContainerDefinition extends Construct {
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
-  constructor(scope: Construct, id: string, private readonly props: ContainerDefinitionProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: ContainerDefinitionProps
+  ) {
     super(scope, id);
     if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
       if (props.memoryLimitMiB < props.memoryReservationMiB) {
@@ -560,7 +568,8 @@ export class ContainerDefinition extends Construct {
     }
     this.essential = props.essential ?? true;
     this.taskDefinition = props.taskDefinition;
-    this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
+    this.memoryLimitSpecified =
+      props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
 
@@ -627,7 +636,11 @@ export class ContainerDefinition extends Construct {
       this.addUlimits(...props.ulimits);
     }
 
-    this.validateRestartPolicy(props.enableRestartPolicy, props.restartIgnoredExitCodes, props.restartAttemptPeriod);
+    this.validateRestartPolicy(
+      props.enableRestartPolicy,
+      props.restartIgnoredExitCodes,
+      props.restartAttemptPeriod
+    );
   }
 
   /**
@@ -681,17 +694,19 @@ export class ContainerDefinition extends Construct {
    * This method adds one or more port mappings to the container.
    */
   public addPortMappings(...portMappings: PortMapping[]) {
-    this.portMappings.push(...portMappings.map(pm => {
-      const portMap = new PortMap(this.taskDefinition.networkMode, pm);
-      portMap.validate();
-      const serviceConnect = new ServiceConnect(this.taskDefinition.networkMode, pm);
-      if (serviceConnect.isServiceConnect()) {
-        serviceConnect.validate();
-        this.setNamedPort(pm);
-      }
-      const sanitizedPM = this.addHostPortIfNeeded(pm);
-      return sanitizedPM;
-    }));
+    this.portMappings.push(
+      ...portMappings.map((pm) => {
+        const portMap = new PortMap(this.taskDefinition.networkMode, pm);
+        portMap.validate();
+        const serviceConnect = new ServiceConnect(this.taskDefinition.networkMode, pm);
+        if (serviceConnect.isServiceConnect()) {
+          serviceConnect.validate();
+          this.setNamedPort(pm);
+        }
+        const sanitizedPM = this.addHostPortIfNeeded(pm);
+        return sanitizedPM;
+      })
+    );
   }
 
   /**
@@ -724,14 +739,18 @@ export class ContainerDefinition extends Construct {
    * This method adds one or more resources to the container.
    */
   public addInferenceAcceleratorResource(...inferenceAcceleratorResources: string[]) {
-    this.inferenceAcceleratorResources.push(...inferenceAcceleratorResources.map(resource => {
-      for (const inferenceAccelerator of this.taskDefinition.inferenceAccelerators) {
-        if (resource === inferenceAccelerator.deviceName) {
-          return resource;
+    this.inferenceAcceleratorResources.push(
+      ...inferenceAcceleratorResources.map((resource) => {
+        for (const inferenceAccelerator of this.taskDefinition.inferenceAccelerators) {
+          if (resource === inferenceAccelerator.deviceName) {
+            return resource;
+          }
         }
-      }
-      throw new Error(`Resource value ${resource} in container definition doesn't match any inference accelerator device name in the task definition.`);
-    }));
+        throw new Error(
+          `Resource value ${resource} in container definition doesn't match any inference accelerator device name in the task definition.`
+        );
+      })
+    );
   }
 
   /**
@@ -786,7 +805,7 @@ export class ContainerDefinition extends Construct {
   /**
    * This method adds an namedPort
    */
-  private setNamedPort(pm: PortMapping) :void {
+  private setNamedPort(pm: PortMapping): void {
     if (!pm.name) return;
     if (this._namedPorts.has(pm.name)) {
       throw new Error(`Port mapping name '${pm.name}' already exists on this container`);
@@ -798,8 +817,12 @@ export class ContainerDefinition extends Construct {
    * This method sets the host port to 0 if the network mode is Bridge and neither
    * the host port nor the container port range is already set.
    */
-  private addHostPortIfNeeded(pm: PortMapping) :PortMapping {
-    if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE || pm.hostPort !== undefined || pm.containerPortRange !== undefined) {
+  private addHostPortIfNeeded(pm: PortMapping): PortMapping {
+    if (
+      this.taskDefinition.networkMode !== NetworkMode.BRIDGE ||
+      pm.hostPort !== undefined ||
+      pm.containerPortRange !== undefined
+    ) {
       return pm;
     }
 
@@ -809,15 +832,31 @@ export class ContainerDefinition extends Construct {
     };
   }
 
-  private validateRestartPolicy(enableRestartPolicy?: boolean, restartIgnoredExitCodes?: number[], restartAttemptPeriod?: cdk.Duration) {
-    if (enableRestartPolicy === false && (restartIgnoredExitCodes !== undefined || restartAttemptPeriod !== undefined)) {
-      throw new Error('The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false');
+  private validateRestartPolicy(
+    enableRestartPolicy?: boolean,
+    restartIgnoredExitCodes?: number[],
+    restartAttemptPeriod?: cdk.Duration
+  ) {
+    if (
+      enableRestartPolicy === false &&
+      (restartIgnoredExitCodes !== undefined || restartAttemptPeriod !== undefined)
+    ) {
+      throw new Error(
+        'The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false'
+      );
     }
     if (restartIgnoredExitCodes && restartIgnoredExitCodes.length > 50) {
-      throw new Error(`Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`);
+      throw new Error(
+        `Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`
+      );
     }
-    if (restartAttemptPeriod && (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)) {
-      throw new Error(`The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`);
+    if (
+      restartAttemptPeriod &&
+      (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)
+    ) {
+      throw new Error(
+        `The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`
+      );
     }
   }
 
@@ -841,7 +880,9 @@ export class ContainerDefinition extends Construct {
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(
+        `Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`
+      );
     }
     const defaultPortMapping = this.portMappings[0];
 
@@ -854,7 +895,9 @@ export class ContainerDefinition extends Construct {
     }
 
     if (defaultPortMapping.containerPortRange !== undefined) {
-      throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
+      throw new Error(
+        `The first port mapping of the container ${this.containerName} must expose a single port.`
+      );
     }
 
     return defaultPortMapping.containerPort;
@@ -865,12 +908,16 @@ export class ContainerDefinition extends Construct {
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(
+        `Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`
+      );
     }
     const defaultPortMapping = this.portMappings[0];
 
     if (defaultPortMapping.containerPortRange !== undefined) {
-      throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
+      throw new Error(
+        `The first port mapping of the container ${this.containerName} must expose a single port.`
+      );
     }
 
     return defaultPortMapping.containerPort;
@@ -881,13 +928,18 @@ export class ContainerDefinition extends Construct {
    *
    * @param _taskDefinition [disable-awslint:ref-via-interface] (unused but kept to avoid breaking change)
    */
-  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(
+    _taskDefinition?: TaskDefinition
+  ): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
       credentialSpecs: this.credentialSpecs && this.credentialSpecs.map(renderCredentialSpec),
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
-      dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
+      dependsOn: cdk.Lazy.any(
+        { produce: () => this.containerDependencies.map(renderContainerDependency) },
+        { omitEmptyArray: true }
+      ),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: Object.keys(this.dockerLabels).length ? this.dockerLabels : undefined,
@@ -899,31 +951,54 @@ export class ContainerDefinition extends Construct {
       interactive: this.props.interactive,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: cdk.Lazy.any({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
+      mountPoints: cdk.Lazy.any(
+        { produce: () => this.mountPoints.map(renderMountPoint) },
+        { omitEmptyArray: true }
+      ),
       name: this.containerName,
-      portMappings: cdk.Lazy.any({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
+      portMappings: cdk.Lazy.any(
+        { produce: () => this.portMappings.map(renderPortMapping) },
+        { omitEmptyArray: true }
+      ),
       privileged: this.props.privileged,
       pseudoTerminal: this.props.pseudoTerminal,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
       startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
       stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
-      ulimits: cdk.Lazy.any({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
+      ulimits: cdk.Lazy.any(
+        { produce: () => this.ulimits.map(renderUlimit) },
+        { omitEmptyArray: true }
+      ),
       user: this.props.user,
-      volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
+      volumesFrom: cdk.Lazy.any(
+        { produce: () => this.volumesFrom.map(renderVolumeFrom) },
+        { omitEmptyArray: true }
+      ),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
-      environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
+      environment:
+        this.environment && Object.keys(this.environment).length
+          ? renderKV(this.environment, 'name', 'value')
+          : undefined,
+      environmentFiles:
+        this.environmentFiles &&
+        renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
       secrets: this.secrets.length ? this.secrets : undefined,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
-      resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
-        renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
+      resourceRequirements:
+        !this.props.gpuCount && this.inferenceAcceleratorResources.length == 0
+          ? undefined
+          : renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
       systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
-      restartPolicy: renderRestartPolicy(this.props.enableRestartPolicy, this.props.restartIgnoredExitCodes, this.props.restartAttemptPeriod),
+      restartPolicy: renderRestartPolicy(
+        this.props.enableRestartPolicy,
+        this.props.restartIgnoredExitCodes,
+        this.props.restartAttemptPeriod
+      ),
     };
   }
 }
@@ -987,7 +1062,10 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
   return ret;
 }
 
-function renderEnvironmentFiles(partition: string, environmentFiles: EnvironmentFileConfig[]): any[] {
+function renderEnvironmentFiles(
+  partition: string,
+  environmentFiles: EnvironmentFileConfig[]
+): any[] {
   const ret = [];
   for (const environmentFile of environmentFiles) {
     const s3Location = environmentFile.s3Location;
@@ -1059,8 +1137,10 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   return hcCommand.concat(cmd);
 }
 
-function renderResourceRequirements(gpuCount: number = 0, inferenceAcceleratorResources: string[] = []):
-CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
+function renderResourceRequirements(
+  gpuCount: number = 0,
+  inferenceAcceleratorResources: string[] = []
+): CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
   const ret = [];
   for (const resource of inferenceAcceleratorResources) {
     ret.push({
@@ -1175,7 +1255,9 @@ export enum ContainerDependencyCondition {
   HEALTHY = 'HEALTHY',
 }
 
-function renderContainerDependency(containerDependency: ContainerDependency): CfnTaskDefinition.ContainerDependencyProperty {
+function renderContainerDependency(
+  containerDependency: ContainerDependency
+): CfnTaskDefinition.ContainerDependencyProperty {
   return {
     containerName: containerDependency.container.containerName,
     condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY,
@@ -1264,7 +1346,6 @@ export interface PortMapping {
  * PortMap ValueObjectClass having by ContainerDefinition
  */
 export class PortMap {
-
   /**
    * The networking mode to use for the containers in the task.
    */
@@ -1289,18 +1370,31 @@ export class PortMap {
       throw new Error('Port mapping name cannot be an empty string.');
     }
 
-    if (this.portmapping.containerPort === ContainerDefinition.CONTAINER_PORT_USE_RANGE && this.portmapping.containerPortRange === undefined) {
-      throw new Error(`The containerPortRange must be set when containerPort is equal to ${ContainerDefinition.CONTAINER_PORT_USE_RANGE}`);
+    if (
+      this.portmapping.containerPort === ContainerDefinition.CONTAINER_PORT_USE_RANGE &&
+      this.portmapping.containerPortRange === undefined
+    ) {
+      throw new Error(
+        `The containerPortRange must be set when containerPort is equal to ${ContainerDefinition.CONTAINER_PORT_USE_RANGE}`
+      );
     }
 
-    if (this.portmapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE && this.portmapping.containerPortRange !== undefined) {
+    if (
+      this.portmapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE &&
+      this.portmapping.containerPortRange !== undefined
+    ) {
       throw new Error('Cannot set "containerPort" and "containerPortRange" at the same time.');
     }
 
     if (this.portmapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE) {
-      if ((this.networkmode === NetworkMode.AWS_VPC || this.networkmode === NetworkMode.HOST)
-          && this.portmapping.hostPort !== undefined && this.portmapping.hostPort !== this.portmapping.containerPort) {
-        throw new Error('The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
+      if (
+        (this.networkmode === NetworkMode.AWS_VPC || this.networkmode === NetworkMode.HOST) &&
+        this.portmapping.hostPort !== undefined &&
+        this.portmapping.hostPort !== this.portmapping.containerPort
+      ) {
+        throw new Error(
+          'The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.'
+        );
       }
     }
 
@@ -1314,11 +1408,15 @@ export class PortMap {
       }
 
       if (this.networkmode !== NetworkMode.BRIDGE && this.networkmode !== NetworkMode.AWS_VPC) {
-        throw new Error('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+        throw new Error(
+          'Either AwsVpc or Bridge network mode is required to set a port range for the container.'
+        );
       }
 
       if (!/^\d+-\d+$/.test(this.portmapping.containerPortRange)) {
-        throw new Error('The containerPortRange must be a string in the format [start port]-[end port].');
+        throw new Error(
+          'The containerPortRange must be a string in the format [start port]-[end port].'
+        );
       }
     }
   }
@@ -1329,7 +1427,6 @@ export class PortMap {
     }
     return true;
   }
-
 }
 
 /**
@@ -1355,7 +1452,7 @@ export class ServiceConnect {
    * Judge parameters can be serviceconnect logick.
    * If parameters can be serviceConnect return true.
    */
-  public isServiceConnect() :boolean {
+  public isServiceConnect(): boolean {
     const hasPortname = this.portmapping.name;
     const hasAppProtcol = this.portmapping.appProtocol;
     if (hasPortname || hasAppProtcol) return true;
@@ -1366,23 +1463,27 @@ export class ServiceConnect {
    * Judge serviceconnect parametes are valid.
    * If invalid, throw Error.
    */
-  public validate() :void {
+  public validate(): void {
     if (!this.isValidNetworkmode()) {
-      throw new Error(`Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode ${this.networkmode}`);
+      throw new Error(
+        `Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode ${this.networkmode}`
+      );
     }
     if (!this.isValidPortName()) {
-      throw new Error('Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
+      throw new Error(
+        "Service connect-related port mapping field 'appProtocol' cannot be set without 'name'"
+      );
     }
   }
 
-  private isValidNetworkmode() :boolean {
+  private isValidNetworkmode(): boolean {
     const isAwsVpcMode = this.networkmode == NetworkMode.AWS_VPC;
     const isBridgeMode = this.networkmode == NetworkMode.BRIDGE;
     if (isAwsVpcMode || isBridgeMode) return true;
     return false;
   }
 
-  private isValidPortName() :boolean {
+  private isValidPortName(): boolean {
     if (!this.portmapping.name) return false;
     return true;
   }
@@ -1432,7 +1533,10 @@ export class AppProtocol {
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
-    containerPort: pm.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE ? pm.containerPort : undefined,
+    containerPort:
+      pm.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE
+        ? pm.containerPort
+        : undefined,
     containerPortRange: pm.containerPortRange,
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.TCP,
@@ -1540,8 +1644,10 @@ export interface SystemControl {
   readonly value: string;
 }
 
-function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinition.SystemControlProperty[] {
-  return systemControls.map(sc => ({
+function renderSystemControls(
+  systemControls: SystemControl[]
+): CfnTaskDefinition.SystemControlProperty[] {
+  return systemControls.map((sc) => ({
     namespace: sc.namespace,
     value: sc.value,
   }));
@@ -1550,9 +1656,13 @@ function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinitio
 function renderRestartPolicy(
   enableRestartPolicy?: boolean,
   restartIgnoredExitCodes?: number[],
-  restartAttemptPeriod?: cdk.Duration,
+  restartAttemptPeriod?: cdk.Duration
 ): CfnTaskDefinition.RestartPolicyProperty | undefined {
-  if (enableRestartPolicy === undefined && restartIgnoredExitCodes === undefined && restartAttemptPeriod === undefined) {
+  if (
+    enableRestartPolicy === undefined &&
+    restartIgnoredExitCodes === undefined &&
+    restartAttemptPeriod === undefined
+  ) {
     return;
   }
 

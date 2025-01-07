@@ -81,7 +81,6 @@ export interface MatchmakingRuleSetAttributes {
    * @default derived from `matchmakingRuleSetArn`.
    */
   readonly matchmakingRuleSetName?: string;
-
 }
 
 /**
@@ -137,37 +136,57 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
   /**
    * Import a ruleSet into CDK using its name
    */
-  static fromMatchmakingRuleSetName(scope: Construct, id: string, matchmakingRuleSetName: string): IMatchmakingRuleSet {
+  static fromMatchmakingRuleSetName(
+    scope: Construct,
+    id: string,
+    matchmakingRuleSetName: string
+  ): IMatchmakingRuleSet {
     return this.fromMatchmakingRuleSetAttributes(scope, id, { matchmakingRuleSetName });
   }
 
   /**
    * Import a ruleSet into CDK using its ARN
    */
-  static fromMatchmakingRuleSetArn(scope: Construct, id: string, matchmakingRuleSetArn: string): IMatchmakingRuleSet {
+  static fromMatchmakingRuleSetArn(
+    scope: Construct,
+    id: string,
+    matchmakingRuleSetArn: string
+  ): IMatchmakingRuleSet {
     return this.fromMatchmakingRuleSetAttributes(scope, id, { matchmakingRuleSetArn });
   }
 
   /**
    * Import an existing matchmaking ruleSet from its attributes.
    */
-  static fromMatchmakingRuleSetAttributes(scope: Construct, id: string, attrs: MatchmakingRuleSetAttributes): IMatchmakingRuleSet {
+  static fromMatchmakingRuleSetAttributes(
+    scope: Construct,
+    id: string,
+    attrs: MatchmakingRuleSetAttributes
+  ): IMatchmakingRuleSet {
     if (!attrs.matchmakingRuleSetName && !attrs.matchmakingRuleSetArn) {
-      throw new Error('Either matchmakingRuleSetName or matchmakingRuleSetArn must be provided in MatchmakingRuleSetAttributes');
+      throw new Error(
+        'Either matchmakingRuleSetName or matchmakingRuleSetArn must be provided in MatchmakingRuleSetAttributes'
+      );
     }
-    const matchmakingRuleSetName = attrs.matchmakingRuleSetName ??
-      cdk.Stack.of(scope).splitArn(attrs.matchmakingRuleSetArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    const matchmakingRuleSetName =
+      attrs.matchmakingRuleSetName ??
+      cdk.Stack.of(scope).splitArn(attrs.matchmakingRuleSetArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME)
+        .resourceName;
 
     if (!matchmakingRuleSetName) {
-      throw new Error(`No matchmaking ruleSet identifier found in ARN: '${attrs.matchmakingRuleSetArn}'`);
+      throw new Error(
+        `No matchmaking ruleSet identifier found in ARN: '${attrs.matchmakingRuleSetArn}'`
+      );
     }
 
-    const matchmakingRuleSetArn = attrs.matchmakingRuleSetArn ?? cdk.Stack.of(scope).formatArn({
-      service: 'gamelift',
-      resource: 'matchmakingruleset',
-      resourceName: attrs.matchmakingRuleSetName,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    });
+    const matchmakingRuleSetArn =
+      attrs.matchmakingRuleSetArn ??
+      cdk.Stack.of(scope).formatArn({
+        service: 'gamelift',
+        resource: 'matchmakingruleset',
+        resourceName: attrs.matchmakingRuleSetName,
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      });
     class Import extends MatchmakingRuleSetBase {
       public readonly matchmakingRuleSetName = matchmakingRuleSetName!;
       public readonly matchmakingRuleSetArn = matchmakingRuleSetArn;
@@ -198,11 +217,15 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
 
     if (!cdk.Token.isUnresolved(props.matchmakingRuleSetName)) {
       if (props.matchmakingRuleSetName.length > 128) {
-        throw new Error(`RuleSet name can not be longer than 128 characters but has ${props.matchmakingRuleSetName.length} characters.`);
+        throw new Error(
+          `RuleSet name can not be longer than 128 characters but has ${props.matchmakingRuleSetName.length} characters.`
+        );
       }
 
       if (!/^[a-zA-Z0-9-\.]+$/.test(props.matchmakingRuleSetName)) {
-        throw new Error(`RuleSet name ${props.matchmakingRuleSetName} can contain only letters, numbers, hyphens, back slash or dot with no spaces.`);
+        throw new Error(
+          `RuleSet name ${props.matchmakingRuleSetName} can contain only letters, numbers, hyphens, back slash or dot with no spaces.`
+        );
       }
     }
     const content = props.content.bind(this);

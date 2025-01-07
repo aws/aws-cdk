@@ -1,9 +1,4 @@
-export type ToolkitAction =
-  | 'bootstrap'
-  | 'synth'
-  | 'list'
-  | 'deploy'
-  | 'destroy';
+export type ToolkitAction = 'bootstrap' | 'synth' | 'list' | 'deploy' | 'destroy';
 
 export type MessageLevel = 'error' | 'warn' | 'info' | 'debug';
 

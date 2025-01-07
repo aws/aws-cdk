@@ -112,7 +112,6 @@ export interface VersionAttributes {
  * creating the `Version.
  */
 export class Version extends QualifiedFunctionBase implements IVersion {
-
   /**
    * Construct a Version object from a Version ARN.
    *
@@ -151,7 +150,11 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     return new Import(scope, id);
   }
 
-  public static fromVersionAttributes(scope: Construct, id: string, attrs: VersionAttributes): IVersion {
+  public static fromVersionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: VersionAttributes
+  ): IVersion {
     class Import extends QualifiedFunctionBase implements IVersion {
       public readonly version = attrs.version;
       public readonly lambda = attrs.lambda;
@@ -211,7 +214,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.functionName = `${this.lambda.functionName}:${this.version}`;
     this.qualifier = version.attrVersion;
 
-    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+    if (
+      props.onFailure ||
+      props.onSuccess ||
+      props.maxEventAge ||
+      props.retryAttempts !== undefined
+    ) {
       this.configureAsyncInvoke({
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,
@@ -278,7 +286,9 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    *
    * Member must have value greater than or equal to 1
    */
-  private determineProvisionedConcurrency(props: VersionProps): CfnVersion.ProvisionedConcurrencyConfigurationProperty | undefined {
+  private determineProvisionedConcurrency(
+    props: VersionProps
+  ): CfnVersion.ProvisionedConcurrencyConfigurationProperty | undefined {
     if (!props.provisionedConcurrentExecutions) {
       return undefined;
     }
@@ -324,5 +334,8 @@ export function extractLambdaFunctionArn(arn: string) {
   if (!Token.isUnresolved(arn)) {
     return arn.split(':').slice(0, 7).join(':');
   }
-  return Fn.join(':', [...Array(7).keys()].map((i) => Fn.select(i, Fn.split(':', arn))));
+  return Fn.join(
+    ':',
+    [...Array(7).keys()].map((i) => Fn.select(i, Fn.split(':', arn)))
+  );
 }

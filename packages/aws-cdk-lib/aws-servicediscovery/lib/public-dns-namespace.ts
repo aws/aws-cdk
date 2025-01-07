@@ -5,7 +5,7 @@ import { CfnPublicDnsNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
 
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
-export interface IPublicDnsNamespace extends INamespace { }
+export interface IPublicDnsNamespace extends INamespace {}
 export interface PublicDnsNamespaceAttributes {
   /**
    * A name for the Namespace.
@@ -27,8 +27,11 @@ export interface PublicDnsNamespaceAttributes {
  * Define a Public DNS Namespace
  */
 export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace {
-
-  public static fromPublicDnsNamespaceAttributes(scope: Construct, id: string, attrs: PublicDnsNamespaceAttributes): IPublicDnsNamespace {
+  public static fromPublicDnsNamespaceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: PublicDnsNamespaceAttributes
+  ): IPublicDnsNamespace {
     class Import extends Resource implements IPublicDnsNamespace {
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
@@ -79,13 +82,19 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
   }
 
   /** @attribute */
-  public get publicDnsNamespaceArn() { return this.namespaceArn; }
+  public get publicDnsNamespaceArn() {
+    return this.namespaceArn;
+  }
 
   /** @attribute */
-  public get publicDnsNamespaceName() { return this.namespaceName; }
+  public get publicDnsNamespaceName() {
+    return this.namespaceName;
+  }
 
   /** @attribute */
-  public get publicDnsNamespaceId() { return this.namespaceId; }
+  public get publicDnsNamespaceId() {
+    return this.namespaceId;
+  }
 
   /**
    * Creates a service within the namespace

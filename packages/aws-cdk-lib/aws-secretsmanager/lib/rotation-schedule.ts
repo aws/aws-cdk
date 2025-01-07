@@ -14,7 +14,7 @@ import { Duration, Resource, Stack } from '../../core';
  * some engine-specific characters (for example, Oracle doesn't like '@' in its passwords),
  * and some that trip up other services, like DMS.
  */
-const DEFAULT_PASSWORD_EXCLUDE_CHARS = " %+~`#$&*()|[]{}:;<>?!'/@\"\\";
+const DEFAULT_PASSWORD_EXCLUDE_CHARS = ' %+~`#$&*()|[]{}:;<>?!\'/@"\\';
 
 /**
  * Options to add a rotation schedule to a secret.
@@ -90,7 +90,10 @@ export class RotationSchedule extends Resource {
   constructor(scope: Construct, id: string, props: RotationScheduleProps) {
     super(scope, id);
 
-    if ((!props.rotationLambda && !props.hostedRotation) || (props.rotationLambda && props.hostedRotation)) {
+    if (
+      (!props.rotationLambda && !props.hostedRotation) ||
+      (props.rotationLambda && props.hostedRotation)
+    ) {
       throw new Error('One of `rotationLambda` or `hostedRotation` must be specified.');
     }
 
@@ -99,12 +102,14 @@ export class RotationSchedule extends Resource {
         props.secret.encryptionKey.grantEncryptDecrypt(
           new kms.ViaServicePrincipal(
             `secretsmanager.${Stack.of(this).region}.amazonaws.com`,
-            props.rotationLambda.grantPrincipal,
-          ),
+            props.rotationLambda.grantPrincipal
+          )
         );
       }
 
-      const grant = props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
+      const grant = props.rotationLambda.grantInvoke(
+        new iam.ServicePrincipal('secretsmanager.amazonaws.com')
+      );
       grant.applyBefore(this);
 
       props.rotationLambda.addToRolePolicy(
@@ -115,16 +120,18 @@ export class RotationSchedule extends Resource {
             'secretsmanager:PutSecretValue',
             'secretsmanager:UpdateSecretVersionStage',
           ],
-          resources: [props.secret.secretFullArn ? props.secret.secretFullArn : `${props.secret.secretArn}-??????`],
-        }),
+          resources: [
+            props.secret.secretFullArn
+              ? props.secret.secretFullArn
+              : `${props.secret.secretArn}-??????`,
+          ],
+        })
       );
       props.rotationLambda.addToRolePolicy(
         new iam.PolicyStatement({
-          actions: [
-            'secretsmanager:GetRandomPassword',
-          ],
+          actions: ['secretsmanager:GetRandomPassword'],
           resources: ['*'],
-        }),
+        })
       );
     }
 
@@ -133,10 +140,14 @@ export class RotationSchedule extends Resource {
       const automaticallyAfterMillis = props.automaticallyAfter.toMilliseconds();
       if (automaticallyAfterMillis > 0) {
         if (automaticallyAfterMillis < Duration.hours(4).toMilliseconds()) {
-          throw new Error(`automaticallyAfter must not be smaller than 4 hours, got ${props.automaticallyAfter.toHours()} hours`);
+          throw new Error(
+            `automaticallyAfter must not be smaller than 4 hours, got ${props.automaticallyAfter.toHours()} hours`
+          );
         }
         if (automaticallyAfterMillis > Duration.days(1000).toMilliseconds()) {
-          throw new Error(`automaticallyAfter must not be greater than 1000 days, got ${props.automaticallyAfter.toDays()} days`);
+          throw new Error(
+            `automaticallyAfter must not be greater than 1000 days, got ${props.automaticallyAfter.toDays()} days`
+          );
         }
         scheduleExpression = Schedule.rate(props.automaticallyAfter).expressionString;
       }
@@ -236,7 +247,11 @@ export class HostedRotation implements ec2.IConnectable {
 
   /** PostgreSQL Multi User */
   public static postgreSqlMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation(HostedRotationType.POSTGRESQL_MULTI_USER, options, options.masterSecret);
+    return new HostedRotation(
+      HostedRotationType.POSTGRESQL_MULTI_USER,
+      options,
+      options.masterSecret
+    );
   }
 
   /** Oracle Single User */
@@ -266,7 +281,11 @@ export class HostedRotation implements ec2.IConnectable {
 
   /** SQL Server Multi User */
   public static sqlServerMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation(HostedRotationType.SQLSERVER_MULTI_USER, options, options.masterSecret);
+    return new HostedRotation(
+      HostedRotationType.SQLSERVER_MULTI_USER,
+      options,
+      options.masterSecret
+    );
   }
 
   /** Redshift Single User */
@@ -276,7 +295,11 @@ export class HostedRotation implements ec2.IConnectable {
 
   /** Redshift Multi User */
   public static redshiftMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation(HostedRotationType.REDSHIFT_MULTI_USER, options, options.masterSecret);
+    return new HostedRotation(
+      HostedRotationType.REDSHIFT_MULTI_USER,
+      options,
+      options.masterSecret
+    );
   }
 
   /** MongoDB Single User */
@@ -294,7 +317,7 @@ export class HostedRotation implements ec2.IConnectable {
   private constructor(
     private readonly type: HostedRotationType,
     private readonly props: SingleUserHostedRotationOptions | MultiUserHostedRotationOptions,
-    private readonly masterSecret?: ISecret,
+    private readonly masterSecret?: ISecret
   ) {
     if (type.isMultiUser && !masterSecret) {
       throw new Error('The `masterSecret` must be specified when using the multi user scheme.');
@@ -314,9 +337,11 @@ export class HostedRotation implements ec2.IConnectable {
 
     if (this.props.vpc) {
       this._connections = new ec2.Connections({
-        securityGroups: this.props.securityGroups || [new ec2.SecurityGroup(scope, 'SecurityGroup', {
-          vpc: this.props.vpc,
-        })],
+        securityGroups: this.props.securityGroups || [
+          new ec2.SecurityGroup(scope, 'SecurityGroup', {
+            vpc: this.props.vpc,
+          }),
+        ],
       });
     }
 
@@ -328,12 +353,13 @@ export class HostedRotation implements ec2.IConnectable {
     let masterSecretArn: string | undefined;
     if (this.masterSecret?.secretFullArn) {
       masterSecretArn = this.masterSecret.secretArn;
-    } else if (this.masterSecret) { // ISecret as an imported secret with partial ARN
+    } else if (this.masterSecret) {
+      // ISecret as an imported secret with partial ARN
       masterSecretArn = this.masterSecret.secretArn + '-??????';
     }
 
     const defaultExcludeCharacters = Secret.isSecret(secret)
-      ? secret.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS
+      ? (secret.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS)
       : DEFAULT_PASSWORD_EXCLUDE_CHARS;
 
     return {
@@ -342,7 +368,9 @@ export class HostedRotation implements ec2.IConnectable {
       masterSecretArn: masterSecretArn,
       masterSecretKmsKeyArn: this.masterSecret?.encryptionKey?.keyArn,
       rotationLambdaName: this.props.functionName,
-      vpcSecurityGroupIds: this._connections?.securityGroups?.map(s => s.securityGroupId).join(','),
+      vpcSecurityGroupIds: this._connections?.securityGroups
+        ?.map((s) => s.securityGroupId)
+        .join(','),
       vpcSubnetIds: this.props.vpc?.selectSubnets(this.props.vpcSubnets).subnetIds.join(','),
       excludeCharacters: this.props.excludeCharacters ?? defaultExcludeCharacters,
     };
@@ -358,7 +386,9 @@ export class HostedRotation implements ec2.IConnectable {
 
     // If we are in a vpc and bind() has been called _connections should be defined
     if (!this._connections) {
-      throw new Error('Cannot use connections for a hosted rotation that has not been bound to a secret');
+      throw new Error(
+        'Cannot use connections for a hosted rotation that has not been bound to a secret'
+      );
     }
 
     return this._connections;
@@ -379,7 +409,10 @@ export class HostedRotationType {
   public static readonly POSTGRESQL_SINGLE_USER = new HostedRotationType('PostgreSQLSingleUser');
 
   /** PostgreSQL Multi User */
-  public static readonly POSTGRESQL_MULTI_USER = new HostedRotationType('PostgreSQLMultiUser', true);
+  public static readonly POSTGRESQL_MULTI_USER = new HostedRotationType(
+    'PostgreSQLMultiUser',
+    true
+  );
 
   /** Oracle Single User */
   public static readonly ORACLE_SINGLE_USER = new HostedRotationType('OracleSingleUser');
@@ -415,5 +448,8 @@ export class HostedRotationType {
    * @param name The type of rotation
    * @param isMultiUser Whether the rotation uses the mutli user scheme
    */
-  private constructor(public readonly name: string, public readonly isMultiUser?: boolean) {}
+  private constructor(
+    public readonly name: string,
+    public readonly isMultiUser?: boolean
+  ) {}
 }

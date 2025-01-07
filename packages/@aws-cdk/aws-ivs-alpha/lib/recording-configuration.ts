@@ -48,7 +48,7 @@ export interface RecordingConfigurationProps {
    *
    * @default - no thumbnail configuration
    */
-  readonly thumbnailConfiguration?:ThumbnailConfiguration;
+  readonly thumbnailConfiguration?: ThumbnailConfiguration;
 }
 
 /**
@@ -77,9 +77,11 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
   /**
    * Imports an IVS Recording Configuration from attributes.
    */
-  public static fromRecordingConfigurationId(scope: Construct, id: string,
-    recordingConfigurationId: string): IRecordingConfiguration {
-
+  public static fromRecordingConfigurationId(
+    scope: Construct,
+    id: string,
+    recordingConfigurationId: string
+  ): IRecordingConfiguration {
     class Import extends Resource implements IRecordingConfiguration {
       public readonly recordingConfigurationId = recordingConfigurationId;
       public readonly recordingConfigurationArn = Stack.of(this).formatArn({
@@ -95,7 +97,11 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
   /**
    * Imports an IVS Recording Configuration from its ARN
    */
-  public static fromArn(scope: Construct, id: string, recordingConfigurationArn: string): IRecordingConfiguration {
+  public static fromArn(
+    scope: Construct,
+    id: string,
+    recordingConfigurationArn: string
+  ): IRecordingConfiguration {
     const resourceParts = Fn.split('/', recordingConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 2) {
@@ -152,7 +158,9 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     this.recordingConfigurationArn = resource.attrArn;
   }
 
-  private _renderRenditionConfiguration(): CfnRecordingConfiguration.RenditionConfigurationProperty | undefined {
+  private _renderRenditionConfiguration():
+    | CfnRecordingConfiguration.RenditionConfigurationProperty
+    | undefined {
     if (!this.props.renditionConfiguration) {
       return;
     }
@@ -161,9 +169,11 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
       renditions: this.props.renditionConfiguration.renditions,
       renditionSelection: this.props.renditionConfiguration.renditionSelection,
     };
-  };
+  }
 
-  private _renderThumbnailConfiguration(): CfnRecordingConfiguration.ThumbnailConfigurationProperty | undefined {
+  private _renderThumbnailConfiguration():
+    | CfnRecordingConfiguration.ThumbnailConfigurationProperty
+    | undefined {
     if (!this.props.thumbnailConfiguration) {
       return;
     }
@@ -174,7 +184,7 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
       storage: this.props.thumbnailConfiguration.storage,
       targetIntervalSeconds: this.props.thumbnailConfiguration.targetInterval?.toSeconds(),
     };
-  };
+  }
 
   private validateRecordingConfigurationName(): undefined {
     const recordingConfigurationName = this.props.recordingConfigurationName;
@@ -184,13 +194,17 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
     }
 
     if (!/^[a-zA-Z0-9-_]*$/.test(recordingConfigurationName)) {
-      throw new Error(`\`recordingConfigurationName\` must consist only of alphanumeric characters, hyphens or underbars, got: ${recordingConfigurationName}.`);
+      throw new Error(
+        `\`recordingConfigurationName\` must consist only of alphanumeric characters, hyphens or underbars, got: ${recordingConfigurationName}.`
+      );
     }
 
     if (recordingConfigurationName.length > 128) {
-      throw new Error(`\`recordingConfigurationName\` must be less than or equal to 128 characters, got: ${recordingConfigurationName.length} characters.`);
+      throw new Error(
+        `\`recordingConfigurationName\` must be less than or equal to 128 characters, got: ${recordingConfigurationName.length} characters.`
+      );
     }
-  };
+  }
 
   private validateRecordingReconnectWindowSeconds(): undefined {
     const recordingReconnectWindow = this.props.recordingReconnectWindow;
@@ -199,12 +213,19 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
       return;
     }
 
-    if (0 < recordingReconnectWindow.toMilliseconds() && recordingReconnectWindow.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new Error(`\`recordingReconnectWindow\` must be between 0 and 300 seconds, got ${recordingReconnectWindow.toMilliseconds()} milliseconds.`);
+    if (
+      0 < recordingReconnectWindow.toMilliseconds() &&
+      recordingReconnectWindow.toMilliseconds() < Duration.seconds(1).toMilliseconds()
+    ) {
+      throw new Error(
+        `\`recordingReconnectWindow\` must be between 0 and 300 seconds, got ${recordingReconnectWindow.toMilliseconds()} milliseconds.`
+      );
     }
 
     if (recordingReconnectWindow.toSeconds() > 300) {
-      throw new Error(`\`recordingReconnectWindow\` must be between 0 and 300 seconds, got ${recordingReconnectWindow.toSeconds()} seconds.`);
+      throw new Error(
+        `\`recordingReconnectWindow\` must be between 0 and 300 seconds, got ${recordingReconnectWindow.toSeconds()} seconds.`
+      );
     }
-  };
+  }
 }

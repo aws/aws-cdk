@@ -1,6 +1,10 @@
 import { Construct } from 'constructs';
 import { SingletonPolicy } from './private/singleton-policy';
-import { CommonCloudFormationStackSetOptions, StackInstances, StackSetParameters } from './stackset-types';
+import {
+  CommonCloudFormationStackSetOptions,
+  StackInstances,
+  StackSetParameters,
+} from './stackset-types';
 import * as codepipeline from '../../../aws-codepipeline';
 import { Action } from '../action';
 import { validatePercentage } from '../common';
@@ -8,7 +12,9 @@ import { validatePercentage } from '../common';
 /**
  * Properties for the CloudFormationDeployStackInstancesAction
  */
-export interface CloudFormationDeployStackInstancesActionProps extends codepipeline.CommonAwsActionProps, CommonCloudFormationStackSetOptions {
+export interface CloudFormationDeployStackInstancesActionProps
+  extends codepipeline.CommonAwsActionProps,
+    CommonCloudFormationStackSetOptions {
   /**
    * The name of the StackSet we are adding instances to
    */
@@ -60,8 +66,8 @@ export class CloudFormationDeployStackInstancesAction extends Action {
         maxOutputs: 0,
       },
       inputs: [
-        ...props.parameterOverrides?._artifactsReferenced ?? [],
-        ...props.stackInstances?._artifactsReferenced ?? [],
+        ...(props.parameterOverrides?._artifactsReferenced ?? []),
+        ...(props.stackInstances?._artifactsReferenced ?? []),
       ],
     });
 
@@ -71,7 +77,11 @@ export class CloudFormationDeployStackInstancesAction extends Action {
     validatePercentage('maxAccountConcurrencyPercentage', props.maxAccountConcurrencyPercentage);
   }
 
-  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  protected bound(
+    scope: Construct,
+    _stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
     singletonPolicy.grantCreateUpdateStackSet(this.props);
 

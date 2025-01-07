@@ -20,16 +20,24 @@
  */
 export function renderIntrinsics(x: any): any {
   if (Array.isArray(x)) {
-    return x.filter(el => !isNoValue(el)).map(renderIntrinsics);
+    return x.filter((el) => !isNoValue(el)).map(renderIntrinsics);
   }
 
-  if (isNoValue(x)) { return undefined; }
+  if (isNoValue(x)) {
+    return undefined;
+  }
 
   const intrinsic = getIntrinsic(x);
   if (intrinsic) {
-    if (intrinsic.fn === 'Ref') { return '${' + intrinsic.args + '}'; }
-    if (intrinsic.fn === 'Fn::GetAtt') { return '${' + intrinsic.args[0] + '.' + intrinsic.args[1] + '}'; }
-    if (intrinsic.fn === 'Fn::Join') { return unCloudFormationFnJoin(intrinsic.args[0], intrinsic.args[1]); }
+    if (intrinsic.fn === 'Ref') {
+      return '${' + intrinsic.args + '}';
+    }
+    if (intrinsic.fn === 'Fn::GetAtt') {
+      return '${' + intrinsic.args[0] + '.' + intrinsic.args[1] + '}';
+    }
+    if (intrinsic.fn === 'Fn::Join') {
+      return unCloudFormationFnJoin(intrinsic.args[0], intrinsic.args[1]);
+    }
     return stringifyIntrinsic(intrinsic.fn, intrinsic.args);
   }
 
@@ -47,7 +55,10 @@ export function renderIntrinsics(x: any): any {
 
 function unCloudFormationFnJoin(separator: string, args: any) {
   if (Array.isArray(args)) {
-    return args.filter(el => !isNoValue(el)).map(renderIntrinsics).join(separator);
+    return args
+      .filter((el) => !isNoValue(el))
+      .map(renderIntrinsics)
+      .join(separator);
   }
   return stringifyIntrinsic('Fn::Join', [separator, args]);
 }
@@ -57,10 +68,16 @@ function stringifyIntrinsic(fn: string, args: any) {
 }
 
 function getIntrinsic(x: any): Intrinsic | undefined {
-  if (x === undefined || x === null || Array.isArray(x)) { return undefined; }
-  if (typeof x !== 'object') { return undefined; }
+  if (x === undefined || x === null || Array.isArray(x)) {
+    return undefined;
+  }
+  if (typeof x !== 'object') {
+    return undefined;
+  }
   const keys = Object.keys(x);
-  return keys.length === 1 && (keys[0] === 'Ref' || keys[0].startsWith('Fn::')) ? { fn: keys[0], args: x[keys[0]] } : undefined;
+  return keys.length === 1 && (keys[0] === 'Ref' || keys[0].startsWith('Fn::'))
+    ? { fn: keys[0], args: x[keys[0]] }
+    : undefined;
 }
 
 function isNoValue(x: any) {

@@ -28,7 +28,9 @@ export function checkTemplateForCyclicDependencies(template: Template): void {
         cycleResources[logicalId] = template.Resources?.[logicalId];
       }
 
-      throw new Error(`Template is undeployable, these resources have a dependency cycle: ${cycle.join(' -> ')}:\n\n${JSON.stringify(cycleResources, undefined, 2)}`);
+      throw new Error(
+        `Template is undeployable, these resources have a dependency cycle: ${cycle.join(' -> ')}:\n\n${JSON.stringify(cycleResources, undefined, 2)}`
+      );
     }
 
     for (const [logicalId, _] of free) {
@@ -41,10 +43,7 @@ export function checkTemplateForCyclicDependencies(template: Template): void {
 }
 
 function findResourceDependencies(res: Resource): Set<string> {
-  return new Set([
-    ...toArray(res.DependsOn ?? []),
-    ...findExpressionDependencies(res.Properties),
-  ]);
+  return new Set([...toArray(res.DependsOn ?? []), ...findExpressionDependencies(res.Properties)]);
 }
 
 function toArray<A>(x: A | A[]): A[] {
@@ -57,7 +56,9 @@ function findExpressionDependencies(obj: any): Set<string> {
   return ret;
 
   function recurse(x: any): void {
-    if (!x) { return; }
+    if (!x) {
+      return;
+    }
     if (Array.isArray(x)) {
       x.forEach(recurse);
     }
@@ -150,7 +151,7 @@ type SubFragment =
   | { readonly type: 'getatt'; readonly logicalId: string; readonly attr: string };
 
 function intersect<A>(xs: Set<A>, ys: Set<A>): Set<A> {
-  return new Set<A>(Array.from(xs).filter(x => ys.has(x)));
+  return new Set<A>(Array.from(xs).filter((x) => ys.has(x)));
 }
 
 /**
@@ -161,16 +162,22 @@ function intersect<A>(xs: Set<A>, ys: Set<A>): Set<A> {
 function findCycle(deps: ReadonlyMap<string, ReadonlySet<string>>): string[] {
   for (const node of deps.keys()) {
     const cycle = recurse(node, [node]);
-    if (cycle) { return cycle; }
+    if (cycle) {
+      return cycle;
+    }
   }
   throw new Error('No cycle found. Assertion failure!');
 
   function recurse(node: string, path: string[]): string[] | undefined {
     for (const dep of deps.get(node) ?? []) {
-      if (path.includes(dep)) { return [...path, dep]; }
+      if (path.includes(dep)) {
+        return [...path, dep];
+      }
 
       const cycle = recurse(dep, [...path, dep]);
-      if (cycle) { return cycle; }
+      if (cycle) {
+        return cycle;
+      }
     }
 
     return undefined;

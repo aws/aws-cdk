@@ -7,14 +7,18 @@ export class InputFormat {
    *
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/ql/io/avro/AvroContainerInputFormat.html
    */
-  public static readonly AVRO = new InputFormat('org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat');
+  public static readonly AVRO = new InputFormat(
+    'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+  );
 
   /**
    * InputFormat for Cloudtrail Logs.
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/cloudtrail.html
    */
-  public static readonly CLOUDTRAIL = new InputFormat('com.amazon.emr.cloudtrail.CloudTrailInputFormat');
+  public static readonly CLOUDTRAIL = new InputFormat(
+    'com.amazon.emr.cloudtrail.CloudTrailInputFormat'
+  );
 
   /**
    * InputFormat for Orc files.
@@ -28,7 +32,9 @@ export class InputFormat {
    *
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/ql/io/parquet/MapredParquetInputFormat.html
    */
-  public static readonly PARQUET = new InputFormat('org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat');
+  public static readonly PARQUET = new InputFormat(
+    'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'
+  );
 
   /**
    * An InputFormat for plain text files. Files are broken into lines. Either linefeed or
@@ -52,14 +58,18 @@ export class OutputFormat {
    *
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/ql/io/HiveIgnoreKeyTextOutputFormat.html
    */
-  public static readonly HIVE_IGNORE_KEY_TEXT = new OutputFormat('org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat');
+  public static readonly HIVE_IGNORE_KEY_TEXT = new OutputFormat(
+    'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+  );
 
   /**
    * OutputFormat for Avro files.
    *
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/ql/io/avro/AvroContainerOutputFormat.html
    */
-  public static readonly AVRO = new InputFormat('org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat');
+  public static readonly AVRO = new InputFormat(
+    'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+  );
 
   /**
    * OutputFormat for Orc files.
@@ -73,7 +83,9 @@ export class OutputFormat {
    *
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/ql/io/parquet/MapredParquetOutputFormat.html
    */
-  public static readonly PARQUET = new OutputFormat('org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat');
+  public static readonly PARQUET = new OutputFormat(
+    'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+  );
 
   constructor(public readonly className: string) {}
 }
@@ -87,12 +99,16 @@ export class SerializationLibrary {
   /**
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/serde2/avro/AvroSerDe.html
    */
-  public static readonly AVRO = new SerializationLibrary('org.apache.hadoop.hive.serde2.avro.AvroSerDe');
+  public static readonly AVRO = new SerializationLibrary(
+    'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+  );
 
   /**
    * @see https://docs.aws.amazon.com/athena/latest/ug/cloudtrail.html
    */
-  public static readonly CLOUDTRAIL = new SerializationLibrary('com.amazon.emr.hive.serde.CloudTrailSerde');
+  public static readonly CLOUDTRAIL = new SerializationLibrary(
+    'com.amazon.emr.hive.serde.CloudTrailSerde'
+  );
 
   /**
    * @see https://docs.aws.amazon.com/athena/latest/ug/grok.html
@@ -102,37 +118,51 @@ export class SerializationLibrary {
   /**
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hive/hcatalog/data/JsonSerDe.html
    */
-  public static readonly HIVE_JSON = new SerializationLibrary('org.apache.hive.hcatalog.data.JsonSerDe');
+  public static readonly HIVE_JSON = new SerializationLibrary(
+    'org.apache.hive.hcatalog.data.JsonSerDe'
+  );
 
   /**
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/serde2/lazy/LazySimpleSerDe.html
    */
-  public static readonly LAZY_SIMPLE = new SerializationLibrary('org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe');
+  public static readonly LAZY_SIMPLE = new SerializationLibrary(
+    'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+  );
 
   /**
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/serde2/OpenCSVSerde.html
    */
-  public static readonly OPEN_CSV = new SerializationLibrary('org.apache.hadoop.hive.serde2.OpenCSVSerde');
+  public static readonly OPEN_CSV = new SerializationLibrary(
+    'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+  );
 
   /**
    * @see https://github.com/rcongiu/Hive-JSON-Serde
    */
-  public static readonly OPENX_JSON = new SerializationLibrary('org.openx.data.jsonserde.JsonSerDe');
+  public static readonly OPENX_JSON = new SerializationLibrary(
+    'org.openx.data.jsonserde.JsonSerDe'
+  );
 
   /**
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/ql/io/orc/OrcSerde.html
    */
-  public static readonly ORC = new SerializationLibrary('org.apache.hadoop.hive.ql.io.orc.OrcSerde');
+  public static readonly ORC = new SerializationLibrary(
+    'org.apache.hadoop.hive.ql.io.orc.OrcSerde'
+  );
 
   /**
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/ql/io/parquet/serde/ParquetHiveSerDe.html
    */
-  public static readonly PARQUET = new SerializationLibrary('org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe');
+  public static readonly PARQUET = new SerializationLibrary(
+    'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+  );
 
   /**
    * @see https://svn.apache.org/repos/infra/websites/production/hive/content/javadocs/r3.1.3/api/org/apache/hadoop/hive/serde2/RegexSerDe.html
    */
-  public static readonly REGEXP = new SerializationLibrary('org.apache.hadoop.hive.serde2.RegexSerDe');
+  public static readonly REGEXP = new SerializationLibrary(
+    'org.apache.hadoop.hive.serde2.RegexSerDe'
+  );
 
   constructor(public readonly className: string) {}
 }

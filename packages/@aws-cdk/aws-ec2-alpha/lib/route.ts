@@ -1,4 +1,19 @@
-import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
+import {
+  CfnEIP,
+  CfnEgressOnlyInternetGateway,
+  CfnInternetGateway,
+  CfnNatGateway,
+  CfnVPCPeeringConnection,
+  CfnRoute,
+  CfnRouteTable,
+  CfnVPCGatewayAttachment,
+  CfnVPNGateway,
+  CfnVPNGatewayRoutePropagation,
+  GatewayVpcEndpoint,
+  IRouteTable,
+  IVpcEndpoint,
+  RouterType,
+} from 'aws-cdk-lib/aws-ec2';
 import { Construct, IDependable } from 'constructs';
 import { Annotations, Duration, IResource, Resource, Tags } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
@@ -69,14 +84,12 @@ export interface InternetGatewayProps {
    * @default - provisioned without a resource name
    */
   readonly internetGatewayName?: string;
-
 }
 
 /**
  * Properties to define a VPN gateway.
  */
 export interface VPNGatewayV2Props extends VPNGatewayV2Options {
-
   /**
    * The ID of the VPC for which to create the VPN gateway.
    */
@@ -360,11 +373,14 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
 
     // Propagate routes on route tables associated with the right subnets
     const vpnRoutePropagation = props.vpnRoutePropagation ?? [];
-    const subnets = vpnRoutePropagation.map(s => props.vpc.selectSubnets(s).subnets).flat();
+    const subnets = vpnRoutePropagation.map((s) => props.vpc.selectSubnets(s).subnets).flat();
     const routeTableIds = allRouteTableIds(subnets);
 
     if (routeTableIds.length === 0) {
-      Annotations.of(scope).addWarningV2('@aws-cdk:aws-ec2-elpha:enableVpnGatewayV2', `No subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Annotations.of(scope).addWarningV2(
+        '@aws-cdk:aws-ec2-elpha:enableVpnGatewayV2',
+        `No subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`
+      );
     }
 
     this._routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -383,7 +399,6 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
  * @resource AWS::EC2::NatGateway
  */
 export class NatGateway extends Resource implements IRouteTarget {
-
   /**
    * Id of the NatGateway
    * @attribute
@@ -471,7 +486,6 @@ export class NatGateway extends Resource implements IRouteTarget {
  * @resource AWS::EC2::VPCPeeringConnection
  */
 export class VPCPeeringConnection extends Resource implements IRouteTarget {
-
   /**
    * The type of router used in the route.
    */
@@ -504,7 +518,9 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
     const overlap = this.validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);
     if (overlap) {
-      throw new Error('CIDR block should not overlap with each other for establishing a peering connection');
+      throw new Error(
+        'CIDR block should not overlap with each other for establishing a peering connection'
+      );
     }
     if (props.vpcPeeringConnectionName) {
       Tags.of(this).add(NAME_TAG, props.vpcPeeringConnectionName);
@@ -531,20 +547,23 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
    * @internal
    */
   private validateVpcCidrOverlap(requestorVpc: IVpcV2, acceptorVpc: IVpcV2): boolean {
-
     const requestorCidrs = [requestorVpc.ipv4CidrBlock];
     const acceptorCidrs = [acceptorVpc.ipv4CidrBlock];
 
     if (requestorVpc.secondaryCidrBlock) {
-      requestorCidrs.push(...requestorVpc.secondaryCidrBlock
-        .map(block => block.cidrBlock)
-        .filter((cidr): cidr is string => cidr !== undefined));
+      requestorCidrs.push(
+        ...requestorVpc.secondaryCidrBlock
+          .map((block) => block.cidrBlock)
+          .filter((cidr): cidr is string => cidr !== undefined)
+      );
     }
 
     if (acceptorVpc.secondaryCidrBlock) {
-      acceptorCidrs.push(...acceptorVpc.secondaryCidrBlock
-        .map(block => block.cidrBlock)
-        .filter((cidr): cidr is string => cidr !== undefined));
+      acceptorCidrs.push(
+        ...acceptorVpc.secondaryCidrBlock
+          .map((block) => block.cidrBlock)
+          .filter((cidr): cidr is string => cidr !== undefined)
+      );
     }
 
     for (const requestorCidr of requestorCidrs) {
@@ -563,7 +582,6 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
 
     return false;
   }
-
 }
 
 /**
@@ -729,18 +747,26 @@ export class Route extends Resource implements IRouteV2 {
       this.destinationIpv4Cidr = props.destination;
     }
 
-    if (this.target.gateway?.routerType === RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4) {
+    if (
+      this.target.gateway?.routerType === RouterType.EGRESS_ONLY_INTERNET_GATEWAY &&
+      isDestinationIpv4
+    ) {
       throw new Error('Egress only internet gateway does not support IPv4 routing');
     }
-    this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
+    this.targetRouterType = this.target.gateway
+      ? this.target.gateway.routerType
+      : RouterType.VPC_ENDPOINT;
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it
     if (!(this.target.endpoint instanceof GatewayVpcEndpoint)) {
       this.resource = new CfnRoute(this, 'Route', {
         routeTableId: this.routeTable.routeTableId,
         destinationCidrBlock: this.destinationIpv4Cidr,
         destinationIpv6CidrBlock: this.destinationIpv6Cidr,
-        [routerTypeToPropName(this.targetRouterType)]: this.target.gateway ? this.target.gateway.routerTargetId :
-          this.target.endpoint ? this.target.endpoint.vpcEndpointId : null,
+        [routerTypeToPropName(this.targetRouterType)]: this.target.gateway
+          ? this.target.gateway.routerTargetId
+          : this.target.endpoint
+            ? this.target.endpoint.vpcEndpointId
+            : null,
       });
     }
     this.node.defaultChild = this.resource;
@@ -819,7 +845,7 @@ export class RouteTable extends Resource implements IRouteTable {
 }
 
 function routerTypeToPropName(routerType: RouterType) {
-  return ({
+  return {
     [RouterType.CARRIER_GATEWAY]: 'carrierGatewayId',
     [RouterType.EGRESS_ONLY_INTERNET_GATEWAY]: 'egressOnlyInternetGatewayId',
     [RouterType.GATEWAY]: 'gatewayId',
@@ -830,5 +856,5 @@ function routerTypeToPropName(routerType: RouterType) {
     [RouterType.TRANSIT_GATEWAY]: 'transitGatewayId',
     [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
     [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
-  })[routerType];
+  }[routerType];
 }

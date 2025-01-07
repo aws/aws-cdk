@@ -1,4 +1,3 @@
-
 /**
  * Partial and special matching during assertions.
  */
@@ -17,7 +16,9 @@ export abstract class Match {
    * The keys and their values (or matchers) must be present in the target but the target can be a superset.
    * @param pattern the pattern to match
    */
-  public static objectLike(pattern: { [key: string]: any }): { [key: string]: { [key: string]: any } } {
+  public static objectLike(pattern: { [key: string]: any }): {
+    [key: string]: { [key: string]: any };
+  } {
     return { $ObjectLike: pattern };
   }
 
@@ -32,7 +33,9 @@ export abstract class Match {
    * Matches any string-encoded JSON and applies the specified pattern after parsing it.
    * @param pattern the pattern to match after parsing the encoded JSON.
    */
-  public static serializedJson(pattern: { [key: string]: any }): { [key: string]: { [key: string]: any } } {
+  public static serializedJson(pattern: { [key: string]: any }): {
+    [key: string]: { [key: string]: any };
+  } {
     return { $SerializedJson: pattern };
   }
 }

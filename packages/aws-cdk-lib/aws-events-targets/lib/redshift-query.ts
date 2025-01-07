@@ -8,7 +8,6 @@ import * as sqs from '../../aws-sqs';
  * Configuration properties of an Amazon Redshift Query event.
  */
 export interface RedshiftQueryProps {
-
   /**
    * The Amazon Redshift database to run the query against.
    */
@@ -90,7 +89,7 @@ export class RedshiftQuery implements events.IRuleTarget {
     /**
      * The properties of the Redshift Query event
      */
-    private readonly props: RedshiftQueryProps,
+    private readonly props: RedshiftQueryProps
   ) {}
 
   bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {

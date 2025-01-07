@@ -93,14 +93,24 @@ export class BackupSelection extends Resource implements iam.IGrantable {
   constructor(scope: Construct, id: string, props: BackupSelectionProps) {
     super(scope, id);
 
-    const role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
-    });
+    const role =
+      props.role ||
+      new iam.Role(this, 'Role', {
+        assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
+      });
     if (!props.disableDefaultBackupPolicy) {
-      role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForBackup'));
+      role.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'service-role/AWSBackupServiceRolePolicyForBackup'
+        )
+      );
     }
     if (props.allowRestores) {
-      role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForRestores'));
+      role.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'service-role/AWSBackupServiceRolePolicyForRestores'
+        )
+      );
     }
     this.grantPrincipal = role;
 
@@ -109,12 +119,18 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       backupSelection: {
         iamRoleArn: role.roleArn,
         selectionName: props.backupSelectionName || this.node.id,
-        listOfTags: Lazy.any({
-          produce: () => this.listOfTags,
-        }, { omitEmptyArray: true }),
-        resources: Lazy.list({
-          produce: () => [...this.resources, ...this.backupableResourcesCollector.resources],
-        }, { omitEmpty: true }),
+        listOfTags: Lazy.any(
+          {
+            produce: () => this.listOfTags,
+          },
+          { omitEmptyArray: true }
+        ),
+        resources: Lazy.list(
+          {
+            produce: () => [...this.resources, ...this.backupableResourcesCollector.resources],
+          },
+          { omitEmpty: true }
+        ),
       },
     });
 
@@ -140,7 +156,9 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     }
 
     if (resource.construct) {
-      Aspects.of(resource.construct).add(this.backupableResourcesCollector, { priority: AspectPriority.MUTATING });
+      Aspects.of(resource.construct).add(this.backupableResourcesCollector, {
+        priority: AspectPriority.MUTATING,
+      });
       // Cannot push `this.backupableResourcesCollector.resources` to
       // `this.resources` here because it has not been evaluated yet.
       // Will be concatenated to `this.resources` in a `Lazy.list`

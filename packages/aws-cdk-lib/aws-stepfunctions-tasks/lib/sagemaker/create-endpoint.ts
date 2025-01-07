@@ -39,10 +39,17 @@ export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: SageMakerCreateEndpointProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: SageMakerCreateEndpointProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, SageMakerCreateEndpoint.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      SageMakerCreateEndpoint.SUPPORTED_INTEGRATION_PATTERNS
+    );
     this.taskPolicies = this.makePolicyStatements();
   }
 
@@ -76,14 +83,18 @@ export class SageMakerCreateEndpoint extends sfn.TaskStateBase {
             resource: 'endpoint',
             // If the endpoint name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointName) ? '*' : `${this.props.endpointName.toLowerCase()}`,
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointName)
+              ? '*'
+              : `${this.props.endpointName.toLowerCase()}`,
           }),
           stack.formatArn({
             service: 'sagemaker',
             resource: 'endpoint-config',
             // If the endpoint config name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointConfigName) ? '*' : `${this.props.endpointConfigName.toLowerCase()}`,
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointConfigName)
+              ? '*'
+              : `${this.props.endpointConfigName.toLowerCase()}`,
           }),
         ],
       }),

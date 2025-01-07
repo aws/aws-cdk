@@ -22,7 +22,10 @@ const role = new iam.Role(stack, 'Role', {
 });
 
 const mockS3Destination: firehose.IDestination = {
-  bind(_scope: constructs.Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+  bind(
+    _scope: constructs.Construct,
+    _options: firehose.DestinationBindOptions
+  ): firehose.DestinationConfig {
     const bucketGrant = bucket.grantReadWrite(role);
     return {
       extendedS3DestinationConfiguration: {
@@ -57,15 +60,20 @@ integTest.assertions.awsApiCall('Kinesis', 'putRecord', {
   PartitionKey: '1',
 });
 
-const s3ApiCall = integTest.assertions.awsApiCall('S3', 'listObjectsV2', {
-  Bucket: bucket.bucketName,
-  MaxKeys: 1,
-}).expect(ExpectedResult.objectLike({
-  KeyCount: 1,
-})).waitForAssertions({
-  interval: cdk.Duration.seconds(30),
-  totalTimeout: cdk.Duration.minutes(10),
-});
+const s3ApiCall = integTest.assertions
+  .awsApiCall('S3', 'listObjectsV2', {
+    Bucket: bucket.bucketName,
+    MaxKeys: 1,
+  })
+  .expect(
+    ExpectedResult.objectLike({
+      KeyCount: 1,
+    })
+  )
+  .waitForAssertions({
+    interval: cdk.Duration.seconds(30),
+    totalTimeout: cdk.Duration.minutes(10),
+  });
 
 if (s3ApiCall instanceof AwsApiCall && s3ApiCall.waiterProvider) {
   s3ApiCall.waiterProvider.addToRolePolicy({

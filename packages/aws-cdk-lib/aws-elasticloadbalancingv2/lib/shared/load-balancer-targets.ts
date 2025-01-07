@@ -1,6 +1,9 @@
 import { ITargetGroup, LoadBalancerTargetProps } from './base-target-group';
 import { TargetType } from './enums';
-import { IApplicationLoadBalancerTarget, IApplicationTargetGroup } from '../alb/application-target-group';
+import {
+  IApplicationLoadBalancerTarget,
+  IApplicationTargetGroup,
+} from '../alb/application-target-group';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup } from '../nlb/network-target-group';
 
 /**
@@ -18,8 +21,10 @@ export class InstanceTarget implements IApplicationLoadBalancerTarget, INetworkL
    * @param instanceId Instance ID of the instance to register to
    * @param port Override the default port for the target group
    */
-  constructor(private readonly instanceId: string, private readonly port?: number) {
-  }
+  constructor(
+    private readonly instanceId: string,
+    private readonly port?: number
+  ) {}
 
   /**
    * Register this instance target with a load balancer
@@ -27,7 +32,9 @@ export class InstanceTarget implements IApplicationLoadBalancerTarget, INetworkL
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(targetGroup: IApplicationTargetGroup): LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(
+    targetGroup: IApplicationTargetGroup
+  ): LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 
@@ -85,8 +92,11 @@ export class IpTarget implements IApplicationLoadBalancerTarget, INetworkLoadBal
    * @param port Override the group's default port
    * @param availabilityZone Availability zone to send traffic from
    */
-  constructor(private readonly ipAddress: string, private readonly port?: number, private readonly availabilityZone?: string) {
-  }
+  constructor(
+    private readonly ipAddress: string,
+    private readonly port?: number,
+    private readonly availabilityZone?: string
+  ) {}
 
   /**
    * Register this instance target with a load balancer
@@ -94,7 +104,9 @@ export class IpTarget implements IApplicationLoadBalancerTarget, INetworkLoadBal
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(targetGroup: IApplicationTargetGroup): LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(
+    targetGroup: IApplicationTargetGroup
+  ): LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 

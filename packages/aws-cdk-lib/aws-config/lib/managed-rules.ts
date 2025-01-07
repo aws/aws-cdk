@@ -30,11 +30,11 @@ export class AccessKeysRotated extends ManagedRule {
       ...props,
       identifier: ManagedRuleIdentifiers.ACCESS_KEYS_ROTATED,
       inputParameters: {
-        ...props.maxAge
+        ...(props.maxAge
           ? {
-            maxAccessKeyAge: props.maxAge.toDays(),
-          }
-          : {},
+              maxAccessKeyAge: props.maxAge.toDays(),
+            }
+          : {}),
       },
     });
   }
@@ -73,7 +73,11 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
 export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
   private readonly role: iam.IRole;
 
-  constructor(scope: Construct, id: string, props: CloudFormationStackDriftDetectionCheckProps = {}) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: CloudFormationStackDriftDetectionCheckProps = {}
+  ) {
     super(scope, id, {
       ...props,
       identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK,
@@ -82,14 +86,17 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       },
     });
 
-    this.ruleScope = RuleScope.fromResource( ResourceType.CLOUDFORMATION_STACK, props.ownStackOnly ? Stack.of(this).stackId : undefined );
+    this.ruleScope = RuleScope.fromResource(
+      ResourceType.CLOUDFORMATION_STACK,
+      props.ownStackOnly ? Stack.of(this).stackId : undefined
+    );
 
-    this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'),
-      ],
-    });
+    this.role =
+      props.role ||
+      new iam.Role(this, 'Role', {
+        assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess')],
+      });
   }
 }
 
@@ -122,10 +129,12 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
     super(scope, id, {
       ...props,
       identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_NOTIFICATION_CHECK,
-      inputParameters: props.topics && props.topics.reduce(
-        (params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.topicArn }),
-        {},
-      ),
+      inputParameters:
+        props.topics &&
+        props.topics.reduce(
+          (params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.topicArn }),
+          {}
+        ),
       ruleScope: RuleScope.fromResources([ResourceType.CLOUDFORMATION_STACK]),
     });
   }

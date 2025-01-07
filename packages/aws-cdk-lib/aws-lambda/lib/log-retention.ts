@@ -4,16 +4,14 @@ import * as logs from '../../aws-logs';
 /**
  * Retry options for all AWS API calls.
  */
-export interface LogRetentionRetryOptions extends logs.LogRetentionRetryOptions {
-}
+export interface LogRetentionRetryOptions extends logs.LogRetentionRetryOptions {}
 
 /**
  * Construction properties for a LogRetention.
  *
  * @deprecated use `LogRetentionProps` from 'aws-cdk-lib/aws-logs' instead
  */
-export interface LogRetentionProps extends logs.LogRetentionProps {
-}
+export interface LogRetentionProps extends logs.LogRetentionProps {}
 
 /**
  * Creates a custom resource to control the retention policy of a CloudWatch Logs

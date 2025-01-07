@@ -185,7 +185,13 @@ export class Build extends BuildBase {
   /**
    * Create a new Build from s3 content
    */
-  static fromBucket(scope: Construct, id: string, bucket: s3.IBucket, key: string, objectVersion?: string) {
+  static fromBucket(
+    scope: Construct,
+    id: string,
+    bucket: s3.IBucket,
+    key: string,
+    objectVersion?: string
+  ) {
     return new Build(scope, id, {
       content: Content.fromBucket(bucket, key, objectVersion),
     });
@@ -221,19 +227,22 @@ export class Build extends BuildBase {
     if (!attrs.buildId && !attrs.buildArn) {
       throw new Error('Either buildId or buildArn must be provided in BuildAttributes');
     }
-    const buildId = attrs.buildId ??
+    const buildId =
+      attrs.buildId ??
       cdk.Stack.of(scope).splitArn(attrs.buildArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!buildId) {
       throw new Error(`No build identifier found in ARN: '${attrs.buildArn}'`);
     }
 
-    const buildArn = attrs.buildArn ?? cdk.Stack.of(scope).formatArn({
-      service: 'gamelift',
-      resource: 'build',
-      resourceName: attrs.buildId,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    });
+    const buildArn =
+      attrs.buildArn ??
+      cdk.Stack.of(scope).formatArn({
+        service: 'gamelift',
+        resource: 'build',
+        resourceName: attrs.buildId,
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      });
     class Import extends BuildBase {
       public readonly buildId = buildId!;
       public readonly buildArn = buildArn;
@@ -276,15 +285,19 @@ export class Build extends BuildBase {
 
     if (props.buildName && !cdk.Token.isUnresolved(props.buildName)) {
       if (props.buildName.length > 1024) {
-        throw new Error(`Build name can not be longer than 1024 characters but has ${props.buildName.length} characters.`);
+        throw new Error(
+          `Build name can not be longer than 1024 characters but has ${props.buildName.length} characters.`
+        );
       }
     }
 
     this.validateServerSdkVersion(props.serverSdkVersion);
 
-    this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
-    });
+    this.role =
+      props.role ??
+      new iam.Role(this, 'ServiceRole', {
+        assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
+      });
     this.grantPrincipal = this.role;
     const content = props.content.bind(this, this.role);
 
@@ -318,7 +331,9 @@ export class Build extends BuildBase {
       throw new Error(`serverSdkVersion must be in the 0.0.0 format, got \'${serverSdkVersion}\'.`);
     }
     if (serverSdkVersion.length > 128) {
-      throw new Error(`serverSdkVersion length must be smaller than or equal to 128, got ${serverSdkVersion.length}.`);
+      throw new Error(
+        `serverSdkVersion length must be smaller than or equal to 128, got ${serverSdkVersion.length}.`
+      );
     }
   }
 }

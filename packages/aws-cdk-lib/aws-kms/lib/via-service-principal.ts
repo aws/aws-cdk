@@ -6,7 +6,10 @@ import * as iam from '../../aws-iam';
 export class ViaServicePrincipal extends iam.PrincipalBase {
   private readonly basePrincipal: iam.IPrincipal;
 
-  constructor(private readonly serviceName: string, basePrincipal?: iam.IPrincipal) {
+  constructor(
+    private readonly serviceName: string,
+    basePrincipal?: iam.IPrincipal
+  ) {
     super();
     this.basePrincipal = basePrincipal ? basePrincipal : new iam.AnyPrincipal();
   }
@@ -17,7 +20,10 @@ export class ViaServicePrincipal extends iam.PrincipalBase {
     const conditions = Object.assign({}, base.conditions);
 
     if (conditions.StringEquals) {
-      conditions.StringEquals = Object.assign({ 'kms:ViaService': this.serviceName }, conditions.StringEquals);
+      conditions.StringEquals = Object.assign(
+        { 'kms:ViaService': this.serviceName },
+        conditions.StringEquals
+      );
     } else {
       conditions.StringEquals = { 'kms:ViaService': this.serviceName };
     }

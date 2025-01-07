@@ -1,9 +1,27 @@
 import { randomUUID } from 'crypto';
-import { DeliveryStream, DestinationBindOptions, DestinationConfig, IDestination } from '@aws-cdk/aws-kinesisfirehose-alpha';
+import {
+  DeliveryStream,
+  DestinationBindOptions,
+  DestinationConfig,
+  IDestination,
+} from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CloudwatchLogsLogDestination, FirehoseLogDestination, IPipe, ISource, ITarget, IncludeExecutionData, InputTransformation, LogLevel, Pipe, S3LogDestination, SourceConfig, TargetConfig } from '../lib';
+import {
+  CloudwatchLogsLogDestination,
+  FirehoseLogDestination,
+  IPipe,
+  ISource,
+  ITarget,
+  IncludeExecutionData,
+  InputTransformation,
+  LogLevel,
+  Pipe,
+  S3LogDestination,
+  SourceConfig,
+  TargetConfig,
+} from '../lib';
 import { name } from '../package.json';
 
 const app = new cdk.App();
@@ -15,7 +33,9 @@ const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 // be replaced with SqsSource from @aws-cdk/aws-pipes-sources-alpha and
 // SqsTarget from @aws-cdk/aws-pipes-targets-alpha
 if (!name.endsWith('-alpha')) {
-  throw new Error('aws-pipes has exited alpha, TestSource and TestTarget should now be replaced with SqsSource and SqsTarget');
+  throw new Error(
+    'aws-pipes has exited alpha, TestSource and TestTarget should now be replaced with SqsSource and SqsTarget'
+  );
 }
 
 class TestSource implements ISource {
@@ -115,13 +135,20 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: uniqueIdentifier,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
-  QueueUrl: targetQueue.queueUrl,
-})).expect(ExpectedResult.objectLike({
-  Messages: [{ Body: uniqueIdentifier }],
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(1),
-  interval: cdk.Duration.seconds(15),
-});
+putMessageOnQueue
+  .next(
+    test.assertions.awsApiCall('SQS', 'receiveMessage', {
+      QueueUrl: targetQueue.queueUrl,
+    })
+  )
+  .expect(
+    ExpectedResult.objectLike({
+      Messages: [{ Body: uniqueIdentifier }],
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(1),
+    interval: cdk.Duration.seconds(15),
+  });
 
 app.synth();

@@ -88,7 +88,11 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
   /**
    * Import an exported receipt rule set.
    */
-  public static fromReceiptRuleSetName(scope: Construct, id: string, receiptRuleSetName: string): IReceiptRuleSet {
+  public static fromReceiptRuleSetName(
+    scope: Construct,
+    id: string,
+    receiptRuleSetName: string
+  ): IReceiptRuleSet {
     class Import extends ReceiptRuleSetBase implements IReceiptRuleSet {
       public readonly receiptRuleSetName = receiptRuleSetName;
     }

@@ -19,19 +19,23 @@ class TestStack extends cdk.Stack {
     const fleet = new gamelift.BuildFleet(this, 'BuildFleet', {
       fleetName: 'test-fleet',
       content: build,
-      ingressRules: [{
-        source: gamelift.Peer.anyIpv4(),
-        port: gamelift.Port.tcp(1935),
-      }],
+      ingressRules: [
+        {
+          source: gamelift.Peer.anyIpv4(),
+          port: gamelift.Port.tcp(1935),
+        },
+      ],
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
       runtimeConfiguration: {
         gameSessionActivationTimeout: Duration.seconds(300),
         maxConcurrentGameSessionActivations: 1,
-        serverProcesses: [{
-          launchPath: '/local/game/TestApplicationServer',
-          parameters: 'port:1935 gameSessionLengthSeconds:20',
-          concurrentExecutions: 1,
-        }],
+        serverProcesses: [
+          {
+            launchPath: '/local/game/TestApplicationServer',
+            parameters: 'port:1935 gameSessionLengthSeconds:20',
+            concurrentExecutions: 1,
+          },
+        ],
       },
     });
     const alias = fleet.addAlias('live');
@@ -44,15 +48,14 @@ class TestStack extends cdk.Stack {
       allowedLocations: ['eu-west-1', 'eu-west-2'],
       destinations: [fleet],
       notificationTarget: topic,
-      playerLatencyPolicies: [{
-        maximumIndividualPlayerLatency: cdk.Duration.millis(100),
-        policyDuration: cdk.Duration.seconds(300),
-      }],
+      playerLatencyPolicies: [
+        {
+          maximumIndividualPlayerLatency: cdk.Duration.millis(100),
+          policyDuration: cdk.Duration.seconds(300),
+        },
+      ],
       priorityConfiguration: {
-        locationOrder: [
-          'eu-west-1',
-          'eu-west-2',
-        ],
+        locationOrder: ['eu-west-1', 'eu-west-2'],
         priorityOrder: [
           gamelift.PriorityType.LATENCY,
           gamelift.PriorityType.COST,

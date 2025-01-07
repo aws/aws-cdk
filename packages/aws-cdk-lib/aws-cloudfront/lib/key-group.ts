@@ -42,12 +42,11 @@ export interface KeyGroupProps {
  * @resource AWS::CloudFront::KeyGroup
  */
 export class KeyGroup extends Resource implements IKeyGroup {
-
   /** Imports a Key Group from its id. */
   public static fromKeyGroupId(scope: Construct, id: string, keyGroupId: string): IKeyGroup {
-    return new class extends Resource implements IKeyGroup {
+    return new (class extends Resource implements IKeyGroup {
       public readonly keyGroupId = keyGroupId;
-    }(scope, id);
+    })(scope, id);
   }
   public readonly keyGroupId: string;
 
@@ -58,7 +57,7 @@ export class KeyGroup extends Resource implements IKeyGroup {
       keyGroupConfig: {
         name: props.keyGroupName ?? this.generateName(),
         comment: props.comment,
-        items: props.items.map(key => key.publicKeyId),
+        items: props.items.map((key) => key.publicKeyId),
       },
     });
 

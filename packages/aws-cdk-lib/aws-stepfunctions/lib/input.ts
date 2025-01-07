@@ -67,7 +67,10 @@ export class TaskInput {
    * @param value payload for the corresponding input type.
    * It can be a JSON-encoded object, context, data, etc.
    */
-  private constructor(public readonly type: InputType, public readonly value: any) {}
+  private constructor(
+    public readonly type: InputType,
+    public readonly value: any
+  ) {}
 }
 
 /**

@@ -1,4 +1,11 @@
-import { DefaultTokenResolver, IResolveContext, Stack, StringConcat, Token, Tokenization } from 'aws-cdk-lib';
+import {
+  DefaultTokenResolver,
+  IResolveContext,
+  Stack,
+  StringConcat,
+  Token,
+  Tokenization,
+} from 'aws-cdk-lib';
 import { ISchedule } from './schedule';
 
 /**
@@ -25,8 +32,7 @@ export abstract class ScheduleTargetInput {
     return new FieldAwareEventInput(obj, true);
   }
 
-  protected constructor() {
-  }
+  protected constructor() {}
 
   /**
    * Return the input properties for this input object
@@ -35,7 +41,10 @@ export abstract class ScheduleTargetInput {
 }
 
 class FieldAwareEventInput extends ScheduleTargetInput {
-  constructor(private readonly input: any, private readonly toJsonString: boolean) {
+  constructor(
+    private readonly input: any,
+    private readonly toJsonString: boolean
+  ) {
     super();
   }
 
@@ -106,8 +115,7 @@ export class ContextAttribute {
     return new ContextAttribute(name).toString();
   }
 
-  private constructor(public readonly name: string) {
-  }
+  private constructor(public readonly name: string) {}
 
   /**
    * Convert the path to the field in the event pattern to JSON

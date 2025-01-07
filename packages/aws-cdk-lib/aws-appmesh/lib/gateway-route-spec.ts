@@ -47,9 +47,7 @@ export abstract class GatewayRouteHostnameMatch {
 }
 
 class GatewayRouteHostnameMatchImpl extends GatewayRouteHostnameMatch {
-  constructor(
-    private readonly matchProperty: CfnGatewayRoute.GatewayRouteHostnameMatchProperty,
-  ) {
+  constructor(private readonly matchProperty: CfnGatewayRoute.GatewayRouteHostnameMatchProperty) {
     super();
   }
 
@@ -302,7 +300,9 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
-    const pathMatchConfig = (this.match?.path ?? HttpGatewayRoutePathMatch.startsWith('/')).bind(scope);
+    const pathMatchConfig = (this.match?.path ?? HttpGatewayRoutePathMatch.startsWith('/')).bind(
+      scope
+    );
     const rewriteRequestHostname = this.match?.rewriteRequestHostname;
 
     const prefixPathRewrite = pathMatchConfig.prefixPathRewrite;
@@ -314,8 +314,10 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
         path: pathMatchConfig.wholePathMatch,
         hostname: this.match?.hostname?.bind(scope).hostnameMatch,
         method: this.match?.method,
-        headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
-        queryParameters: this.match?.queryParameters?.map(queryParameter => queryParameter.bind(scope).queryParameterMatch),
+        headers: this.match?.headers?.map((header) => header.bind(scope).headerMatch),
+        queryParameters: this.match?.queryParameters?.map(
+          (queryParameter) => queryParameter.bind(scope).queryParameterMatch
+        ),
         port: this.match?.port,
       },
       action: {
@@ -324,17 +326,19 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
         },
-        rewrite: rewriteRequestHostname !== undefined || prefixPathRewrite || wholePathRewrite
-          ? {
-            hostname: rewriteRequestHostname === undefined
-              ? undefined
-              : {
-                defaultTargetHostname: rewriteRequestHostname? 'ENABLED' : 'DISABLED',
-              },
-            prefix: prefixPathRewrite,
-            path: wholePathRewrite,
-          }
-          : undefined,
+        rewrite:
+          rewriteRequestHostname !== undefined || prefixPathRewrite || wholePathRewrite
+            ? {
+                hostname:
+                  rewriteRequestHostname === undefined
+                    ? undefined
+                    : {
+                        defaultTargetHostname: rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
+                      },
+                prefix: prefixPathRewrite,
+                path: wholePathRewrite,
+              }
+            : undefined,
       },
     };
     return {
@@ -373,7 +377,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
           serviceName: this.match.serviceName,
           hostname: this.match.hostname?.bind(scope).hostnameMatch,
           port: this.match.port,
-          metadata: metadataMatch?.map(metadata => metadata.bind(scope).headerMatch),
+          metadata: metadataMatch?.map((metadata) => metadata.bind(scope).headerMatch),
         },
         action: {
           target: {
@@ -381,13 +385,16 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
               virtualServiceName: this.routeTarget.virtualServiceName,
             },
           },
-          rewrite: this.match.rewriteRequestHostname === undefined
-            ? undefined
-            : {
-              hostname: {
-                defaultTargetHostname: this.match.rewriteRequestHostname ? 'ENABLED' : 'DISABLED',
-              },
-            },
+          rewrite:
+            this.match.rewriteRequestHostname === undefined
+              ? undefined
+              : {
+                  hostname: {
+                    defaultTargetHostname: this.match.rewriteRequestHostname
+                      ? 'ENABLED'
+                      : 'DISABLED',
+                  },
+                },
         },
       },
       priority: this.priority,

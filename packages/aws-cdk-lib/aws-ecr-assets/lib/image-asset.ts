@@ -3,7 +3,18 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { FingerprintOptions, FollowMode, IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
-import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '../../core';
+import {
+  Annotations,
+  AssetStaging,
+  FeatureFlags,
+  FileFingerprintOptions,
+  IgnoreMode,
+  Stack,
+  SymlinkFollowMode,
+  Token,
+  Stage,
+  CfnResource,
+} from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -47,7 +58,7 @@ export class NetworkMode {
   /**
    * @param mode The networking mode to use for docker build
    */
-  private constructor(public readonly mode: string) { }
+  private constructor(public readonly mode: string) {}
 }
 
 /**
@@ -77,7 +88,7 @@ export class Platform {
   /**
    * @param platform The platform to use for docker build
    */
-  private constructor(public readonly platform: string) { }
+  private constructor(public readonly platform: string) {}
 }
 
 /**
@@ -446,7 +457,8 @@ export class DockerImageAsset extends Construct implements IAsset {
     }
 
     const defaultIgnoreMode = FeatureFlags.of(this).isEnabled(cxapi.DOCKER_IGNORE_SUPPORT)
-      ? IgnoreMode.DOCKER : IgnoreMode.GLOB;
+      ? IgnoreMode.DOCKER
+      : IgnoreMode.GLOB;
     let ignoreMode = props.ignoreMode ?? defaultIgnoreMode;
 
     let exclude: string[] = props.exclude || [];
@@ -454,7 +466,11 @@ export class DockerImageAsset extends Construct implements IAsset {
     const ignore = path.join(dir, '.dockerignore');
 
     if (fs.existsSync(ignore)) {
-      const dockerIgnorePatterns = fs.readFileSync(ignore).toString().split('\n').filter(e => !!e);
+      const dockerIgnorePatterns = fs
+        .readFileSync(ignore)
+        .toString()
+        .split('\n')
+        .filter((e) => !!e);
 
       exclude = [
         ...dockerIgnorePatterns,
@@ -472,21 +488,44 @@ export class DockerImageAsset extends Construct implements IAsset {
     exclude.push(cdkout);
 
     if (props.repositoryName) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr-assets:repositoryNameDeprecated', 'DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecr-assets:repositoryNameDeprecated',
+        'DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations'
+      );
     }
 
     // include build context in "extra" so it will impact the hash
     const extraHash: { [field: string]: any } = {};
-    if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
-    if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
-    if (props.invalidation?.buildSecrets !== false && props.buildSecrets) { extraHash.buildSecrets = props.buildSecrets; }
-    if (props.invalidation?.buildSsh !== false && props.buildSsh) {extraHash.buildSsh = props.buildSsh; }
-    if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
-    if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
-    if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
-    if (props.invalidation?.networkMode !== false && props.networkMode) { extraHash.networkMode = props.networkMode; }
-    if (props.invalidation?.platform !== false && props.platform) { extraHash.platform = props.platform; }
-    if (props.invalidation?.outputs !== false && props.outputs) { extraHash.outputs = props.outputs; }
+    if (props.invalidation?.extraHash !== false && props.extraHash) {
+      extraHash.user = props.extraHash;
+    }
+    if (props.invalidation?.buildArgs !== false && props.buildArgs) {
+      extraHash.buildArgs = props.buildArgs;
+    }
+    if (props.invalidation?.buildSecrets !== false && props.buildSecrets) {
+      extraHash.buildSecrets = props.buildSecrets;
+    }
+    if (props.invalidation?.buildSsh !== false && props.buildSsh) {
+      extraHash.buildSsh = props.buildSsh;
+    }
+    if (props.invalidation?.target !== false && props.target) {
+      extraHash.target = props.target;
+    }
+    if (props.invalidation?.file !== false && props.file) {
+      extraHash.file = props.file;
+    }
+    if (props.invalidation?.repositoryName !== false && props.repositoryName) {
+      extraHash.repositoryName = props.repositoryName;
+    }
+    if (props.invalidation?.networkMode !== false && props.networkMode) {
+      extraHash.networkMode = props.networkMode;
+    }
+    if (props.invalidation?.platform !== false && props.platform) {
+      extraHash.platform = props.platform;
+    }
+    if (props.invalidation?.outputs !== false && props.outputs) {
+      extraHash.outputs = props.outputs;
+    }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the
@@ -499,9 +538,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       exclude,
       ignoreMode,
       sourcePath: dir,
-      extraHash: Object.keys(extraHash).length === 0
-        ? undefined
-        : JSON.stringify(extraHash),
+      extraHash: Object.keys(extraHash).length === 0 ? undefined : JSON.stringify(extraHash),
     });
 
     this.assetHash = staging.assetHash;
@@ -536,7 +573,11 @@ export class DockerImageAsset extends Construct implements IAsset {
       dockerCacheDisabled: this.dockerCacheDisabled,
     });
 
-    this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
+    this.repository = ecr.Repository.fromRepositoryName(
+      this,
+      'Repository',
+      location.repositoryName
+    );
     this.imageUri = location.imageUri;
     this.imageTag = location.imageTag ?? this.assetHash;
   }
@@ -566,24 +607,34 @@ export class DockerImageAsset extends Construct implements IAsset {
     // in order to enable local invocation of this function.
     resource.cfnOptions.metadata = resource.cfnOptions.metadata || {};
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] = this.dockerBuildArgs;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY] = this.dockerBuildSecrets;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY] = this.dockerBuildSsh;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] =
+      this.dockerfilePath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] =
+      this.dockerBuildArgs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SECRETS_KEY] =
+      this.dockerBuildSecrets;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY] =
+      this.dockerBuildSsh;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] =
+      this.dockerBuildTarget;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] = this.dockerOutputs;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY] = this.dockerCacheFrom;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY] = this.dockerCacheTo;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_DISABLED_KEY] = this.dockerCacheDisabled;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] =
+      this.dockerOutputs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY] =
+      this.dockerCacheFrom;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY] =
+      this.dockerCacheTo;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_DISABLED_KEY] =
+      this.dockerCacheDisabled;
   }
-
 }
 
 function validateProps(props: DockerImageAssetProps) {
   for (const [key, value] of Object.entries(props)) {
     if (Token.isUnresolved(value)) {
-      throw new Error(`Cannot use Token as value of '${key}': this value is used before deployment starts`);
+      throw new Error(
+        `Cannot use Token as value of '${key}': this value is used before deployment starts`
+      );
     }
   }
 
@@ -594,7 +645,9 @@ function validateProps(props: DockerImageAssetProps) {
 function validateBuildProps(buildPropName: string, buildProps?: { [key: string]: string }) {
   for (const [key, value] of Object.entries(buildProps || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
-      throw new Error(`Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`);
+      throw new Error(
+        `Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`
+      );
     }
   }
 }
@@ -609,10 +662,15 @@ function validateBuildSecrets(buildSecrets?: { [key: string]: string }) {
 
 function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefined {
   switch (follow) {
-    case undefined: return undefined;
-    case FollowMode.NEVER: return SymlinkFollowMode.NEVER;
-    case FollowMode.ALWAYS: return SymlinkFollowMode.ALWAYS;
-    case FollowMode.BLOCK_EXTERNAL: return SymlinkFollowMode.BLOCK_EXTERNAL;
-    case FollowMode.EXTERNAL: return SymlinkFollowMode.EXTERNAL;
+    case undefined:
+      return undefined;
+    case FollowMode.NEVER:
+      return SymlinkFollowMode.NEVER;
+    case FollowMode.ALWAYS:
+      return SymlinkFollowMode.ALWAYS;
+    case FollowMode.BLOCK_EXTERNAL:
+      return SymlinkFollowMode.BLOCK_EXTERNAL;
+    case FollowMode.EXTERNAL:
+      return SymlinkFollowMode.EXTERNAL;
   }
 }

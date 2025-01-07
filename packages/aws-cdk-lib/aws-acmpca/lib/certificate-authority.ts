@@ -22,12 +22,15 @@ export class CertificateAuthority {
   /**
    * Import an existing Certificate given an ARN
    */
-  public static fromCertificateAuthorityArn(scope: Construct, id: string, certificateAuthorityArn: string): ICertificateAuthority {
-    return new class extends cdk.Resource implements ICertificateAuthority {
+  public static fromCertificateAuthorityArn(
+    scope: Construct,
+    id: string,
+    certificateAuthorityArn: string
+  ): ICertificateAuthority {
+    return new (class extends cdk.Resource implements ICertificateAuthority {
       readonly certificateAuthorityArn = certificateAuthorityArn;
-    }(scope, id);
+    })(scope, id);
   }
 
-  private constructor() {
-  }
+  private constructor() {}
 }

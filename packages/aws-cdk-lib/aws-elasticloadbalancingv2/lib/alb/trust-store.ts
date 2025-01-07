@@ -24,7 +24,6 @@ export interface ITrustStore extends IResource {
  * Properties used for the Trust Store
  */
 export interface TrustStoreProps {
-
   /**
    * The name of the trust store
    *
@@ -58,7 +57,11 @@ export class TrustStore extends Resource implements ITrustStore {
   /**
    * Import from ARN
    */
-  public static fromTrustStoreArn(scope: Construct, id: string, trustStoreArn: string): ITrustStore {
+  public static fromTrustStoreArn(
+    scope: Construct,
+    id: string,
+    trustStoreArn: string
+  ): ITrustStore {
     const resourceParts = Fn.split('/', trustStoreArn);
 
     const trustStoreName = Fn.select(0, resourceParts);
@@ -100,21 +103,23 @@ export class TrustStore extends Resource implements ITrustStore {
 
   constructor(scope: Construct, id: string, props: TrustStoreProps) {
     super(scope, id, {
-      physicalName: props.trustStoreName ?? Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 32 }),
-      }),
+      physicalName:
+        props.trustStoreName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 32 }),
+        }),
     });
 
     if (props.trustStoreName !== undefined && !Token.isUnresolved(props.trustStoreName)) {
-
       if (props.trustStoreName.length < 1 || props.trustStoreName.length > 32) {
         throw new Error(`trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`);
       }
       const validNameRegex = /^([a-zA-Z0-9]+-)*[a-zA-Z0-9]+$/;
       if (!validNameRegex.test(props.trustStoreName)) {
-        throw new Error(`trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`);
+        throw new Error(
+          `trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`
+        );
       }
-
     }
 
     const resource = new CfnTrustStore(this, 'Resource', {

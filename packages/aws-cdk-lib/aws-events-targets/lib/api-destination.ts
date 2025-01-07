@@ -1,4 +1,9 @@
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import {
+  addToDeadLetterQueueResourcePolicy,
+  bindBaseTargetConfig,
+  singletonEventRole,
+  TargetBaseProps,
+} from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 
@@ -61,8 +66,8 @@ export interface ApiDestinationProps extends TargetBaseProps {
 export class ApiDestination implements events.IRuleTarget {
   constructor(
     private readonly apiDestination: events.IApiDestination,
-    private readonly props: ApiDestinationProps = {},
-  ) { }
+    private readonly props: ApiDestinationProps = {}
+  ) {}
 
   /**
    * Returns a RuleTarget that can be used to trigger API destinations
@@ -70,24 +75,27 @@ export class ApiDestination implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const httpParameters: events.CfnRule.HttpParametersProperty | undefined =
-      this.props.headerParameters ??
+      (this.props.headerParameters ??
       this.props.pathParameterValues ??
-      this.props.queryStringParameters
+      this.props.queryStringParameters)
         ? {
-          headerParameters: this.props.headerParameters,
-          pathParameterValues: this.props.pathParameterValues,
-          queryStringParameters: this.props.queryStringParameters,
-        } : undefined;
+            headerParameters: this.props.headerParameters,
+            pathParameterValues: this.props.pathParameterValues,
+            queryStringParameters: this.props.queryStringParameters,
+          }
+        : undefined;
 
     if (this.props?.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
     }
 
     const role = this.props?.eventRole ?? singletonEventRole(this.apiDestination);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.apiDestination.apiDestinationArn],
-      actions: ['events:InvokeApiDestination'],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        resources: [this.apiDestination.apiDestinationArn],
+        actions: ['events:InvokeApiDestination'],
+      })
+    );
 
     return {
       ...(this.props ? bindBaseTargetConfig(this.props) : {}),

@@ -63,7 +63,10 @@ export class FirehosePutRecordAction implements iot.IAction {
    * @param stream The Kinesis Data Firehose stream to which to put records.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly stream: firehose.IDeliveryStream, props: FirehosePutRecordActionProps = {}) {
+  constructor(
+    private readonly stream: firehose.IDeliveryStream,
+    props: FirehosePutRecordActionProps = {}
+  ) {
     this.batchMode = props.batchMode;
     this.recordSeparator = props.recordSeparator;
     this.role = props.role;

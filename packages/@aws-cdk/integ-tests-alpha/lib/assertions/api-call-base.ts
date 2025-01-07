@@ -131,7 +131,6 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
-
   }
 
   public getAtt(attributeName: string): Reference {
@@ -158,5 +157,5 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
     return next;
   }
 
-  public abstract waitForAssertions(options?: WaiterStateMachineOptions): IApiCall
+  public abstract waitForAssertions(options?: WaiterStateMachineOptions): IApiCall;
 }

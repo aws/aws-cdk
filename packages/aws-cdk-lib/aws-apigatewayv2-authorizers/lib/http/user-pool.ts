@@ -1,4 +1,10 @@
-import { HttpAuthorizer, HttpAuthorizerType, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from '../../../aws-apigatewayv2';
+import {
+  HttpAuthorizer,
+  HttpAuthorizerType,
+  HttpRouteAuthorizerBindOptions,
+  HttpRouteAuthorizerConfig,
+  IHttpRouteAuthorizer,
+} from '../../../aws-apigatewayv2';
 import { IUserPool, IUserPoolClient } from '../../../aws-cognito';
 import { Stack } from '../../../core';
 
@@ -51,17 +57,15 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
   constructor(
     private readonly id: string,
     private readonly pool: IUserPool,
-    private readonly props: HttpUserPoolAuthorizerProps = {}) {
-  }
+    private readonly props: HttpUserPoolAuthorizerProps = {}
+  ) {}
 
   /**
    * Return the id of the authorizer if it's been constructed
    */
   public get authorizerId(): string {
     if (!this.authorizer) {
-      throw new Error(
-        'Cannot access authorizerId until authorizer is attached to a HttpRoute',
-      );
+      throw new Error('Cannot access authorizerId until authorizer is attached to a HttpRoute');
     }
     return this.authorizer.authorizerId;
   }
@@ -69,7 +73,9 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (!this.authorizer) {
       const region = this.props.userPoolRegion ?? Stack.of(options.scope).region;
-      const clients = this.props.userPoolClients ?? [this.pool.addClient('UserPoolAuthorizerClient')];
+      const clients = this.props.userPoolClients ?? [
+        this.pool.addClient('UserPoolAuthorizerClient'),
+      ];
 
       this.authorizer = new HttpAuthorizer(options.scope, this.id, {
         httpApi: options.route.httpApi,

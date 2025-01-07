@@ -12,34 +12,58 @@ import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, RouteTable, VPNGatewayV2 } from '../lib/route';
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import {
+  EgressOnlyInternetGateway,
+  InternetGateway,
+  NatConnectivityType,
+  NatGateway,
+  RouteTable,
+  VPNGatewayV2,
+} from '../lib/route';
+import {
+  GatewayVpcEndpoint,
+  GatewayVpcEndpointAwsService,
+  SubnetType,
+  VpnConnectionType,
+} from 'aws-cdk-lib/aws-ec2';
 import { Fn } from 'aws-cdk-lib';
 
 const app = new cdk.App();
 
-const stacks: {[id: string] : cdk.Stack} = {
+const stacks: { [id: string]: cdk.Stack } = {
   default: new cdk.Stack(app, 'aws-cdk-routev2-alpha', { stackName: 'DefaultVpcDeploy' }),
-  eigw: new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', { stackName: 'EgressOnlyIgwVpc' }),
+  eigw: new cdk.Stack(app, 'aws-cdk-routev2-egressonlyigw-alpha', {
+    stackName: 'EgressOnlyIgwVpc',
+  }),
   igw: new cdk.Stack(app, 'aws-cdk-routev2-igw-alpha', { stackName: 'InternetGatewayVpc' }),
-  vpgw: new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', { stackName: 'VirtualPrivateGwVpc' }),
+  vpgw: new cdk.Stack(app, 'aws-cdk-routev2-virtualprivategw-alpha', {
+    stackName: 'VirtualPrivateGwVpc',
+  }),
   natgw_pub: new cdk.Stack(app, 'aws-cdk-routev2-publicnatgw-alpha', { stackName: 'NatGwPubVpc' }),
-  natgw_priv: new cdk.Stack(app, 'aws-cdk-routev2-privatenatgw-alpha', { stackName: 'NatGwPrivVpc' }),
+  natgw_priv: new cdk.Stack(app, 'aws-cdk-routev2-privatenatgw-alpha', {
+    stackName: 'NatGwPrivVpc',
+  }),
   nif: new cdk.Stack(app, 'aws-cdk-routev2-networkif-alpha', { stackName: 'NetworkInterfaceVpc' }),
-  vpcpc: new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', { stackName: 'VpcPeerConnection' }),
-  dynamodb: new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha', { stackName: 'DynamodbEndpointVpc' }),
+  vpcpc: new cdk.Stack(app, 'aws-cdk-routev2-vpcpeerconnection-alpha', {
+    stackName: 'VpcPeerConnection',
+  }),
+  dynamodb: new cdk.Stack(app, 'aws-cdk-routev2-dynamodbendpoint-alpha', {
+    stackName: 'DynamodbEndpointVpc',
+  }),
 };
 
-var vpcs: {[id: string] : vpc_v2.VpcV2} = {};
-var subnets: {[id: string]: SubnetV2} = {};
-var routeTables: {[id: string]: RouteTable} = {};
+var vpcs: { [id: string]: vpc_v2.VpcV2 } = {};
+var subnets: { [id: string]: SubnetV2 } = {};
+var routeTables: { [id: string]: RouteTable } = {};
 
 for (const stackName in stacks) {
   const vpc = new vpc_v2.VpcV2(stacks[stackName], stackName, {
     primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
-    secondaryAddressBlocks: [vpc_v2.IpAddresses.amazonProvidedIpv6({
-      cidrBlockName: 'AmazonIpv6',
-    })],
+    secondaryAddressBlocks: [
+      vpc_v2.IpAddresses.amazonProvidedIpv6({
+        cidrBlockName: 'AmazonIpv6',
+      }),
+    ],
     enableDnsHostnames: true,
     enableDnsSupport: true,
   });
@@ -102,9 +126,7 @@ const natGwPriv = new NatGateway(stacks.natgw_priv, 'testNATgw', {
   vpc: vpcs.natgw_priv,
   connectivityType: NatConnectivityType.PRIVATE,
   privateIpAddress: '10.0.0.42',
-  secondaryPrivateIpAddresses: [
-    '10.0.0.43', '10.0.0.44', '10.0.0.45',
-  ],
+  secondaryPrivateIpAddresses: ['10.0.0.43', '10.0.0.44', '10.0.0.45'],
 });
 routeTables.natgw_priv.addRoute('natGwPrivRoute', '0.0.0.0/0', { gateway: natGwPriv });
 

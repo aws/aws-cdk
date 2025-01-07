@@ -124,7 +124,7 @@ export class Task extends State implements INextable {
 
     this.taskProps = {
       ...taskProps,
-      parameters: noEmptyObject({ ...taskProps.parameters || {}, ...props.parameters || {} }),
+      parameters: noEmptyObject({ ...(taskProps.parameters || {}), ...(props.parameters || {}) }),
     };
     this.endStates = [this];
   }
@@ -198,7 +198,10 @@ export class Task extends State implements INextable {
    * @default average over 5 minutes
    */
   public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.taskMetric(this.taskProps.metricPrefixSingular, 'RunTime', { statistic: 'avg', ...props });
+    return this.taskMetric(this.taskProps.metricPrefixSingular, 'RunTime', {
+      statistic: 'avg',
+      ...props,
+    });
   }
 
   /**
@@ -207,7 +210,10 @@ export class Task extends State implements INextable {
    * @default average over 5 minutes
    */
   public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.taskMetric(this.taskProps.metricPrefixSingular, 'ScheduleTime', { statistic: 'avg', ...props });
+    return this.taskMetric(this.taskProps.metricPrefixSingular, 'ScheduleTime', {
+      statistic: 'avg',
+      ...props,
+    });
   }
 
   /**
@@ -216,7 +222,10 @@ export class Task extends State implements INextable {
    * @default average over 5 minutes
    */
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.taskMetric(this.taskProps.metricPrefixSingular, 'Time', { statistic: 'avg', ...props });
+    return this.taskMetric(this.taskProps.metricPrefixSingular, 'Time', {
+      statistic: 'avg',
+      ...props,
+    });
   }
 
   /**
@@ -280,7 +289,11 @@ export class Task extends State implements INextable {
     }
   }
 
-  private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  private taskMetric(
+    prefix: string | undefined,
+    suffix: string,
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     if (prefix === undefined) {
       throw new Error('This Task Resource does not expose metrics');
     }

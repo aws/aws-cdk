@@ -16,7 +16,10 @@ export class GlobalAcceleratorDomainTarget implements route53.IAliasRecordTarget
   /**
    * Create an Alias Target for a Global Accelerator domain name.
    */
-  constructor(private readonly acceleratorDomainName: string, private readonly props?: IAliasRecordTargetProps) {}
+  constructor(
+    private readonly acceleratorDomainName: string,
+    private readonly props?: IAliasRecordTargetProps
+  ) {}
 
   bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     return {

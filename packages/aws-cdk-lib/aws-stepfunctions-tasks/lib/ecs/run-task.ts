@@ -191,7 +191,10 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the Fargate launch type configured on RunTask
    */
-  public bind(_task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
+  public bind(
+    _task: EcsRunTask,
+    launchTargetOptions: LaunchTargetBindOptions
+  ): EcsLaunchTargetConfig {
     if (!launchTargetOptions.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not compatible with Fargate');
     }
@@ -215,13 +218,18 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
   /**
    * Called when the EC2 launch type is configured on RunTask
    */
-  public bind(_task: EcsRunTask, launchTargetOptions: LaunchTargetBindOptions): EcsLaunchTargetConfig {
+  public bind(
+    _task: EcsRunTask,
+    launchTargetOptions: LaunchTargetBindOptions
+  ): EcsLaunchTargetConfig {
     if (!launchTargetOptions.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not compatible with EC2');
     }
 
     if (!launchTargetOptions.cluster?.hasEc2Capacity) {
-      throw new Error('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.');
+      throw new Error(
+        'Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.'
+      );
     }
 
     return {
@@ -231,8 +239,16 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
         // and renders the Json to be passed as a parameter in the state machine.
         // input: [ecs.PlacementConstraint.distinctInstances()] - distinctInstances() returns [{ type: 'distinctInstance' }]
         // output: {Type: 'distinctInstance'}
-        PlacementConstraints: noEmpty(flatten((this.options?.placementConstraints ?? []).map((c) => c.toJson().map(uppercaseKeys)))),
-        PlacementStrategy: noEmpty(flatten((this.options?.placementStrategies ?? []).map((c) => c.toJson().map(uppercaseKeys)))),
+        PlacementConstraints: noEmpty(
+          flatten(
+            (this.options?.placementConstraints ?? []).map((c) => c.toJson().map(uppercaseKeys))
+          )
+        ),
+        PlacementStrategy: noEmpty(
+          flatten(
+            (this.options?.placementStrategies ?? []).map((c) => c.toJson().map(uppercaseKeys))
+          )
+        ),
       },
     };
 
@@ -279,15 +295,25 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   private networkConfiguration?: any;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EcsRunTaskProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EcsRunTaskProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, EcsRunTask.SUPPORTED_INTEGRATION_PATTERNS);
 
-    if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
-      && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
-      throw new Error('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
+    if (
+      this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN &&
+      !sfn.FieldUtils.containsTaskToken(
+        props.containerOverrides?.map((override) => override.environment)
+      )
+    ) {
+      throw new Error(
+        'Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.'
+      );
     }
 
     if (!this.props.taskDefinition.defaultContainer) {
@@ -307,7 +333,9 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.findContainer(name);
         if (!cont) {
-          throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
+          throw new Error(
+            `Overrides mention container with name '${name}', but no such container in task definition`
+          );
         }
       }
     }
@@ -323,42 +351,58 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Cluster: this.props.cluster.clusterArn,
-        TaskDefinition: this.props.revisionNumber === undefined ? this.props.taskDefinition.family : `${this.props.taskDefinition.family}:${this.props.revisionNumber.toString()}`,
+        TaskDefinition:
+          this.props.revisionNumber === undefined
+            ? this.props.taskDefinition.family
+            : `${this.props.taskDefinition.family}:${this.props.revisionNumber.toString()}`,
         NetworkConfiguration: this.networkConfiguration,
-        Overrides: renderOverrides(
-          {
-            cpu: this.props.cpu,
-            memoryMiB: this.props.memoryMiB,
-            containerOverrides: this.props.containerOverrides,
-          }),
+        Overrides: renderOverrides({
+          cpu: this.props.cpu,
+          memoryMiB: this.props.memoryMiB,
+          containerOverrides: this.props.containerOverrides,
+        }),
         PropagateTags: this.props.propagatedTagSource,
-        ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
+        ...this.props.launchTarget.bind(this, {
+          taskDefinition: this.props.taskDefinition,
+          cluster: this.props.cluster,
+        }).parameters,
         EnableExecuteCommand: this.props.enableExecuteCommand,
       }),
     };
   }
 
   private configureAwsVpcNetworking() {
-    const subnetSelection = this.props.subnets ??
-      { subnetType: this.props.assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS };
+    const subnetSelection = this.props.subnets ?? {
+      subnetType: this.props.assignPublicIp
+        ? ec2.SubnetType.PUBLIC
+        : ec2.SubnetType.PRIVATE_WITH_EGRESS,
+    };
 
     this.networkConfiguration = {
       AwsvpcConfiguration: {
-        AssignPublicIp: this.props.assignPublicIp ? (this.props.assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
+        AssignPublicIp: this.props.assignPublicIp
+          ? this.props.assignPublicIp
+            ? 'ENABLED'
+            : 'DISABLED'
+          : undefined,
         Subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: cdk.Lazy.list({ produce: () => this.securityGroups?.map(sg => sg.securityGroupId) }),
+        SecurityGroups: cdk.Lazy.list({
+          produce: () => this.securityGroups?.map((sg) => sg.securityGroupId),
+        }),
       },
     };
 
     // Make sure we have a security group if we're using AWSVPC networking
-    this.securityGroups = this.props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc })];
+    this.securityGroups = this.props.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc }),
+    ];
     this.connections.addSecurityGroup(...this.securityGroups);
   }
 
   private validateNoNetworkingProps() {
     if (this.props.subnets !== undefined || this.props.securityGroups !== undefined) {
       throw new Error(
-        `Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`,
+        `Supplied TaskDefinition must have 'networkMode' of 'AWS_VPC' to use 'vpcSubnets' and 'securityGroup'. Received: ${this.props.taskDefinition.networkMode}`
       );
     }
   }
@@ -369,7 +413,11 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [cdk.FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY) ? this.getTaskDefinitionArn() : this.getTaskDefinitionFamilyArn() + ':*'],
+        resources: [
+          cdk.FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY)
+            ? this.getTaskDefinitionArn()
+            : this.getTaskDefinitionFamilyArn() + ':*',
+        ],
       }),
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -392,7 +440,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
               resourceName: 'StepFunctionsGetEventsForECSTaskRule',
             }),
           ],
-        }),
+        })
       );
     }
 
@@ -410,7 +458,10 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
    * After - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world
    */
   private getTaskDefinitionFamilyArn(): string {
-    const arnComponents = cdk.Stack.of(this).splitArn(this.props.taskDefinition.taskDefinitionArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
+    const arnComponents = cdk.Stack.of(this).splitArn(
+      this.props.taskDefinition.taskDefinitionArn,
+      cdk.ArnFormat.SLASH_RESOURCE_NAME
+    );
     let { resourceName } = arnComponents;
 
     if (resourceName) {
@@ -461,11 +512,10 @@ function renderOverrides(props: OverrideProps) {
         Cpu: override.cpu,
         Memory: override.memoryLimit,
         MemoryReservation: override.memoryReservation,
-        Environment:
-          override.environment?.map((e) => ({
-            Name: e.name,
-            Value: e.value,
-          })),
+        Environment: override.environment?.map((e) => ({
+          Name: e.name,
+          Value: e.value,
+        })),
       });
     }
   }

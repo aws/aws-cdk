@@ -5,8 +5,7 @@ import * as subs from '../../aws-sns-subscriptions';
 /**
  * Properties forwarded to the Lambda Subscription.
  */
-export interface SnsEventSourceProps extends subs.LambdaSubscriptionProps {
-}
+export interface SnsEventSourceProps extends subs.LambdaSubscriptionProps {}
 
 /**
  * Use an Amazon SNS topic as an event source for AWS Lambda.
@@ -14,7 +13,10 @@ export interface SnsEventSourceProps extends subs.LambdaSubscriptionProps {
 export class SnsEventSource implements lambda.IEventSource {
   private readonly props?: SnsEventSourceProps;
 
-  constructor(readonly topic: sns.ITopic, props?: SnsEventSourceProps) {
+  constructor(
+    readonly topic: sns.ITopic,
+    props?: SnsEventSourceProps
+  ) {
     this.props = props;
   }
 

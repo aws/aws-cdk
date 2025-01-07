@@ -101,13 +101,20 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly lambdaFunction: IFunction;
 
-  constructor(scope: Construct, id: string, private readonly props: CallAwsServiceCrossRegionProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: CallAwsServiceCrossRegionProps
+  ) {
     super(scope, id, props);
 
     if (props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
     }
-    if (!Token.isUnresolved(props.action) && !props.action.startsWith(props.action[0]?.toLowerCase())) {
+    if (
+      !Token.isUnresolved(props.action) &&
+      !props.action.startsWith(props.action[0]?.toLowerCase())
+    ) {
       throw new Error(`action must be camelCase, got: ${props.action}`);
     }
 
@@ -116,9 +123,9 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
     // We try to automatically convert those formats here (not exhaustive though).
     // Users can set iamAction property to override IAM service name if necessary.
     const iamServiceMap: Record<string, string> = {
-      'sfn': 'states',
+      sfn: 'states',
       'cloudwatch-logs': 'logs',
-      'mwaa': 'airflow',
+      mwaa: 'airflow',
     };
     const iamService = iamServiceMap[props.service] ?? props.service;
 
@@ -148,7 +155,12 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
     if (props.retryOnServiceExceptions ?? true) {
       // Best practice from https://docs.aws.amazon.com/step-functions/latest/dg/bp-lambda-serviceexception.html
       this.addRetry({
-        errors: ['Lambda.ClientExecutionTimeoutException', 'Lambda.ServiceException', 'Lambda.AWSLambdaException', 'Lambda.SdkClientException'],
+        errors: [
+          'Lambda.ClientExecutionTimeoutException',
+          'Lambda.ServiceException',
+          'Lambda.AWSLambdaException',
+          'Lambda.SdkClientException',
+        ],
         interval: Duration.seconds(2),
         maxAttempts: 6,
         backoffRate: 2,

@@ -4,7 +4,12 @@ import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import {
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+} from '../assets';
 import { Fn } from '../cfn-fn';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
@@ -45,7 +50,10 @@ const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-n
  * This is the only StackSynthesizer that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */
-export class LegacyStackSynthesizer extends StackSynthesizer implements IReusableStackSynthesizer, IBoundStackSynthesizer {
+export class LegacyStackSynthesizer
+  extends StackSynthesizer
+  implements IReusableStackSynthesizer, IBoundStackSynthesizer
+{
   private cycle = false;
 
   /**
@@ -124,15 +132,20 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     // check if we have an override from context
-    const repositoryNameOverride = this.boundStack.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
-    const repositoryName = asset.repositoryName ?? repositoryNameOverride ?? ASSETS_ECR_REPOSITORY_NAME;
+    const repositoryNameOverride = this.boundStack.node.tryGetContext(
+      ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY
+    );
+    const repositoryName =
+      asset.repositoryName ?? repositoryNameOverride ?? ASSETS_ECR_REPOSITORY_NAME;
     const imageTag = asset.sourceHash;
     const assetId = asset.sourceHash;
 
     // only add every image (identified by source hash) once for each stack that uses it.
     if (!this.addedImageAssets.has(assetId)) {
       if (!asset.directoryName) {
-        throw new Error(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
+        throw new Error(
+          `LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`
+        );
       }
 
       const metadata: cxschema.ContainerImageAssetMetadataEntry = {
@@ -171,7 +184,9 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
       if (!asset.fileName || !asset.packaging) {
-        throw new Error(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
+        throw new Error(
+          `LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`
+        );
       }
 
       const metadata: cxschema.FileAssetMetadataEntry = {

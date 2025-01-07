@@ -14,7 +14,9 @@ export function apexDomain(domainName: string): string {
   const accumulated: string[] = [];
   for (const part of parts) {
     accumulated.push(part);
-    if (!(part in curr)) { break; }
+    if (!(part in curr)) {
+      break;
+    }
     curr = curr[part];
   }
   return accumulated.reverse().join('.');

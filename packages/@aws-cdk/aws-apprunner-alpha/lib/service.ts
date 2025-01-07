@@ -68,12 +68,10 @@ export class Cpu {
     const numericPatterns = ['256', '512', '1024', '2048', '4096'];
     const unitPatterns = ['0.25 vCPU', '0.5 vCPU', '1 vCPU', '2 vCPU', '4 vCPU'];
     const allowedPatterns = numericPatterns.concat(unitPatterns);
-    const isValidValue = allowedPatterns.some(
-      (pattern) => pattern === unit,
-    );
+    const isValidValue = allowedPatterns.some((pattern) => pattern === unit);
     if (!isValidValue) {
       throw new Error('CPU value is invalid');
-    };
+    }
 
     return new Cpu(unit);
   }
@@ -82,7 +80,7 @@ export class Cpu {
    *
    * @param unit The unit of CPU.
    */
-  private constructor(public readonly unit: string) { }
+  private constructor(public readonly unit: string) {}
 }
 
 /**
@@ -142,15 +140,33 @@ export class Memory {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apprunner-service-instanceconfiguration.html#cfn-apprunner-service-instanceconfiguration-memory
    */
   public static of(unit: string): Memory {
-    const numericPatterns = ['512', '1024', '2048', '3072', '4096', '6144', '8192', '10240', '12288'];
-    const unitPatterns = ['0.5 GB', '1 GB', '2 GB', '3 GB', '4 GB', '6 GB', '8 GB', '10 GB', '12 GB'];
+    const numericPatterns = [
+      '512',
+      '1024',
+      '2048',
+      '3072',
+      '4096',
+      '6144',
+      '8192',
+      '10240',
+      '12288',
+    ];
+    const unitPatterns = [
+      '0.5 GB',
+      '1 GB',
+      '2 GB',
+      '3 GB',
+      '4 GB',
+      '6 GB',
+      '8 GB',
+      '10 GB',
+      '12 GB',
+    ];
     const allowedPatterns = numericPatterns.concat(unitPatterns);
-    const isValidValue = allowedPatterns.some(
-      (pattern) => pattern === unit,
-    );
+    const isValidValue = allowedPatterns.some((pattern) => pattern === unit);
     if (!isValidValue) {
       throw new Error('Memory value is invalid');
-    };
+    }
 
     return new Memory(unit);
   }
@@ -159,14 +175,13 @@ export class Memory {
    *
    * @param unit The unit of memory.
    */
-  private constructor(public readonly unit: string) { }
+  private constructor(public readonly unit: string) {}
 }
 
 /**
  * The code runtimes
  */
 export class Runtime {
-
   /**
    * CORRETTO 8
    */
@@ -235,13 +250,15 @@ export class Runtime {
    * @param name runtime name
    *
    */
-  public static of(name: string) { return new Runtime(name); }
+  public static of(name: string) {
+    return new Runtime(name);
+  }
 
   /**
    *
    * @param name The runtime name.
    */
-  private constructor(public readonly name: string) { }
+  private constructor(public readonly name: string) {}
 }
 
 /**
@@ -481,7 +498,7 @@ export class EcrSource extends Source {
       imageRepository: {
         imageConfiguration: this.props.imageConfiguration,
         imageIdentifier: this.props.repository.repositoryUriForTagOrDigest(
-          this.props.tagOrDigest || this.props.tag || 'latest',
+          this.props.tagOrDigest || this.props.tag || 'latest'
         ),
         imageRepositoryType: ImageRepositoryType.ECR,
       },
@@ -770,7 +787,6 @@ export interface ServiceProps {
    * @default - no observability configuration resource is associated with the service.
    */
   readonly observabilityConfiguration?: IObservabilityConfiguration;
-
 }
 
 /**
@@ -976,7 +992,7 @@ export interface HttpHealthCheckOptions extends HealthCheckCommonOptions {
 /**
  * Properties used to define TCP Based healthchecks.
  */
-export interface TcpHealthCheckOptions extends HealthCheckCommonOptions { }
+export interface TcpHealthCheckOptions extends HealthCheckCommonOptions {}
 
 /**
  * Contains static factory methods for creating health checks for different protocols
@@ -992,7 +1008,7 @@ export class HealthCheck {
       options.interval,
       options.timeout,
       options.unhealthyThreshold,
-      options.path,
+      options.path
     );
   }
 
@@ -1005,7 +1021,7 @@ export class HealthCheck {
       options.healthyThreshold,
       options.interval,
       options.timeout,
-      options.unhealthyThreshold,
+      options.unhealthyThreshold
     );
   }
 
@@ -1015,7 +1031,7 @@ export class HealthCheck {
     public readonly interval: cdk.Duration = cdk.Duration.seconds(5),
     public readonly timeout: cdk.Duration = cdk.Duration.seconds(2),
     public readonly unhealthyThreshold: number = 5,
-    public readonly path?: string,
+    public readonly path?: string
   ) {
     if (this.healthCheckProtocolType === HealthCheckProtocolType.HTTP) {
       if (this.path !== undefined && this.path.length === 0) {
@@ -1030,10 +1046,14 @@ export class HealthCheck {
       throw new Error(`healthyThreshold must be between 1 and 20, got ${this.healthyThreshold}`);
     }
     if (this.unhealthyThreshold < 1 || this.unhealthyThreshold > 20) {
-      throw new Error(`unhealthyThreshold must be between 1 and 20, got ${this.unhealthyThreshold}`);
+      throw new Error(
+        `unhealthyThreshold must be between 1 and 20, got ${this.unhealthyThreshold}`
+      );
     }
     if (this.interval.toSeconds() < 1 || this.interval.toSeconds() > 20) {
-      throw new Error(`interval must be between 1 and 20 seconds, got ${this.interval.toSeconds()}`);
+      throw new Error(
+        `interval must be between 1 and 20 seconds, got ${this.interval.toSeconds()}`
+      );
     }
     if (this.timeout.toSeconds() < 1 || this.timeout.toSeconds() > 20) {
       throw new Error(`timeout must be between 1 and 20 seconds, got ${this.timeout.toSeconds()}`);
@@ -1118,7 +1138,7 @@ export abstract class Secret {
   public static fromSsmParameter(parameter: ssm.IParameter): Secret {
     return {
       arn: parameter.parameterArn,
-      grantRead: grantee => parameter.grantRead(grantee),
+      grantRead: (grantee) => parameter.grantRead(grantee),
     };
   }
 
@@ -1136,7 +1156,7 @@ export abstract class Secret {
     return {
       arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
       hasField: !!field,
-      grantRead: grantee => secret.grantRead(grantee),
+      grantRead: (grantee) => secret.grantRead(grantee),
     };
   }
 
@@ -1151,11 +1171,15 @@ export abstract class Secret {
    * If you do not specify a JSON field, then the full content of the secret is
    * used.
    */
-  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+  public static fromSecretsManagerVersion(
+    secret: secretsmanager.ISecret,
+    versionInfo: SecretVersionInfo,
+    field?: string
+  ): Secret {
     return {
       arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
       hasField: !!field,
-      grantRead: grantee => secret.grantRead(grantee),
+      grantRead: (grantee) => secret.grantRead(grantee),
     };
   }
 
@@ -1197,7 +1221,11 @@ export class Service extends cdk.Resource implements iam.IGrantable {
   /**
    * Import from service attributes.
    */
-  public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
+  public static fromServiceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ServiceAttributes
+  ): IService {
     const serviceArn = attrs.serviceArn;
     const serviceName = attrs.serviceName;
     const serviceUrl = attrs.serviceUrl;
@@ -1285,25 +1313,31 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     }
 
     // generate an IAM role only when ImageRepositoryType is ECR and props.accessRole is undefined
-    this.accessRole = (this.source.imageRepository?.imageRepositoryType == ImageRepositoryType.ECR) ?
-      this.props.accessRole ?? this.generateDefaultRole() : undefined;
+    this.accessRole =
+      this.source.imageRepository?.imageRepositoryType == ImageRepositoryType.ECR
+        ? (this.props.accessRole ?? this.generateDefaultRole())
+        : undefined;
 
-    if (this.source.codeRepository?.codeConfiguration.configurationSource == ConfigurationSourceType.REPOSITORY &&
-      this.source.codeRepository?.codeConfiguration.configurationValues) {
-      throw new Error('configurationValues cannot be provided if the ConfigurationSource is Repository');
+    if (
+      this.source.codeRepository?.codeConfiguration.configurationSource ==
+        ConfigurationSourceType.REPOSITORY &&
+      this.source.codeRepository?.codeConfiguration.configurationValues
+    ) {
+      throw new Error(
+        'configurationValues cannot be provided if the ConfigurationSource is Repository'
+      );
     }
 
     if (props.serviceName !== undefined && !cdk.Token.isUnresolved(props.serviceName)) {
-
       if (props.serviceName.length < 4 || props.serviceName.length > 40) {
         throw new Error(
-          `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`,
+          `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.serviceName)) {
         throw new Error(
-          `\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.serviceName}.`,
+          `\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.serviceName}.`
         );
       }
     }
@@ -1318,32 +1352,40 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       sourceConfiguration: {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
         autoDeploymentsEnabled: this.props.autoDeploymentsEnabled,
-        imageRepository: this.source.imageRepository ?
-          this.renderImageRepository(this.source.imageRepository!) :
-          undefined,
-        codeRepository: this.source.codeRepository ?
-          this.renderCodeConfiguration(this.source.codeRepository!.codeConfiguration.configurationValues!) :
-          undefined,
+        imageRepository: this.source.imageRepository
+          ? this.renderImageRepository(this.source.imageRepository!)
+          : undefined,
+        codeRepository: this.source.codeRepository
+          ? this.renderCodeConfiguration(
+              this.source.codeRepository!.codeConfiguration.configurationValues!
+            )
+          : undefined,
       },
-      encryptionConfiguration: this.props.kmsKey ? {
-        kmsKey: this.props.kmsKey.keyArn,
-      } : undefined,
+      encryptionConfiguration: this.props.kmsKey
+        ? {
+            kmsKey: this.props.kmsKey.keyArn,
+          }
+        : undefined,
       autoScalingConfigurationArn: this.props.autoScalingConfiguration?.autoScalingConfigurationArn,
       networkConfiguration: {
         egressConfiguration: {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
-        ingressConfiguration: props.isPubliclyAccessible !== undefined ? { isPubliclyAccessible: props.isPubliclyAccessible } : undefined,
+        ingressConfiguration:
+          props.isPubliclyAccessible !== undefined
+            ? { isPubliclyAccessible: props.isPubliclyAccessible }
+            : undefined,
         ipAddressType: this.props.ipAddressType,
       },
-      healthCheckConfiguration: this.props.healthCheck ?
-        this.props.healthCheck.bind() :
-        undefined,
-      observabilityConfiguration: props.observabilityConfiguration ? {
-        observabilityEnabled: true,
-        observabilityConfigurationArn: props.observabilityConfiguration.observabilityConfigurationArn,
-      } : undefined,
+      healthCheckConfiguration: this.props.healthCheck ? this.props.healthCheck.bind() : undefined,
+      observabilityConfiguration: props.observabilityConfiguration
+        ? {
+            observabilityEnabled: true,
+            observabilityConfigurationArn:
+              props.observabilityConfiguration.observabilityConfigurationArn,
+          }
+        : undefined,
     });
 
     // grant required privileges for the role to access an image in Amazon ECR
@@ -1380,7 +1422,9 @@ export class Service extends cdk.Resource implements iam.IGrantable {
    */
   public addEnvironmentVariable(name: string, value: string) {
     if (name.startsWith('AWSAPPRUNNER')) {
-      throw new Error(`Environment variable key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
+      throw new Error(
+        `Environment variable key ${name} with a prefix of AWSAPPRUNNER is not allowed`
+      );
     }
     this.variables.push({ name: name, value: value });
   }
@@ -1390,7 +1434,9 @@ export class Service extends cdk.Resource implements iam.IGrantable {
    */
   public addSecret(name: string, secret: Secret) {
     if (name.startsWith('AWSAPPRUNNER')) {
-      throw new Error(`Environment secret key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
+      throw new Error(
+        `Environment secret key ${name} with a prefix of AWSAPPRUNNER is not allowed`
+      );
     }
     secret.grantRead(this.instanceRole);
     this.secrets.push({ name: name, value: secret.arn });
@@ -1415,16 +1461,19 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     const accessRole = new iam.Role(this, 'AccessRole', {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
     });
-    accessRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['ecr:GetAuthorizationToken'],
-      resources: ['*'],
-    }));
+    accessRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['ecr:GetAuthorizationToken'],
+        resources: ['*'],
+      })
+    );
     this.accessRole = accessRole;
     return accessRole;
   }
 
   private getEnvironmentSecrets(): { [key: string]: Secret } {
-    let secrets = this.source.codeRepository?.codeConfiguration.configurationValues?.environmentSecrets ??
+    let secrets =
+      this.source.codeRepository?.codeConfiguration.configurationValues?.environmentSecrets ??
       this.source.imageRepository?.imageConfiguration?.environmentSecrets;
 
     return secrets || {};
@@ -1440,14 +1489,16 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       this.source.imageRepository?.imageConfiguration?.environment,
     ];
 
-    if (codeEnv.every(el => el !== undefined) || imageEnv.every(el => el !== undefined)) {
-      throw new Error([
-        'You cannot set both \'environmentVariables\' and \'environment\' properties.',
-        'Please only use environmentVariables, as environment is deprecated.',
-      ].join(' '));
+    if (codeEnv.every((el) => el !== undefined) || imageEnv.every((el) => el !== undefined)) {
+      throw new Error(
+        [
+          "You cannot set both 'environmentVariables' and 'environment' properties.",
+          'Please only use environmentVariables, as environment is deprecated.',
+        ].join(' ')
+      );
     }
 
-    return codeEnv.find(el => el !== undefined) || imageEnv.find(el => el !== undefined) || {};
+    return codeEnv.find((el) => el !== undefined) || imageEnv.find((el) => el !== undefined) || {};
   }
 
   private renderAuthenticationConfiguration(): AuthenticationConfiguration {
@@ -1462,9 +1513,9 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       codeConfiguration: {
         configurationSource: this.source.codeRepository!.codeConfiguration.configurationSource,
         // codeConfigurationValues will be ignored if configurationSource is REPOSITORY
-        codeConfigurationValues: this.source.codeRepository!.codeConfiguration.configurationValues ?
-          this.renderCodeConfigurationValues(props) :
-          undefined,
+        codeConfigurationValues: this.source.codeRepository!.codeConfiguration.configurationValues
+          ? this.renderCodeConfigurationValues(props)
+          : undefined,
       },
       repositoryUrl: this.source.codeRepository!.repositoryUrl,
       sourceCodeVersion: this.source.codeRepository!.sourceCodeVersion,

@@ -303,37 +303,55 @@ export class GameSessionQueue extends GameSessionQueueBase {
   /**
    * Import an existing gameSessionQueue from its name.
    */
-  static fromGameSessionQueueName(scope: Construct, id: string, gameSessionQueueName: string): IGameSessionQueue {
+  static fromGameSessionQueueName(
+    scope: Construct,
+    id: string,
+    gameSessionQueueName: string
+  ): IGameSessionQueue {
     return this.fromGameSessionQueueAttributes(scope, id, { gameSessionQueueName });
   }
 
   /**
    * Import an existing gameSessionQueue from its ARN.
    */
-  static fromGameSessionQueueArn(scope: Construct, id: string, gameSessionQueueArn: string): IGameSessionQueue {
+  static fromGameSessionQueueArn(
+    scope: Construct,
+    id: string,
+    gameSessionQueueArn: string
+  ): IGameSessionQueue {
     return this.fromGameSessionQueueAttributes(scope, id, { gameSessionQueueArn });
   }
 
   /**
    * Import an existing gameSessionQueue from its attributes.
    */
-  static fromGameSessionQueueAttributes(scope: Construct, id: string, attrs: GameSessionQueueAttributes): IGameSessionQueue {
+  static fromGameSessionQueueAttributes(
+    scope: Construct,
+    id: string,
+    attrs: GameSessionQueueAttributes
+  ): IGameSessionQueue {
     if (!attrs.gameSessionQueueName && !attrs.gameSessionQueueArn) {
-      throw new Error('Either gameSessionQueueName or gameSessionQueueArn must be provided in GameSessionQueueAttributes');
+      throw new Error(
+        'Either gameSessionQueueName or gameSessionQueueArn must be provided in GameSessionQueueAttributes'
+      );
     }
-    const gameSessionQueueName = attrs.gameSessionQueueName ??
-      cdk.Stack.of(scope).splitArn(attrs.gameSessionQueueArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    const gameSessionQueueName =
+      attrs.gameSessionQueueName ??
+      cdk.Stack.of(scope).splitArn(attrs.gameSessionQueueArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME)
+        .resourceName;
 
     if (!gameSessionQueueName) {
       throw new Error(`No gameSessionQueue name found in ARN: '${attrs.gameSessionQueueArn}'`);
     }
 
-    const gameSessionQueueArn = attrs.gameSessionQueueArn ?? cdk.Stack.of(scope).formatArn({
-      service: 'gamelift',
-      resource: 'gamesessionqueue',
-      resourceName: attrs.gameSessionQueueName,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    });
+    const gameSessionQueueArn =
+      attrs.gameSessionQueueArn ??
+      cdk.Stack.of(scope).formatArn({
+        service: 'gamelift',
+        resource: 'gamesessionqueue',
+        resourceName: attrs.gameSessionQueueName,
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      });
     class Import extends GameSessionQueueBase {
       public readonly gameSessionQueueName = gameSessionQueueName!;
       public readonly gameSessionQueueArn = gameSessionQueueArn;
@@ -366,20 +384,28 @@ export class GameSessionQueue extends GameSessionQueueBase {
 
     if (!cdk.Token.isUnresolved(props.gameSessionQueueName)) {
       if (props.gameSessionQueueName.length > 128) {
-        throw new Error(`GameSessionQueue name can not be longer than 128 characters but has ${props.gameSessionQueueName.length} characters.`);
+        throw new Error(
+          `GameSessionQueue name can not be longer than 128 characters but has ${props.gameSessionQueueName.length} characters.`
+        );
       }
 
       if (!/^[a-zA-Z0-9-]+$/.test(props.gameSessionQueueName)) {
-        throw new Error(`GameSessionQueue name ${props.gameSessionQueueName} can contain only letters, numbers, hyphens with no spaces.`);
+        throw new Error(
+          `GameSessionQueue name ${props.gameSessionQueueName} can contain only letters, numbers, hyphens with no spaces.`
+        );
       }
     }
 
     if (props.customEventData && props.customEventData.length > 256) {
-      throw new Error(`GameSessionQueue custom event data can not be longer than 256 characters but has ${props.customEventData.length} characters.`);
+      throw new Error(
+        `GameSessionQueue custom event data can not be longer than 256 characters but has ${props.customEventData.length} characters.`
+      );
     }
 
     if (props.allowedLocations && props.allowedLocations.length > 100) {
-      throw new Error(`No more than 100 allowed locations are allowed per game session queue, given ${props.allowedLocations.length}`);
+      throw new Error(
+        `No more than 100 allowed locations are allowed per game session queue, given ${props.allowedLocations.length}`
+      );
     }
 
     // Add all destinations
@@ -414,17 +440,23 @@ export class GameSessionQueue extends GameSessionQueueBase {
     this.destinations.push(destination);
   }
 
-  protected parsePriorityConfiguration(props: GameSessionQueueProps): CfnGameSessionQueue.PriorityConfigurationProperty | undefined {
+  protected parsePriorityConfiguration(
+    props: GameSessionQueueProps
+  ): CfnGameSessionQueue.PriorityConfigurationProperty | undefined {
     if (!props.priorityConfiguration) {
       return undefined;
     }
 
     if (props.priorityConfiguration.locationOrder.length > 100) {
-      throw new Error(`No more than 100 locations are allowed per priority configuration, given ${props.priorityConfiguration.locationOrder.length}`);
+      throw new Error(
+        `No more than 100 locations are allowed per priority configuration, given ${props.priorityConfiguration.locationOrder.length}`
+      );
     }
 
     if (props.priorityConfiguration.priorityOrder.length > 4) {
-      throw new Error(`No more than 4 priorities are allowed per priority configuration, given ${props.priorityConfiguration.priorityOrder.length}`);
+      throw new Error(
+        `No more than 4 priorities are allowed per priority configuration, given ${props.priorityConfiguration.priorityOrder.length}`
+      );
     }
 
     return {
@@ -433,22 +465,30 @@ export class GameSessionQueue extends GameSessionQueueBase {
     };
   }
 
-  protected parsePlayerLatencyPolicies(props: GameSessionQueueProps): CfnGameSessionQueue.PlayerLatencyPolicyProperty[] | undefined {
+  protected parsePlayerLatencyPolicies(
+    props: GameSessionQueueProps
+  ): CfnGameSessionQueue.PlayerLatencyPolicyProperty[] | undefined {
     if (!props.playerLatencyPolicies) {
       return undefined;
     }
 
     return props.playerLatencyPolicies.map(parsePlayerLatencyPolicy);
 
-    function parsePlayerLatencyPolicy(playerLatencyPolicy: PlayerLatencyPolicy): CfnGameSessionQueue.PlayerLatencyPolicyProperty {
+    function parsePlayerLatencyPolicy(
+      playerLatencyPolicy: PlayerLatencyPolicy
+    ): CfnGameSessionQueue.PlayerLatencyPolicyProperty {
       return {
-        maximumIndividualPlayerLatencyMilliseconds: playerLatencyPolicy.maximumIndividualPlayerLatency.toMilliseconds(),
-        policyDurationSeconds: playerLatencyPolicy.policyDuration && playerLatencyPolicy.policyDuration.toSeconds(),
+        maximumIndividualPlayerLatencyMilliseconds:
+          playerLatencyPolicy.maximumIndividualPlayerLatency.toMilliseconds(),
+        policyDurationSeconds:
+          playerLatencyPolicy.policyDuration && playerLatencyPolicy.policyDuration.toSeconds(),
       };
     }
   }
 
-  protected parseFilterConfiguration(props: GameSessionQueueProps): CfnGameSessionQueue.FilterConfigurationProperty | undefined {
+  protected parseFilterConfiguration(
+    props: GameSessionQueueProps
+  ): CfnGameSessionQueue.FilterConfigurationProperty | undefined {
     if (!props.allowedLocations) {
       return undefined;
     }
@@ -465,7 +505,9 @@ export class GameSessionQueue extends GameSessionQueueBase {
 
     return this.destinations.map(parseDestination);
 
-    function parseDestination(destination: IGameSessionQueueDestination): CfnGameSessionQueue.DestinationProperty {
+    function parseDestination(
+      destination: IGameSessionQueueDestination
+    ): CfnGameSessionQueue.DestinationProperty {
       return {
         destinationArn: destination.resourceArnForDestination,
       };

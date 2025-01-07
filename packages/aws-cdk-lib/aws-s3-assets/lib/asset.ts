@@ -180,14 +180,16 @@ export class Asset extends Construct implements cdk.IAsset {
     this.httpUrl = location.httpUrl;
     this.s3Url = location.httpUrl; // for backwards compatibility
 
-    const kmsKey = location.kmsKeyArn ? kms.Key.fromKeyArn(this, 'Key', location.kmsKeyArn) : undefined;
+    const kmsKey = location.kmsKeyArn
+      ? kms.Key.fromKeyArn(this, 'Key', location.kmsKeyArn)
+      : undefined;
 
     this.bucket = s3.Bucket.fromBucketAttributes(this, 'AssetBucket', {
       bucketName: this.s3BucketName,
       encryptionKey: kmsKey,
     });
 
-    for (const reader of (props.readers ?? [])) {
+    for (const reader of props.readers ?? []) {
       this.grantRead(reader);
     }
   }
@@ -215,7 +217,7 @@ export class Asset extends Construct implements cdk.IAsset {
 
     // tell tools such as SAM CLI that the "Code" property of this resource
     // points to a local path in order to enable local invocation of this function.
-    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || {};
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY] = this.isBundled;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;

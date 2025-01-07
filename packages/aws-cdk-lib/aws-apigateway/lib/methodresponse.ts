@@ -1,7 +1,6 @@
 import { IModel } from './model';
 
 export interface MethodResponse {
-
   /**
    * The method response's status code, which you map to an IntegrationResponse.
    * Required.

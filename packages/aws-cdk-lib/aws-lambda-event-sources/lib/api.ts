@@ -3,7 +3,11 @@ import * as lambda from '../../aws-lambda';
 import { Names, Stack } from '../../core';
 
 export class ApiEventSource implements lambda.IEventSource {
-  constructor(private readonly method: string, private readonly path: string, private readonly options?: apigw.MethodOptions) {
+  constructor(
+    private readonly method: string,
+    private readonly path: string,
+    private readonly options?: apigw.MethodOptions
+  ) {
     if (!path.startsWith('/')) {
       throw new Error(`Path must start with "/": ${path}`);
     }

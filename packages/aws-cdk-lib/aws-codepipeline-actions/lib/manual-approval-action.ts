@@ -74,21 +74,37 @@ export class ManualApprovalAction extends Action {
     if (!this.stage) {
       throw new Error('Cannot grant permissions before binding action to a stage');
     }
-    grantable.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['codepipeline:ListPipelines'],
-      resources: ['*'],
-    }));
-    grantable.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['codepipeline:GetPipeline', 'codepipeline:GetPipelineState', 'codepipeline:GetPipelineExecution'],
-      resources: [this.stage.pipeline.pipelineArn],
-    }));
-    grantable.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['codepipeline:PutApprovalResult'],
-      resources: [`${this.stage.pipeline.pipelineArn}/${this.stage.stageName}/${this.props.actionName}`],
-    }));
+    grantable.grantPrincipal.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['codepipeline:ListPipelines'],
+        resources: ['*'],
+      })
+    );
+    grantable.grantPrincipal.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'codepipeline:GetPipeline',
+          'codepipeline:GetPipelineState',
+          'codepipeline:GetPipelineExecution',
+        ],
+        resources: [this.stage.pipeline.pipelineArn],
+      })
+    );
+    grantable.grantPrincipal.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['codepipeline:PutApprovalResult'],
+        resources: [
+          `${this.stage.pipeline.pipelineArn}/${this.stage.stageName}/${this.props.actionName}`,
+        ],
+      })
+    );
   }
 
-  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  protected bound(
+    scope: Construct,
+    stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     if (this.props.notificationTopic) {
       this._notificationTopic = this.props.notificationTopic;
     } else if ((this.props.notifyEmails || []).length > 0) {
@@ -112,9 +128,8 @@ export class ManualApprovalAction extends Action {
       }),
     };
   }
-
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
-  return Object.values(object).some(v => v !== undefined) ? object : undefined;
+  return Object.values(object).some((v) => v !== undefined) ? object : undefined;
 }

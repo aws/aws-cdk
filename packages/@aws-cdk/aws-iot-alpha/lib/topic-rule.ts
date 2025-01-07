@@ -137,7 +137,7 @@ export class TopicRule extends Resource implements ITopicRule {
     });
     this.topicRuleName = this.getResourceNameAttribute(resource.ref);
 
-    props.actions?.forEach(action => {
+    props.actions?.forEach((action) => {
       this.addAction(action);
     });
   }

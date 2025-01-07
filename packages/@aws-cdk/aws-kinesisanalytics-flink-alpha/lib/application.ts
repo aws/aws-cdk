@@ -1,7 +1,10 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from 'aws-cdk-lib/aws-kinesisanalytics';
+import {
+  CfnApplicationCloudWatchLoggingOptionV2,
+  CfnApplicationV2,
+} from 'aws-cdk-lib/aws-kinesisanalytics';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
@@ -178,7 +181,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
   metricOldGenerationGCCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-	 * The total number of live threads used by the application.
+   * The total number of live threads used by the application.
    *
    * Units: Count
    *
@@ -371,7 +374,9 @@ abstract class ApplicationBase extends core.Resource implements IApplication {
 
   public get connections() {
     if (!this._connections) {
-      throw new Error('This Application isn\'t associated with a VPC. Provide a "vpc" prop when creating the Application or "securityGroups" when importing it.');
+      throw new Error(
+        'This Application isn\'t associated with a VPC. Provide a "vpc" prop when creating the Application or "securityGroups" when importing it.'
+      );
     }
     return this._connections;
   }
@@ -905,7 +910,11 @@ class Import extends ApplicationBase {
   public readonly applicationName: string;
   public readonly applicationArn: string;
 
-  constructor(scope: Construct, id: string, attrs: { applicationArn: string; securityGroups?: ec2.ISecurityGroup[] }) {
+  constructor(
+    scope: Construct,
+    id: string,
+    attrs: { applicationArn: string; securityGroups?: ec2.ISecurityGroup[] }
+  ) {
     super(scope, id);
 
     // Imported applications have no associated role or grantPrincipal
@@ -913,9 +922,14 @@ class Import extends ApplicationBase {
     this.role = undefined;
 
     this.applicationArn = attrs.applicationArn;
-    const applicationName = core.Stack.of(scope).splitArn(attrs.applicationArn, core.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    const applicationName = core.Stack.of(scope).splitArn(
+      attrs.applicationArn,
+      core.ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName;
     if (!applicationName) {
-      throw new Error(`applicationArn for fromApplicationArn (${attrs.applicationArn}) must include resource name`);
+      throw new Error(
+        `applicationArn for fromApplicationArn (${attrs.applicationArn}) must include resource name`
+      );
     }
     this.applicationName = applicationName;
 
@@ -937,8 +951,14 @@ export class Application extends ApplicationBase {
    * Import an existing Flink application defined outside of CDK code by
    * applicationName.
    */
-  public static fromApplicationName(scope: Construct, id: string, applicationName: string): IApplication {
-    const applicationArn = core.Stack.of(scope).formatArn(applicationArnComponents(applicationName));
+  public static fromApplicationName(
+    scope: Construct,
+    id: string,
+    applicationName: string
+  ): IApplication {
+    const applicationArn = core.Stack.of(scope).formatArn(
+      applicationArnComponents(applicationName)
+    );
 
     return new Import(scope, id, { applicationArn });
   }
@@ -947,14 +967,22 @@ export class Application extends ApplicationBase {
    * Import an existing application defined outside of CDK code by
    * applicationArn.
    */
-  public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
+  public static fromApplicationArn(
+    scope: Construct,
+    id: string,
+    applicationArn: string
+  ): IApplication {
     return new Import(scope, id, { applicationArn });
   }
 
   /**
    * Import an existing application defined outside of CDK code.
    */
-  public static fromApplicationAttributes(scope: Construct, id: string, attrs: ApplicationAttributes): IApplication {
+  public static fromApplicationAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ApplicationAttributes
+  ): IApplication {
     return new Import(scope, id, {
       applicationArn: attrs.applicationArn,
       securityGroups: attrs.securityGroups,
@@ -973,16 +1001,20 @@ export class Application extends ApplicationBase {
     super(scope, id, { physicalName: props.applicationName });
     validateApplicationProps(props);
 
-    this.role = props.role ?? new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('kinesisanalytics.amazonaws.com'),
-    });
+    this.role =
+      props.role ??
+      new iam.Role(this, 'Role', {
+        assumedBy: new iam.ServicePrincipal('kinesisanalytics.amazonaws.com'),
+      });
     this.grantPrincipal = this.role;
 
     // Permit metric publishing to CloudWatch
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['cloudwatch:PutMetricData'],
-      resources: ['*'],
-    }));
+    this.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['cloudwatch:PutMetricData'],
+        resources: ['*'],
+      })
+    );
 
     const code = props.code.bind(this);
     code.bucket.grantRead(this);
@@ -998,10 +1030,12 @@ export class Application extends ApplicationBase {
       const subnetSelection = props.vpcSubnets ?? {
         subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       };
-      vpcConfigurations = [{
-        securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
-        subnetIds: props.vpc.selectSubnets(subnetSelection).subnetIds,
-      }];
+      vpcConfigurations = [
+        {
+          securityGroupIds: securityGroups.map((sg) => sg.securityGroupId),
+          subnetIds: props.vpc.selectSubnets(subnetSelection).subnetIds,
+        },
+      ];
     }
 
     const resource = new CfnApplicationV2(this, 'Resource', {
@@ -1034,28 +1068,34 @@ export class Application extends ApplicationBase {
 
     /* Permit logging */
 
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:DescribeLogGroups'],
-      resources: [
-        core.Stack.of(this).formatArn({
-          service: 'logs',
-          resource: 'log-group',
-          arnFormat: core.ArnFormat.COLON_RESOURCE_NAME,
-          resourceName: '*',
-        }),
-      ],
-    }));
+    this.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:DescribeLogGroups'],
+        resources: [
+          core.Stack.of(this).formatArn({
+            service: 'logs',
+            resource: 'log-group',
+            arnFormat: core.ArnFormat.COLON_RESOURCE_NAME,
+            resourceName: '*',
+          }),
+        ],
+      })
+    );
 
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:DescribeLogStreams'],
-      resources: [logGroup.logGroupArn],
-    }));
+    this.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:DescribeLogStreams'],
+        resources: [logGroup.logGroupArn],
+      })
+    );
 
     const logStreamArn = `arn:${core.Aws.PARTITION}:logs:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:log-group:${logGroup.logGroupName}:log-stream:${logStream.logStreamName}`;
-    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:PutLogEvents'],
-      resources: [logStreamArn],
-    }));
+    this.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:PutLogEvents'],
+        resources: [logStreamArn],
+      })
+    );
 
     new CfnApplicationCloudWatchLoggingOptionV2(this, 'LoggingOption', {
       applicationName: resource.ref,
@@ -1067,25 +1107,27 @@ export class Application extends ApplicationBase {
     // Permissions required for VPC usage per:
     // https://docs.aws.amazon.com/kinesisanalytics/latest/java/vpc-permissions.html
     if (props.vpc) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: [
-          'ec2:DescribeVpcs',
-          'ec2:DescribeSubnets',
-          'ec2:DescribeSecurityGroups',
-          'ec2:DescribeDhcpOptions',
-          'ec2:CreateNetworkInterface',
-          'ec2:CreateNetworkInterfacePermission',
-          'ec2:DescribeNetworkInterfaces',
-          'ec2:DeleteNetworkInterface',
-        ],
-        resources: ['*'],
-      }));
+      this.role.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: [
+            'ec2:DescribeVpcs',
+            'ec2:DescribeSubnets',
+            'ec2:DescribeSecurityGroups',
+            'ec2:DescribeDhcpOptions',
+            'ec2:CreateNetworkInterface',
+            'ec2:CreateNetworkInterfacePermission',
+            'ec2:DescribeNetworkInterfaces',
+            'ec2:DeleteNetworkInterface',
+          ],
+          resources: ['*'],
+        })
+      );
     }
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
     this.applicationArn = this.getResourceArnAttribute(
       core.Stack.of(this).formatArn(applicationArnComponents(resource.ref)),
-      applicationArnComponents(this.physicalName),
+      applicationArnComponents(this.physicalName)
     );
 
     resource.applyRemovalPolicy(props.removalPolicy, {

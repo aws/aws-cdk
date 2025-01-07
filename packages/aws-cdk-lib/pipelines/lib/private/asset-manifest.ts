@@ -1,7 +1,15 @@
 // FIXME: copied from `ckd-assets`, because this tool needs to read the asset manifest aswell.
 import * as fs from 'fs';
 import * as path from 'path';
-import { AssetManifest, AwsDestination, DockerImageDestination, DockerImageSource, FileDestination, FileSource, Manifest } from '../../../cloud-assembly-schema';
+import {
+  AssetManifest,
+  AwsDestination,
+  DockerImageDestination,
+  DockerImageSource,
+  FileDestination,
+  FileSource,
+  Manifest,
+} from '../../../cloud-assembly-schema';
 
 /**
  * A manifest of assets
@@ -38,7 +46,9 @@ export class AssetManifestReader {
       throw new Error(`Cannot read asset manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
-      return AssetManifestReader.fromFile(path.join(filePath, AssetManifestReader.DEFAULT_FILENAME));
+      return AssetManifestReader.fromFile(
+        path.join(filePath, AssetManifestReader.DEFAULT_FILENAME)
+      );
     }
     return AssetManifestReader.fromFile(filePath);
   }
@@ -48,7 +58,10 @@ export class AssetManifestReader {
    */
   public readonly directory: string;
 
-  constructor(directory: string, private readonly manifest: AssetManifest) {
+  constructor(
+    directory: string,
+    private readonly manifest: AssetManifest
+  ) {
     this.directory = directory;
   }
 
@@ -60,16 +73,21 @@ export class AssetManifestReader {
    * If selection is not given, everything is returned.
    */
   public select(selection?: DestinationPattern[]): AssetManifestReader {
-    if (selection === undefined) { return this; }
+    if (selection === undefined) {
+      return this;
+    }
 
-    const ret: AssetManifest & Required<Pick<AssetManifest, AssetType>>
-      = { version: this.manifest.version, dockerImages: {}, files: {} };
+    const ret: AssetManifest & Required<Pick<AssetManifest, AssetType>> = {
+      version: this.manifest.version,
+      dockerImages: {},
+      files: {},
+    };
 
     for (const assetType of ASSET_TYPES) {
       for (const [assetId, asset] of Object.entries(this.manifest[assetType] || {})) {
-        const filteredDestinations = filterDict(
-          asset.destinations,
-          (_, destId) => selection.some(sel => sel.matches(new DestinationIdentifier(assetId, destId))));
+        const filteredDestinations = filterDict(asset.destinations, (_, destId) =>
+          selection.some((sel) => sel.matches(new DestinationIdentifier(assetId, destId)))
+        );
 
         if (Object.keys(filteredDestinations).length > 0) {
           ret[assetType][assetId] = {
@@ -92,12 +110,17 @@ export class AssetManifestReader {
       ...describeAssets('docker-image', this.manifest.dockerImages || {}),
     ];
 
-    function describeAssets(type: string, assets: Record<string, { source: any; destinations: Record<string, any> }>) {
+    function describeAssets(
+      type: string,
+      assets: Record<string, { source: any; destinations: Record<string, any> }>
+    ) {
       const ret = new Array<string>();
       for (const [assetId, asset] of Object.entries(assets || {})) {
         ret.push(`${assetId} ${type} ${JSON.stringify(asset.source)}`);
 
-        const destStrings = Object.entries(asset.destinations).map(([destId, dest]) => ` ${assetId}:${destId} ${JSON.stringify(dest)}`);
+        const destStrings = Object.entries(asset.destinations).map(
+          ([destId, dest]) => ` ${assetId}:${destId} ${JSON.stringify(dest)}`
+        );
         ret.push(...prefixTreeChars(destStrings, '  '));
       }
       return ret;
@@ -115,8 +138,8 @@ export class AssetManifestReader {
 
     function makeEntries<A, B, C>(
       assets: Record<string, { source: A; destinations: Record<string, B> }>,
-      ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
-
+      ctor: new (id: DestinationIdentifier, source: A, destination: B) => C
+    ): C[] {
       const ret = new Array<C>();
       for (const [assetId, asset] of Object.entries(assets)) {
         for (const [destId, destination] of Object.entries(asset.destinations)) {
@@ -170,7 +193,7 @@ export class FileManifestEntry implements IManifestEntry {
     /** Source of the file asset */
     public readonly source: FileSource,
     /** Destination for the file asset */
-    public readonly destination: FileDestination,
+    public readonly destination: FileDestination
   ) {
     this.genericSource = source;
   }
@@ -189,7 +212,7 @@ export class DockerImageManifestEntry implements IManifestEntry {
     /** Source of the file asset */
     public readonly source: DockerImageSource,
     /** Destination for the file asset */
-    public readonly destination: DockerImageDestination,
+    public readonly destination: DockerImageDestination
   ) {
     this.genericSource = source;
   }
@@ -222,7 +245,10 @@ export class DestinationIdentifier {
   }
 }
 
-function filterDict<A>(xs: Record<string, A>, pred: (x: A, key: string) => boolean): Record<string, A> {
+function filterDict<A>(
+  xs: Record<string, A>,
+  pred: (x: A, key: string) => boolean
+): Record<string, A> {
   const ret: Record<string, A> = {};
   for (const [key, value] of Object.entries(xs)) {
     if (pred(value, key)) {
@@ -240,10 +266,16 @@ export class DestinationPattern {
    * Parse a ':'-separated string into an asset/destination identifier
    */
   public static parse(s: string) {
-    if (!s) { throw new Error('Empty string is not a valid destination identifier'); }
-    const parts = s.split(':').map(x => x !== '*' ? x : undefined);
-    if (parts.length === 1) { return new DestinationPattern(parts[0]); }
-    if (parts.length === 2) { return new DestinationPattern(parts[0] || undefined, parts[1] || undefined); }
+    if (!s) {
+      throw new Error('Empty string is not a valid destination identifier');
+    }
+    const parts = s.split(':').map((x) => (x !== '*' ? x : undefined));
+    if (parts.length === 1) {
+      return new DestinationPattern(parts[0]);
+    }
+    if (parts.length === 2) {
+      return new DestinationPattern(parts[0] || undefined, parts[1] || undefined);
+    }
     throw new Error(`Asset identifier must contain at most 2 ':'-separated parts, got '${s}'`);
   }
 
@@ -266,8 +298,10 @@ export class DestinationPattern {
    * Whether or not this pattern matches the given identifier
    */
   public matches(id: DestinationIdentifier) {
-    return (this.assetId === undefined || this.assetId === id.assetId)
-      && (this.destinationId === undefined || this.destinationId === id.destinationId);
+    return (
+      (this.assetId === undefined || this.assetId === id.assetId) &&
+      (this.destinationId === undefined || this.destinationId === id.destinationId)
+    );
   }
 
   /**

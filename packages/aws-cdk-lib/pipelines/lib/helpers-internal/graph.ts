@@ -17,7 +17,10 @@ export class GraphNode<A> {
   public readonly data?: A;
   private _parentGraph?: Graph<A>;
 
-  constructor(public readonly id: string, props: GraphNodeProps<A> = {}) {
+  constructor(
+    public readonly id: string,
+    props: GraphNodeProps<A> = {}
+  ) {
     this.data = props.data;
   }
 
@@ -26,7 +29,9 @@ export class GraphNode<A> {
    * of all ancestors with hyphens.
    */
   public get uniqueId(): string {
-    return this.ancestorPath(this.root).map(x => x.id).join('-');
+    return this.ancestorPath(this.root)
+      .map((x) => x.id)
+      .join('-');
   }
 
   /**
@@ -162,19 +167,21 @@ export class DependencyBuilder<A> {
   }
 
   public consumersAsString() {
-    return this.consumers.map(c => `${c}`).join(',');
+    return this.consumers.map((c) => `${c}`).join(',');
   }
 }
 
 /**
  * A set of dependency builders identified by a given key.
  */
-export class DependencyBuilders<K, A=any> {
+export class DependencyBuilders<K, A = any> {
   private readonly builders = new Map<K, DependencyBuilder<A>>();
 
   public for(key: K) {
     const b = this.builders.get(key);
-    if (b) { return b; }
+    if (b) {
+      return b;
+    }
     const ret = new DependencyBuilder<A>();
     this.builders.set(key, ret);
     return ret;
@@ -214,7 +221,7 @@ export class Graph<A> extends GraphNode<A> {
 
   private readonly children = new Map<string, GraphNode<A>>();
 
-  constructor(name: string, props: GraphProps<A>={}) {
+  constructor(name: string, props: GraphProps<A> = {}) {
     super(name, props);
 
     if (props.nodes) {
@@ -255,7 +262,7 @@ export class Graph<A> extends GraphNode<A> {
   /**
    * Return topologically sorted tranches of nodes at this graph level
    */
-  public sortedChildren(fail=true): GraphNode<A>[][] {
+  public sortedChildren(fail = true): GraphNode<A>[][] {
     // Project dependencies to current children
     const nodes = this.nodes;
     const projectedDependencies = projectDependencies(this.deepDependencies(), (node) => {
@@ -291,7 +298,10 @@ export class Graph<A> extends GraphNode<A> {
       return ret;
     }
 
-    const projectedDependencies = projectDependencies(this.deepDependencies(), (node) => descendantsMap.get(node) ?? []);
+    const projectedDependencies = projectDependencies(
+      this.deepDependencies(),
+      (node) => descendantsMap.get(node) ?? []
+    );
     return topoSort(new Set(projectedDependencies.keys()), projectedDependencies);
   }
 
@@ -325,9 +335,13 @@ export class Graph<A> extends GraphNode<A> {
     const lines = new Array<string>();
 
     lines.push('digraph G {');
-    lines.push('  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen');
+    lines.push(
+      '  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen'
+    );
     lines.push('  # because the layout looks more natural that way.');
-    lines.push('  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.');
+    lines.push(
+      '  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.'
+    );
     lines.push('  # To render: `dot -Tsvg input.dot > graph.svg`, open in a browser.');
     lines.push('  node [shape="box"];');
     for (const child of this.nodes) {
@@ -374,7 +388,11 @@ export class Graph<A> extends GraphNode<A> {
     }
 
     function id(node: GraphNode<A>) {
-      return node.rootPath().slice(1).map(n => n.id).join('.');
+      return node
+        .rootPath()
+        .slice(1)
+        .map((n) => n.id)
+        .join('.');
     }
 
     function nodeLabel(node: GraphNode<A>) {
@@ -407,7 +425,7 @@ export class Graph<A> extends GraphNode<A> {
     function recurse(node: GraphNode<A>) {
       let deps = ret.get(node);
       if (!deps) {
-        ret.set(node, deps = new Set());
+        ret.set(node, (deps = new Set()));
       }
       for (let dep of node.dependencies) {
         deps.add(dep);
@@ -477,8 +495,8 @@ export class GraphNodeCollection<A> {
   }
 
   /**
-  * Returns the graph node that's shared between these nodes
-  */
+   * Returns the graph node that's shared between these nodes
+   */
   public commonAncestor() {
     const paths = new Array<GraphNode<A>[]>();
     for (const x of this.nodes) {
@@ -504,22 +522,26 @@ export class GraphNodeCollection<A> {
     //
     //   A, B, C, 1, 2    }---> C
     //   A, B, C, 3       }
-    while (paths.every(path => paths[0].length >= 2 && path.length >= 2 && path[1] === paths[0][1])) {
+    while (
+      paths.every((path) => paths[0].length >= 2 && path.length >= 2 && path[1] === paths[0][1])
+    ) {
       for (const path of paths) {
         path.shift();
       }
     }
 
     // If any of the paths are left with 1 element, there's no shared parent.
-    if (paths.some(path => path.length < 2)) {
-      throw new Error(`Could not determine a shared parent between nodes: ${originalPaths.map(nodes => nodes.map(n => n.id).join('/'))}`);
+    if (paths.some((path) => path.length < 2)) {
+      throw new Error(
+        `Could not determine a shared parent between nodes: ${originalPaths.map((nodes) => nodes.map((n) => n.id).join('/'))}`
+      );
     }
 
     return paths[0][0];
   }
 
   public toString() {
-    return this.nodes.map(n => `${n}`).join(', ');
+    return this.nodes.map((n) => `${n}`).join(', ');
   }
 }
 
@@ -528,11 +550,16 @@ export class GraphNodeCollection<A> {
  *
  * Guaranteed to return an entry in the map for every node in the current graph.
  */
-function projectDependencies<A>(dependencies: Map<GraphNode<A>, Set<GraphNode<A>>>, project: (x: GraphNode<A>) => GraphNode<A>[]) {
+function projectDependencies<A>(
+  dependencies: Map<GraphNode<A>, Set<GraphNode<A>>>,
+  project: (x: GraphNode<A>) => GraphNode<A>[]
+) {
   // Project keys
   for (const node of dependencies.keys()) {
     const projectedNodes = project(node);
-    if (projectedNodes.length === 1 && projectedNodes[0] === node) { continue; } // Nothing to do, just for efficiency
+    if (projectedNodes.length === 1 && projectedNodes[0] === node) {
+      continue;
+    } // Nothing to do, just for efficiency
 
     const deps = extract(dependencies, node)!;
     for (const projectedNode of projectedNodes) {

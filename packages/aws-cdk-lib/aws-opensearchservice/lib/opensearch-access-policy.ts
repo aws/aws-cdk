@@ -27,7 +27,6 @@ export interface OpenSearchAccessPolicyProps {
  * Creates LogGroup resource policies.
  */
 export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
-
   private accessPolicyStatements: iam.PolicyStatement[] = [];
 
   constructor(scope: Construct, id: string, props: OpenSearchAccessPolicyProps) {
@@ -40,18 +39,24 @@ export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
         parameters: {
           DomainName: props.domainName,
           AccessPolicies: cdk.Lazy.string({
-            produce: () => JSON.stringify(
-              new iam.PolicyDocument({
-                statements: this.accessPolicyStatements,
-              }).toJSON(),
-            ),
+            produce: () =>
+              JSON.stringify(
+                new iam.PolicyDocument({
+                  statements: this.accessPolicyStatements,
+                }).toJSON()
+              ),
           }),
         },
         // this is needed to limit the response body, otherwise it exceeds the CFN 4k limit
         outputPaths: ['DomainConfig.AccessPolicies'],
         physicalResourceId: cr.PhysicalResourceId.of(`${props.domainName}AccessPolicy`),
       },
-      policy: cr.AwsCustomResourcePolicy.fromStatements([new iam.PolicyStatement({ actions: ['es:UpdateDomainConfig'], resources: [props.domainArn] })]),
+      policy: cr.AwsCustomResourcePolicy.fromStatements([
+        new iam.PolicyStatement({
+          actions: ['es:UpdateDomainConfig'],
+          resources: [props.domainArn],
+        }),
+      ]),
     });
 
     this.addAccessPolicies(...props.accessPolicies);

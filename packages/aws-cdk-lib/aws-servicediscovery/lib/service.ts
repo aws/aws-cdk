@@ -166,8 +166,11 @@ export interface ServiceAttributes {
  * Define a CloudMap Service
  */
 export class Service extends ServiceBase {
-
-  public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
+  public static fromServiceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ServiceAttributes
+  ): IService {
     class Import extends ServiceBase {
       public namespace: INamespace = attrs.namespace;
       public serviceId = attrs.serviceId;
@@ -224,17 +227,14 @@ export class Service extends ServiceBase {
 
     if (namespaceType == NamespaceType.HTTP && discoveryType == DiscoveryType.DNS_AND_API) {
       throw new Error(
-        'Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace.',
+        'Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace.'
       );
     }
 
     // Validations
-    if (
-      discoveryType === DiscoveryType.API &&
-      (props.routingPolicy || props.dnsRecordType)
-    ) {
+    if (discoveryType === DiscoveryType.API && (props.routingPolicy || props.dnsRecordType)) {
       throw new Error(
-        'Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.',
+        'Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.'
       );
     }
 
@@ -246,8 +246,10 @@ export class Service extends ServiceBase {
       throw new Error('Cannot specify `healthCheckConfig` for a Private DNS namespace.');
     }
 
-    if (props.routingPolicy === RoutingPolicy.MULTIVALUE
-        && props.dnsRecordType === DnsRecordType.CNAME) {
+    if (
+      props.routingPolicy === RoutingPolicy.MULTIVALUE &&
+      props.dnsRecordType === DnsRecordType.CNAME
+    ) {
       throw new Error('Cannot use `CNAME` record when routing policy is `Multivalue`.');
     }
 
@@ -255,28 +257,34 @@ export class Service extends ServiceBase {
     // The same validation happens later on during the actual attachment
     // of LBs, but we need the property for the correct configuration of
     // routingPolicy anyway, so might as well do the validation as well.
-    if (props.routingPolicy === RoutingPolicy.MULTIVALUE
-        && props.loadBalancer) {
+    if (props.routingPolicy === RoutingPolicy.MULTIVALUE && props.loadBalancer) {
       throw new Error('Cannot register loadbalancers when routing policy is `Multivalue`.');
     }
 
-    if (props.healthCheck
-        && props.healthCheck.type === HealthCheckType.TCP
-        && props.healthCheck.resourcePath) {
+    if (
+      props.healthCheck &&
+      props.healthCheck.type === HealthCheckType.TCP &&
+      props.healthCheck.resourcePath
+    ) {
       throw new Error('Cannot specify `resourcePath` when using a `TCP` health check.');
     }
 
     // Set defaults where necessary
-    const routingPolicy = (props.dnsRecordType === DnsRecordType.CNAME) || props.loadBalancer
-      ? RoutingPolicy.WEIGHTED
-      : RoutingPolicy.MULTIVALUE;
+    const routingPolicy =
+      props.dnsRecordType === DnsRecordType.CNAME || props.loadBalancer
+        ? RoutingPolicy.WEIGHTED
+        : RoutingPolicy.MULTIVALUE;
 
     const dnsRecordType = props.dnsRecordType || DnsRecordType.A;
 
-    if (props.loadBalancer
-      && (!(dnsRecordType === DnsRecordType.A
-        || dnsRecordType === DnsRecordType.AAAA
-        || dnsRecordType === DnsRecordType.A_AAAA))) {
+    if (
+      props.loadBalancer &&
+      !(
+        dnsRecordType === DnsRecordType.A ||
+        dnsRecordType === DnsRecordType.AAAA ||
+        dnsRecordType === DnsRecordType.A_AAAA
+      )
+    ) {
       throw new Error('Must support `A` or `AAAA` records to register loadbalancers.');
     }
 
@@ -284,20 +292,22 @@ export class Service extends ServiceBase {
       discoveryType === DiscoveryType.API
         ? undefined
         : {
-          dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtl),
-          namespaceId: props.namespace.namespaceId,
-          routingPolicy,
-        };
+            dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtl),
+            namespaceId: props.namespace.namespaceId,
+            routingPolicy,
+          };
 
     const healthCheckConfigDefaults = {
       type: HealthCheckType.HTTP,
       failureThreshold: 1,
-      resourcePath: props.healthCheck && props.healthCheck.type !== HealthCheckType.TCP
-        ? '/'
-        : undefined,
+      resourcePath:
+        props.healthCheck && props.healthCheck.type !== HealthCheckType.TCP ? '/' : undefined,
     };
 
-    const healthCheckConfig = props.healthCheck && { ...healthCheckConfigDefaults, ...props.healthCheck };
+    const healthCheckConfig = props.healthCheck && {
+      ...healthCheckConfigDefaults,
+      ...props.healthCheck,
+    };
     const healthCheckCustomConfig = props.customHealthCheck;
 
     // Create service
@@ -323,7 +333,11 @@ export class Service extends ServiceBase {
   /**
    * Registers an ELB as a new instance with unique name instanceId in this service.
    */
-  public registerLoadBalancer(id: string, loadBalancer: elbv2.ILoadBalancerV2, customAttributes?: {[key: string]: string}): IInstance {
+  public registerLoadBalancer(
+    id: string,
+    loadBalancer: elbv2.ILoadBalancerV2,
+    customAttributes?: { [key: string]: string }
+  ): IInstance {
     return new AliasTargetInstance(this, id, {
       service: this,
       dnsName: loadBalancer.loadBalancerDnsName,
@@ -362,17 +376,23 @@ export class Service extends ServiceBase {
   }
 }
 
-function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtl: Duration = Duration.minutes(1)): CfnService.DnsRecordProperty[] {
+function renderDnsRecords(
+  dnsRecordType: DnsRecordType,
+  dnsTtl: Duration = Duration.minutes(1)
+): CfnService.DnsRecordProperty[] {
   const ttl = dnsTtl.toSeconds();
 
   if (dnsRecordType === DnsRecordType.A_AAAA) {
-    return [{
-      type: DnsRecordType.A,
-      ttl,
-    }, {
-      type: DnsRecordType.AAAA,
-      ttl,
-    }];
+    return [
+      {
+        type: DnsRecordType.A,
+        ttl,
+      },
+      {
+        type: DnsRecordType.AAAA,
+        ttl,
+      },
+    ];
   } else {
     return [{ type: dnsRecordType, ttl }];
   }

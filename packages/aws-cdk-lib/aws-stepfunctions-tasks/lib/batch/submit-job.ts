@@ -172,11 +172,18 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: BatchSubmitJobProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: BatchSubmitJobProps
+  ) {
     super(scope, id, props);
 
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
-    validatePatternSupported(this.integrationPattern, BatchSubmitJob.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      BatchSubmitJob.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     // validate arraySize limits
     withResolved(props.arraySize, (arraySize) => {
@@ -198,22 +205,27 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     });
 
     // validate timeout
-    (props.timeout !== undefined || props.taskTimeout !== undefined) && withResolved(
-      props.timeout?.toSeconds(),
-      props.taskTimeout?.seconds, (timeout, taskTimeout) => {
-        const definedTimeout = timeout ?? taskTimeout;
-        if (definedTimeout && definedTimeout < 60) {
-          throw new Error(`attempt duration must be greater than 60 seconds. Received ${definedTimeout} seconds.`);
+    (props.timeout !== undefined || props.taskTimeout !== undefined) &&
+      withResolved(
+        props.timeout?.toSeconds(),
+        props.taskTimeout?.seconds,
+        (timeout, taskTimeout) => {
+          const definedTimeout = timeout ?? taskTimeout;
+          if (definedTimeout && definedTimeout < 60) {
+            throw new Error(
+              `attempt duration must be greater than 60 seconds. Received ${definedTimeout} seconds.`
+            );
+          }
         }
-      });
+      );
 
     // This is required since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
     if (props.containerOverrides?.environment) {
-      Object.keys(props.containerOverrides.environment).forEach(key => {
+      Object.keys(props.containerOverrides.environment).forEach((key) => {
         if (key.match(/^AWS_BATCH/)) {
           throw new Error(
-            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`,
+            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`
           );
         }
       });
@@ -245,29 +257,23 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
         JobQueue: this.props.jobQueueArn,
         Parameters: this.props.payload?.value,
         ArrayProperties:
-          this.props.arraySize !== undefined
-            ? { Size: this.props.arraySize }
-            : undefined,
+          this.props.arraySize !== undefined ? { Size: this.props.arraySize } : undefined,
 
         ContainerOverrides: this.props.containerOverrides
           ? this.configureContainerOverrides(this.props.containerOverrides)
           : undefined,
 
         DependsOn: this.props.dependsOn
-          ? this.props.dependsOn.map(jobDependency => ({
-            JobId: jobDependency.jobId,
-            Type: jobDependency.type,
-          }))
+          ? this.props.dependsOn.map((jobDependency) => ({
+              JobId: jobDependency.jobId,
+              Type: jobDependency.type,
+            }))
           : undefined,
 
         RetryStrategy:
-          this.props.attempts !== undefined
-            ? { Attempts: this.props.attempts }
-            : undefined,
+          this.props.attempts !== undefined ? { Attempts: this.props.attempts } : undefined,
         Tags: this.props.tags,
-        Timeout: timeout
-          ? { AttemptDurationSeconds: timeout }
-          : undefined,
+        Timeout: timeout ? { AttemptDurationSeconds: timeout } : undefined,
       }),
       TimeoutSeconds: undefined,
       TimeoutSecondsPath: undefined,
@@ -305,38 +311,30 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
   private configureContainerOverrides(containerOverrides: BatchContainerOverrides) {
     let environment;
     if (containerOverrides.environment) {
-      environment = Object.entries(containerOverrides.environment).map(
-        ([key, value]) => ({
-          Name: key,
-          Value: value,
-        }),
-      );
+      environment = Object.entries(containerOverrides.environment).map(([key, value]) => ({
+        Name: key,
+        Value: value,
+      }));
     }
 
     let resources: Array<any> = [];
     if (containerOverrides.gpuCount) {
-      resources.push(
-        {
-          Type: 'GPU',
-          Value: `${containerOverrides.gpuCount}`,
-        },
-      );
+      resources.push({
+        Type: 'GPU',
+        Value: `${containerOverrides.gpuCount}`,
+      });
     }
     if (containerOverrides.memory) {
-      resources.push(
-        {
-          Type: 'MEMORY',
-          Value: `${containerOverrides.memory.toMebibytes()}`,
-        },
-      );
+      resources.push({
+        Type: 'MEMORY',
+        Value: `${containerOverrides.memory.toMebibytes()}`,
+      });
     }
     if (containerOverrides.vcpus) {
-      resources.push(
-        {
-          Type: 'VCPU',
-          Value: `${containerOverrides.vcpus}`,
-        },
-      );
+      resources.push({
+        Type: 'VCPU',
+        Value: `${containerOverrides.vcpus}`,
+      });
     }
 
     return {

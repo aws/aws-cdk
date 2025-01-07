@@ -32,14 +32,19 @@ export class Guardrail {
    * @param guardrailIdentifier The identitifier of guardrail.
    * @param guardrailVersion The version of guardrail.
    */
-  private constructor(public readonly guardrailIdentifier: string, public readonly guardrailVersion: string) {
+  private constructor(
+    public readonly guardrailIdentifier: string,
+    public readonly guardrailVersion: string
+  ) {
     if (!Token.isUnresolved(guardrailIdentifier)) {
       let gurdrailId = undefined;
 
       if (guardrailIdentifier.startsWith('arn:')) {
         const arn = Arn.split(guardrailIdentifier, ArnFormat.SLASH_RESOURCE_NAME);
         if (!arn.resourceName) {
-          throw new Error(`Invalid ARN format. The ARN of Guradrail should have the format: \`arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>\`, got ${guardrailIdentifier}.`);
+          throw new Error(
+            `Invalid ARN format. The ARN of Guradrail should have the format: \`arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>\`, got ${guardrailIdentifier}.`
+          );
         }
         gurdrailId = arn.resourceName;
       } else {
@@ -48,11 +53,15 @@ export class Guardrail {
 
       const guardrailPattern = /^[a-z0-9]+$/;
       if (!guardrailPattern.test(gurdrailId)) {
-        throw new Error(`The id of Guardrail must contain only lowercase letters and numbers, got ${gurdrailId}.`);
+        throw new Error(
+          `The id of Guardrail must contain only lowercase letters and numbers, got ${gurdrailId}.`
+        );
       }
 
       if (guardrailIdentifier.length > 2048) {
-        throw new Error(`\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);
+        throw new Error(
+          `\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`
+        );
       }
     }
   }

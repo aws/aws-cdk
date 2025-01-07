@@ -15,7 +15,7 @@ import * as cxschema from '../../cloud-assembly-schema';
 CloudArtifact.fromManifest = function fromManifest(
   assembly: CloudAssembly,
   id: string,
-  artifact: cxschema.ArtifactManifest,
+  artifact: cxschema.ArtifactManifest
 ): CloudArtifact | undefined {
   switch (artifact.type) {
     case cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK:

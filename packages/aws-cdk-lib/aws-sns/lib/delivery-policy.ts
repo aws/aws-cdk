@@ -103,7 +103,6 @@ export interface HealthyRetryPolicy {
  * Options for customising the delivery of SNS messages to HTTP/S endpoints.
  */
 export interface DeliveryPolicy {
-
   /**
    * The retry policy of the delivery of SNS messages to HTTP/S endpoints.
    *

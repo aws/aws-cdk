@@ -233,12 +233,12 @@ export class Table extends TableBase {
    * Specify a Redshift table using a table name and schema that already exists.
    */
   static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
-    return new class extends TableBase {
+    return new (class extends TableBase {
       readonly tableName = attrs.tableName;
       readonly tableColumns = attrs.tableColumns;
       readonly cluster = attrs.cluster;
       readonly databaseName = attrs.databaseName;
-    }(scope, id);
+    })(scope, id);
   }
 
   readonly tableName: string;
@@ -313,26 +313,34 @@ export class Table extends TableBase {
   private validateDistStyle(distStyle: TableDistStyle, columns: Column[]): void {
     const distKeyColumn = getDistKeyColumn(columns);
     if (distKeyColumn && distStyle !== TableDistStyle.KEY) {
-      throw new Error(`Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${distStyle}`);
+      throw new Error(
+        `Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${distStyle}`
+      );
     }
     if (!distKeyColumn && distStyle === TableDistStyle.KEY) {
-      throw new Error('distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.');
+      throw new Error(
+        'distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.'
+      );
     }
   }
 
   private validateSortStyle(sortStyle: TableSortStyle, columns: Column[]): void {
     const sortKeyColumns = getSortKeyColumns(columns);
     if (sortKeyColumns.length === 0 && sortStyle !== TableSortStyle.AUTO) {
-      throw new Error(`sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`);
+      throw new Error(
+        `sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`
+      );
     }
     if (sortKeyColumns.length > 0 && sortStyle === TableSortStyle.AUTO) {
-      throw new Error(`sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`);
+      throw new Error(
+        `sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`
+      );
     }
   }
 
   private getDefaultSortStyle(columns: Column[]): TableSortStyle {
     const sortKeyColumns = getSortKeyColumns(columns);
-    return (sortKeyColumns.length === 0) ? TableSortStyle.AUTO : TableSortStyle.COMPOUND;
+    return sortKeyColumns.length === 0 ? TableSortStyle.AUTO : TableSortStyle.COMPOUND;
   }
 
   private configureTableColumns(columns: Column[]): Column[] {

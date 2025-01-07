@@ -10,7 +10,7 @@ type AwsSdkMetadataItem = { iamPrefix: string };
 /**
  * AWS SDK service metadata.
  */
-export type AwsSdkMetadata = {[key: string]: AwsSdkMetadataItem | {}};
+export type AwsSdkMetadata = { [key: string]: AwsSdkMetadataItem | {} };
 
 const awsSdkMetadata: AwsSdkMetadata = metadata;
 
@@ -82,22 +82,28 @@ export class AwsApi implements events.IRuleTarget {
    * result from an EventBridge event.
    */
   public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
-    const handler = new AwsApiSingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
-      timeout: Duration.seconds(60),
-      memorySize: 256,
-      uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
-      lambdaPurpose: 'AWS',
-    });
+    const handler = new AwsApiSingletonFunction(
+      rule as events.Rule,
+      `${rule.node.id}${id}Handler`,
+      {
+        timeout: Duration.seconds(60),
+        memorySize: 256,
+        uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
+        lambdaPurpose: 'AWS',
+      }
+    );
 
     checkServiceExists(this.props.service, handler);
 
     if (this.props.policyStatement) {
       handler.addToRolePolicy(this.props.policyStatement);
     } else {
-      handler.addToRolePolicy(new iam.PolicyStatement({
-        actions: [awsSdkToIamAction(this.props.service, this.props.action)],
-        resources: ['*'],
-      }));
+      handler.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: [awsSdkToIamAction(this.props.service, this.props.action)],
+          resources: ['*'],
+        })
+      );
     }
 
     // Allow handler to be called from rule
@@ -126,8 +132,11 @@ export class AwsApi implements events.IRuleTarget {
 function checkServiceExists(service: string, handler: lambda.SingletonFunction) {
   const sdkService = awsSdkMetadata[service.toLowerCase()];
   if (!sdkService) {
-    Annotations.of(handler).addWarningV2(`@aws-cdk/aws-events-targets:${service}DoesNotExist`, `Service ${service} does not exist in the AWS SDK. Check the list of available \
-services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html`);
+    Annotations.of(handler).addWarningV2(
+      `@aws-cdk/aws-events-targets:${service}DoesNotExist`,
+      `Service ${service} does not exist in the AWS SDK. Check the list of available \
+services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html`
+    );
   }
 }
 

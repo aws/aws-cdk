@@ -39,14 +39,15 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrModifyInstanceGroupByNameProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EmrModifyInstanceGroupByNameProps
+  ) {
     super(scope, id, props);
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: [
-          'elasticmapreduce:ModifyInstanceGroups',
-          'elasticmapreduce:ListInstanceGroups',
-        ],
+        actions: ['elasticmapreduce:ModifyInstanceGroups', 'elasticmapreduce:ListInstanceGroups'],
         resources: [
           Stack.of(this).formatArn({
             service: 'elasticmapreduce',
@@ -63,7 +64,11 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceGroupByName', sfn.IntegrationPattern.REQUEST_RESPONSE),
+      Resource: integrationResourceArn(
+        'elasticmapreduce',
+        'modifyInstanceGroupByName',
+        sfn.IntegrationPattern.REQUEST_RESPONSE
+      ),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         InstanceGroupName: this.props.instanceGroupName,

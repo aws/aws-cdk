@@ -32,7 +32,10 @@ export class RuntimeManagementMode {
    */
   readonly runtimeManagementConfig: CfnFunction.RuntimeManagementConfigProperty;
 
-  protected constructor(public readonly mode: string, public readonly arn?: string) {
+  protected constructor(
+    public readonly mode: string,
+    public readonly arn?: string
+  ) {
     if (arn) {
       this.runtimeManagementConfig = {
         runtimeVersionArn: arn,

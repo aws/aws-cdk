@@ -72,18 +72,24 @@ export class Route extends cdk.Resource implements IRoute {
    * Import an existing Route given an ARN
    */
   public static fromRouteArn(scope: Construct, id: string, routeArn: string): IRoute {
-    return new class extends cdk.Resource implements IRoute {
+    return new (class extends cdk.Resource implements IRoute {
       readonly routeArn = routeArn;
       readonly virtualRouter = VirtualRouter.fromVirtualRouterArn(this, 'VirtualRouter', routeArn);
-      readonly routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(routeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
-    }(scope, id);
+      readonly routeName = cdk.Fn.select(
+        4,
+        cdk.Fn.split(
+          '/',
+          cdk.Stack.of(scope).splitArn(routeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!
+        )
+      );
+    })(scope, id);
   }
 
   /**
    * Import an existing Route given attributes
    */
   public static fromRouteAttributes(scope: Construct, id: string, attrs: RouteAttributes): IRoute {
-    return new class extends cdk.Resource implements IRoute {
+    return new (class extends cdk.Resource implements IRoute {
       readonly routeName = attrs.routeName;
       readonly virtualRouter = attrs.virtualRouter;
       readonly routeArn = cdk.Stack.of(this).formatArn({
@@ -91,7 +97,7 @@ export class Route extends cdk.Resource implements IRoute {
         resource: `mesh/${attrs.virtualRouter.mesh.meshName}/virtualRouter/${attrs.virtualRouter.virtualRouterName}/route`,
         resourceName: this.routeName,
       });
-    }(scope, id);
+    })(scope, id);
   }
 
   /**

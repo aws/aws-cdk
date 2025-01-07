@@ -14,7 +14,7 @@ export enum SharePermission {
    * Allows principals in the share to associate resources and attribute groups with applications.
    */
   ALLOW_ACCESS,
-};
+}
 
 /**
  * The options that are passed into a share of an Application or Attribute Group.
@@ -66,7 +66,7 @@ export interface ShareOptions {
  */
 export function hashValues(...values: string[]): string {
   const sha256 = crypto.createHash('sha256');
-  values.forEach(val => sha256.update(val));
+  values.forEach((val) => sha256.update(val));
   return sha256.digest('hex').slice(0, 12);
 }
 
@@ -78,10 +78,10 @@ export function hashValues(...values: string[]): string {
  */
 export function getPrincipalsforSharing(options: ShareOptions): string[] {
   const principals = [
-    ...options.accounts ?? [],
-    ...options.organizationArns ?? [],
-    ...options.users ? options.users.map(user => user.userArn) : [],
-    ...options.roles ? options.roles.map(role => role.roleArn) : [],
+    ...(options.accounts ?? []),
+    ...(options.organizationArns ?? []),
+    ...(options.users ? options.users.map((user) => user.userArn) : []),
+    ...(options.roles ? options.roles.map((role) => role.roleArn) : []),
   ];
 
   if (principals.length == 0) {

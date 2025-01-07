@@ -182,7 +182,11 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
    * @param id The construct's name
    * @param accountId The account ID
    */
-  public static fromAccountId(scope: Construct, id: string, accountId: string): IAccountAuditConfiguration {
+  public static fromAccountId(
+    scope: Construct,
+    id: string,
+    accountId: string
+  ): IAccountAuditConfiguration {
     class Import extends Resource implements IAccountAuditConfiguration {
       public readonly accountId = accountId;
     }
@@ -210,7 +214,9 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
     new iot.CfnAccountAuditConfiguration(this, 'Resource', {
       accountId: this.accountId,
       auditCheckConfigurations: this.renderAuditCheckConfigurations(props?.checkConfiguration),
-      auditNotificationTargetConfigurations: this.renderAuditNotificationTargetConfigurations(props?.targetTopic),
+      auditNotificationTargetConfigurations: this.renderAuditNotificationTargetConfigurations(
+        props?.targetTopic
+      ),
       roleArn: auditRole.roleArn,
     });
   }
@@ -219,7 +225,7 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
    * Render the audit notification target configurations
    */
   private renderAuditNotificationTargetConfigurations(
-    targetTopic?: sns.ITopic,
+    targetTopic?: sns.ITopic
   ): iot.CfnAccountAuditConfiguration.AuditNotificationTargetConfigurationsProperty | undefined {
     if (!targetTopic) {
       return undefined;
@@ -251,37 +257,67 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
   /**
    * Render the audit check configurations
    */
-  private renderAuditCheckConfigurations(checkConfiguration?: CheckConfiguration): iot.CfnAccountAuditConfiguration.AuditCheckConfigurationsProperty {
+  private renderAuditCheckConfigurations(
+    checkConfiguration?: CheckConfiguration
+  ): iot.CfnAccountAuditConfiguration.AuditCheckConfigurationsProperty {
     return {
-      authenticatedCognitoRoleOverlyPermissiveCheck:
-        this.renderAuditCheckConfiguration(checkConfiguration?.authenticatedCognitoRoleOverlyPermissiveCheck),
-      caCertificateExpiringCheck: this.renderAuditCheckConfiguration(checkConfiguration?.caCertificateExpiringCheck),
-      caCertificateKeyQualityCheck: this.renderAuditCheckConfiguration(checkConfiguration?.caCertificateKeyQualityCheck),
-      conflictingClientIdsCheck: this.renderAuditCheckConfiguration(checkConfiguration?.conflictingClientIdsCheck),
-      deviceCertificateExpiringCheck: this.renderAuditCheckConfiguration(checkConfiguration?.deviceCertificateExpiringCheck),
-      deviceCertificateKeyQualityCheck: this.renderAuditCheckConfiguration(checkConfiguration?.deviceCertificateKeyQualityCheck),
-      deviceCertificateSharedCheck: this.renderAuditCheckConfiguration(checkConfiguration?.deviceCertificateSharedCheck),
-      intermediateCaRevokedForActiveDeviceCertificatesCheck:
-        this.renderAuditCheckConfiguration(checkConfiguration?.intermediateCaRevokedForActiveDeviceCertificatesCheck),
-      iotPolicyOverlyPermissiveCheck: this.renderAuditCheckConfiguration(checkConfiguration?.iotPolicyOverlyPermissiveCheck),
-      ioTPolicyPotentialMisConfigurationCheck: this.renderAuditCheckConfiguration(checkConfiguration?.ioTPolicyPotentialMisConfigurationCheck),
-      iotRoleAliasAllowsAccessToUnusedServicesCheck:
-        this.renderAuditCheckConfiguration(checkConfiguration?.iotRoleAliasAllowsAccessToUnusedServicesCheck),
-      iotRoleAliasOverlyPermissiveCheck: this.renderAuditCheckConfiguration(checkConfiguration?.iotRoleAliasOverlyPermissiveCheck),
-      loggingDisabledCheck: this.renderAuditCheckConfiguration(checkConfiguration?.loggingDisabledCheck),
-      revokedCaCertificateStillActiveCheck: this.renderAuditCheckConfiguration(checkConfiguration?.revokedCaCertificateStillActiveCheck),
-      revokedDeviceCertificateStillActiveCheck:
-        this.renderAuditCheckConfiguration(checkConfiguration?.revokedDeviceCertificateStillActiveCheck),
-      unauthenticatedCognitoRoleOverlyPermissiveCheck:
-        this.renderAuditCheckConfiguration(checkConfiguration?.unauthenticatedCognitoRoleOverlyPermissiveCheck),
+      authenticatedCognitoRoleOverlyPermissiveCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.authenticatedCognitoRoleOverlyPermissiveCheck
+      ),
+      caCertificateExpiringCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.caCertificateExpiringCheck
+      ),
+      caCertificateKeyQualityCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.caCertificateKeyQualityCheck
+      ),
+      conflictingClientIdsCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.conflictingClientIdsCheck
+      ),
+      deviceCertificateExpiringCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.deviceCertificateExpiringCheck
+      ),
+      deviceCertificateKeyQualityCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.deviceCertificateKeyQualityCheck
+      ),
+      deviceCertificateSharedCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.deviceCertificateSharedCheck
+      ),
+      intermediateCaRevokedForActiveDeviceCertificatesCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.intermediateCaRevokedForActiveDeviceCertificatesCheck
+      ),
+      iotPolicyOverlyPermissiveCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.iotPolicyOverlyPermissiveCheck
+      ),
+      ioTPolicyPotentialMisConfigurationCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.ioTPolicyPotentialMisConfigurationCheck
+      ),
+      iotRoleAliasAllowsAccessToUnusedServicesCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.iotRoleAliasAllowsAccessToUnusedServicesCheck
+      ),
+      iotRoleAliasOverlyPermissiveCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.iotRoleAliasOverlyPermissiveCheck
+      ),
+      loggingDisabledCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.loggingDisabledCheck
+      ),
+      revokedCaCertificateStillActiveCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.revokedCaCertificateStillActiveCheck
+      ),
+      revokedDeviceCertificateStillActiveCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.revokedDeviceCertificateStillActiveCheck
+      ),
+      unauthenticatedCognitoRoleOverlyPermissiveCheck: this.renderAuditCheckConfiguration(
+        checkConfiguration?.unauthenticatedCognitoRoleOverlyPermissiveCheck
+      ),
     };
   }
 
   /**
    * Render the audit check configuration
    */
-  private renderAuditCheckConfiguration(check?: boolean): iot.CfnAccountAuditConfiguration.AuditCheckConfigurationProperty | undefined {
+  private renderAuditCheckConfiguration(
+    check?: boolean
+  ): iot.CfnAccountAuditConfiguration.AuditCheckConfigurationProperty | undefined {
     return check === false ? undefined : { enabled: true };
   }
 }
-

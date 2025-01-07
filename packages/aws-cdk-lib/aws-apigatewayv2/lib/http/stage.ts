@@ -137,7 +137,11 @@ export class HttpStage extends HttpStageBase {
   /**
    * Import an existing stage into this CDK app.
    */
-  public static fromHttpStageAttributes(scope: Construct, id: string, attrs: HttpStageAttributes): IHttpStage {
+  public static fromHttpStageAttributes(
+    scope: Construct,
+    id: string,
+    attrs: HttpStageAttributes
+  ): IHttpStage {
     class Import extends HttpStageBase {
       protected readonly baseApi = attrs.api;
       public readonly stageName = attrs.stageName;
@@ -167,10 +171,12 @@ export class HttpStage extends HttpStageBase {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
-      defaultRouteSettings: !props.throttle ? undefined : {
-        throttlingBurstLimit: props.throttle?.burstLimit,
-        throttlingRateLimit: props.throttle?.rateLimit,
-      },
+      defaultRouteSettings: !props.throttle
+        ? undefined
+        : {
+            throttlingBurstLimit: props.throttle?.burstLimit,
+            throttlingRateLimit: props.throttle?.rateLimit,
+          },
       description: props.description,
     });
 
@@ -194,7 +200,9 @@ export class HttpStage extends HttpStageBase {
 
   public get domainUrl(): string {
     if (!this._apiMapping) {
-      throw new Error('domainUrl is not available when no API mapping is associated with the Stage');
+      throw new Error(
+        'domainUrl is not available when no API mapping is associated with the Stage'
+      );
     }
 
     return `https://${this._apiMapping.domainName.name}/${this._apiMapping.mappingKey ?? ''}`;

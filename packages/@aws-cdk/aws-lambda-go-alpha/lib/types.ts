@@ -34,7 +34,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no build arguments are passed
    */
-  readonly buildArgs?: { [key:string] : string };
+  readonly buildArgs?: { [key: string]: string };
 
   /**
    * Determines how the asset hash is calculated. Assets will

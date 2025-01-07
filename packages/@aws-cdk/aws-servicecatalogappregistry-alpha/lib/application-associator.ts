@@ -41,16 +41,21 @@ export class ApplicationAssociator extends Construct {
     super(scope, id);
 
     if (props.applications.length != 1) {
-      throw new Error('Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property');
+      throw new Error(
+        'Please pass exactly 1 instance of TargetApplication.createApplicationStack() or TargetApplication.existingApplicationFromArn() into the "applications" property'
+      );
     }
 
     const targetApplication = props.applications[0];
     const targetBindResult = targetApplication.bind(scope);
     this.application = targetBindResult.application;
     this.associateCrossAccountStacks = targetBindResult.associateCrossAccountStacks;
-    cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this, {
-      associateCrossAccountStacks: this.associateCrossAccountStacks,
-    }), { priority: cdk.AspectPriority.MUTATING });
+    cdk.Aspects.of(scope).add(
+      new CheckedStageStackAssociator(this, {
+        associateCrossAccountStacks: this.associateCrossAccountStacks,
+      }),
+      { priority: cdk.AspectPriority.MUTATING }
+    );
   }
 
   /**
@@ -59,9 +64,12 @@ export class ApplicationAssociator extends Construct {
    */
   public associateStage(stage: cdk.Stage): cdk.Stage {
     this.associatedStages.add(stage);
-    cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this, {
-      associateCrossAccountStacks: this.associateCrossAccountStacks,
-    }), { priority: cdk.AspectPriority.MUTATING });
+    cdk.Aspects.of(stage).add(
+      new CheckedStageStackAssociator(this, {
+        associateCrossAccountStacks: this.associateCrossAccountStacks,
+      }),
+      { priority: cdk.AspectPriority.MUTATING }
+    );
     return stage;
   }
 

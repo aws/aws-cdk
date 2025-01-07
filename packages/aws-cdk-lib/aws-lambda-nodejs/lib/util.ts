@@ -78,9 +78,13 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 
   if (proc.status !== 0) {
     if (proc.stdout || proc.stderr) {
-      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+      throw new Error(
+        `[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`
+      );
     }
-    throw new Error(`${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`);
+    throw new Error(
+      `${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`
+    );
   }
 
   return proc;
@@ -101,11 +105,15 @@ export function tryGetModuleVersionFromRequire(mod: string): string | undefined 
 /**
  * Gets module version from package.json content
  */
-export function tryGetModuleVersionFromPkg(mod: string, pkgJson: { [key: string]: any }, pkgPath: string): string | undefined {
+export function tryGetModuleVersionFromPkg(
+  mod: string,
+  pkgJson: { [key: string]: any },
+  pkgPath: string
+): string | undefined {
   const dependencies = {
-    ...pkgJson.dependencies ?? {},
-    ...pkgJson.devDependencies ?? {},
-    ...pkgJson.peerDependencies ?? {},
+    ...(pkgJson.dependencies ?? {}),
+    ...(pkgJson.devDependencies ?? {}),
+    ...(pkgJson.peerDependencies ?? {}),
   };
 
   if (!dependencies[mod]) {
@@ -117,7 +125,7 @@ export function tryGetModuleVersionFromPkg(mod: string, pkgJson: { [key: string]
   if (fileMatch && !path.isAbsolute(fileMatch[1])) {
     const absoluteFilePath = path.join(path.dirname(pkgPath), fileMatch[1]);
     return `file:${absoluteFilePath}`;
-  };
+  }
 
   return dependencies[mod];
 }
@@ -135,10 +143,12 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   const pkgJson = require(pkgPath); // eslint-disable-line @typescript-eslint/no-require-imports
 
   for (const mod of modules) {
-    const version = tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath)
-      ?? tryGetModuleVersionFromRequire(mod);
+    const version =
+      tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath) ?? tryGetModuleVersionFromRequire(mod);
     if (!version) {
-      throw new Error(`Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
+      throw new Error(
+        `Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`
+      );
     }
     dependencies[mod] = version;
   }
@@ -148,12 +158,7 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
 
 export function getTsconfigCompilerOptions(tsconfigPath: string): string {
   const compilerOptions = extractTsConfig(tsconfigPath);
-  const excludedCompilerOptions = [
-    'composite',
-    'charset',
-    'noEmit',
-    'tsBuildInfoFile',
-  ];
+  const excludedCompilerOptions = ['composite', 'charset', 'noEmit', 'tsBuildInfoFile'];
 
   const options: Record<string, any> = {
     ...compilerOptions,
@@ -165,37 +170,41 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
   };
 
   let compilerOptionsString = '';
-  Object.keys(options).sort().forEach((key: string) => {
+  Object.keys(options)
+    .sort()
+    .forEach((key: string) => {
+      if (excludedCompilerOptions.includes(key)) {
+        return;
+      }
 
-    if (excludedCompilerOptions.includes(key)) {
-      return;
-    }
+      const value = options[key];
+      const option = '--' + key;
+      const type = typeof value;
 
-    const value = options[key];
-    const option = '--' + key;
-    const type = typeof value;
-
-    if (type === 'boolean') {
-      if (value) {
-        compilerOptionsString += option + ' ';
+      if (type === 'boolean') {
+        if (value) {
+          compilerOptionsString += option + ' ';
+        } else {
+          compilerOptionsString += option + ' false ';
+        }
+      } else if (type === 'string') {
+        compilerOptionsString += option + ' ' + value + ' ';
+      } else if (type === 'object') {
+        if (Array.isArray(value)) {
+          compilerOptionsString += option + ' ' + value.join(',') + ' ';
+        }
       } else {
-        compilerOptionsString += option + ' false ';
+        throw new Error(`Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
       }
-    } else if (type === 'string') {
-      compilerOptionsString += option + ' ' + value + ' ';
-    } else if (type === 'object') {
-      if (Array.isArray(value)) {
-        compilerOptionsString += option + ' ' + value.join(',') + ' ';
-      }
-    } else {
-      throw new Error(`Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
-    }
-  });
+    });
 
   return compilerOptionsString.trim();
 }
 
-function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<string, any>): Record<string, any> | undefined {
+function extractTsConfig(
+  tsconfigPath: string,
+  previousCompilerOptions?: Record<string, any>
+): Record<string, any> | undefined {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { extends: extendedConfig, compilerOptions } = require(tsconfigPath);
   const updatedCompilerOptions = {
@@ -205,7 +214,7 @@ function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<
   if (extendedConfig) {
     return extractTsConfig(
       path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig),
-      updatedCompilerOptions,
+      updatedCompilerOptions
     );
   }
   return updatedCompilerOptions;
@@ -226,5 +235,7 @@ export function isSdkV2Runtime(runtime: Runtime): boolean {
     Runtime.NODEJS_16_X,
   ];
 
-  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
+  return sdkV2RuntimeList.some((r) => {
+    return r.family === runtime.family && r.name === runtime.name;
+  });
 }

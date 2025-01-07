@@ -72,7 +72,6 @@ export interface BundlingProps extends BundlingOptions {
  * Bundling
  */
 export class Bundling implements cdk.BundlingOptions {
-
   public static bundle(options: BundlingProps): AssetCode {
     const bundling = new Bundling(options);
 
@@ -96,7 +95,8 @@ export class Bundling implements cdk.BundlingOptions {
     });
   }
 
-  public static clearRunsLocallyCache(): void { // for tests
+  public static clearRunsLocallyCache(): void {
+    // for tests
     this.runsLocally = undefined;
   }
 
@@ -119,9 +119,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly relativeEntryPath: string;
 
   constructor(private readonly props: BundlingProps) {
-    Bundling.runsLocally = Bundling.runsLocally
-      ?? getGoBuildVersion()
-      ?? false;
+    Bundling.runsLocally = Bundling.runsLocally ?? getGoBuildVersion() ?? false;
 
     const projectRoot = path.dirname(props.moduleDir);
     this.relativeEntryPath = `./${path.relative(projectRoot, path.resolve(props.entry))}`;
@@ -143,16 +141,20 @@ export class Bundling implements cdk.BundlingOptions {
     // Docker bundling
     const shouldBuildImage = props.forcedDockerBundling || !Bundling.runsLocally;
     this.image = shouldBuildImage
-      ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
-        buildArgs: {
-          ...props.buildArgs ?? {},
-          IMAGE: Runtime.GO_1_X.bundlingImage.image, // always use the GO_1_X build image
-        },
-        platform: props.architecture.dockerPlatform,
-      })
+      ? (props.dockerImage ??
+        cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
+          buildArgs: {
+            ...(props.buildArgs ?? {}),
+            IMAGE: Runtime.GO_1_X.bundlingImage.image, // always use the GO_1_X build image
+          },
+          platform: props.architecture.dockerPlatform,
+        }))
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
-    const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
+    const bundlingCommand = this.createBundlingCommand(
+      cdk.AssetStaging.BUNDLING_INPUT_DIR,
+      cdk.AssetStaging.BUNDLING_OUTPUT_DIR
+    );
     this.command = props.command ?? ['bash', '-c', bundlingCommand];
     this.environment = environment;
     this.entrypoint = props.entrypoint;
@@ -165,10 +167,12 @@ export class Bundling implements cdk.BundlingOptions {
     this.bundlingFileAccess = props.bundlingFileAccess;
 
     // Local bundling
-    if (!props.forcedDockerBundling) { // only if Docker is not forced
+    if (!props.forcedDockerBundling) {
+      // only if Docker is not forced
 
       const osPlatform = os.platform();
-      const createLocalCommand = (outputDir: string) => this.createBundlingCommand(projectRoot, outputDir, osPlatform);
+      const createLocalCommand = (outputDir: string) =>
+        this.createBundlingCommand(projectRoot, outputDir, osPlatform);
 
       this.local = {
         tryBundle(outputDir: string) {
@@ -180,20 +184,18 @@ export class Bundling implements cdk.BundlingOptions {
           const localCommand = createLocalCommand(outputDir);
           exec(
             osPlatform === 'win32' ? 'cmd' : 'bash',
-            [
-              osPlatform === 'win32' ? '/c' : '-c',
-              localCommand,
-            ],
+            [osPlatform === 'win32' ? '/c' : '-c', localCommand],
             {
-              env: { ...process.env, ...environment ?? {} },
-              stdio: [ // show output
+              env: { ...process.env, ...(environment ?? {}) },
+              stdio: [
+                // show output
                 'ignore', // ignore stdio
                 process.stderr, // redirect stdout to stderr
                 'inherit', // inherit stderr
               ],
               cwd: path.dirname(props.moduleDir),
               windowsVerbatimArguments: osPlatform === 'win32',
-            },
+            }
           );
           return true;
         },
@@ -201,23 +203,31 @@ export class Bundling implements cdk.BundlingOptions {
     }
   }
 
-  public createBundlingCommand(inputDir: string, outputDir: string, osPlatform: NodeJS.Platform = 'linux'): string {
+  public createBundlingCommand(
+    inputDir: string,
+    outputDir: string,
+    osPlatform: NodeJS.Platform = 'linux'
+  ): string {
     const pathJoin = osPathJoin(osPlatform);
 
     const hasVendor = findUp('vendor', path.dirname(this.props.entry));
 
     const goBuildCommand: string = [
-      'go', 'build',
-      hasVendor ? '-mod=vendor': '',
-      '-o', `"${pathJoin(outputDir, 'bootstrap')}"`,
+      'go',
+      'build',
+      hasVendor ? '-mod=vendor' : '',
+      '-o',
+      `"${pathJoin(outputDir, 'bootstrap')}"`,
       `${this.props.goBuildFlags ? this.props.goBuildFlags.join(' ') : ''}`,
       `${this.relativeEntryPath.replace(/\\/g, '/')}`,
-    ].filter(c => !!c).join(' ');
+    ]
+      .filter((c) => !!c)
+      .join(' ');
 
     return chain([
-      ...this.props.commandHooks?.beforeBundling(inputDir, outputDir) ?? [],
+      ...(this.props.commandHooks?.beforeBundling(inputDir, outputDir) ?? []),
       goBuildCommand,
-      ...this.props.commandHooks?.afterBundling(inputDir, outputDir) ?? [],
+      ...(this.props.commandHooks?.afterBundling(inputDir, outputDir) ?? []),
     ]);
   }
 }
@@ -226,7 +236,7 @@ export class Bundling implements cdk.BundlingOptions {
  * Platform specific path join
  */
 function osPathJoin(platform: NodeJS.Platform) {
-  return function(...paths: string[]): string {
+  return function (...paths: string[]): string {
     const joined = path.join(...paths);
     // If we are on win32 but need posix style paths
     if (os.platform() === 'win32' && platform !== 'win32') {
@@ -237,5 +247,5 @@ function osPathJoin(platform: NodeJS.Platform) {
 }
 
 function chain(commands: string[]): string {
-  return commands.filter(c => !!c).join(' && ');
+  return commands.filter((c) => !!c).join(' && ');
 }

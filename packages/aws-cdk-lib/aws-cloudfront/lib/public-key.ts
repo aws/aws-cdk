@@ -44,12 +44,11 @@ export interface PublicKeyProps {
  * @resource AWS::CloudFront::PublicKey
  */
 export class PublicKey extends Resource implements IPublicKey {
-
   /** Imports a Public Key from its id. */
   public static fromPublicKeyId(scope: Construct, id: string, publicKeyId: string): IPublicKey {
-    return new class extends Resource implements IPublicKey {
+    return new (class extends Resource implements IPublicKey {
       public readonly publicKeyId = publicKeyId;
-    }(scope, id);
+    })(scope, id);
   }
 
   public readonly publicKeyId: string;
@@ -57,8 +56,13 @@ export class PublicKey extends Resource implements IPublicKey {
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);
 
-    if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
-      throw new Error(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`);
+    if (
+      !Token.isUnresolved(props.encodedKey) &&
+      !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)
+    ) {
+      throw new Error(
+        `Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`
+      );
     }
 
     const resource = new CfnPublicKey(this, 'Resource', {

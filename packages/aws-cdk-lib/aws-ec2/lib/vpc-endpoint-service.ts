@@ -45,7 +45,6 @@ export interface IVpcEndpointService extends IResource {
  *
  */
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
-
   /**
    * The default value for a VPC Endpoint Service name prefix, useful if you do
    * not have a synthesize-time region literal available (all you have is
@@ -102,7 +101,10 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
   constructor(scope: Construct, id: string, props: VpcEndpointServiceProps) {
     super(scope, id);
 
-    if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
+    if (
+      props.vpcEndpointServiceLoadBalancers === undefined ||
+      props.vpcEndpointServiceLoadBalancers.length === 0
+    ) {
       throw new Error('VPC Endpoint Service must have at least one load balancer specified.');
     }
 
@@ -111,13 +113,15 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.contributorInsightsEnabled = props.contributorInsights;
 
     if (props.allowedPrincipals && props.whitelistedPrincipals) {
-      throw new Error('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead');
+      throw new Error(
+        '`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead'
+      );
     }
     this.allowedPrincipals = props.allowedPrincipals ?? props.whitelistedPrincipals ?? [];
     this.whitelistedPrincipals = this.allowedPrincipals;
 
     this.endpointService = new CfnVPCEndpointService(this, id, {
-      networkLoadBalancerArns: this.vpcEndpointServiceLoadBalancers.map(lb => lb.loadBalancerArn),
+      networkLoadBalancerArns: this.vpcEndpointServiceLoadBalancers.map((lb) => lb.loadBalancerArn),
       acceptanceRequired: this.acceptanceRequired,
       contributorInsightsEnabled: this.contributorInsightsEnabled,
     });
@@ -125,15 +129,19 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.vpcEndpointServiceId = this.endpointService.ref;
 
     const { region } = Stack.of(this);
-    const serviceNamePrefix = !Token.isUnresolved(region) ?
-      (RegionInfo.get(region).vpcEndpointServiceNamePrefix ?? VpcEndpointService.DEFAULT_PREFIX) :
-      VpcEndpointService.DEFAULT_PREFIX;
+    const serviceNamePrefix = !Token.isUnresolved(region)
+      ? (RegionInfo.get(region).vpcEndpointServiceNamePrefix ?? VpcEndpointService.DEFAULT_PREFIX)
+      : VpcEndpointService.DEFAULT_PREFIX;
 
-    this.vpcEndpointServiceName = Fn.join('.', [serviceNamePrefix, Aws.REGION, this.vpcEndpointServiceId]);
+    this.vpcEndpointServiceName = Fn.join('.', [
+      serviceNamePrefix,
+      Aws.REGION,
+      this.vpcEndpointServiceId,
+    ]);
     if (this.allowedPrincipals.length > 0) {
       new CfnVPCEndpointServicePermissions(this, 'Permissions', {
         serviceId: this.endpointService.ref,
-        allowedPrincipals: this.allowedPrincipals.map(x => x.arn),
+        allowedPrincipals: this.allowedPrincipals.map((x) => x.arn),
       });
     }
   }
@@ -144,7 +152,6 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
  *
  */
 export interface VpcEndpointServiceProps {
-
   /**
    * Name of the Vpc Endpoint Service
    * @deprecated This property is not used

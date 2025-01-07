@@ -4,7 +4,16 @@ import { ISubnet, IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
+import {
+  IResource,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  FeatureFlags,
+  Stack,
+  Tags,
+  CfnResource,
+} from '../../core';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
 /**
@@ -106,7 +115,7 @@ export abstract class FlowLogResourceType {
       resourceType: 'TransitGateway',
       resourceId: id,
     };
-  };
+  }
 
   /**
    * The Transit Gateway Attachment to attach the Flow Log to
@@ -116,7 +125,7 @@ export abstract class FlowLogResourceType {
       resourceType: 'TransitGatewayAttachment',
       resourceId: id,
     };
-  };
+  }
 
   /**
    * The type of resource to attach a flow log to.
@@ -179,7 +188,7 @@ export interface S3DestinationOptions {
  * TODO: there are other destination options, currently they are
  * only for s3 destinations (not sure if that will change)
  */
-export interface DestinationOptions extends S3DestinationOptions { }
+export interface DestinationOptions extends S3DestinationOptions {}
 
 /**
  * The destination type for the flow log
@@ -188,7 +197,10 @@ export abstract class FlowLogDestination {
   /**
    * Use CloudWatch logs as the destination
    */
-  public static toCloudWatchLogs(logGroup?: logs.ILogGroup, iamRole?: iam.IRole): FlowLogDestination {
+  public static toCloudWatchLogs(
+    logGroup?: logs.ILogGroup,
+    iamRole?: iam.IRole
+  ): FlowLogDestination {
     return new CloudWatchLogsDestination({
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
       logGroup,
@@ -204,7 +216,11 @@ export abstract class FlowLogDestination {
    * @param keyPrefix optional prefix within the bucket to write logs to
    * @param options additional s3 destination options
    */
-  public static toS3(bucket?: s3.IBucket, keyPrefix?: string, options?: S3DestinationOptions): FlowLogDestination {
+  public static toS3(
+    bucket?: s3.IBucket,
+    keyPrefix?: string,
+    options?: S3DestinationOptions
+  ): FlowLogDestination {
     return new S3Destination({
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket: bucket,
@@ -314,63 +330,62 @@ class S3Destination extends FlowLogDestination {
         ? s3Bucket.arnForObjects(`${keyPrefix}AWSLogs/aws-account-id=${stack.account}/*`)
         : s3Bucket.arnForObjects(`${keyPrefix}AWSLogs/${stack.account}/*`);
 
-      s3Bucket.addToResourcePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [
-          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
-        ],
-        resources: [
-          prefix,
-        ],
-        actions: ['s3:PutObject'],
-        conditions: {
-          StringEquals: {
-            's3:x-amz-acl': 'bucket-owner-full-control',
-            'aws:SourceAccount': stack.account,
+      s3Bucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          principals: [new iam.ServicePrincipal('delivery.logs.amazonaws.com')],
+          resources: [prefix],
+          actions: ['s3:PutObject'],
+          conditions: {
+            StringEquals: {
+              's3:x-amz-acl': 'bucket-owner-full-control',
+              'aws:SourceAccount': stack.account,
+            },
+            ArnLike: {
+              'aws:SourceArn': stack.formatArn({
+                service: 'logs',
+                resource: '*',
+              }),
+            },
           },
-          ArnLike: {
-            'aws:SourceArn': stack.formatArn({
-              service: 'logs',
-              resource: '*',
-            }),
-          },
-        },
-      }));
+        })
+      );
 
-      s3Bucket.addToResourcePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [
-          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
-        ],
-        resources: [s3Bucket.bucketArn],
-        actions: [
-          's3:GetBucketAcl',
-          's3:ListBucket',
-        ],
-        conditions: {
-          StringEquals: {
-            'aws:SourceAccount': stack.account,
+      s3Bucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          principals: [new iam.ServicePrincipal('delivery.logs.amazonaws.com')],
+          resources: [s3Bucket.bucketArn],
+          actions: ['s3:GetBucketAcl', 's3:ListBucket'],
+          conditions: {
+            StringEquals: {
+              'aws:SourceAccount': stack.account,
+            },
+            ArnLike: {
+              'aws:SourceArn': stack.formatArn({
+                service: 'logs',
+                resource: '*',
+              }),
+            },
           },
-          ArnLike: {
-            'aws:SourceArn': stack.formatArn({
-              service: 'logs',
-              resource: '*',
-            }),
-          },
-        },
-      }));
+        })
+      );
     }
     return {
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket,
       keyPrefix: this.props.keyPrefix,
-      destinationOptions: (this.props.destinationOptions?.fileFormat || this.props.destinationOptions?.perHourPartition
-      || this.props.destinationOptions?.hiveCompatiblePartitions)
-        ? {
-          fileFormat: this.props.destinationOptions.fileFormat ?? FlowLogFileFormat.PLAIN_TEXT,
-          perHourPartition: this.props.destinationOptions.perHourPartition ?? false,
-          hiveCompatiblePartitions: this.props.destinationOptions.hiveCompatiblePartitions ?? false,
-        } : undefined,
+      destinationOptions:
+        this.props.destinationOptions?.fileFormat ||
+        this.props.destinationOptions?.perHourPartition ||
+        this.props.destinationOptions?.hiveCompatiblePartitions
+          ? {
+              fileFormat: this.props.destinationOptions.fileFormat ?? FlowLogFileFormat.PLAIN_TEXT,
+              perHourPartition: this.props.destinationOptions.perHourPartition ?? false,
+              hiveCompatiblePartitions:
+                this.props.destinationOptions.hiveCompatiblePartitions ?? false,
+            }
+          : undefined,
     };
   }
 }
@@ -403,14 +418,10 @@ class CloudWatchLogsDestination extends FlowLogDestination {
 
     iamRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
-        actions: [
-          'logs:CreateLogStream',
-          'logs:PutLogEvents',
-          'logs:DescribeLogStreams',
-        ],
+        actions: ['logs:CreateLogStream', 'logs:PutLogEvents', 'logs:DescribeLogStreams'],
         effect: iam.Effect.ALLOW,
         resources: [logGroup.logGroupArn],
-      }),
+      })
     );
 
     iamRole.addToPrincipalPolicy(
@@ -418,7 +429,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
         actions: ['iam:PassRole'],
         effect: iam.Effect.ALLOW,
         resources: [iamRole.roleArn],
-      }),
+      })
     );
 
     return {
@@ -465,7 +476,6 @@ export enum FlowLogMaxAggregationInterval {
    * 10 minutes (600 seconds)
    */
   TEN_MINUTES = 600,
-
 }
 
 /**
@@ -701,7 +711,9 @@ export class LogFormat {
   /**
    * The default format.
    */
-  public static readonly ALL_DEFAULT_FIELDS = new LogFormat('${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}');
+  public static readonly ALL_DEFAULT_FIELDS = new LogFormat(
+    '${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}'
+  );
 
   /**
    * A custom format string.
@@ -868,25 +880,39 @@ export class FlowLog extends FlowLogBase {
 
     let logDestination: string | undefined = undefined;
     if (this.bucket) {
-      logDestination = this.keyPrefix ? this.bucket.arnForObjects(this.keyPrefix) : this.bucket.bucketArn;
+      logDestination = this.keyPrefix
+        ? this.bucket.arnForObjects(this.keyPrefix)
+        : this.bucket.bucketArn;
     }
     if (this.deliveryStreamArn) {
       logDestination = this.deliveryStreamArn;
     }
     let customLogFormat: string | undefined = undefined;
     if (props.logFormat) {
-      customLogFormat = props.logFormat.map(elm => {
-        return elm.value;
-      }).join(' ');
+      customLogFormat = props.logFormat
+        .map((elm) => {
+          return elm.value;
+        })
+        .join(' ');
     }
 
     let trafficType: FlowLogTrafficType | undefined = props.trafficType ?? FlowLogTrafficType.ALL;
-    if (props.resourceType.resourceType === 'TransitGateway' || props.resourceType.resourceType === 'TransitGatewayAttachment') {
+    if (
+      props.resourceType.resourceType === 'TransitGateway' ||
+      props.resourceType.resourceType === 'TransitGatewayAttachment'
+    ) {
       if (props.trafficType) {
-        throw new Error('trafficType is not supported for Transit Gateway and Transit Gateway Attachment');
+        throw new Error(
+          'trafficType is not supported for Transit Gateway and Transit Gateway Attachment'
+        );
       }
-      if (props.maxAggregationInterval && props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE) {
-        throw new Error('maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment');
+      if (
+        props.maxAggregationInterval &&
+        props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE
+      ) {
+        throw new Error(
+          'maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment'
+        );
       }
       trafficType = undefined;
     }
@@ -911,7 +937,8 @@ export class FlowLog extends FlowLogBase {
     }
 
     // we must remove a flow log configuration first before deleting objects.
-    const deleteObjects = this.bucket?.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node.defaultChild;
+    const deleteObjects = this.bucket?.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node
+      .defaultChild;
     if (deleteObjects instanceof CfnResource) {
       flowLog.addDependency(deleteObjects);
     }

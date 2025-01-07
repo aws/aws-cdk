@@ -54,8 +54,10 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
     const scopes = props.scopes ?? ['name'];
 
     // Exactly one of the properties must be configured
-    if ((!props.privateKey && !props.privateKeyValue) ||
-      (props.privateKey && props.privateKeyValue)) {
+    if (
+      (!props.privateKey && !props.privateKeyValue) ||
+      (props.privateKey && props.privateKeyValue)
+    ) {
       throw new Error('Exactly one of "privateKey" or "privateKeyValue" must be configured.');
     }
 
@@ -67,7 +69,9 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
         client_id: props.clientId,
         team_id: props.teamId,
         key_id: props.keyId,
-        private_key: props.privateKeyValue ? props.privateKeyValue.unsafeUnwrap() : props.privateKey,
+        private_key: props.privateKeyValue
+          ? props.privateKeyValue.unsafeUnwrap()
+          : props.privateKey,
         authorize_scopes: scopes.join(' '),
       },
       attributeMapping: super.configureAttributeMapping(),

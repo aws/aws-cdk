@@ -71,9 +71,11 @@ export abstract class Capacity {
       }
 
       public _renderWriteCapacity() {
-        throw new Error(`You cannot configure 'writeCapacity' with ${CapacityMode.FIXED} capacity mode`);
+        throw new Error(
+          `You cannot configure 'writeCapacity' with ${CapacityMode.FIXED} capacity mode`
+        );
       }
-    }) (CapacityMode.FIXED);
+    })(CapacityMode.FIXED);
   }
 
   /**
@@ -91,12 +93,17 @@ export abstract class Capacity {
           throw new Error('`minCapacity` must be less than or equal to `maxCapacity`');
         }
 
-        if (options.targetUtilizationPercent !== undefined && (options.targetUtilizationPercent < 20 || options.targetUtilizationPercent > 90)) {
+        if (
+          options.targetUtilizationPercent !== undefined &&
+          (options.targetUtilizationPercent < 20 || options.targetUtilizationPercent > 90)
+        ) {
           throw new Error('`targetUtilizationPercent` cannot be less than 20 or greater than 90');
         }
 
-        if (options.seedCapacity !== undefined && (options.seedCapacity < 1)) {
-          throw new Error(`'seedCapacity' cannot be less than 1 - received ${options.seedCapacity}`);
+        if (options.seedCapacity !== undefined && options.seedCapacity < 1) {
+          throw new Error(
+            `'seedCapacity' cannot be less than 1 - received ${options.seedCapacity}`
+          );
         }
       }
 
@@ -122,8 +129,7 @@ export abstract class Capacity {
           },
         };
       }
-
-    }) (CapacityMode.AUTOSCALED);
+    })(CapacityMode.AUTOSCALED);
   }
 
   private constructor(public readonly mode: CapacityMode) {}

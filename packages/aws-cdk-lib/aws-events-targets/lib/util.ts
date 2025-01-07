@@ -51,12 +51,13 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
 
   return {
     deadLetterConfig: deadLetterQueue ? { arn: deadLetterQueue?.queueArn } : undefined,
-    retryPolicy: (retryAttempts !== undefined && retryAttempts >= 0) || maxEventAge
-      ? {
-        maximumRetryAttempts: retryAttempts,
-        maximumEventAgeInSeconds: maxEventAge?.toSeconds({ integral: true }),
-      }
-      : undefined,
+    retryPolicy:
+      (retryAttempts !== undefined && retryAttempts >= 0) || maxEventAge
+        ? {
+            maximumRetryAttempts: retryAttempts,
+            maximumEventAgeInSeconds: maxEventAge?.toSeconds({ integral: true }),
+          }
+        : undefined,
   };
 }
 
@@ -70,7 +71,9 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
 export function singletonEventRole(scope: IConstruct): iam.IRole {
   const id = 'EventsRole';
   const existing = scope.node.tryFindChild(id) as iam.IRole;
-  if (existing) { return existing; }
+  if (existing) {
+    return existing;
+  }
 
   const role = new iam.Role(scope as Construct, id, {
     roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -111,7 +114,9 @@ export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunctio
  */
 export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sqs.IQueue) {
   if (!sameEnvDimension(rule.env.region, queue.env.region)) {
-    throw new Error(`Cannot assign Dead Letter Queue in region ${queue.env.region} to the rule ${Names.nodeUniqueId(rule.node)} in region ${rule.env.region}. Both the queue and the rule must be in the same region.`);
+    throw new Error(
+      `Cannot assign Dead Letter Queue in region ${queue.env.region} to the rule ${Names.nodeUniqueId(rule.node)} in region ${rule.env.region}. Both the queue and the rule must be in the same region.`
+    );
   }
 
   // Skip Resource Policy creation if the Queue is not in the same account.
@@ -120,20 +125,25 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
   if (sameEnvDimension(rule.env.account, queue.env.account)) {
     const policyStatementId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
 
-    queue.addToResourcePolicy(new iam.PolicyStatement({
-      sid: policyStatementId,
-      principals: [new iam.ServicePrincipal('events.amazonaws.com')],
-      effect: iam.Effect.ALLOW,
-      actions: ['sqs:SendMessage'],
-      resources: [queue.queueArn],
-      conditions: {
-        ArnEquals: {
-          'aws:SourceArn': rule.ruleArn,
+    queue.addToResourcePolicy(
+      new iam.PolicyStatement({
+        sid: policyStatementId,
+        principals: [new iam.ServicePrincipal('events.amazonaws.com')],
+        effect: iam.Effect.ALLOW,
+        actions: ['sqs:SendMessage'],
+        resources: [queue.queueArn],
+        conditions: {
+          ArnEquals: {
+            'aws:SourceArn': rule.ruleArn,
+          },
         },
-      },
-    }));
+      })
+    );
   } else {
-    Annotations.of(rule).addWarningV2('@aws-cdk/aws-events-targets:manuallyAddDLQResourcePolicy', `Cannot add a resource policy to your dead letter queue associated with rule ${rule.ruleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
+    Annotations.of(rule).addWarningV2(
+      '@aws-cdk/aws-events-targets:manuallyAddDLQResourcePolicy',
+      `Cannot add a resource policy to your dead letter queue associated with rule ${rule.ruleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`
+    );
   }
 }
 
@@ -153,5 +163,9 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
  * @internal
  */
 function sameEnvDimension(dim1: string, dim2: string) {
-  return [TokenComparison.SAME, TokenComparison.ONE_UNRESOLVED, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(dim1, dim2));
+  return [
+    TokenComparison.SAME,
+    TokenComparison.ONE_UNRESOLVED,
+    TokenComparison.BOTH_UNRESOLVED,
+  ].includes(Token.compareStrings(dim1, dim2));
 }

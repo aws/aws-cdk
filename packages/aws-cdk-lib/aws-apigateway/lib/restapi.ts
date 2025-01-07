@@ -17,7 +17,17 @@ import { UsagePlan, UsagePlanProps } from './usage-plan';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IVpcEndpoint } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size } from '../../core';
+import {
+  ArnFormat,
+  CfnOutput,
+  IResource as IResourceBase,
+  Resource,
+  Stack,
+  Token,
+  FeatureFlags,
+  RemovalPolicy,
+  Size,
+} from '../../core';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -210,14 +220,12 @@ export interface RestApiBaseProps {
  * Represents the props that all Rest APIs share.
  * @deprecated - superseded by `RestApiBaseProps`
  */
-export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
-}
+export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {}
 
 /**
  * Props to create a new instance of RestApi
  */
 export interface RestApiProps extends RestApiOptions {
-
   /**
    * The list of binary media mime-types that are supported by the RestApi
    * resource, such as "image/png" or "application/octet-stream"
@@ -307,7 +315,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    * @internal
    */
   public static _isRestApiBase(x: any): x is RestApiBase {
-    return x !== null && typeof(x) === 'object' && RESTAPI_SYMBOL in x;
+    return x !== null && typeof x === 'object' && RESTAPI_SYMBOL in x;
   }
 
   /**
@@ -371,7 +379,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 
   protected cloudWatchAccount?: CfnAccount;
 
-  constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
+  constructor(scope: Construct, id: string, props: RestApiBaseProps = {}) {
     const restApiName = props.restApiName ?? id;
     super(scope, id, {
       physicalName: restApiName,
@@ -388,7 +396,9 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    */
   public urlForPath(path: string = '/'): string {
     if (!this.deploymentStage) {
-      throw new Error('Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"');
+      throw new Error(
+        'Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"'
+      );
     }
 
     return this.deploymentStage.urlForPath(path);
@@ -572,13 +582,19 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   protected _configureCloudWatchRole(
     apiResource: CfnRestApi,
     cloudWatchRole?: boolean,
-    cloudWatchRoleRemovalPolicy?: RemovalPolicy,
+    cloudWatchRoleRemovalPolicy?: RemovalPolicy
   ) {
-    const cloudWatchRoleDefault = FeatureFlags.of(this).isEnabled(APIGATEWAY_DISABLE_CLOUDWATCH_ROLE) ? false : true;
+    const cloudWatchRoleDefault = FeatureFlags.of(this).isEnabled(
+      APIGATEWAY_DISABLE_CLOUDWATCH_ROLE
+    )
+      ? false
+      : true;
     cloudWatchRole = cloudWatchRole ?? cloudWatchRoleDefault;
     if (!cloudWatchRole) {
       if (cloudWatchRoleRemovalPolicy) {
-        throw new Error('\'cloudWatchRole\' must be enabled for \'cloudWatchRoleRemovalPolicy\' to be applied.');
+        throw new Error(
+          "'cloudWatchRole' must be enabled for 'cloudWatchRoleRemovalPolicy' to be applied."
+        );
       }
       return;
     }
@@ -587,7 +603,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'service-role/AmazonAPIGatewayPushToCloudWatchLogs'
+        ),
+      ],
     });
     role.applyRemovalPolicy(cloudWatchRoleRemovalPolicy);
 
@@ -619,9 +639,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   protected _configureDeployment(props: RestApiBaseProps) {
     const deploy = props.deploy ?? true;
     if (deploy) {
-
       this._latestDeployment = new Deployment(this, 'Deployment', {
-        description: props.deployOptions?.description ?? props.description ?? 'Automatically created by the RestApi construct',
+        description:
+          props.deployOptions?.description ??
+          props.description ??
+          'Automatically created by the RestApi construct',
         api: this,
         retainDeployments: props.retainDeployments,
       });
@@ -635,10 +657,13 @@ export abstract class RestApiBase extends Resource implements IRestApi {
         ...props.deployOptions,
       });
 
-      new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
+      new CfnOutput(this, 'Endpoint', {
+        exportName: props.endpointExportName,
+        value: this.urlForPath(),
+      });
     } else {
       if (props.deployOptions) {
-        throw new Error('Cannot set \'deployOptions\' if \'deploy\' is disabled');
+        throw new Error("Cannot set 'deployOptions' if 'deploy' is disabled");
       }
     }
   }
@@ -646,14 +671,20 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   /**
    * @internal
    */
-  protected _configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+  protected _configureEndpoints(
+    props: RestApiProps
+  ): CfnRestApi.EndpointConfigurationProperty | undefined {
     if (props.endpointTypes && props.endpointConfiguration) {
-      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
+      throw new Error(
+        'Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed'
+      );
     }
     if (props.endpointConfiguration) {
       return {
         types: props.endpointConfiguration.types,
-        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
+        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(
+          (vpcEndpoint) => vpcEndpoint.vpcEndpointId
+        ),
       };
     }
     if (props.endpointTypes) {
@@ -662,7 +693,10 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     return undefined;
   }
 
-  private cannedMetric(fn: (dims: { ApiName: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions) {
+  private cannedMetric(
+    fn: (dims: { ApiName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions
+  ) {
     return new cloudwatch.Metric({
       ...fn({ ApiName: this.restApiName }),
       ...props,
@@ -720,7 +754,11 @@ export class SpecRestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
-    this._configureCloudWatchRole(resource, props.cloudWatchRole, props.cloudWatchRoleRemovalPolicy);
+    this._configureCloudWatchRole(
+      resource,
+      props.cloudWatchRole,
+      props.cloudWatchRoleRemovalPolicy
+    );
 
     this._configureDeployment(props);
     if (props.domainName) {
@@ -760,12 +798,11 @@ export interface RestApiAttributes {
  * public endpoint.
  */
 export class RestApi extends RestApiBase {
-
   /**
    * Return whether the given object is a `RestApi`
    */
-  public static isRestApi(x: any) : x is RestApi {
-    return x !== null && typeof(x) === 'object' && APIGATEWAY_RESTAPI_SYMBOL in x;
+  public static isRestApi(x: any): x is RestApi {
+    return x !== null && typeof x === 'object' && APIGATEWAY_RESTAPI_SYMBOL in x;
   }
 
   /**
@@ -776,11 +813,15 @@ export class RestApi extends RestApiBase {
       public readonly restApiId = restApiId;
 
       public get root(): IResource {
-        throw new Error('root is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.');
+        throw new Error(
+          'root is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.'
+        );
       }
 
       public get restApiRootResourceId(): string {
-        throw new Error('restApiRootResourceId is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.');
+        throw new Error(
+          'restApiRootResourceId is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.'
+        );
       }
     }
 
@@ -790,7 +831,11 @@ export class RestApi extends RestApiBase {
   /**
    * Import an existing RestApi that can be configured with additional Methods and Resources.
    */
-  public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
+  public static fromRestApiAttributes(
+    scope: Construct,
+    id: string,
+    attrs: RestApiAttributes
+  ): IRestApi {
     class Import extends RestApiBase {
       public readonly restApiId = attrs.restApiId;
       public readonly restApiName = attrs.restApiName ?? id;
@@ -817,11 +862,13 @@ export class RestApi extends RestApiBase {
    */
   private readonly deployments = new Array<Deployment>();
 
-  constructor(scope: Construct, id: string, props: RestApiProps = { }) {
+  constructor(scope: Construct, id: string, props: RestApiProps = {}) {
     super(scope, id, props);
 
     if (props.minCompressionSize !== undefined && props.minimumCompressionSize !== undefined) {
-      throw new Error('both properties minCompressionSize and minimumCompressionSize cannot be set at once.');
+      throw new Error(
+        'both properties minCompressionSize and minimumCompressionSize cannot be set at once.'
+      );
     }
 
     const resource = new CfnRestApi(this, 'Resource', {
@@ -840,7 +887,11 @@ export class RestApi extends RestApiBase {
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
 
-    this._configureCloudWatchRole(resource, props.cloudWatchRole, props.cloudWatchRoleRemovalPolicy);
+    this._configureCloudWatchRole(
+      resource,
+      props.cloudWatchRole,
+      props.cloudWatchRoleRemovalPolicy
+    );
 
     this._configureDeployment(props);
     if (props.domainName) {
@@ -1007,7 +1058,9 @@ class RootResource extends ResourceBase {
    */
   public get restApi(): RestApi {
     if (!this._restApi) {
-      throw new Error('RestApi is not available on Resource not connected to an instance of RestApi. Use `api` instead');
+      throw new Error(
+        'RestApi is not available on Resource not connected to an instance of RestApi. Use `api` instead'
+      );
     }
     return this._restApi;
   }

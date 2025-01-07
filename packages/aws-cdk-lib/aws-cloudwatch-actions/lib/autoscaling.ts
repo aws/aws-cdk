@@ -6,8 +6,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
  * Use an AutoScaling StepScalingAction as an Alarm Action
  */
 export class AutoScalingAction implements cloudwatch.IAlarmAction {
-  constructor(private readonly stepScalingAction: autoscaling.StepScalingAction) {
-  }
+  constructor(private readonly stepScalingAction: autoscaling.StepScalingAction) {}
 
   /**
    * Returns an alarm action configuration to use an AutoScaling StepScalingAction

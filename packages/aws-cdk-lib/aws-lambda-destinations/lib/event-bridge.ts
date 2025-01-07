@@ -12,13 +12,16 @@ export class EventBridgeDestination implements lambda.IDestination {
   /**
    * @default - use the default event bus
    */
-  constructor(private readonly eventBus?: events.IEventBus) {
-  }
+  constructor(private readonly eventBus?: events.IEventBus) {}
 
   /**
    * Returns a destination configuration
    */
-  public bind(_scope: Construct, fn: lambda.IFunction, _options?: lambda.DestinationOptions): lambda.DestinationConfig {
+  public bind(
+    _scope: Construct,
+    fn: lambda.IFunction,
+    _options?: lambda.DestinationOptions
+  ): lambda.DestinationConfig {
     if (this.eventBus) {
       this.eventBus.grantPutEventsTo(fn);
 
@@ -28,11 +31,17 @@ export class EventBridgeDestination implements lambda.IDestination {
     }
 
     const existingDefaultEventBus = _scope.node.tryFindChild('DefaultEventBus');
-    let eventBus = (existingDefaultEventBus as events.EventBus) || events.EventBus.fromEventBusArn(_scope, 'DefaultEventBus', Stack.of(fn).formatArn({
-      service: 'events',
-      resource: 'event-bus',
-      resourceName: 'default',
-    }));
+    let eventBus =
+      (existingDefaultEventBus as events.EventBus) ||
+      events.EventBus.fromEventBusArn(
+        _scope,
+        'DefaultEventBus',
+        Stack.of(fn).formatArn({
+          service: 'events',
+          resource: 'event-bus',
+          resourceName: 'default',
+        })
+      );
 
     eventBus.grantPutEventsTo(fn);
 

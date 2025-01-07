@@ -7,7 +7,9 @@ import { CfnTaskDefinition } from '../ecs.generated';
 /**
  * Remove undefined values from a dictionary
  */
-export function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): { [key: string]: string } {
+export function removeEmpty<T>(x: { [key: string]: T | undefined | string }): {
+  [key: string]: string;
+} {
   for (const key of Object.keys(x)) {
     if (x[key] === undefined) {
       delete x[key];
@@ -34,7 +36,9 @@ export function ensureInRange(val: number, start: number, end: number) {
   }
 }
 
-export function stringifyOptions(options: { [key: string]: (SecretValue | Duration | string | string[] | number | boolean | undefined) }) {
+export function stringifyOptions(options: {
+  [key: string]: SecretValue | Duration | string | string[] | number | boolean | undefined;
+}) {
   const _options: { [key: string]: string } = {};
   const filteredOptions = removeEmpty(options);
 
@@ -48,9 +52,9 @@ export function stringifyOptions(options: { [key: string]: (SecretValue | Durati
 
 export function renderCommonLogDriverOptions(opts: BaseLogDriverProps) {
   return {
-    'tag': opts.tag,
-    'labels': joinWithCommas(opts.labels),
-    'env': joinWithCommas(opts.env),
+    tag: opts.tag,
+    labels: joinWithCommas(opts.labels),
+    env: joinWithCommas(opts.env),
     'env-regex': opts.envRegex,
   };
 }
@@ -59,8 +63,10 @@ export function joinWithCommas(xs?: string[]): string | undefined {
   return xs && xs.join(',');
 }
 
-export function renderLogDriverSecretOptions(secretValue: { [key: string]: Secret }, taskDefinition: TaskDefinition):
-CfnTaskDefinition.SecretProperty[] {
+export function renderLogDriverSecretOptions(
+  secretValue: { [key: string]: Secret },
+  taskDefinition: TaskDefinition
+): CfnTaskDefinition.SecretProperty[] {
   const secrets = [];
   for (const [name, secret] of Object.entries(secretValue)) {
     secret.grantRead(taskDefinition.obtainExecutionRole());

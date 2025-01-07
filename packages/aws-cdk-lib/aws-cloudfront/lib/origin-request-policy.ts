@@ -55,34 +55,49 @@ export interface OriginRequestPolicyProps {
  * @resource AWS::CloudFront::OriginRequestPolicy
  */
 export class OriginRequestPolicy extends Resource implements IOriginRequestPolicy {
-
   /** This policy includes only the User-Agent and Referer headers. It doesn’t include any query strings or cookies. */
-  public static readonly USER_AGENT_REFERER_HEADERS = OriginRequestPolicy.fromManagedOriginRequestPolicy('acba4595-bd28-49b8-b9fe-13317c0390fa');
+  public static readonly USER_AGENT_REFERER_HEADERS =
+    OriginRequestPolicy.fromManagedOriginRequestPolicy('acba4595-bd28-49b8-b9fe-13317c0390fa');
   /** This policy includes the header that enables cross-origin resource sharing (CORS) requests when the origin is a custom origin. */
-  public static readonly CORS_CUSTOM_ORIGIN = OriginRequestPolicy.fromManagedOriginRequestPolicy('59781a5b-3903-41f3-afcb-af62929ccde1');
+  public static readonly CORS_CUSTOM_ORIGIN = OriginRequestPolicy.fromManagedOriginRequestPolicy(
+    '59781a5b-3903-41f3-afcb-af62929ccde1'
+  );
   /** This policy includes the headers that enable cross-origin resource sharing (CORS) requests when the origin is an Amazon S3 bucket. */
-  public static readonly CORS_S3_ORIGIN = OriginRequestPolicy.fromManagedOriginRequestPolicy('88a5eaf4-2fd4-4709-b370-b4c650ea3fcf');
+  public static readonly CORS_S3_ORIGIN = OriginRequestPolicy.fromManagedOriginRequestPolicy(
+    '88a5eaf4-2fd4-4709-b370-b4c650ea3fcf'
+  );
   /** This policy includes all values (query strings, headers, and cookies) in the viewer request. */
-  public static readonly ALL_VIEWER = OriginRequestPolicy.fromManagedOriginRequestPolicy('216adef6-5c7f-47e4-b989-5492eafa07d3');
+  public static readonly ALL_VIEWER = OriginRequestPolicy.fromManagedOriginRequestPolicy(
+    '216adef6-5c7f-47e4-b989-5492eafa07d3'
+  );
   /** This policy is designed for use with an origin that is an AWS Elemental MediaTailor endpoint. */
-  public static readonly ELEMENTAL_MEDIA_TAILOR = OriginRequestPolicy.fromManagedOriginRequestPolicy('775133bc-15f2-49f9-abea-afb2e0bf67d2');
+  public static readonly ELEMENTAL_MEDIA_TAILOR =
+    OriginRequestPolicy.fromManagedOriginRequestPolicy('775133bc-15f2-49f9-abea-afb2e0bf67d2');
   /** This policy includes all values (headers, cookies, and query strings) in the viewer request, and all CloudFront headers that were released through June 2022 (CloudFront headers released after June 2022 are not included). */
-  public static readonly ALL_VIEWER_AND_CLOUDFRONT_2022 = OriginRequestPolicy.fromManagedOriginRequestPolicy('33f36d7e-f396-46d9-90e0-52428a34d9dc');
+  public static readonly ALL_VIEWER_AND_CLOUDFRONT_2022 =
+    OriginRequestPolicy.fromManagedOriginRequestPolicy('33f36d7e-f396-46d9-90e0-52428a34d9dc');
   /** This policy includes all values (query strings, and cookies) except the header in the viewer request. */
-  public static readonly ALL_VIEWER_EXCEPT_HOST_HEADER = OriginRequestPolicy.fromManagedOriginRequestPolicy('b689b0a8-53d0-40ab-baf2-68738e2966ac');
+  public static readonly ALL_VIEWER_EXCEPT_HOST_HEADER =
+    OriginRequestPolicy.fromManagedOriginRequestPolicy('b689b0a8-53d0-40ab-baf2-68738e2966ac');
 
   /** Imports a Origin Request Policy from its id. */
-  public static fromOriginRequestPolicyId(scope: Construct, id: string, originRequestPolicyId: string): IOriginRequestPolicy {
-    return new class extends Resource implements IOriginRequestPolicy {
+  public static fromOriginRequestPolicyId(
+    scope: Construct,
+    id: string,
+    originRequestPolicyId: string
+  ): IOriginRequestPolicy {
+    return new (class extends Resource implements IOriginRequestPolicy {
       public readonly originRequestPolicyId = originRequestPolicyId;
-    }(scope, id);
+    })(scope, id);
   }
 
   /** Use an existing managed origin request policy. */
-  private static fromManagedOriginRequestPolicy(managedOriginRequestPolicyId: string): IOriginRequestPolicy {
-    return new class implements IOriginRequestPolicy {
+  private static fromManagedOriginRequestPolicy(
+    managedOriginRequestPolicyId: string
+  ): IOriginRequestPolicy {
+    return new (class implements IOriginRequestPolicy {
       public readonly originRequestPolicyId = managedOriginRequestPolicyId;
-    }();
+    })();
   }
 
   public readonly originRequestPolicyId: string;
@@ -93,8 +108,13 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
     });
 
     const originRequestPolicyName = props.originRequestPolicyName ?? Names.uniqueId(this);
-    if (!Token.isUnresolved(originRequestPolicyName) && !originRequestPolicyName.match(/^[\w-]+$/i)) {
-      throw new Error(`'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`);
+    if (
+      !Token.isUnresolved(originRequestPolicyName) &&
+      !originRequestPolicyName.match(/^[\w-]+$/i)
+    ) {
+      throw new Error(
+        `'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`
+      );
     }
 
     const cookies = props.cookieBehavior ?? OriginRequestCookieBehavior.none();
@@ -133,10 +153,14 @@ export class OriginRequestCookieBehavior {
    * Cookies in viewer requests are not included in requests that CloudFront sends to the origin.
    * Any cookies that are listed in a CachePolicy are still included in origin requests.
    */
-  public static none() { return new OriginRequestCookieBehavior('none'); }
+  public static none() {
+    return new OriginRequestCookieBehavior('none');
+  }
 
   /** All cookies in viewer requests are included in requests that CloudFront sends to the origin. */
-  public static all() { return new OriginRequestCookieBehavior('all'); }
+  public static all() {
+    return new OriginRequestCookieBehavior('all');
+  }
 
   /** All cookies except the provided `cookies` are included in requests that CloudFront sends to the origin. */
   public static denyList(...cookies: string[]) {
@@ -173,7 +197,9 @@ export class OriginRequestHeaderBehavior {
    * HTTP headers are not included in requests that CloudFront sends to the origin.
    * Any headers that are listed in a CachePolicy are still included in origin requests.
    */
-  public static none() { return new OriginRequestHeaderBehavior('none'); }
+  public static none() {
+    return new OriginRequestHeaderBehavior('none');
+  }
 
   /**
    * All HTTP headers in viewer requests are included in requests that CloudFront sends to the origin.
@@ -182,8 +208,10 @@ export class OriginRequestHeaderBehavior {
    */
   public static all(...cloudfrontHeaders: string[]) {
     if (cloudfrontHeaders.length > 0) {
-      if (!cloudfrontHeaders.every(header => header.startsWith('CloudFront-'))) {
-        throw new Error('additional CloudFront headers passed to `OriginRequestHeaderBehavior.all()` must begin with \'CloudFront-\'');
+      if (!cloudfrontHeaders.every((header) => header.startsWith('CloudFront-'))) {
+        throw new Error(
+          "additional CloudFront headers passed to `OriginRequestHeaderBehavior.all()` must begin with 'CloudFront-'"
+        );
       }
       return new OriginRequestHeaderBehavior('allViewerAndWhitelistCloudFront', cloudfrontHeaders);
     } else {
@@ -196,8 +224,14 @@ export class OriginRequestHeaderBehavior {
     if (headers.length === 0) {
       throw new Error('At least one header to allow must be provided');
     }
-    if (headers.map(header => header.toLowerCase()).some(header => ['authorization', 'accept-encoding'].includes(header))) {
-      throw new Error('you cannot pass `Authorization` or `Accept-Encoding` as header values; use a CachePolicy to forward these headers instead');
+    if (
+      headers
+        .map((header) => header.toLowerCase())
+        .some((header) => ['authorization', 'accept-encoding'].includes(header))
+    ) {
+      throw new Error(
+        'you cannot pass `Authorization` or `Accept-Encoding` as header values; use a CachePolicy to forward these headers instead'
+      );
     }
     return new OriginRequestHeaderBehavior('whitelist', headers);
   }
@@ -230,10 +264,14 @@ export class OriginRequestQueryStringBehavior {
    * Query strings in viewer requests are not included in requests that CloudFront sends to the origin.
    * Any query strings that are listed in a CachePolicy are still included in origin requests.
    */
-  public static none() { return new OriginRequestQueryStringBehavior('none'); }
+  public static none() {
+    return new OriginRequestQueryStringBehavior('none');
+  }
 
   /** All query strings in viewer requests are included in requests that CloudFront sends to the origin. */
-  public static all() { return new OriginRequestQueryStringBehavior('all'); }
+  public static all() {
+    return new OriginRequestQueryStringBehavior('all');
+  }
 
   /** Only the provided `queryStrings` are included in requests that CloudFront sends to the origin. */
   public static allowList(...queryStrings: string[]) {

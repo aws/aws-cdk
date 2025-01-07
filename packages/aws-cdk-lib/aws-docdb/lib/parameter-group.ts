@@ -19,7 +19,11 @@ abstract class ClusterParameterGroupBase extends Resource implements IClusterPar
   /**
    * Imports a parameter group
    */
-  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IClusterParameterGroup {
+  public static fromParameterGroupName(
+    scope: Construct,
+    id: string,
+    parameterGroupName: string
+  ): IClusterParameterGroup {
     class Import extends Resource implements IClusterParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
     }
@@ -66,7 +70,10 @@ export interface ClusterParameterGroupProps {
  *
  * @resource AWS::DocDB::DBClusterParameterGroup
  */
-export class ClusterParameterGroup extends ClusterParameterGroupBase implements IClusterParameterGroup {
+export class ClusterParameterGroup
+  extends ClusterParameterGroupBase
+  implements IClusterParameterGroup
+{
   /**
    * The name of the parameter group
    */

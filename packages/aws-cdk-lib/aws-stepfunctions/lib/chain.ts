@@ -45,7 +45,11 @@ export class Chain implements IChainable {
    */
   public readonly endStates: INextable[];
 
-  private constructor(startState: State, endStates: INextable[], private readonly lastAdded: IChainable) {
+  private constructor(
+    startState: State,
+    endStates: INextable[],
+    private readonly lastAdded: IChainable
+  ) {
     this.id = lastAdded.id;
     this.startState = startState;
     this.endStates = endStates;
@@ -56,7 +60,9 @@ export class Chain implements IChainable {
    */
   public next(next: IChainable): Chain {
     if (this.endStates.length === 0) {
-      throw new Error(`Cannot add to chain: last state in chain (${this.lastAdded.id}) does not allow it`);
+      throw new Error(
+        `Cannot add to chain: last state in chain (${this.lastAdded.id}) does not allow it`
+      );
     }
 
     for (const endState of this.endStates) {

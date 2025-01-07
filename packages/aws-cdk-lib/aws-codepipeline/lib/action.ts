@@ -215,7 +215,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
   notifyOn(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options: PipelineNotifyOnOptions,
+    options: PipelineNotifyOnOptions
   ): notifications.INotificationRule;
 
   /**
@@ -229,7 +229,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
   notifyOnExecutionStateChange(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -243,7 +243,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
   notifyOnAnyStageStateChange(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -257,7 +257,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
   notifyOnAnyActionStateChange(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -271,7 +271,7 @@ export interface IPipeline extends IResource, notifications.INotificationRuleSou
   notifyOnAnyManualApprovalStateChange(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 }
 
@@ -370,14 +370,18 @@ export abstract class Action implements IAction {
       produce: () => {
         // make sure the action was bound (= added to a pipeline)
         if (this._actualNamespace === undefined) {
-          throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
-            'as that action was never added to a pipeline');
+          throw new Error(
+            `Cannot reference variables of action '${this.actionProperties.actionName}', ` +
+              'as that action was never added to a pipeline'
+          );
         } else {
           return this._customerProvidedNamespace !== undefined
-            // if a customer passed a namespace explicitly, always use that
-            ? this._customerProvidedNamespace
-            // otherwise, only return a namespace if any variable was referenced
-            : (this._variableReferenced ? this._actualNamespace : undefined);
+            ? // if a customer passed a namespace explicitly, always use that
+              this._customerProvidedNamespace
+            : // otherwise, only return a namespace if any variable was referenced
+              this._variableReferenced
+              ? this._actualNamespace
+              : undefined;
         }
       },
     });
@@ -389,9 +393,10 @@ export abstract class Action implements IAction {
       this._customerProvidedNamespace = actionProperties.variablesNamespace;
       this.__actionProperties = {
         ...actionProperties,
-        variablesNamespace: this._customerProvidedNamespace === undefined
-          ? this._namespaceToken
-          : this._customerProvidedNamespace,
+        variablesNamespace:
+          this._customerProvidedNamespace === undefined
+            ? this._namespaceToken
+            : this._customerProvidedNamespace,
       };
     }
     return this.__actionProperties;
@@ -402,10 +407,11 @@ export abstract class Action implements IAction {
     this.__stage = stage;
     this.__scope = scope;
 
-    this._actualNamespace = this._customerProvidedNamespace === undefined
-      // default a namespace name, based on the stage and action names
-      ? `${stage.stageName}_${this.actionProperties.actionName}_NS`
-      : this._customerProvidedNamespace;
+    this._actualNamespace =
+      this._customerProvidedNamespace === undefined
+        ? // default a namespace name, based on the stage and action names
+          `${stage.stageName}_${this.actionProperties.actionName}_NS`
+        : this._customerProvidedNamespace;
 
     return this.bound(scope, stage, options);
   }
@@ -433,13 +439,19 @@ export abstract class Action implements IAction {
   /**
    * This is a renamed version of the `IAction.bind` method.
    */
-  protected abstract bound(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig;
+  protected abstract bound(
+    scope: Construct,
+    stage: IStage,
+    options: ActionBindOptions
+  ): ActionConfig;
 
   private get _pipeline(): IPipeline {
     if (this.__pipeline) {
       return this.__pipeline;
     } else {
-      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new Error(
+        'Action must be added to a stage that is part of a pipeline before using onStateChange'
+      );
     }
   }
 
@@ -447,7 +459,9 @@ export abstract class Action implements IAction {
     if (this.__stage) {
       return this.__stage;
     } else {
-      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new Error(
+        'Action must be added to a stage that is part of a pipeline before using onStateChange'
+      );
     }
   }
 
@@ -506,23 +520,23 @@ export enum PipelineNotificationEvents {
   STAGE_EXECUTION_STARTED = 'codepipeline-pipeline-stage-execution-started',
 
   /**
-  * Trigger notification when pipeline stage execution succeeded
-  */
+   * Trigger notification when pipeline stage execution succeeded
+   */
   STAGE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-stage-execution-succeeded',
 
   /**
-  * Trigger notification when pipeline stage execution resumed
-  */
+   * Trigger notification when pipeline stage execution resumed
+   */
   STAGE_EXECUTION_RESUMED = 'codepipeline-pipeline-stage-execution-resumed',
 
   /**
-  * Trigger notification when pipeline stage execution canceled
-  */
+   * Trigger notification when pipeline stage execution canceled
+   */
   STAGE_EXECUTION_CANCELED = 'codepipeline-pipeline-stage-execution-canceled',
 
   /**
-  * Trigger notification when pipeline stage execution failed
-  */
+   * Trigger notification when pipeline stage execution failed
+   */
   STAGE_EXECUTION_FAILED = 'codepipeline-pipeline-stage-execution-failed',
 
   /**

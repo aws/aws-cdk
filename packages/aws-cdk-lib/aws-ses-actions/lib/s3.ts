@@ -42,9 +42,7 @@ export interface S3Props {
  * a notification to Amazon SNS.
  */
 export class S3 implements ses.IReceiptRuleAction {
-
-  constructor(private readonly props: S3Props) {
-  }
+  constructor(private readonly props: S3Props) {}
 
   public bind(rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
     // Allow SES to write to S3 bucket
@@ -63,10 +61,14 @@ export class S3 implements ses.IReceiptRuleAction {
     this.props.bucket.addToResourcePolicy(s3Statement);
 
     const policy = this.props.bucket.node.tryFindChild('Policy') as s3.BucketPolicy;
-    if (policy) { // The bucket could be imported
+    if (policy) {
+      // The bucket could be imported
       rule.node.addDependency(policy);
     } else {
-      cdk.Annotations.of(rule).addWarningV2('@aws-cdk/s3:AddBucketPermissions', 'This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
+      cdk.Annotations.of(rule).addWarningV2(
+        '@aws-cdk/s3:AddBucketPermissions',
+        'This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.'
+      );
     }
 
     // Allow SES to use KMS master key

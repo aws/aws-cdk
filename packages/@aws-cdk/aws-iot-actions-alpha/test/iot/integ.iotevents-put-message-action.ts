@@ -13,9 +13,7 @@ class TestStack extends cdk.Stack {
 
     const logGroup = new logs.LogGroup(this, 'logs', { removalPolicy: cdk.RemovalPolicy.DESTROY });
     const topicRule = new iot.TopicRule(this, 'TopicRule', {
-      sql: iot.IotSql.fromStringAsVer20160323(
-        "SELECT * FROM 'device/+/data'",
-      ),
+      sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
       errorAction: new actions.CloudWatchLogsAction(logGroup),
     });
 
@@ -27,17 +25,19 @@ class TestStack extends cdk.Stack {
       detectorKey: 'payload.deviceId',
       initialState: new iotevents.State({
         stateName: 'initialState',
-        onEnter: [{
-          eventName: 'enter',
-          condition: iotevents.Expression.currentInput(input),
-        }],
+        onEnter: [
+          {
+            eventName: 'enter',
+            condition: iotevents.Expression.currentInput(input),
+          },
+        ],
       }),
     });
 
     topicRule.addAction(
       new actions.IotEventsPutMessageAction(input, {
         batchMode: true,
-      }),
+      })
     );
 
     this.detectorModelName = detectorModel.detectorModelName;

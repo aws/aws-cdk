@@ -1,4 +1,8 @@
-import { StringSpecializer, translateAssetTokenToCfnToken, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
+import {
+  StringSpecializer,
+  translateAssetTokenToCfnToken,
+  translateCfnTokenToAssetToken,
+} from 'aws-cdk-lib/core/lib/helpers-internal';
 import { AppStagingSynthesizer } from './app-staging-synthesizer';
 
 /**
@@ -81,7 +85,9 @@ export class DeploymentIdentities {
   /**
    * Use the Roles that have been created by the default bootstrap stack
    */
-  public static defaultBootstrapRoles(options: DefaultBootstrapRolesOptions = {}): DeploymentIdentities {
+  public static defaultBootstrapRoles(
+    options: DefaultBootstrapRolesOptions = {}
+  ): DeploymentIdentities {
     function replacePlaceholders(x: string) {
       if (options.bootstrapRegion !== undefined) {
         x = x.replace(/\$\{AWS::Region\}/g, options.bootstrapRegion);
@@ -90,9 +96,15 @@ export class DeploymentIdentities {
     }
 
     return new DeploymentIdentities({
-      deploymentRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN)),
-      cloudFormationExecutionRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN)),
-      lookupRole: BootstrapRole.fromRoleArn(replacePlaceholders(AppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN)),
+      deploymentRole: BootstrapRole.fromRoleArn(
+        replacePlaceholders(AppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN)
+      ),
+      cloudFormationExecutionRole: BootstrapRole.fromRoleArn(
+        replacePlaceholders(AppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN)
+      ),
+      lookupRole: BootstrapRole.fromRoleArn(
+        replacePlaceholders(AppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN)
+      ),
     });
   }
 
@@ -114,7 +126,7 @@ export class DeploymentIdentities {
 
   private constructor(
     /** roles that are bootstrapped to your account. */
-    roles: BootstrapRoles,
+    roles: BootstrapRoles
   ) {
     this.cloudFormationExecutionRole = roles.cloudFormationExecutionRole;
     this.deploymentRole = roles.deploymentRole;

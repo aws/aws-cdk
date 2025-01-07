@@ -65,8 +65,8 @@ export class VpcLink extends Resource implements IVpcLink {
 
   constructor(scope: Construct, id: string, props: VpcLinkProps = {}) {
     super(scope, id, {
-      physicalName: props.vpcLinkName ||
-        Lazy.string({ produce: () => Names.nodeUniqueId(this.node) }),
+      physicalName:
+        props.vpcLinkName || Lazy.string({ produce: () => Names.nodeUniqueId(this.node) }),
     });
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
@@ -93,7 +93,7 @@ export class VpcLink extends Resource implements IVpcLink {
    * @internal
    * */
   public get _targetDnsNames(): string[] {
-    return this._targets.map(t => t.loadBalancerDnsName);
+    return this._targets.map((t) => t.loadBalancerDnsName);
   }
 
   private validateVpcLink(): string[] {
@@ -104,6 +104,6 @@ export class VpcLink extends Resource implements IVpcLink {
   }
 
   private renderTargets() {
-    return this._targets.map(nlb => nlb.loadBalancerArn);
+    return this._targets.map((nlb) => nlb.loadBalancerArn);
   }
 }

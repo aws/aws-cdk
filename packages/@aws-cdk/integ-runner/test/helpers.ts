@@ -1,6 +1,15 @@
 import { ChildProcess } from 'child_process';
 import { Readable, Writable } from 'stream';
-import { CdkCliWrapper, CdkCliWrapperOptions, DeployOptions, DestroyOptions, ICdk, ListOptions, SynthFastOptions, SynthOptions } from '@aws-cdk/cdk-cli-wrapper';
+import {
+  CdkCliWrapper,
+  CdkCliWrapperOptions,
+  DeployOptions,
+  DestroyOptions,
+  ICdk,
+  ListOptions,
+  SynthFastOptions,
+  SynthOptions,
+} from '@aws-cdk/cdk-cli-wrapper';
 import { IntegSnapshotRunner, IntegTest } from '../lib/runner';
 import { DestructiveChange, Diagnostic } from '../lib/workers';
 
@@ -26,16 +35,20 @@ export class MockCdkProvider {
     this.cdk.deploy = this.mocks.deploy;
   }
   public mockWatch(mock?: MockCdkMocks['watch']) {
-    this.mocks.watch = mock ?? jest.fn().mockImplementation(jest.fn(() => {
-      return {
-        on: (_event: 'close', listener: (..._args: any[]) => void) => {
-          listener(0);
-        },
-        stdout: new Readable({ read: jest.fn(() => {}) }),
-        stderr: new Readable({ read: jest.fn(() => {}) }),
-        stdin: new Writable({ write: jest.fn(() => {}), final: jest.fn(() => {}) }),
-      } as unknown as ChildProcess;
-    }));
+    this.mocks.watch =
+      mock ??
+      jest.fn().mockImplementation(
+        jest.fn(() => {
+          return {
+            on: (_event: 'close', listener: (..._args: any[]) => void) => {
+              listener(0);
+            },
+            stdout: new Readable({ read: jest.fn(() => {}) }),
+            stderr: new Readable({ read: jest.fn(() => {}) }),
+            stdin: new Writable({ write: jest.fn(() => {}), final: jest.fn(() => {}) }),
+          } as unknown as ChildProcess;
+        })
+      );
     this.cdk.watch = this.mocks.watch;
   }
   public mockSynth(mock?: MockCdkMocks['synth']) {
@@ -71,7 +84,10 @@ export class MockCdkProvider {
    * @param actualSnapshot The directory of the snapshot that is used for of the actual (current) app
    * @returns Diagnostics as they would be returned by testSnapshot
    */
-  public snapshotTest(integTestFile: string, actualSnapshot?: string): {
+  public snapshotTest(
+    integTestFile: string,
+    actualSnapshot?: string
+  ): {
     diagnostics: Diagnostic[];
     destructiveChanges: DestructiveChange[];
   } {

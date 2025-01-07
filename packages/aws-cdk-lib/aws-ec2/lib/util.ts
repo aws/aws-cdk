@@ -15,7 +15,8 @@ export function slugify(x: string): string {
  */
 export function defaultSubnetName(type: SubnetType) {
   switch (type) {
-    case SubnetType.PUBLIC: return 'Public';
+    case SubnetType.PUBLIC:
+      return 'Public';
     case SubnetType.PRIVATE_WITH_NAT:
     case SubnetType.PRIVATE_WITH_EGRESS:
     case SubnetType.PRIVATE:
@@ -59,8 +60,8 @@ export class ImportSubnetGroup {
     idField: string,
     nameField: string,
     routeTableIdField: string,
-    ipv4CidrBlockField: string) {
-
+    ipv4CidrBlockField: string
+  ) {
     this.subnetIds = subnetIds || [];
     this.routeTableIds = routeTableIds || [];
     this.ipv4CidrBlocks = ipv4CidrBlocks || [];
@@ -68,24 +69,30 @@ export class ImportSubnetGroup {
 
     if (Math.floor(this.groups) !== this.groups) {
       // eslint-disable-next-line max-len
-      throw new Error(`Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
+      throw new Error(
+        `Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`
+      );
     }
     if (this.routeTableIds.length !== this.subnetIds.length && routeTableIds != null) {
       // We don't err if no routeTableIds were provided to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
       /* eslint-disable max-len */
-      throw new Error(`Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+      throw new Error(
+        `Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`
+      );
     }
     if (this.ipv4CidrBlocks.length !== this.subnetIds.length && ipv4CidrBlocks != null) {
       // We don't err if no ipv4CidrBlocks were provided to maintain backwards-compatibility.
       /* eslint-disable max-len */
-      throw new Error(`Number of ${ipv4CidrBlockField} (${this.ipv4CidrBlocks.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
+      throw new Error(
+        `Number of ${ipv4CidrBlockField} (${this.ipv4CidrBlocks.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`
+      );
     }
 
     this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
   }
 
   public import(scope: Construct): ISubnet[] {
-    return range(this.subnetIds.length).map(i => {
+    return range(this.subnetIds.length).map((i) => {
       const k = Math.floor(i / this.availabilityZones.length);
       return Subnet.fromSubnetAttributes(scope, subnetId(this.names[k], i), {
         availabilityZone: this.pickAZ(i),
@@ -107,7 +114,9 @@ export class ImportSubnetGroup {
 
     // If given, must match given subnets
     if (names.length !== this.groups) {
-      throw new Error(`${fieldName} must have an entry for every corresponding subnet group, got: ${JSON.stringify(names)}`);
+      throw new Error(
+        `${fieldName} must have an entry for every corresponding subnet group, got: ${JSON.stringify(names)}`
+      );
     }
 
     return names;

@@ -27,9 +27,13 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   const sanitizedRequest = { ...cfnRequest, ResponseURL: '...' } as const;
   log('onEventHandler', sanitizedRequest);
 
-  cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || { };
+  cfnRequest.ResourceProperties = cfnRequest.ResourceProperties || {};
 
-  const onEventResult = await invokeUserFunction(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, sanitizedRequest, cfnRequest.ResponseURL) as OnEventResponse;
+  const onEventResult = (await invokeUserFunction(
+    consts.USER_ON_EVENT_FUNCTION_ARN_ENV,
+    sanitizedRequest,
+    cfnRequest.ResponseURL
+  )) as OnEventResponse;
   if (onEventResult?.NoEcho) {
     log('redacted onEvent returned:', cfnResponse.redactDataFromPayload(onEventResult));
   } else {
@@ -77,7 +81,11 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
     log('isComplete', sanitizedRequest);
   }
 
-  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, sanitizedRequest, event.ResponseURL) as IsCompleteResponse;
+  const isCompleteResult = (await invokeUserFunction(
+    consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV,
+    sanitizedRequest,
+    event.ResponseURL
+  )) as IsCompleteResponse;
   if (event?.NoEcho) {
     log('redacted user isComplete returned:', cfnResponse.redactDataFromPayload(isCompleteResult));
   } else {
@@ -110,13 +118,19 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
 async function onTimeout(timeoutEvent: any) {
   log('timeoutHandler', timeoutEvent);
 
-  const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
+  const isCompleteRequest = JSON.parse(
+    JSON.parse(timeoutEvent.Cause).errorMessage
+  ) as AWSCDKAsyncCustomResource.IsCompleteRequest;
   await cfnResponse.submitResponse('FAILED', isCompleteRequest, {
     reason: 'Operation timed out',
   });
 }
 
-async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A, responseUrl: string) {
+async function invokeUserFunction<A extends { ResponseURL: '...' }>(
+  functionArnEnv: string,
+  sanitizedPayload: A,
+  responseUrl: string
+) {
   const functionArn = getEnv(functionArnEnv);
   log(`executing user function ${functionArn} with payload`, sanitizedPayload);
 
@@ -130,7 +144,7 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
     Payload: JSON.stringify({ ...sanitizedPayload, ResponseURL: responseUrl }),
   });
 
-  log('user function response:', resp, typeof(resp));
+  log('user function response:', resp, typeof resp);
 
   // ParseJsonPayload is very defensive. It should not be possible for `Payload`
   // to be anything other than a JSON encoded string (or intarray). Something weird is
@@ -169,24 +183,32 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
   return jsonPayload;
 }
 
-function createResponseEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent, onEventResult: OnEventResponse): AWSCDKAsyncCustomResource.IsCompleteRequest {
+function createResponseEvent(
+  cfnRequest: AWSLambda.CloudFormationCustomResourceEvent,
+  onEventResult: OnEventResponse
+): AWSCDKAsyncCustomResource.IsCompleteRequest {
   //
   // validate that onEventResult always includes a PhysicalResourceId
 
-  onEventResult = onEventResult || { };
+  onEventResult = onEventResult || {};
 
   // if physical ID is not returned, we have some defaults for you based
   // on the request type.
-  const physicalResourceId = onEventResult.PhysicalResourceId || defaultPhysicalResourceId(cfnRequest);
+  const physicalResourceId =
+    onEventResult.PhysicalResourceId || defaultPhysicalResourceId(cfnRequest);
 
   // if we are in DELETE and physical ID was changed, it's an error.
   if (cfnRequest.RequestType === 'Delete' && physicalResourceId !== cfnRequest.PhysicalResourceId) {
-    throw new Error(`DELETE: cannot change the physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}" during deletion`);
+    throw new Error(
+      `DELETE: cannot change the physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}" during deletion`
+    );
   }
 
   // if we are in UPDATE and physical ID was changed, it's a replacement (just log)
   if (cfnRequest.RequestType === 'Update' && physicalResourceId !== cfnRequest.PhysicalResourceId) {
-    log(`UPDATE: changing physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}"`);
+    log(
+      `UPDATE: changing physical resource ID from "${cfnRequest.PhysicalResourceId}" to "${onEventResult.PhysicalResourceId}"`
+    );
   }
 
   // merge request event and result event (result prevails).

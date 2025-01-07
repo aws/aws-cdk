@@ -71,22 +71,34 @@ class LambdaFunctionProvider extends Construct {
       properties: {
         AssumeRolePolicyDocument: {
           Version: '2012-10-17',
-          Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }],
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'lambda.amazonaws.com' },
+            },
+          ],
         },
         ManagedPolicyArns: [
-          { 'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
+          {
+            'Fn::Sub':
+              'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+          },
         ],
         Policies: Lazy.any({
           produce: () => {
-            const policies = this.policies.length > 0 ? [
-              {
-                PolicyName: 'Inline',
-                PolicyDocument: {
-                  Version: '2012-10-17',
-                  Statement: this.policies,
-                },
-              },
-            ] : undefined;
+            const policies =
+              this.policies.length > 0
+                ? [
+                    {
+                      PolicyName: 'Inline',
+                      PolicyDocument: {
+                        Version: '2012-10-17',
+                        Statement: this.policies,
+                      },
+                    },
+                  ]
+                : undefined;
             return policies;
           },
         }),
@@ -130,7 +142,6 @@ class LambdaFunctionProvider extends Construct {
   public addPolicies(policies: any[]): void {
     this.policies.push(...policies);
   }
-
 }
 
 interface SingletonFunctionProps extends LambdaFunctionProviderProps {
@@ -191,11 +202,13 @@ class SingletonFunction extends Construct {
    * Create a policy statement from a specific api call
    */
   public addPolicyStatementFromSdkCall(service: string, api: string, resources?: string[]): void {
-    this.lambdaFunction.addPolicies([{
-      Action: [awsSdkToIamAction(service, api)],
-      Effect: 'Allow',
-      Resource: resources || ['*'],
-    }]);
+    this.lambdaFunction.addPolicies([
+      {
+        Action: [awsSdkToIamAction(service, api)],
+        Effect: 'Allow',
+        Resource: resources || ['*'],
+      },
+    ]);
   }
 }
 

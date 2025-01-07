@@ -199,17 +199,27 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     });
 
-    if (this.authBindResult && !(this.authBindResult.authorizationType in HttpRouteAuthorizationType)) {
-      throw new Error(`authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE but was '${this.authBindResult.authorizationType}'`);
+    if (
+      this.authBindResult &&
+      !(this.authBindResult.authorizationType in HttpRouteAuthorizationType)
+    ) {
+      throw new Error(
+        `authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE but was '${this.authBindResult.authorizationType}'`
+      );
     }
 
     let authorizationScopes = this.authBindResult?.authorizationScopes;
 
-    if (this.authBindResult && (props.authorizationScopes || this.httpApi.defaultAuthorizationScopes)) {
-      authorizationScopes = Array.from(new Set([
-        ...authorizationScopes ?? [],
-        ...props.authorizationScopes ?? this.httpApi.defaultAuthorizationScopes ?? [],
-      ]));
+    if (
+      this.authBindResult &&
+      (props.authorizationScopes || this.httpApi.defaultAuthorizationScopes)
+    ) {
+      authorizationScopes = Array.from(
+        new Set([
+          ...(authorizationScopes ?? []),
+          ...(props.authorizationScopes ?? this.httpApi.defaultAuthorizationScopes ?? []),
+        ])
+      );
     }
 
     if (authorizationScopes?.length === 0) {
@@ -237,23 +247,26 @@ export class HttpRoute extends Resource implements IHttpRoute {
     // path variable and all that follows with a wildcard.
     if (path.length > 1000) {
       throw new Error(`Path is too long: ${path}`);
-    };
+    }
     const iamPath = path.replace(/\{.*?\}.*/, '*');
 
     return `arn:${Aws.PARTITION}:execute-api:${this.env.region}:${this.env.account}:${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`;
   }
 
   public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
-    if (!this.authBindResult || this.authBindResult.authorizationType !== HttpRouteAuthorizationType.AWS_IAM) {
+    if (
+      !this.authBindResult ||
+      this.authBindResult.authorizationType !== HttpRouteAuthorizationType.AWS_IAM
+    ) {
       throw new Error('To use grantInvoke, you must use IAM authorization');
     }
 
     const httpMethods = Array.from(new Set(options.httpMethods ?? [this.method]));
-    if (this.method !== HttpMethod.ANY && httpMethods.some(method => method !== this.method)) {
+    if (this.method !== HttpMethod.ANY && httpMethods.some((method) => method !== this.method)) {
       throw new Error('This route does not support granting invoke for all requested http methods');
     }
 
-    const resourceArns = httpMethods.map(httpMethod => {
+    const resourceArns = httpMethods.map((httpMethod) => {
       return this.produceRouteArn(httpMethod);
     });
 

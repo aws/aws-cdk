@@ -5,12 +5,10 @@ import { IResource, Resource } from '../../core';
  * Interface for Alarm Rule.
  */
 export interface IAlarmRule {
-
   /**
    * serialized representation of Alarm Rule to be used when building the Composite Alarm resource.
    */
   renderAlarmRule(): string;
-
 }
 
 /**
@@ -36,7 +34,6 @@ export interface IAlarm extends IAlarmRule, IResource {
  * The base class for Alarm and CompositeAlarm resources.
  */
 export abstract class AlarmBase extends Resource implements IAlarm {
-
   /**
    * @attribute
    */
@@ -64,7 +61,7 @@ export abstract class AlarmBase extends Resource implements IAlarm {
       this.alarmActionArns = [];
     }
 
-    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+    this.alarmActionArns.push(...actions.map((a) => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -77,7 +74,7 @@ export abstract class AlarmBase extends Resource implements IAlarm {
       this.insufficientDataActionArns = [];
     }
 
-    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+    this.insufficientDataActionArns.push(...actions.map((a) => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -90,7 +87,6 @@ export abstract class AlarmBase extends Resource implements IAlarm {
       this.okActionArns = [];
     }
 
-    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+    this.okActionArns.push(...actions.map((a) => a.bind(this, this).alarmActionArn));
   }
-
 }

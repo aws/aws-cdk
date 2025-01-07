@@ -73,7 +73,12 @@ export class EventBridgeTarget implements ITarget {
     this.targetArn = eventBus.eventBusArn;
     if (parameters) {
       this.eventBridgeParameters = parameters;
-      for (const validate of [validateDetailType, validateEndpointId, validateSource, validateTime]) {
+      for (const validate of [
+        validateDetailType,
+        validateEndpointId,
+        validateSource,
+        validateTime,
+      ]) {
         validate(parameters);
       }
     }
@@ -102,7 +107,9 @@ export class EventBridgeTarget implements ITarget {
 function validateDetailType({ detailType }: EventBridgeTargetParameters) {
   if (detailType !== undefined && !Token.isUnresolved(detailType)) {
     if (detailType.length < 1 || detailType.length > 128) {
-      throw new Error(`Detail type must be between 1 and 128 characters, received ${detailType.length}`);
+      throw new Error(
+        `Detail type must be between 1 and 128 characters, received ${detailType.length}`
+      );
     }
   }
 }
@@ -110,7 +117,9 @@ function validateDetailType({ detailType }: EventBridgeTargetParameters) {
 function validateEndpointId({ endpointId }: EventBridgeTargetParameters) {
   if (endpointId !== undefined && !Token.isUnresolved(endpointId)) {
     if (endpointId.length < 1 || endpointId.length > 50) {
-      throw new Error(`Endpoint id must be between 1 and 50 characters, received ${endpointId.length}`);
+      throw new Error(
+        `Endpoint id must be between 1 and 50 characters, received ${endpointId.length}`
+      );
     }
   }
 }

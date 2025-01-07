@@ -1,5 +1,11 @@
 import * as workerpool from 'workerpool';
-import { printResults, printSummary, IntegBatchResponse, IntegTestOptions, IntegRunnerMetrics } from './common';
+import {
+  printResults,
+  printSummary,
+  IntegBatchResponse,
+  IntegTestOptions,
+  IntegRunnerMetrics,
+} from './common';
 import * as logger from '../logger';
 import { IntegTestInfo } from '../runner/integration-tests';
 import { flatten } from '../utils';
@@ -44,12 +50,15 @@ export interface IntegTestRunOptions extends IntegTestOptions {
 /**
  * Run Integration tests.
  */
-export async function runIntegrationTests(options: IntegTestRunOptions): Promise<{ success: boolean; metrics: IntegRunnerMetrics[] }> {
+export async function runIntegrationTests(
+  options: IntegTestRunOptions
+): Promise<{ success: boolean; metrics: IntegRunnerMetrics[] }> {
   logger.highlight('\nRunning integration tests for failed tests...\n');
   logger.print(
     'Running in parallel across %sregions: %s',
-    options.profiles ? `profiles ${options.profiles.join(', ')} and `: '',
-    options.regions.join(', '));
+    options.profiles ? `profiles ${options.profiles.join(', ')} and ` : '',
+    options.regions.join(', ')
+  );
   const totalTests = options.tests.length;
 
   const responses = await runIntegrationTestsInParallel(options);
@@ -109,9 +118,8 @@ function getAccountWorkers(regions: string[], profiles?: string[]): AccountWorke
  * is done running a test, the next test will be pulled from the queue
  */
 export async function runIntegrationTestsInParallel(
-  options: IntegTestRunOptions,
+  options: IntegTestRunOptions
 ): Promise<IntegBatchResponse> {
-
   const queue = options.tests;
   const results: IntegBatchResponse = {
     metrics: [],
@@ -126,19 +134,27 @@ export async function runIntegrationTestsInParallel(
       const test = queue.pop();
       if (!test) break;
       const testStart = Date.now();
-      logger.highlight(`Running test ${test.fileName} in ${worker.profile ? worker.profile + '/' : ''}${worker.region}`);
-      const response: IntegTestInfo[][] = await options.pool.exec('integTestWorker', [{
-        watch: options.watch,
-        region: worker.region,
-        profile: worker.profile,
-        tests: [test],
-        clean: options.clean,
-        dryRun: options.dryRun,
-        verbosity: options.verbosity,
-        updateWorkflow: options.updateWorkflow,
-      }], {
-        on: printResults,
-      });
+      logger.highlight(
+        `Running test ${test.fileName} in ${worker.profile ? worker.profile + '/' : ''}${worker.region}`
+      );
+      const response: IntegTestInfo[][] = await options.pool.exec(
+        'integTestWorker',
+        [
+          {
+            watch: options.watch,
+            region: worker.region,
+            profile: worker.profile,
+            tests: [test],
+            clean: options.clean,
+            dryRun: options.dryRun,
+            verbosity: options.verbosity,
+            updateWorkflow: options.updateWorkflow,
+          },
+        ],
+        {
+          on: printResults,
+        }
+      );
 
       results.failedTests.push(...flatten(response));
       tests[test.fileName] = (Date.now() - testStart) / 1000;

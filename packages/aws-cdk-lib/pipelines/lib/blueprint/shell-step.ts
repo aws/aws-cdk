@@ -149,7 +149,10 @@ export class ShellStep extends Step {
     this.commands = props.commands;
     this.installCommands = props.installCommands ?? [];
     this.env = props.env ?? {};
-    this.envFromCfnOutputs = mapValues(props.envFromCfnOutputs ?? {}, StackOutputReference.fromCfnOutput);
+    this.envFromCfnOutputs = mapValues(
+      props.envFromCfnOutputs ?? {},
+      StackOutputReference.fromCfnOutput
+    );
 
     // 'env' is the only thing that can contain outputs
     this.discoverReferencedOutputs({
@@ -160,7 +163,9 @@ export class ShellStep extends Step {
     if (props.input) {
       const fileSet = props.input.primaryOutput;
       if (!fileSet) {
-        throw new Error(`'${id}': primary input should be a step that has produced a file set, got ${props.input}`);
+        throw new Error(
+          `'${id}': primary input should be a step that has produced a file set, got ${props.input}`
+        );
       }
       this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory: '.', fileSet });
@@ -173,7 +178,9 @@ export class ShellStep extends Step {
 
       const fileSet = step.primaryOutput;
       if (!fileSet) {
-        throw new Error(`'${id}': additionalInput for directory '${directory}' should be a step that has produced a file set, got ${step}`);
+        throw new Error(
+          `'${id}': additionalInput for directory '${directory}' should be a step that has produced a file set, got ${step}`
+        );
       }
       this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory, fileSet });
@@ -200,7 +207,9 @@ export class ShellStep extends Step {
   public primaryOutputDirectory(directory: string): FileSet {
     if (this._primaryOutputDirectory !== undefined) {
       if (this._primaryOutputDirectory !== directory) {
-        throw new Error(`${this}: primaryOutputDirectory is '${this._primaryOutputDirectory}', cannot be changed to '${directory}'`);
+        throw new Error(
+          `${this}: primaryOutputDirectory is '${this._primaryOutputDirectory}', cannot be changed to '${directory}'`
+        );
       }
 
       return this.primaryOutput!;
@@ -263,7 +272,11 @@ export class StackOutputReference {
    */
   public static fromCfnOutput(output: CfnOutput) {
     const stack = Stack.of(output);
-    return new StackOutputReference(stack.node.path, stack.artifactId, stack.resolve(output.logicalId));
+    return new StackOutputReference(
+      stack.node.path,
+      stack.artifactId,
+      stack.resolve(output.logicalId)
+    );
   }
 
   private constructor(
@@ -272,8 +285,8 @@ export class StackOutputReference {
     /** Artifact id of the producing stack */
     private readonly stackArtifactId: string,
     /** Output name of the producing stack */
-    public readonly outputName: string) {
-  }
+    public readonly outputName: string
+  ) {}
 
   /**
    * Whether or not this stack output is being produced by the given Stack deployment

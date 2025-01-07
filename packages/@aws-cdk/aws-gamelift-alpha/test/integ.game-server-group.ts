@@ -18,12 +18,14 @@ class TestStack extends cdk.Stack {
     });
 
     new gamelift.GameServerGroup(this, 'MyGameServerGroup', {
-      instanceDefinitions: [{
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
-      },
-      {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
-      }],
+      instanceDefinitions: [
+        {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+        },
+        {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.LARGE),
+        },
+      ],
       minSize: 1,
       maxSize: 10,
       protectGameServer: true,

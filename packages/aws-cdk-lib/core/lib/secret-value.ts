@@ -94,7 +94,10 @@ export class SecretValue extends Intrinsic {
    * @param secretId The ID or ARN of the secret
    * @param options Options
    */
-  public static secretsManager(secretId: string, options: SecretsManagerSecretOptions = {}): SecretValue {
+  public static secretsManager(
+    secretId: string,
+    options: SecretsManagerSecretOptions = {}
+  ): SecretValue {
     if (!secretId) {
       throw new Error('secretId cannot be empty');
     }
@@ -104,7 +107,9 @@ export class SecretValue extends Intrinsic {
     }
 
     if (options.versionStage && options.versionId) {
-      throw new Error(`versionStage: '${options.versionStage}' and versionId: '${options.versionId}' were both provided but only one is allowed`);
+      throw new Error(
+        `versionStage: '${options.versionStage}' and versionId: '${options.versionId}' were both provided but only one is allowed`
+      );
     }
 
     const parts = [
@@ -115,7 +120,10 @@ export class SecretValue extends Intrinsic {
       options.versionId || '',
     ];
 
-    const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
+    const dyref = new CfnDynamicReference(
+      CfnDynamicReferenceService.SECRETS_MANAGER,
+      parts.join(':')
+    );
     return this.cfnDynamicReference(dyref);
   }
 
@@ -135,8 +143,11 @@ export class SecretValue extends Intrinsic {
    */
   public static ssmSecure(parameterName: string, version?: string): SecretValue {
     return this.cfnDynamicReference(
-      new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE,
-        version ? `${parameterName}:${version}` : parameterName));
+      new CfnDynamicReference(
+        CfnDynamicReferenceService.SSM_SECURE,
+        version ? `${parameterName}:${version}` : parameterName
+      )
+    );
   }
 
   /**
@@ -171,7 +182,11 @@ export class SecretValue extends Intrinsic {
    */
   public static resourceAttribute(attr: string) {
     const resolved = Tokenization.reverseCompleteString(attr);
-    if (!resolved || !CfnReference.isCfnReference(resolved) || !CfnResource.isCfnResource(resolved.target)) {
+    if (
+      !resolved ||
+      !CfnReference.isCfnReference(resolved) ||
+      !CfnResource.isCfnResource(resolved.target)
+    ) {
       throw new Error('SecretValue.resourceAttribute() must be used with a resource attribute');
     }
 
@@ -220,7 +235,7 @@ export class SecretValue extends Intrinsic {
   public resolve(context: IResolveContext) {
     if (FeatureFlags.of(context.scope).isEnabled(CHECK_SECRET_USAGE)) {
       throw new Error(
-        `Synthing a secret value to ${context.documentPath.join('/')}. Using a SecretValue here risks exposing your secret. Only pass SecretValues to constructs that accept a SecretValue property, or call AWS Secrets Manager directly in your runtime code. Call 'secretValue.unsafeUnwrap()' if you understand and accept the risks.`,
+        `Synthing a secret value to ${context.documentPath.join('/')}. Using a SecretValue here risks exposing your secret. Only pass SecretValues to constructs that accept a SecretValue property, or call AWS Secrets Manager directly in your runtime code. Call 'secretValue.unsafeUnwrap()' if you understand and accept the risks.`
       );
     }
     return super.resolve(context);

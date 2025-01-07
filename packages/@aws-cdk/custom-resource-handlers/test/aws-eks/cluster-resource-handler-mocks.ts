@@ -20,7 +20,7 @@ export let actualRequest: {
   deleteFargateProfile?: eks.DeleteFargateProfileCommandInput;
   tagResourceRequest?: eks.TagResourceCommandInput;
   untagResourceRequest?: eks.UntagResourceCommandInput;
-} = { };
+} = {};
 
 /**
  * Responses can be simulated by assigning values here.
@@ -31,22 +31,21 @@ export let simulateResponse: {
   describeUpdateResponseMockErrors?: eks.ErrorDetail[];
   deleteClusterError?: Error;
   describeClusterException?: Error;
-} = { };
+} = {};
 
 export function reset() {
-  actualRequest = { };
-  simulateResponse = { };
+  actualRequest = {};
+  simulateResponse = {};
 }
 
 export const MOCK_UPDATE_STATUS_ID = 'MockEksUpdateStatusId';
 
 export const client: EksClient = {
-
-  configureAssumeRole: req => {
+  configureAssumeRole: (req) => {
     actualRequest.configureAssumeRoleRequest = req;
   },
 
-  createCluster: async req => {
+  createCluster: async (req) => {
     actualRequest.createClusterRequest = req;
     return {
       $metadata: {},
@@ -61,7 +60,7 @@ export const client: EksClient = {
     };
   },
 
-  deleteCluster: async req => {
+  deleteCluster: async (req) => {
     actualRequest.deleteClusterRequest = req;
     if (simulateResponse.deleteClusterError) {
       throw simulateResponse.deleteClusterError;
@@ -74,7 +73,7 @@ export const client: EksClient = {
     };
   },
 
-  describeCluster: async req => {
+  describeCluster: async (req) => {
     actualRequest.describeClusterRequest = req;
 
     if (simulateResponse.describeClusterException) {
@@ -95,7 +94,7 @@ export const client: EksClient = {
     };
   },
 
-  describeUpdate: async req => {
+  describeUpdate: async (req) => {
     actualRequest.describeUpdateRequest = req;
 
     return {
@@ -108,7 +107,7 @@ export const client: EksClient = {
     };
   },
 
-  updateClusterConfig: async req => {
+  updateClusterConfig: async (req) => {
     actualRequest.updateClusterConfigRequest = req;
     return {
       $metadata: {},
@@ -118,7 +117,7 @@ export const client: EksClient = {
     };
   },
 
-  updateClusterVersion: async req => {
+  updateClusterVersion: async (req) => {
     actualRequest.updateClusterVersionRequest = req;
     return {
       $metadata: {},
@@ -128,27 +127,27 @@ export const client: EksClient = {
     };
   },
 
-  createFargateProfile: async req => {
+  createFargateProfile: async (req) => {
     actualRequest.createFargateProfile = req;
     return { $metadata: {} };
   },
 
-  describeFargateProfile: async req => {
+  describeFargateProfile: async (req) => {
     actualRequest.describeFargateProfile = req;
     return { $metadata: {} };
   },
 
-  deleteFargateProfile: async req => {
+  deleteFargateProfile: async (req) => {
     actualRequest.deleteFargateProfile = req;
     return { $metadata: {} };
   },
 
-  tagResource: async req => {
+  tagResource: async (req) => {
     actualRequest.tagResourceRequest = req;
     return { $metadata: {} };
   },
 
-  untagResource: async req => {
+  untagResource: async (req) => {
     actualRequest.untagResourceRequest = req;
     return { $metadata: {} };
   },
@@ -167,7 +166,8 @@ export const MOCK_ASSUME_ROLE_ARN = 'assume:role:arn';
 export function newRequest<T extends 'Create' | 'Update' | 'Delete'>(
   requestType: T,
   props?: Partial<eks.CreateClusterCommandInput>,
-  oldProps?: Partial<eks.CreateClusterCommandInput>) {
+  oldProps?: Partial<eks.CreateClusterCommandInput>
+) {
   return {
     StackId: 'fake-stack-id',
     RequestId: 'fake-request-id',

@@ -43,7 +43,9 @@ export function calculateCidrSplits(rootNetmask: number, netmasks: number[]): Ci
   }
 
   if (offset > Math.pow(2, 32 - rootNetmask)) {
-    throw new Error(`IP space of size /${rootNetmask} not big enough to allocate subnets of sizes ${netmasks.map(x => `/${x}`)}`);
+    throw new Error(
+      `IP space of size /${rootNetmask} not big enough to allocate subnets of sizes ${netmasks.map((x) => `/${x}`)}`
+    );
   }
 
   return ret;

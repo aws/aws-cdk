@@ -132,20 +132,32 @@ export class VirtualGateway extends VirtualGatewayBase {
   /**
    * Import an existing VirtualGateway given an ARN
    */
-  public static fromVirtualGatewayArn(scope: Construct, id: string, virtualGatewayArn: string): IVirtualGateway {
-    return new class extends VirtualGatewayBase {
-      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualGatewayArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
+  public static fromVirtualGatewayArn(
+    scope: Construct,
+    id: string,
+    virtualGatewayArn: string
+  ): IVirtualGateway {
+    return new (class extends VirtualGatewayBase {
+      private readonly parsedArn = cdk.Fn.split(
+        '/',
+        cdk.Stack.of(scope).splitArn(virtualGatewayArn, cdk.ArnFormat.SLASH_RESOURCE_NAME)
+          .resourceName!
+      );
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
       readonly virtualGatewayArn = virtualGatewayArn;
       readonly virtualGatewayName = cdk.Fn.select(2, this.parsedArn);
-    }(scope, id);
+    })(scope, id);
   }
 
   /**
    * Import an existing VirtualGateway given its attributes
    */
-  public static fromVirtualGatewayAttributes(scope: Construct, id: string, attrs: VirtualGatewayAttributes): IVirtualGateway {
-    return new class extends VirtualGatewayBase {
+  public static fromVirtualGatewayAttributes(
+    scope: Construct,
+    id: string,
+    attrs: VirtualGatewayAttributes
+  ): IVirtualGateway {
+    return new (class extends VirtualGatewayBase {
       readonly mesh = attrs.mesh;
       readonly virtualGatewayName = attrs.virtualGatewayName;
       readonly virtualGatewayArn = cdk.Stack.of(this).formatArn({
@@ -153,7 +165,7 @@ export class VirtualGateway extends VirtualGatewayBase {
         resource: `mesh/${attrs.mesh.meshName}/virtualGateway`,
         resourceName: this.virtualGatewayName,
       });
-    }(scope, id);
+    })(scope, id);
   }
 
   /**
@@ -175,7 +187,8 @@ export class VirtualGateway extends VirtualGatewayBase {
 
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
-      physicalName: props.virtualGatewayName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName:
+        props.virtualGatewayName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;
@@ -184,7 +197,7 @@ export class VirtualGateway extends VirtualGatewayBase {
       // Use listener default of http listener port 8080 if no listener is defined
       this.listeners.push(VirtualGatewayListener.http().bind(this));
     } else {
-      props.listeners.forEach(listener => this.listeners.push(listener.bind(this)));
+      props.listeners.forEach((listener) => this.listeners.push(listener.bind(this)));
     }
 
     const accessLogging = props.accessLog?.bind(this);
@@ -194,17 +207,21 @@ export class VirtualGateway extends VirtualGatewayBase {
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
-        listeners: this.listeners.map(listener => listener.listener),
-        backendDefaults: props.backendDefaults !== undefined
-          ? {
-            clientPolicy: {
-              tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy),
-            },
-          }
-          : undefined,
-        logging: accessLogging !== undefined ? {
-          accessLog: accessLogging.virtualGatewayAccessLog,
-        } : undefined,
+        listeners: this.listeners.map((listener) => listener.listener),
+        backendDefaults:
+          props.backendDefaults !== undefined
+            ? {
+                clientPolicy: {
+                  tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy),
+                },
+              }
+            : undefined,
+        logging:
+          accessLogging !== undefined
+            ? {
+                accessLog: accessLogging.virtualGatewayAccessLog,
+              }
+            : undefined,
       },
     });
 

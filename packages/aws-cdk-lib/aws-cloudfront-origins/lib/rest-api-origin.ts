@@ -34,8 +34,10 @@ export interface RestApiOriginProps extends cloudfront.OriginProps {
  * An Origin for an API Gateway REST API.
  */
 export class RestApiOrigin extends cloudfront.OriginBase {
-
-  constructor(restApi: apigateway.RestApiBase, private readonly props: RestApiOriginProps = {}) {
+  constructor(
+    restApi: apigateway.RestApiBase,
+    private readonly props: RestApiOriginProps = {}
+  ) {
     // urlForPath() is of the form 'https://<rest-api-id>.execute-api.<region>.amazonaws.com/<stage>'
     // Splitting on '/' gives: ['https', '', '<rest-api-id>.execute-api.<region>.amazonaws.com', '<stage>']
     // The element at index 2 is the domain name, the element at index 3 is the stage name
@@ -48,7 +50,9 @@ export class RestApiOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
-  protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
+  protected renderCustomOriginConfig():
+    | cloudfront.CfnDistribution.CustomOriginConfigProperty
+    | undefined {
     return {
       originSslProtocols: [cloudfront.OriginSslPolicy.TLS_V1_2],
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,

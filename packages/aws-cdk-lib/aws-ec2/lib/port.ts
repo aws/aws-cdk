@@ -279,9 +279,7 @@ export class Port {
       protocol: Protocol.UDP,
       fromPort: startPort,
       toPort: endPort,
-      stringRepresentation: `UDP ${renderPort(startPort)}-${renderPort(
-        endPort,
-      )}`,
+      stringRepresentation: `UDP ${renderPort(startPort)}-${renderPort(endPort)}`,
     });
   }
 
@@ -394,8 +392,7 @@ export class Port {
   public readonly canInlineRule: boolean;
 
   constructor(private readonly props: PortProps) {
-    this.canInlineRule =
-      !Token.isUnresolved(props.fromPort) && !Token.isUnresolved(props.toPort);
+    this.canInlineRule = !Token.isUnresolved(props.fromPort) && !Token.isUnresolved(props.toPort);
   }
 
   /**

@@ -10,7 +10,6 @@ import {
  * Properties to initialize HttpJwtAuthorizer.
  */
 export interface HttpJwtAuthorizerProps {
-
   /**
    * The name of the authorizer
    * @default - same value as `id` passed in the constructor
@@ -51,17 +50,15 @@ export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
   constructor(
     private readonly id: string,
     private readonly jwtIssuer: string,
-    private readonly props: HttpJwtAuthorizerProps) {
-  }
+    private readonly props: HttpJwtAuthorizerProps
+  ) {}
 
   /**
    * Return the id of the authorizer if it's been constructed
    */
   public get authorizerId(): string {
     if (!this.authorizer) {
-      throw new Error(
-        'Cannot access authorizerId until authorizer is attached to a HttpRoute',
-      );
+      throw new Error('Cannot access authorizerId until authorizer is attached to a HttpRoute');
     }
     return this.authorizer.authorizerId;
   }

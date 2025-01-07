@@ -29,7 +29,7 @@ export interface IJobDefinition extends IResource {
    *
    * @default none
    */
-  readonly parameters?: { [key:string]: any };
+  readonly parameters?: { [key: string]: any };
 
   /**
    * The number of times to retry a job.
@@ -90,7 +90,7 @@ export interface JobDefinitionProps {
    *
    * @default none
    */
-  readonly parameters?: { [key:string]: any };
+  readonly parameters?: { [key: string]: any };
 
   /**
    * The number of times to retry a job.
@@ -235,10 +235,10 @@ export class Reason {
  * @internal
  */
 export abstract class JobDefinitionBase extends Resource implements IJobDefinition {
-  public readonly abstract jobDefinitionArn: string;
-  public readonly abstract jobDefinitionName: string;
+  public abstract readonly jobDefinitionArn: string;
+  public abstract readonly jobDefinitionName: string;
 
-  public readonly parameters?: { [key:string]: any };
+  public readonly parameters?: { [key: string]: any };
   public readonly retryAttempts?: number;
   public readonly retryStrategies: RetryStrategy[];
   public readonly schedulingPriority?: number;
@@ -264,7 +264,9 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
 /**
  * @internal
  */
-export function baseJobDefinitionProperties(baseJobDefinition: JobDefinitionBase): CfnJobDefinitionProps {
+export function baseJobDefinitionProperties(
+  baseJobDefinition: JobDefinitionBase
+): CfnJobDefinitionProps {
   return {
     parameters: baseJobDefinition.parameters,
     retryStrategy: {

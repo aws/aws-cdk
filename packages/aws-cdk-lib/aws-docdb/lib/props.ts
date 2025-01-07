@@ -11,7 +11,6 @@ import { Duration, SecretValue } from '../../core';
  * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/backup-restore.db-cluster-snapshots.html#backup-restore.backup-window
  */
 export interface BackupProps {
-
   /**
    * How many days to retain the backup
    */

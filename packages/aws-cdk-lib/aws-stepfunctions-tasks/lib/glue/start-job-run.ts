@@ -8,7 +8,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * Properties for starting an AWS Glue job as a task
  */
 export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
-
   /**
    * Glue job name
    */
@@ -103,11 +102,18 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: GlueStartJobRunProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: GlueStartJobRunProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(this.integrationPattern, GlueStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      GlueStartJobRun.SUPPORTED_INTEGRATION_PATTERNS
+    );
 
     this.taskPolicies = this.getPolicies();
 
@@ -122,7 +128,9 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
+    const notificationProperty = this.props.notifyDelayAfter
+      ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() }
+      : null;
 
     let timeout: number | undefined = undefined;
     if (this.props.timeout) {
@@ -136,13 +144,19 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
     if (this.props.workerConfiguration) {
       const workerConfiguration = this.props.workerConfiguration;
       if (workerConfiguration?.workerTypeV2 && workerConfiguration.workerType) {
-        throw new Error('You cannot set both \'workerType\' and \'workerTypeV2\' properties in \'workerConfiguration\'.');
+        throw new Error(
+          "You cannot set both 'workerType' and 'workerTypeV2' properties in 'workerConfiguration'."
+        );
       }
       if (!workerConfiguration.workerTypeV2 && !workerConfiguration.workerType) {
-        throw new Error('You must set either \'workerType\' or \'workerTypeV2\' property in \'workerConfiguration\'.');
+        throw new Error(
+          "You must set either 'workerType' or 'workerTypeV2' property in 'workerConfiguration'."
+        );
       }
     }
-    const workerType = this.props.workerConfiguration?.workerType ?? this.props.workerConfiguration?.workerTypeV2?.name;
+    const workerType =
+      this.props.workerConfiguration?.workerType ??
+      this.props.workerConfiguration?.workerTypeV2?.name;
 
     return {
       Resource: integrationResourceArn('glue', 'startJobRun', this.integrationPattern),
@@ -174,16 +188,18 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
       ];
     }
 
-    return [new iam.PolicyStatement({
-      resources: [
-        Stack.of(this).formatArn({
-          service: 'glue',
-          resource: 'job',
-          resourceName: this.props.glueJobName,
-        }),
-      ],
-      actions: iamActions,
-    })];
+    return [
+      new iam.PolicyStatement({
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'glue',
+            resource: 'job',
+            resourceName: this.props.glueJobName,
+          }),
+        ],
+        actions: iamActions,
+      }),
+    ];
   }
 }
 

@@ -23,14 +23,14 @@ export interface ProductStackSynthesizerProps {
    *
    * @default - No encryption is used
    */
-  readonly serverSideEncryption? : ServerSideEncryption;
+  readonly serverSideEncryption?: ServerSideEncryption;
 
   /**
    * For AWS_KMS ServerSideEncryption a KMS KeyId must be provided which will be used to encrypt assets.
    *
    * @default - No KMS KeyId and SSE_KMS encryption cannot be used
    */
-  readonly serverSideEncryptionAwsKmsKeyId? : string;
+  readonly serverSideEncryptionAwsKmsKeyId?: string;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
@@ -52,8 +52,8 @@ export interface ProductStackSynthesizerProps {
 export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   private readonly parentStack: cdk.Stack;
   private readonly assetBucket?: IBucket;
-  private readonly serverSideEncryption? : ServerSideEncryption;
-  private readonly serverSideEncryptionAwsKmsKeyId? : string;
+  private readonly serverSideEncryption?: ServerSideEncryption;
+  private readonly serverSideEncryptionAwsKmsKeyId?: string;
   private readonly memoryLimit?: number;
   private parentAssetBucket?: IBucket;
 
@@ -66,8 +66,11 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     this.memoryLimit = props.memoryLimit;
 
     if (this.assetBucket && !cdk.Resource.isOwnedResource(this.assetBucket)) {
-      cdk.Annotations.of(this.parentStack).addWarningV2('@aws-cdk/aws-servicecatalog:assetsManuallyAddBucketPermissions', '[WARNING] Bucket Policy Permissions cannot be added to' +
-        ' referenced Bucket. Please make sure your bucket has the correct permissions');
+      cdk.Annotations.of(this.parentStack).addWarningV2(
+        '@aws-cdk/aws-servicecatalog:assetsManuallyAddBucketPermissions',
+        '[WARNING] Bucket Policy Permissions cannot be added to' +
+          ' referenced Bucket. Please make sure your bucket has the correct permissions'
+      );
     }
   }
 
@@ -79,23 +82,34 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     // This assumes all assets added to the parent stack's synthesizer go into the same bucket.
     const location = this.parentStack.synthesizer.addFileAsset(asset);
     if (!this.parentAssetBucket) {
-      this.parentAssetBucket = Bucket.fromBucketName(this.boundStack, 'ParentAssetBucket', location.bucketName);
+      this.parentAssetBucket = Bucket.fromBucketName(
+        this.boundStack,
+        'ParentAssetBucket',
+        location.bucketName
+      );
     }
     const objectKey = location.objectKey;
     const source = Source.bucket(this.parentAssetBucket, location.objectKey);
 
-    if (this.serverSideEncryption === ServerSideEncryption.AWS_KMS && !this.serverSideEncryptionAwsKmsKeyId) {
+    if (
+      this.serverSideEncryption === ServerSideEncryption.AWS_KMS &&
+      !this.serverSideEncryptionAwsKmsKeyId
+    ) {
       throw new Error('A KMS Key must be provided to use SSE_KMS');
     }
-    if (this.serverSideEncryption !== ServerSideEncryption.AWS_KMS && this.serverSideEncryptionAwsKmsKeyId) {
+    if (
+      this.serverSideEncryption !== ServerSideEncryption.AWS_KMS &&
+      this.serverSideEncryptionAwsKmsKeyId
+    ) {
       throw new Error('A SSE_KMS encryption must be enabled if you provide KMS Key');
     }
 
     // Multiple Products deploying into the same bucket will use the same 'BucketDeployment' construct.
     const deploymentScope = this.assetBucket;
     const deploymentCid = 'ProductAssetsDeployment';
-    const bucketDeployment = deploymentScope.node.tryFindChild(deploymentCid) as BucketDeployment | undefined
-      ?? new BucketDeployment(deploymentScope, deploymentCid, {
+    const bucketDeployment =
+      (deploymentScope.node.tryFindChild(deploymentCid) as BucketDeployment | undefined) ??
+      new BucketDeployment(deploymentScope, deploymentCid, {
         sources: [source],
         destinationBucket: this.assetBucket,
         extract: false,
@@ -121,7 +135,9 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   private physicalNameOfBucket(bucket: IBucket) {
     let resolvedName;
     if (cdk.Resource.isOwnedResource(bucket)) {
-      resolvedName = cdk.Stack.of(bucket).resolve((bucket.node.defaultChild as CfnBucket).bucketName);
+      resolvedName = cdk.Stack.of(bucket).resolve(
+        (bucket.node.defaultChild as CfnBucket).bucketName
+      );
     } else {
       resolvedName = bucket.bucketName;
     }

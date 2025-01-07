@@ -4,7 +4,12 @@ import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import {
+  AddToPrincipalPolicyResult,
+  ArnPrincipal,
+  IPrincipal,
+  PrincipalPolicyFragment,
+} from './principals';
 import { AttachedPolicies } from './private/util';
 import { IUser } from './user';
 import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
@@ -184,11 +189,14 @@ export class Group extends GroupBase {
       physicalName: props.groupName,
     });
 
-    this.managedPolicies.push(...props.managedPolicies || []);
+    this.managedPolicies.push(...(props.managedPolicies || []));
 
     const group = new CfnGroup(this, 'Resource', {
       groupName: this.physicalName,
-      managedPolicyArns: Lazy.list({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
+      managedPolicyArns: Lazy.list(
+        { produce: () => this.managedPolicies.map((p) => p.managedPolicyArn) },
+        { omitEmpty: true }
+      ),
       path: props.path,
     });
 
@@ -211,14 +219,19 @@ export class Group extends GroupBase {
    * @param policy The managed policy to attach.
    */
   public addManagedPolicy(policy: IManagedPolicy) {
-    if (this.managedPolicies.find(mp => mp === policy)) { return; }
+    if (this.managedPolicies.find((mp) => mp === policy)) {
+      return;
+    }
     this.managedPolicies.push(policy);
     this.managedPoliciesExceededWarning();
   }
 
   private managedPoliciesExceededWarning() {
     if (this.managedPolicies.length > 10) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:groupMaxPoliciesExceeded', `You added ${this.managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-iam:groupMaxPoliciesExceeded',
+        `You added ${this.managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`
+      );
     }
   }
 }

@@ -397,7 +397,7 @@ export interface TlsAuthProps {
 /**
  * SASL + TLS authentication properties
  */
-export interface SaslTlsAuthProps extends SaslAuthProps, TlsAuthProps { }
+export interface SaslTlsAuthProps extends SaslAuthProps, TlsAuthProps {}
 
 /**
  * Configuration properties for client authentication.
@@ -430,7 +430,7 @@ export class ClientAuthentication {
    */
   private constructor(
     public readonly saslProps?: SaslAuthProps,
-    public readonly tlsProps?: TlsAuthProps,
+    public readonly tlsProps?: TlsAuthProps
   ) {}
 }
 
@@ -446,7 +446,7 @@ export class Cluster extends ClusterBase {
   public static fromClusterArn(
     scope: constructs.Construct,
     id: string,
-    clusterArn: string,
+    clusterArn: string
   ): ICluster {
     class Import extends ClusterBase {
       public readonly clusterArn = clusterArn;
@@ -480,9 +480,7 @@ export class Cluster extends ClusterBase {
     });
 
     if (subnetSelection.subnets.length < 2) {
-      throw Error(
-        `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}`,
-      );
+      throw Error(`Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}`);
     }
 
     if (
@@ -492,7 +490,7 @@ export class Cluster extends ClusterBase {
     ) {
       throw Error(
         'The cluster name must only contain alphanumeric characters and have a maximum length of 64 characters.' +
-          `got: '${props.clusterName}. length: ${props.clusterName.length}'`,
+          `got: '${props.clusterName}. length: ${props.clusterName.length}'`
       );
     }
 
@@ -504,61 +502,53 @@ export class Cluster extends ClusterBase {
     }
 
     if (
-      props.encryptionInTransit?.clientBroker ===
-        ClientBrokerEncryption.PLAINTEXT &&
+      props.encryptionInTransit?.clientBroker === ClientBrokerEncryption.PLAINTEXT &&
       props.clientAuthentication
     ) {
       throw Error(
-        'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
+        'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.'
       );
     } else if (
-      props.encryptionInTransit?.clientBroker ===
-        ClientBrokerEncryption.TLS_PLAINTEXT &&
-      (props.clientAuthentication?.saslProps?.scram ||
-        props.clientAuthentication?.saslProps?.iam)
+      props.encryptionInTransit?.clientBroker === ClientBrokerEncryption.TLS_PLAINTEXT &&
+      (props.clientAuthentication?.saslProps?.scram || props.clientAuthentication?.saslProps?.iam)
     ) {
       throw Error(
-        'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
+        'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.'
       );
     }
 
-    const volumeSize =
-      props.ebsStorageInfo?.volumeSize ?? 1000;
+    const volumeSize = props.ebsStorageInfo?.volumeSize ?? 1000;
     // Minimum: 1 GiB, maximum: 16384 GiB
     if (volumeSize < 1 || volumeSize > 16384) {
-      throw Error(
-        'EBS volume size should be in the range 1-16384',
-      );
+      throw Error('EBS volume size should be in the range 1-16384');
     }
 
     const instanceType = props.instanceType
       ? this.mskInstanceType(props.instanceType)
-      : this.mskInstanceType(
-        ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
-      );
+      : this.mskInstanceType(ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE));
 
     if (props.storageMode && props.storageMode === StorageMode.TIERED) {
       if (!props.kafkaVersion.isTieredStorageCompatible()) {
-        throw Error(`To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`);
+        throw Error(
+          `To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`
+        );
       }
-      if (instanceType === this.mskInstanceType(
-        ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
-      )) {
-        throw Error('Tiered storage doesn\'t support broker type t3.small');
+      if (
+        instanceType ===
+        this.mskInstanceType(ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL))
+      ) {
+        throw Error("Tiered storage doesn't support broker type t3.small");
       }
     }
 
     const encryptionAtRest = props.ebsStorageInfo?.encryptionKey
       ? {
-        dataVolumeKmsKeyId:
-            props.ebsStorageInfo.encryptionKey.keyId,
-      }
+          dataVolumeKmsKeyId: props.ebsStorageInfo.encryptionKey.keyId,
+        }
       : undefined; // MSK will create the managed key
 
     const encryptionInTransit = {
-      clientBroker:
-        props.encryptionInTransit?.clientBroker ??
-        ClientBrokerEncryption.TLS,
+      clientBroker: props.encryptionInTransit?.clientBroker ?? ClientBrokerEncryption.TLS,
       inCluster: props.encryptionInTransit?.enableInCluster ?? true,
     };
 
@@ -566,81 +556,70 @@ export class Cluster extends ClusterBase {
       props.monitoring?.enablePrometheusJmxExporter ||
       props.monitoring?.enablePrometheusNodeExporter
         ? {
-          prometheus: {
-            jmxExporter: props.monitoring?.enablePrometheusJmxExporter
-              ? { enabledInBroker: true }
-              : undefined,
-            nodeExporter: props.monitoring
-              ?.enablePrometheusNodeExporter
-              ? { enabledInBroker: true }
-              : undefined,
-          },
-        }
+            prometheus: {
+              jmxExporter: props.monitoring?.enablePrometheusJmxExporter
+                ? { enabledInBroker: true }
+                : undefined,
+              nodeExporter: props.monitoring?.enablePrometheusNodeExporter
+                ? { enabledInBroker: true }
+                : undefined,
+            },
+          }
         : undefined;
 
     const loggingBucket = props.logging?.s3?.bucket;
     if (loggingBucket && FeatureFlags.of(this).isEnabled(S3_CREATE_DEFAULT_LOGGING_POLICY)) {
       const stack = core.Stack.of(this);
-      loggingBucket.addToResourcePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [
-          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
-        ],
-        resources: [
-          loggingBucket.arnForObjects(`AWSLogs/${stack.account}/*`),
-        ],
-        actions: ['s3:PutObject'],
-        conditions: {
-          StringEquals: {
-            's3:x-amz-acl': 'bucket-owner-full-control',
-            'aws:SourceAccount': stack.account,
+      loggingBucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          principals: [new iam.ServicePrincipal('delivery.logs.amazonaws.com')],
+          resources: [loggingBucket.arnForObjects(`AWSLogs/${stack.account}/*`)],
+          actions: ['s3:PutObject'],
+          conditions: {
+            StringEquals: {
+              's3:x-amz-acl': 'bucket-owner-full-control',
+              'aws:SourceAccount': stack.account,
+            },
+            ArnLike: {
+              'aws:SourceArn': stack.formatArn({
+                service: 'logs',
+                resource: '*',
+              }),
+            },
           },
-          ArnLike: {
-            'aws:SourceArn': stack.formatArn({
-              service: 'logs',
-              resource: '*',
-            }),
-          },
-        },
-      }));
+        })
+      );
 
-      loggingBucket.addToResourcePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [
-          new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
-        ],
-        resources: [loggingBucket.bucketArn],
-        actions: [
-          's3:GetBucketAcl',
-          's3:ListBucket',
-        ],
-        conditions: {
-          StringEquals: {
-            'aws:SourceAccount': stack.account,
+      loggingBucket.addToResourcePolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          principals: [new iam.ServicePrincipal('delivery.logs.amazonaws.com')],
+          resources: [loggingBucket.bucketArn],
+          actions: ['s3:GetBucketAcl', 's3:ListBucket'],
+          conditions: {
+            StringEquals: {
+              'aws:SourceAccount': stack.account,
+            },
+            ArnLike: {
+              'aws:SourceArn': stack.formatArn({
+                service: 'logs',
+                resource: '*',
+              }),
+            },
           },
-          ArnLike: {
-            'aws:SourceArn': stack.formatArn({
-              service: 'logs',
-              resource: '*',
-            }),
-          },
-        },
-      }));
+        })
+      );
     }
     const loggingInfo = {
       brokerLogs: {
         cloudWatchLogs: {
-          enabled:
-            props.logging?.cloudwatchLogGroup !== undefined,
-          logGroup:
-            props.logging?.cloudwatchLogGroup?.logGroupName,
+          enabled: props.logging?.cloudwatchLogGroup !== undefined,
+          logGroup: props.logging?.cloudwatchLogGroup?.logGroupName,
         },
         firehose: {
-          enabled:
-            props.logging?.firehoseDeliveryStreamName !==
-            undefined,
-          deliveryStream:
-            props.logging?.firehoseDeliveryStreamName,
+          enabled: props.logging?.firehoseDeliveryStreamName !== undefined,
+          deliveryStream: props.logging?.firehoseDeliveryStreamName,
         },
         s3: {
           enabled: loggingBucket !== undefined,
@@ -655,16 +634,14 @@ export class Cluster extends ClusterBase {
       props.clientAuthentication?.saslProps?.key === undefined
     ) {
       this.saslScramAuthenticationKey = new kms.Key(this, 'SASLKey', {
-        description:
-          'Used for encrypting MSK secrets for SASL/SCRAM authentication.',
+        description: 'Used for encrypting MSK secrets for SASL/SCRAM authentication.',
         alias: `msk/${props.clusterName}/sasl/scram`,
       });
 
       // https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-policies
       this.saslScramAuthenticationKey.addToResourcePolicy(
         new iam.PolicyStatement({
-          sid:
-            'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
+          sid: 'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
           principals: [new iam.AnyPrincipal()],
           actions: [
             'kms:Encrypt',
@@ -681,7 +658,7 @@ export class Cluster extends ClusterBase {
               'kms:CallerAccount': core.Stack.of(this).account,
             },
           },
-        }),
+        })
       );
     }
 
@@ -694,9 +671,10 @@ export class Cluster extends ClusterBase {
         clientAuthentication = {
           sasl: { iam: { enabled: props.clientAuthentication.saslProps.iam } },
           tls: {
-            certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities?.map(
-              (ca) => ca.certificateAuthorityArn,
-            ),
+            certificateAuthorityArnList:
+              props.clientAuthentication?.tlsProps?.certificateAuthorities?.map(
+                (ca) => ca.certificateAuthorityArn
+              ),
           },
         };
       }
@@ -708,14 +686,13 @@ export class Cluster extends ClusterBase {
           },
         },
       };
-    } else if (
-      props.clientAuthentication?.tlsProps?.certificateAuthorities !== undefined
-    ) {
+    } else if (props.clientAuthentication?.tlsProps?.certificateAuthorities !== undefined) {
       clientAuthentication = {
         tls: {
-          certificateAuthorityArnList: props.clientAuthentication?.tlsProps?.certificateAuthorities.map(
-            (ca) => ca.certificateAuthorityArn,
-          ),
+          certificateAuthorityArnList:
+            props.clientAuthentication?.tlsProps?.certificateAuthorities.map(
+              (ca) => ca.certificateAuthorityArn
+            ),
         },
       };
     }
@@ -724,14 +701,13 @@ export class Cluster extends ClusterBase {
       clusterName: props.clusterName,
       kafkaVersion: props.kafkaVersion.version,
       numberOfBrokerNodes:
-        props.numberOfBrokerNodes !== undefined ?
-          subnetSelection.availabilityZones.length * props.numberOfBrokerNodes : subnetSelection.availabilityZones.length,
+        props.numberOfBrokerNodes !== undefined
+          ? subnetSelection.availabilityZones.length * props.numberOfBrokerNodes
+          : subnetSelection.availabilityZones.length,
       brokerNodeGroupInfo: {
         instanceType,
         clientSubnets: subnetSelection.subnetIds,
-        securityGroups: this.connections.securityGroups.map(
-          (group) => group.securityGroupId,
-        ),
+        securityGroups: this.connections.securityGroups.map((group) => group.securityGroupId),
         storageInfo: {
           ebsStorageInfo: {
             volumeSize: volumeSize,
@@ -751,7 +727,7 @@ export class Cluster extends ClusterBase {
     });
 
     this.clusterName = this.getResourceNameAttribute(
-      core.Fn.select(1, core.Fn.split('/', resource.ref)),
+      core.Fn.select(1, core.Fn.split('/', resource.ref))
     );
     this.clusterArn = resource.ref;
 
@@ -781,9 +757,7 @@ export class Cluster extends ClusterBase {
           parameters: {
             ClusterArn: this.clusterArn,
           },
-          physicalResourceId: cr.PhysicalResourceId.of(
-            'ZooKeeperConnectionString',
-          ),
+          physicalResourceId: cr.PhysicalResourceId.of('ZooKeeperConnectionString'),
           // Limit the output of describeCluster that is otherwise too large
           outputPaths: [
             'ClusterInfo.ZookeeperConnectString',
@@ -831,24 +805,27 @@ export class Cluster extends ClusterBase {
    */
   private _bootstrapBrokers(responseField: string): string {
     if (!this._clusterBootstrapBrokers) {
-      this._clusterBootstrapBrokers = new cr.AwsCustomResource(this, `BootstrapBrokers${responseField}`, {
-        onUpdate: {
-          service: 'Kafka',
-          action: 'getBootstrapBrokers',
-          parameters: {
-            ClusterArn: this.clusterArn,
+      this._clusterBootstrapBrokers = new cr.AwsCustomResource(
+        this,
+        `BootstrapBrokers${responseField}`,
+        {
+          onUpdate: {
+            service: 'Kafka',
+            action: 'getBootstrapBrokers',
+            parameters: {
+              ClusterArn: this.clusterArn,
+            },
+            physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
           },
-          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
-        },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-          resources: [this.clusterArn],
-        }),
-        // APIs are available in 2.1055.0
-        installLatestAwsSdk: false,
-      });
+          policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+            resources: [this.clusterArn],
+          }),
+          // APIs are available in 2.1055.0
+          installLatestAwsSdk: false,
+        }
+      );
     }
     return this._clusterBootstrapBrokers.getResponseField(responseField);
-
   }
   /**
    * Get the list of brokers that a client application can use to bootstrap
@@ -914,7 +891,7 @@ export class Cluster extends ClusterBase {
               generateStringKey: 'password',
             },
             encryptionKey: this.saslScramAuthenticationKey,
-          }),
+          })
       );
 
       new cr.AwsCustomResource(this, `BatchAssociateScramSecrets${addressOf(usernames)}`, {
@@ -941,7 +918,7 @@ export class Cluster extends ClusterBase {
       });
     } else {
       throw Error(
-        'Cannot create users if an authentication KMS key has not been created/provided.',
+        'Cannot create users if an authentication KMS key has not been created/provided.'
       );
     }
   }

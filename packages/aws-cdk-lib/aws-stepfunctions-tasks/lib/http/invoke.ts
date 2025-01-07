@@ -124,7 +124,11 @@ export class HttpInvoke extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: Construct, id: string, private readonly props: HttpInvokeProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: HttpInvokeProps
+  ) {
     super(scope, id, props);
 
     this.taskPolicies = this.buildTaskPolicyStatements();
@@ -176,8 +180,14 @@ export class HttpInvoke extends sfn.TaskStateBase {
       QueryParameters: this.props.queryStringParameters?.value,
     };
 
-    if (this.props.urlEncodingFormat != null && this.props.urlEncodingFormat !== URLEncodingFormat.NONE) {
-      parameters.Headers = { ...parameters.Headers, 'Content-Type': 'application/x-www-form-urlencoded' };
+    if (
+      this.props.urlEncodingFormat != null &&
+      this.props.urlEncodingFormat !== URLEncodingFormat.NONE
+    ) {
+      parameters.Headers = {
+        ...parameters.Headers,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
       parameters.Transform = {
         RequestBodyEncoding: 'URL_ENCODED',
       };

@@ -25,11 +25,14 @@ export interface EmrCancelStepProps extends sfn.TaskStateBaseProps {
  *
  */
 export class EmrCancelStep extends sfn.TaskStateBase {
-
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrCancelStepProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EmrCancelStepProps
+  ) {
     super(scope, id, props);
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -50,7 +53,11 @@ export class EmrCancelStep extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('elasticmapreduce', 'cancelStep', sfn.IntegrationPattern.REQUEST_RESPONSE),
+      Resource: integrationResourceArn(
+        'elasticmapreduce',
+        'cancelStep',
+        sfn.IntegrationPattern.REQUEST_RESPONSE
+      ),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         StepId: this.props.stepId,

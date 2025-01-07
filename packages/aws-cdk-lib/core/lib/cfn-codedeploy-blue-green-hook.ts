@@ -296,9 +296,12 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
    *
    * @internal
    */
-  public static _fromCloudFormation(scope: Construct, id: string, hookAttributes: any,
-    options: FromCloudFormationOptions): CfnCodeDeployBlueGreenHook {
-
+  public static _fromCloudFormation(
+    scope: Construct,
+    id: string,
+    hookAttributes: any,
+    options: FromCloudFormationOptions
+  ): CfnCodeDeployBlueGreenHook {
     hookAttributes = hookAttributes || {};
     const hookProperties = options.parser.parseValue(hookAttributes.Properties);
     return new CfnCodeDeployBlueGreenHook(scope, id, {
@@ -316,7 +319,8 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
         },
       },
       additionalOptions: {
-        terminationWaitTimeInMinutes: hookProperties?.AdditionalOptions?.TerminationWaitTimeInMinutes,
+        terminationWaitTimeInMinutes:
+          hookProperties?.AdditionalOptions?.TerminationWaitTimeInMinutes,
       },
       lifecycleEventHooks: {
         beforeInstall: hookProperties?.LifecycleEventHooks?.BeforeInstall,
@@ -329,14 +333,18 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
 
     function applicationFromCloudFormation(app: any) {
       const target = findResource(app?.Target?.LogicalID);
-      const taskDefinitions: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TaskDefinitions?.map(
-        (td: any) => findResource(td));
-      const taskSets: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TaskSets?.map(
-        (ts: any) => findResource(ts));
-      const prodTrafficRoute = findResource(app?.ECSAttributes?.TrafficRouting?.ProdTrafficRoute?.LogicalID);
-      const testTrafficRoute = findResource(app?.ECSAttributes?.TrafficRouting?.TestTrafficRoute?.LogicalID);
-      const targetGroups: Array<CfnResource | undefined> | undefined = app?.ECSAttributes?.TrafficRouting?.TargetGroups?.map(
-        (tg: any) => findResource(tg));
+      const taskDefinitions: Array<CfnResource | undefined> | undefined =
+        app?.ECSAttributes?.TaskDefinitions?.map((td: any) => findResource(td));
+      const taskSets: Array<CfnResource | undefined> | undefined =
+        app?.ECSAttributes?.TaskSets?.map((ts: any) => findResource(ts));
+      const prodTrafficRoute = findResource(
+        app?.ECSAttributes?.TrafficRouting?.ProdTrafficRoute?.LogicalID
+      );
+      const testTrafficRoute = findResource(
+        app?.ECSAttributes?.TrafficRouting?.TestTrafficRoute?.LogicalID
+      );
+      const targetGroups: Array<CfnResource | undefined> | undefined =
+        app?.ECSAttributes?.TrafficRouting?.TargetGroups?.map((tg: any) => findResource(tg));
 
       return {
         target: {
@@ -344,8 +352,8 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
           logicalId: target?.logicalId,
         },
         ecsAttributes: {
-          taskDefinitions: taskDefinitions?.map(td => td?.logicalId),
-          taskSets: taskSets?.map(ts => ts?.logicalId),
+          taskDefinitions: taskDefinitions?.map((td) => td?.logicalId),
+          taskSets: taskSets?.map((ts) => ts?.logicalId),
           trafficRouting: {
             prodTrafficRoute: {
               type: app?.ECSAttributes?.TrafficRouting?.ProdTrafficRoute?.Type,
@@ -367,7 +375,9 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
       }
       const ret = options.parser.finder.findResource(logicalId);
       if (!ret) {
-        throw new Error(`Hook '${id}' references resource '${logicalId}' that was not found in the template`);
+        throw new Error(
+          `Hook '${id}' references resource '${logicalId}' that was not found in the template`
+        );
       }
       return ret;
     }

@@ -1,8 +1,16 @@
 import { Construct } from 'constructs';
-import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import {
+  Ec2Service,
+  Ec2TaskDefinition,
+  PlacementConstraint,
+  PlacementStrategy,
+} from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
+import {
+  QueueProcessingServiceBase,
+  QueueProcessingServiceBaseProps,
+} from '../base/queue-processing-service-base';
 
 /**
  * The properties for the QueueProcessingEc2Service service.
@@ -82,7 +90,7 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 
@@ -90,7 +98,6 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
  * Class to create a queue processing EC2 service.
  */
 export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
-
   /**
    * The EC2 service in this construct.
    */
@@ -129,7 +136,9 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     });
 
     // The desiredCount should be removed from the fargate service when the feature flag is removed.
-    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? undefined : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)
+      ? undefined
+      : this.desiredCount;
 
     // Create an ECS service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.

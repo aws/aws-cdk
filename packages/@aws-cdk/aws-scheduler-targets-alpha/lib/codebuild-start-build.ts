@@ -9,15 +9,17 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 export class CodeBuildStartBuild extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly project: IProject,
-    props: ScheduleTargetBaseProps = {},
+    props: ScheduleTargetBaseProps = {}
   ) {
     super(props, project.projectArn);
   }
 
   protected addTargetActionToRole(role: IRole): void {
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['codebuild:StartBuild'],
-      resources: [this.project.projectArn],
-    }));
+    role.addToPrincipalPolicy(
+      new PolicyStatement({
+        actions: ['codebuild:StartBuild'],
+        resources: [this.project.projectArn],
+      })
+    );
   }
 }

@@ -37,7 +37,6 @@ export interface IVpnConnection extends IResource {
  * The virtual private gateway interface
  */
 export interface IVpnGateway extends IResource {
-
   /**
    * The virtual private gateway Id
    */
@@ -109,7 +108,6 @@ export interface VpnConnectionOptions {
  * The VpnGateway Properties
  */
 export interface VpnGatewayProps {
-
   /**
    * Default type ipsec.1
    */
@@ -162,7 +160,6 @@ export enum VpnConnectionType {
  * @resource AWS::EC2::VPNGateway
  */
 export class VpnGateway extends Resource implements IVpnGateway {
-
   /**
    * The virtual private gateway Id
    */
@@ -183,7 +180,6 @@ export class VpnGateway extends Resource implements IVpnGateway {
  * Attributes of an imported VpnConnection.
  */
 export interface VpnConnectionAttributes {
-
   /**
    * The id of the VPN connection.
    */
@@ -203,19 +199,16 @@ export interface VpnConnectionAttributes {
    * The ASN of the customer gateway.
    */
   readonly customerGatewayAsn: number;
-
 }
 
 /**
  * Base class for Vpn connections.
  */
 export abstract class VpnConnectionBase extends Resource implements IVpnConnection {
-
   public abstract readonly vpnId: string;
   public abstract readonly customerGatewayId: string;
   public abstract readonly customerGatewayIp: string;
   public abstract readonly customerGatewayAsn: number;
-
 }
 
 /**
@@ -224,23 +217,22 @@ export abstract class VpnConnectionBase extends Resource implements IVpnConnecti
  * @resource AWS::EC2::VPNConnection
  */
 export class VpnConnection extends VpnConnectionBase {
-
   /**
    * Import a VPN connection by supplying all attributes directly
    */
-  public static fromVpnConnectionAttributes(scope: Construct, id: string, attrs: VpnConnectionAttributes): IVpnConnection {
-
+  public static fromVpnConnectionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: VpnConnectionAttributes
+  ): IVpnConnection {
     class Import extends VpnConnectionBase {
-
       public readonly vpnId: string = attrs.vpnId;
       public readonly customerGatewayId: string = attrs.customerGatewayId;
       public readonly customerGatewayIp: string = attrs.customerGatewayIp;
       public readonly customerGatewayAsn: number = attrs.customerGatewayAsn;
-
     }
 
     return new Import(scope, id);
-
   }
 
   /**
@@ -319,10 +311,14 @@ export class VpnConnection extends VpnConnectionBase {
         throw new Error('Cannot specify more than two `tunnelOptions`');
       }
 
-      if (props.tunnelOptions.length === 2 &&
+      if (
+        props.tunnelOptions.length === 2 &&
         props.tunnelOptions[0].tunnelInsideCidr === props.tunnelOptions[1].tunnelInsideCidr &&
-        props.tunnelOptions[0].tunnelInsideCidr !== undefined) {
-        throw new Error(`Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`);
+        props.tunnelOptions[0].tunnelInsideCidr !== undefined
+      ) {
+        throw new Error(
+          `Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`
+        );
       }
 
       props.tunnelOptions.forEach((options, index) => {
@@ -330,20 +326,30 @@ export class VpnConnection extends VpnConnectionBase {
           throw new Error("Specify at most one of 'preSharedKey' and 'preSharedKeySecret'.");
         }
 
-        if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
+        if (
+          options.preSharedKey &&
+          !Token.isUnresolved(options.preSharedKey) &&
+          !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)
+        ) {
           /* eslint-disable max-len */
-          throw new Error(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`);
+          throw new Error(
+            `The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`
+          );
           /* eslint-enable max-len */
         }
 
         if (options.tunnelInsideCidr) {
           if (RESERVED_TUNNEL_INSIDE_CIDR.includes(options.tunnelInsideCidr)) {
-            throw new Error(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`);
+            throw new Error(
+              `The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`
+            );
           }
 
           if (!/^169\.254\.\d{1,3}\.\d{1,3}\/30$/.test(options.tunnelInsideCidr)) {
             /* eslint-disable-next-line max-len */
-            throw new Error(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`);
+            throw new Error(
+              `The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`
+            );
           }
         }
       });
@@ -354,7 +360,7 @@ export class VpnConnection extends VpnConnectionBase {
       customerGatewayId: customerGateway.ref,
       staticRoutesOnly: props.staticRoutes ? true : false,
       vpnGatewayId: props.vpc.vpnGatewayId,
-      vpnTunnelOptionsSpecifications: props.tunnelOptions?.map(t => ({
+      vpnTunnelOptionsSpecifications: props.tunnelOptions?.map((t) => ({
         preSharedKey: t.preSharedKeySecret?.unsafeUnwrap() ?? t.preSharedKey,
         tunnelInsideCidr: t.tunnelInsideCidr,
       })),
@@ -363,7 +369,7 @@ export class VpnConnection extends VpnConnectionBase {
     this.vpnId = vpnConnection.ref;
 
     if (props.staticRoutes) {
-      props.staticRoutes.forEach(route => {
+      props.staticRoutes.forEach((route) => {
         new CfnVPNConnectionRoute(this, `Route${route.replace(/[^\d]/g, '')}`, {
           destinationCidrBlock: route,
           vpnConnectionId: this.vpnId,

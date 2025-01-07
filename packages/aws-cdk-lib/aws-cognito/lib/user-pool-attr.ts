@@ -229,8 +229,7 @@ export interface StringAttributeConstraints {
 /**
  * Props for constructing a StringAttr
  */
-export interface StringAttributeProps extends StringAttributeConstraints, CustomAttributeProps {
-}
+export interface StringAttributeProps extends StringAttributeConstraints, CustomAttributeProps {}
 
 /**
  * The String custom attribute type.
@@ -289,8 +288,7 @@ export interface NumberAttributeConstraints {
 /**
  * Props for NumberAttr
  */
-export interface NumberAttributeProps extends NumberAttributeConstraints, CustomAttributeProps {
-}
+export interface NumberAttributeProps extends NumberAttributeConstraints, CustomAttributeProps {}
 
 /**
  * The Number custom attribute type.
@@ -484,7 +482,6 @@ export interface StandardAttributesMask {
  * A set of attributes, useful to set Read and Write attributes
  */
 export class ClientAttributes {
-
   /**
    * The set of attributes
    */

@@ -86,22 +86,25 @@ export class EcrSourceAction extends Action {
     };
   }
 
-  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
-    options.role.addToPolicy(new iam.PolicyStatement({
-      actions: ['ecr:DescribeImages'],
-      resources: [this.props.repository.repositoryArn],
-    }));
+  protected bound(
+    scope: Construct,
+    stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
+    options.role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['ecr:DescribeImages'],
+        resources: [this.props.repository.repositoryArn],
+      })
+    );
 
     new Rule(scope, Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule', {
-      targets: [
-        new targets.CodePipeline(stage.pipeline),
-      ],
+      targets: [new targets.CodePipeline(stage.pipeline)],
       eventPattern: {
         detailType: ['ECR Image Action'],
         source: ['aws.ecr'],
         detail: {
-          'result': ['SUCCESS'],
+          result: ['SUCCESS'],
           'repository-name': [this.props.repository.repositoryName],
           'image-tag': [this.props.imageTag === '' ? undefined : (this.props.imageTag ?? 'latest')],
           'action-type': ['PUSH'],

@@ -22,8 +22,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     StartRecordType: resourceProps.RecordType,
   });
 
-  const existingRecord = listResourceRecordSets.ResourceRecordSets
-    ?.find(r => r.Name === resourceProps.RecordName && r.Type === resourceProps.RecordType);
+  const existingRecord = listResourceRecordSets.ResourceRecordSets?.find(
+    (r) => r.Name === resourceProps.RecordName && r.Type === resourceProps.RecordType
+  );
 
   if (!existingRecord) {
     // There is no existing record, we can safely return
@@ -33,20 +34,25 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   const changeResourceRecordSets = await route53.changeResourceRecordSets({
     HostedZoneId: resourceProps.HostedZoneId,
     ChangeBatch: {
-      Changes: [{
-        Action: 'DELETE',
-        ResourceRecordSet: removeUndefinedAndEmpty({
-          Name: existingRecord.Name,
-          Type: existingRecord.Type,
-          TTL: existingRecord.TTL,
-          AliasTarget: existingRecord.AliasTarget,
-          ResourceRecords: existingRecord.ResourceRecords,
-        }),
-      }],
+      Changes: [
+        {
+          Action: 'DELETE',
+          ResourceRecordSet: removeUndefinedAndEmpty({
+            Name: existingRecord.Name,
+            Type: existingRecord.Type,
+            TTL: existingRecord.TTL,
+            AliasTarget: existingRecord.AliasTarget,
+            ResourceRecords: existingRecord.ResourceRecords,
+          }),
+        },
+      ],
     },
   });
 
-  await waitUntilResourceRecordSetsChanged({ client: route53, maxWaitTime: 890 }, { Id: changeResourceRecordSets?.ChangeInfo?.Id });
+  await waitUntilResourceRecordSetsChanged(
+    { client: route53, maxWaitTime: 890 },
+    { Id: changeResourceRecordSets?.ChangeInfo?.Id }
+  );
 
   return {
     PhysicalResourceId: `${existingRecord.Name}-${existingRecord.Type}`,

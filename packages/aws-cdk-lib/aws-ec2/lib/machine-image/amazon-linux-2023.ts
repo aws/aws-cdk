@@ -1,4 +1,10 @@
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxImageSsmParameterBase } from './common';
+import {
+  AmazonLinuxCpuType,
+  AmazonLinuxEdition,
+  AmazonLinuxGeneration,
+  AmazonLinuxImageSsmParameterCommonOptions,
+  AmazonLinuxImageSsmParameterBase,
+} from './common';
 
 /**
  * Amazon Linux 2023 kernel versions
@@ -25,7 +31,7 @@ export class AmazonLinux2023Kernel {
    * Kernel version 6.1
    */
   public static readonly KERNEL_6_1 = new AmazonLinux2023Kernel('6.1');
-  constructor(private readonly version: string) { }
+  constructor(private readonly version: string) {}
 
   /**
    * Generate a string representation of the kernel
@@ -38,7 +44,8 @@ export class AmazonLinux2023Kernel {
 /**
  * Properties specific to al2023 images
  */
-export interface AmazonLinux2023ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
+export interface AmazonLinux2023ImageSsmParameterProps
+  extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
    * What kernel version of Amazon Linux to use
    *
@@ -68,13 +75,13 @@ export class AmazonLinux2023ImageSsmParameter extends AmazonLinuxImageSsmParamet
   public static ssmParameterName(props: AmazonLinux2023ImageSsmParameterProps): string {
     const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
 
-    const parts: Array<string|undefined> = [
+    const parts: Array<string | undefined> = [
       AmazonLinuxGeneration.AMAZON_LINUX_2023,
       'ami',
       edition !== AmazonLinuxEdition.STANDARD ? edition : undefined,
       (props.kernel ?? AmazonLinux2023Kernel.DEFAULT)?.toString(),
       props.cpuType ?? AmazonLinuxCpuType.X86_64,
-    ].filter(x => !!x);
+    ].filter((x) => !!x);
 
     return '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
   }

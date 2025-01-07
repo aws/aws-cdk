@@ -1,0 +1,26 @@
+name: Prettier Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "*"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run Prettier Check
+        run: yarn format-check || (echo "❌ Code formatting issues detected. Please run 'yarn format-all' to fix them." && exit 1)

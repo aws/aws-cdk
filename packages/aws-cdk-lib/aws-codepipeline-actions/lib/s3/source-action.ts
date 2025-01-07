@@ -111,8 +111,11 @@ export class S3SourceAction extends Action {
     };
   }
 
-  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  protected bound(
+    _scope: Construct,
+    stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     if (this.props.trigger === S3Trigger.EVENTS) {
       const id = this.generateEventId(stage);
       this.props.bucket.onCloudTrailWriteObject(id, {
@@ -159,7 +162,9 @@ export class S3SourceAction extends Action {
       ret = baseId + this.props.bucketKey;
       if (this.props.bucket.node.tryFindChild(ret)) {
         // this means a duplicate path for the same bucket - error out
-        throw new Error(`S3 source action with path '${this.props.bucketKey}' is already present in the pipeline for this source bucket`);
+        throw new Error(
+          `S3 source action with path '${this.props.bucketKey}' is already present in the pipeline for this source bucket`
+        );
       }
     }
 

@@ -3,7 +3,11 @@ import { AbsentMatch } from './matchers/absent';
 import { formatAllMismatches, matchSection, formatSectionMatchFailure } from './section';
 import { Resource, Template } from './template';
 
-export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+export function findResources(
+  template: Template,
+  type: string,
+  props: any = {}
+): { [key: string]: { [key: string]: any } } {
   const section = template.Resources ?? {};
   const result = matchSection(filterType(section, type), props);
 
@@ -33,7 +37,11 @@ export function allResources(template: Template, type: string, props: any): stri
   }
 }
 
-export function allResourcesProperties(template: Template, type: string, props: any): string | void {
+export function allResourcesProperties(
+  template: Template,
+  type: string,
+  props: any
+): string | void {
   let amended = template;
 
   // special case to exclude AbsentMatch because adding an empty Properties object will affect its evaluation.
@@ -43,10 +51,13 @@ export function allResourcesProperties(template: Template, type: string, props: 
     amended = addEmptyProperties(amended);
   }
 
-  return allResources(amended, type, Match.objectLike({
-    Properties: props,
-  }));
-
+  return allResources(
+    amended,
+    type,
+    Match.objectLike({
+      Properties: props,
+    })
+  );
 }
 
 export function hasResource(template: Template, type: string, props: any): string | void {
@@ -69,9 +80,13 @@ export function hasResourceProperties(template: Template, type: string, props: a
     amended = addEmptyProperties(amended);
   }
 
-  return hasResource(amended, type, Match.objectLike({
-    Properties: props,
-  }));
+  return hasResource(
+    amended,
+    type,
+    Match.objectLike({
+      Properties: props,
+    })
+  );
 }
 
 export function countResources(template: Template, type: string): number {
@@ -92,9 +107,12 @@ export function countResourcesProperties(template: Template, type: string, props
   }
 
   const section = amended.Resources ?? {};
-  const result = matchSection(filterType(section, type), Match.objectLike({
-    Properties: props,
-  }));
+  const result = matchSection(
+    filterType(section, type),
+    Match.objectLike({
+      Properties: props,
+    })
+  );
 
   if (result.match) {
     return Object.keys(result.matches).length;
@@ -114,8 +132,13 @@ function addEmptyProperties(template: Template): Template {
   return template;
 }
 
-function filterType(section: { [key: string]: Resource }, type: string): { [key: string]: Resource } {
+function filterType(
+  section: { [key: string]: Resource },
+  type: string
+): { [key: string]: Resource } {
   return Object.entries(section ?? {})
     .filter(([_, v]) => v.Type === type)
-    .reduce((agg, [k, v]) => { return { ...agg, [k]: v }; }, {});
+    .reduce((agg, [k, v]) => {
+      return { ...agg, [k]: v };
+    }, {});
 }

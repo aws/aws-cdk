@@ -1,8 +1,17 @@
 import { Construct } from 'constructs';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 import {
-  Connections, IConnectable, Instance, ISecurityGroup, IVpc, Peer, Port,
-  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
+  Connections,
+  IConnectable,
+  Instance,
+  ISecurityGroup,
+  IVpc,
+  Peer,
+  Port,
+  SecurityGroup,
+  SelectedSubnets,
+  SubnetSelection,
+  SubnetType,
 } from '../../aws-ec2';
 import { Duration, Lazy, Resource } from '../../core';
 
@@ -81,7 +90,6 @@ export interface LoadBalancerProps {
    * @default - disabled
    */
   readonly accessLoggingPolicy?: CfnLoadBalancer.AccessLoggingPolicyProperty;
-
 }
 
 /**
@@ -256,7 +264,10 @@ export class LoadBalancer extends Resource implements IConnectable {
   constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
 
-    this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
+    this.securityGroup = new SecurityGroup(this, 'SecurityGroup', {
+      vpc: props.vpc,
+      allowAllOutbound: false,
+    });
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
@@ -278,8 +289,8 @@ export class LoadBalancer extends Resource implements IConnectable {
       this.elb.accessLoggingPolicy = props.accessLoggingPolicy;
     }
 
-    ifUndefined(props.listeners, []).forEach(b => this.addListener(b));
-    ifUndefined(props.targets, []).forEach(t => this.addTarget(t));
+    ifUndefined(props.listeners, []).forEach((b) => this.addListener(b));
+    ifUndefined(props.targets, []).forEach((t) => this.addTarget(t));
   }
 
   /**
@@ -291,12 +302,18 @@ export class LoadBalancer extends Resource implements IConnectable {
     if (listener.sslCertificateArn && listener.sslCertificateId) {
       throw new Error('"sslCertificateId" is deprecated, please use "sslCertificateArn" only.');
     }
-    const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
+    const protocol = ifUndefinedLazy(listener.externalProtocol, () =>
+      wellKnownProtocol(listener.externalPort)
+    );
     const instancePort = listener.internalPort || listener.externalPort;
     const sslCertificateArn = listener.sslCertificateArn || listener.sslCertificateId;
-    const instanceProtocol = ifUndefined(listener.internalProtocol,
-      ifUndefined(tryWellKnownProtocol(instancePort),
-        isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
+    const instanceProtocol = ifUndefined(
+      listener.internalProtocol,
+      ifUndefined(
+        tryWellKnownProtocol(instancePort),
+        isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP
+      )
+    );
 
     this.listeners.push({
       loadBalancerPort: listener.externalPort.toString(),
@@ -310,7 +327,7 @@ export class LoadBalancer extends Resource implements IConnectable {
     const port = new ListenerPort(this.securityGroup, Port.tcp(listener.externalPort));
 
     // Allow connections on the public port for all supplied peers (default: everyone)
-    ifUndefined(listener.allowConnectionsFrom, [Peer.anyIpv4()]).forEach(peer => {
+    ifUndefined(listener.allowConnectionsFrom, [Peer.anyIpv4()]).forEach((peer) => {
       port.connections.allowDefaultPortFrom(peer, `Default rule allow on ${listener.externalPort}`);
     });
 
@@ -374,7 +391,7 @@ export class LoadBalancer extends Resource implements IConnectable {
    * Allow connections to all existing targets on new instance port
    */
   private newInstancePort(instancePort: number) {
-    this.targets.forEach(t => this.allowTargetConnection(instancePort, t));
+    this.targets.forEach((t) => this.allowTargetConnection(instancePort, t));
 
     // Keep track of port for future targets
     this.instancePorts.push(instancePort);
@@ -384,7 +401,7 @@ export class LoadBalancer extends Resource implements IConnectable {
    * Allow connections to target on all existing instance ports
    */
   private newTarget(target: ILoadBalancerTarget) {
-    this.instancePorts.forEach(p => this.allowTargetConnection(p, target));
+    this.instancePorts.forEach((p) => this.allowTargetConnection(p, target));
 
     // Keep track of target for future listeners.
     this.targets.push(target);
@@ -394,10 +411,7 @@ export class LoadBalancer extends Resource implements IConnectable {
    * Allow connections for a single (port, target) pair
    */
   private allowTargetConnection(instancePort: number, target: ILoadBalancerTarget) {
-    this.connections.allowTo(
-      target,
-      Port.tcp(instancePort),
-      `Port ${instancePort} LB to fleet`);
+    this.connections.allowTo(target, Port.tcp(instancePort), `Port ${instancePort} LB to fleet`);
   }
 
   /**
@@ -458,8 +472,12 @@ function wellKnownProtocol(port: number): LoadBalancingProtocol {
 }
 
 function tryWellKnownProtocol(port: number): LoadBalancingProtocol | undefined {
-  if (port === 80) { return LoadBalancingProtocol.HTTP; }
-  if (port === 443) { return LoadBalancingProtocol.HTTPS; }
+  if (port === 80) {
+    return LoadBalancingProtocol.HTTP;
+  }
+  if (port === 443) {
+    return LoadBalancingProtocol.HTTPS;
+  }
   return undefined;
 }
 
@@ -479,11 +497,15 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
  * Turn health check parameters into a parameter blob for the LB
  */
 function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
-  const protocol = ifUndefined(healthCheck.protocol,
-    ifUndefined(tryWellKnownProtocol(healthCheck.port),
-      LoadBalancingProtocol.TCP));
+  const protocol = ifUndefined(
+    healthCheck.protocol,
+    ifUndefined(tryWellKnownProtocol(healthCheck.port), LoadBalancingProtocol.TCP)
+  );
 
-  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, '/') : '';
+  const path =
+    protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS
+      ? ifUndefined(healthCheck.path, '/')
+      : '';
 
   const target = `${protocol.toUpperCase()}:${healthCheck.port}${path}`;
 

@@ -43,19 +43,19 @@ export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProp
  *
  */
 export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
-
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrModifyInstanceFleetByNameProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EmrModifyInstanceFleetByNameProps
+  ) {
     super(scope, id, props);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: [
-          'elasticmapreduce:ModifyInstanceFleet',
-          'elasticmapreduce:ListInstanceFleets',
-        ],
+        actions: ['elasticmapreduce:ModifyInstanceFleet', 'elasticmapreduce:ListInstanceFleets'],
         resources: [
           Stack.of(this).formatArn({
             service: 'elasticmapreduce',
@@ -72,8 +72,11 @@ export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('elasticmapreduce', 'modifyInstanceFleetByName',
-        sfn.IntegrationPattern.REQUEST_RESPONSE),
+      Resource: integrationResourceArn(
+        'elasticmapreduce',
+        'modifyInstanceFleetByName',
+        sfn.IntegrationPattern.REQUEST_RESPONSE
+      ),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterId: this.props.clusterId,
         InstanceFleetName: this.props.instanceFleetName,

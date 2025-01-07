@@ -154,7 +154,11 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
   /**
    * import from EnvironmentEc2Name
    */
-  public static fromEc2EnvironmentName(scope: Construct, id: string, ec2EnvironmentName: string): IEc2Environment {
+  public static fromEc2EnvironmentName(
+    scope: Construct,
+    id: string,
+    ec2EnvironmentName: string
+  ): IEc2Environment {
     class Import extends cdk.Resource {
       public ec2EnvironmentName = ec2EnvironmentName;
       public ec2EnvironmentArn = cdk.Stack.of(this).formatArn({
@@ -200,7 +204,9 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
 
     this.vpc = props.vpc;
     if (!props.subnetSelection && this.vpc.publicSubnets.length === 0) {
-      throw new Error('no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection');
+      throw new Error(
+        'no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection'
+      );
     }
 
     if (!props.imageId) {
@@ -212,12 +218,16 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       name: props.ec2EnvironmentName,
       description: props.description,
       ownerArn: props.owner?.ownerArn,
-      instanceType: props.instanceType?.toString() ?? ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
+      instanceType:
+        props.instanceType?.toString() ??
+        ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO).toString(),
       subnetId: this.vpc.selectSubnets(vpcSubnets).subnetIds[0],
-      repositories: props.clonedRepositories ? props.clonedRepositories.map(r => ({
-        repositoryUrl: r.repositoryUrl,
-        pathComponent: r.pathComponent,
-      })) : undefined,
+      repositories: props.clonedRepositories
+        ? props.clonedRepositories.map((r) => ({
+            repositoryUrl: r.repositoryUrl,
+            pathComponent: r.pathComponent,
+          }))
+        : undefined,
       connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
       imageId: props.imageId,
       automaticStopTimeMinutes: props.automaticStop?.toMinutes(),
@@ -246,7 +256,10 @@ export class CloneRepository {
     };
   }
 
-  private constructor(public readonly repositoryUrl: string, public readonly pathComponent: string) {}
+  private constructor(
+    public readonly repositoryUrl: string,
+    public readonly pathComponent: string
+  ) {}
 }
 
 /**

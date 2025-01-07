@@ -66,8 +66,12 @@ export interface RunLambdaTaskProps {
 export class RunLambdaTask implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: RunLambdaTaskProps = {}) {
-    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+  constructor(
+    private readonly lambdaFunction: lambda.IFunction,
+    private readonly props: RunLambdaTaskProps = {}
+  ) {
+    this.integrationPattern =
+      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -75,28 +79,38 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Lambda.`);
+      throw new Error(
+        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Lambda.`
+      );
     }
 
-    if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
-        && !sfn.FieldUtils.containsTaskToken(props.payload)) {
-      throw new Error('Task Token is missing in payload (pass JsonPath.taskToken somewhere in payload)');
+    if (
+      this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN &&
+      !sfn.FieldUtils.containsTaskToken(props.payload)
+    ) {
+      throw new Error(
+        'Task Token is missing in payload (pass JsonPath.taskToken somewhere in payload)'
+      );
     }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: getResourceArn('lambda', 'invoke', this.integrationPattern),
-      policyStatements: [new iam.PolicyStatement({
-        resources: this.lambdaFunction.resourceArnsForGrantInvoke,
-        actions: ['lambda:InvokeFunction'],
-      })],
+      policyStatements: [
+        new iam.PolicyStatement({
+          resources: this.lambdaFunction.resourceArnsForGrantInvoke,
+          actions: ['lambda:InvokeFunction'],
+        }),
+      ],
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',
       metricDimensions: { LambdaFunctionArn: this.lambdaFunction.functionArn },
       parameters: {
         FunctionName: this.lambdaFunction.functionName,
-        Payload: this.props.payload ? this.props.payload.value : sfn.TaskInput.fromJsonPathAt('$').value,
+        Payload: this.props.payload
+          ? this.props.payload.value
+          : sfn.TaskInput.fromJsonPathAt('$').value,
         InvocationType: this.props.invocationType,
         ClientContext: this.props.clientContext,
         Qualifier: this.props.qualifier,

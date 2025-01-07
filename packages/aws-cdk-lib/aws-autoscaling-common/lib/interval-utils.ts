@@ -9,14 +9,19 @@ export interface CompleteScalingInterval {
 /**
  * Normalize the given interval set to cover the complete number line and make sure it has at most one gap
  */
-export function normalizeIntervals(intervals: ScalingInterval[], changesAreAbsolute: boolean): CompleteScalingInterval[] {
+export function normalizeIntervals(
+  intervals: ScalingInterval[],
+  changesAreAbsolute: boolean
+): CompleteScalingInterval[] {
   // Make intervals a complete numberline
   const full = orderAndCompleteIntervals(intervals);
   // Add 'undefined's in uncovered areas of the number line
   makeGapsUndefined(full);
 
   // In case of relative changes, treat 0-change also as 'undefined' (= no change action)
-  if (!changesAreAbsolute) { makeZerosUndefined(full); }
+  if (!changesAreAbsolute) {
+    makeZerosUndefined(full);
+  }
 
   // Combine adjacent undefines and make sure there's at most one of them
   combineUndefineds(full);
@@ -35,27 +40,37 @@ function orderAndCompleteIntervals(intervals: ScalingInterval[]): CompleteScalin
 
   for (const interval of intervals) {
     if (interval.lower === undefined && interval.upper === undefined) {
-      throw new Error(`Must supply at least one of 'upper' or 'lower', got: ${JSON.stringify(interval)}`);
+      throw new Error(
+        `Must supply at least one of 'upper' or 'lower', got: ${JSON.stringify(interval)}`
+      );
     }
   }
 
   // Make a copy
-  intervals = intervals.map(x => ({ ...x }));
+  intervals = intervals.map((x) => ({ ...x }));
 
   // Sort by whatever number we have for each interval
   intervals.sort(comparatorFromKey((x: ScalingInterval) => x.lower ?? x.upper));
 
   // Propagate boundaries until no more change
-  while (propagateBounds(intervals)) { /* Repeat */ }
+  while (propagateBounds(intervals)) {
+    /* Repeat */
+  }
 
   const lastIndex = intervals.length - 1;
 
   // Validate that no intervals have undefined bounds now, which must mean they're complete.
-  if (intervals[0].lower === undefined) { intervals[0] = { ...intervals[0], lower: 0 }; }
-  if (intervals[lastIndex].upper === undefined) { intervals[lastIndex] = { ...intervals[lastIndex], upper: Infinity }; }
+  if (intervals[0].lower === undefined) {
+    intervals[0] = { ...intervals[0], lower: 0 };
+  }
+  if (intervals[lastIndex].upper === undefined) {
+    intervals[lastIndex] = { ...intervals[lastIndex], upper: Infinity };
+  }
   for (const interval of intervals) {
     if (interval.lower === undefined || interval.upper === undefined) {
-      throw new Error(`Could not determine the lower and upper bounds for ${JSON.stringify(interval)}`);
+      throw new Error(
+        `Could not determine the lower and upper bounds for ${JSON.stringify(interval)}`
+      );
     }
   }
 
@@ -64,7 +79,9 @@ function orderAndCompleteIntervals(intervals: ScalingInterval[]): CompleteScalin
   // Validate that we have nonoverlapping intervals now.
   for (let i = 0; i < completeIntervals.length - 1; i++) {
     if (overlap(completeIntervals[i], completeIntervals[i + 1])) {
-      throw new Error(`Two intervals overlap: ${JSON.stringify(completeIntervals[i])} and ${JSON.stringify(completeIntervals[i + 1])}`);
+      throw new Error(
+        `Two intervals overlap: ${JSON.stringify(completeIntervals[i])} and ${JSON.stringify(completeIntervals[i + 1])}`
+      );
     }
   }
 
@@ -146,7 +163,7 @@ function combineUndefineds(intervals: CompleteScalingInterval[]) {
 }
 
 function validateAtMostOneUndefined(intervals: CompleteScalingInterval[]) {
-  const undef = intervals.filter(x => x.change === undefined);
+  const undef = intervals.filter((x) => x.change === undefined);
   if (undef.length > 1) {
     throw new Error(`Can have at most one no-change interval, got ${JSON.stringify(undef)}`);
   }
@@ -157,8 +174,12 @@ function comparatorFromKey<T, U>(keyFn: (x: T) => U) {
     const keyA = keyFn(a);
     const keyB = keyFn(b);
 
-    if (keyA < keyB) { return -1; }
-    if (keyA === keyB) { return 0; }
+    if (keyA < keyB) {
+      return -1;
+    }
+    if (keyA === keyB) {
+      return 0;
+    }
     return 1;
   };
 }
@@ -208,7 +229,7 @@ export interface Alarms {
  * pick the middle interval if there's no such interval.
  */
 export function findAlarmThresholds(intervals: CompleteScalingInterval[]): Alarms {
-  const gapIndex = intervals.findIndex(x => x.change === undefined);
+  const gapIndex = intervals.findIndex((x) => x.change === undefined);
 
   if (gapIndex !== -1) {
     return {

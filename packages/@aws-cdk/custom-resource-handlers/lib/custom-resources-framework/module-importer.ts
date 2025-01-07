@@ -4,7 +4,9 @@ import { CallableExpr } from './callable-expr';
 import { ImportableModule } from './modules';
 
 type Target = CallableExpr | Type;
-type ModuleImport = { [fqn: string]: { module: ImportableModule; targets: Set<Target>; fromLocation?: string } };
+type ModuleImport = {
+  [fqn: string]: { module: ImportableModule; targets: Set<Target>; fromLocation?: string };
+};
 
 /**
  * Options used to import an external module.
@@ -41,9 +43,8 @@ export class ModuleImporter {
     const registeredTargets = this.imports[fqn]?.targets ?? new Set();
 
     if (this.imports.hasOwnProperty(fqn)) {
-      const _targets = registeredTargets.size > 0 && targets.length > 0
-        ? [...registeredTargets, ...targets]
-        : [];
+      const _targets =
+        registeredTargets.size > 0 && targets.length > 0 ? [...registeredTargets, ...targets] : [];
       this.imports[fqn].targets = new Set(_targets);
       return;
     }
@@ -63,9 +64,14 @@ export class ModuleImporter {
     }
   }
 
-  private importModuleInto(scope: Module, module: ImportableModule, targets: Set<Target>, fromLocation?: string) {
+  private importModuleInto(
+    scope: Module,
+    module: ImportableModule,
+    targets: Set<Target>,
+    fromLocation?: string
+  ) {
     if (targets.size > 0) {
-      const _targets = Array.from(targets).map(target => target.toString());
+      const _targets = Array.from(targets).map((target) => target.toString());
       module.importSelective(scope, _targets, { fromLocation });
       return;
     }

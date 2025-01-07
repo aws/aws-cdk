@@ -21,9 +21,10 @@ export interface S3EventSourceProps {
  * Use S3 bucket notifications as an event source for AWS Lambda.
  */
 export class S3EventSource implements lambda.IEventSource {
-  constructor(readonly bucket: s3.Bucket, private readonly props: S3EventSourceProps) {
-
-  }
+  constructor(
+    readonly bucket: s3.Bucket,
+    private readonly props: S3EventSourceProps
+  ) {}
 
   public bind(target: lambda.IFunction) {
     const filters = this.props.filters || [];
@@ -37,9 +38,10 @@ export class S3EventSource implements lambda.IEventSource {
  * S3EventSourceV2 Use S3 bucket notifications as an event source for AWS Lambda.
  */
 export class S3EventSourceV2 implements lambda.IEventSource {
-  constructor(private readonly bucket: s3.IBucket, private readonly props: S3EventSourceProps) {
-
-  }
+  constructor(
+    private readonly bucket: s3.IBucket,
+    private readonly props: S3EventSourceProps
+  ) {}
 
   public bind(target: lambda.IFunction) {
     const filters = this.props.filters || [];

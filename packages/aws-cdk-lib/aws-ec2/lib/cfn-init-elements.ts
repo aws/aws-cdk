@@ -1,5 +1,10 @@
 import * as fs from 'fs';
-import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
+import {
+  InitBindOptions,
+  InitElementConfig,
+  InitElementType,
+  InitPlatform,
+} from './private/cfn-init-internal';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
@@ -71,7 +76,7 @@ export class InitServiceRestartHandle {
    * @internal
    */
   public _renderRestartHandles(): any {
-    const nonEmpty = <A>(x: A[]) => x.length > 0 ? x : undefined;
+    const nonEmpty = <A>(x: A[]) => (x.length > 0 ? x : undefined);
 
     return {
       commands: nonEmpty(this.commands),
@@ -86,7 +91,6 @@ export class InitServiceRestartHandle {
  * Base class for all CloudFormation Init elements
  */
 export abstract class InitElement {
-
   /**
    * Returns the init element type for this element.
    */
@@ -101,7 +105,6 @@ export abstract class InitElement {
    * @internal
    */
   public abstract _bind(options: InitBindOptions): InitElementConfig;
-
 }
 
 /**
@@ -175,10 +178,12 @@ export interface InitCommandOptions {
 export abstract class InitCommandWaitDuration {
   /** Wait for a specified duration after a command. */
   public static of(duration: Duration): InitCommandWaitDuration {
-    return new class extends InitCommandWaitDuration {
+    return new (class extends InitCommandWaitDuration {
       /** @internal */
-      public _render() { return duration.toSeconds(); }
-    }();
+      public _render() {
+        return duration.toSeconds();
+      }
+    })();
   }
 
   /** Do not wait for this command. */
@@ -188,10 +193,12 @@ export abstract class InitCommandWaitDuration {
 
   /** cfn-init will exit and resume only after a reboot. */
   public static forever(): InitCommandWaitDuration {
-    return new class extends InitCommandWaitDuration {
+    return new (class extends InitCommandWaitDuration {
       /** @internal */
-      public _render() { return 'forever'; }
-    }();
+      public _render() {
+        return 'forever';
+      }
+    })();
   }
 
   /**
@@ -229,7 +236,10 @@ export class InitCommand extends InitElement {
 
   public readonly elementType = InitElementType.COMMAND.toString();
 
-  private constructor(private readonly command: string[] | string, private readonly options: InitCommandOptions) {
+  private constructor(
+    private readonly command: string[] | string,
+    private readonly options: InitCommandOptions
+  ) {
     super();
   }
 
@@ -237,8 +247,13 @@ export class InitCommand extends InitElement {
   public _bind(options: InitBindOptions): InitElementConfig {
     const commandKey = this.options.key || `${options.index}`.padStart(3, '0'); // 001, 005, etc.
 
-    if (options.platform !== InitPlatform.WINDOWS && this.options.waitAfterCompletion !== undefined) {
-      throw new Error(`Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`);
+    if (
+      options.platform !== InitPlatform.WINDOWS &&
+      this.options.waitAfterCompletion !== undefined
+    ) {
+      throw new Error(
+        `Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`
+      );
     }
 
     for (const handle of this.options.serviceRestartHandles ?? []) {
@@ -258,7 +273,6 @@ export class InitCommand extends InitElement {
       },
     };
   }
-
 }
 
 /**
@@ -316,22 +330,26 @@ export interface InitFileOptions {
 /**
  * Additional options for creating an InitFile from an asset.
  */
-export interface InitFileAssetOptions extends InitFileOptions, s3_assets.AssetOptions {
-}
+export interface InitFileAssetOptions extends InitFileOptions, s3_assets.AssetOptions {}
 
 /**
  * Create files on the EC2 instance.
  */
 export abstract class InitFile extends InitElement {
-
   /**
    * Use a literal string as the file content
    */
-  public static fromString(fileName: string, content: string, options: InitFileOptions = {}): InitFile {
+  public static fromString(
+    fileName: string,
+    content: string,
+    options: InitFileOptions = {}
+  ): InitFile {
     if (!content) {
-      throw new Error(`InitFile ${fileName}: cannot create empty file. Please supply at least one character of content.`);
+      throw new Error(
+        `InitFile ${fileName}: cannot create empty file. Please supply at least one character of content.`
+      );
     }
-    return new class extends InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         return {
           config: this._standardConfig(options, bindOptions.platform, {
@@ -340,7 +358,7 @@ export abstract class InitFile extends InitElement {
           }),
         };
       }
-    }(fileName, options);
+    })(fileName, options);
   }
 
   /**
@@ -351,7 +369,7 @@ export abstract class InitFile extends InitElement {
     if (mode && mode.slice(0, 3) !== '120') {
       throw new Error('File mode for symlinks must begin with 120XXX');
     }
-    return InitFile.fromString(fileName, target, { mode: (mode || '120644'), ...otherOptions });
+    return InitFile.fromString(fileName, target, { mode: mode || '120644', ...otherOptions });
   }
 
   /**
@@ -359,8 +377,12 @@ export abstract class InitFile extends InitElement {
    *
    * May contain tokens.
    */
-  public static fromObject(fileName: string, obj: Record<string, any>, options: InitFileOptions = {}): InitFile {
-    return new class extends InitFile {
+  public static fromObject(
+    fileName: string,
+    obj: Record<string, any>,
+    options: InitFileOptions = {}
+  ): InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         return {
           config: this._standardConfig(options, bindOptions.platform, {
@@ -368,7 +390,7 @@ export abstract class InitFile extends InitElement {
           }),
         };
       }
-    }(fileName, options);
+    })(fileName, options);
   }
 
   /**
@@ -379,7 +401,11 @@ export abstract class InitFile extends InitElement {
    *
    * If options.base64encoded is set to true, this will base64-encode the file's contents.
    */
-  public static fromFileInline(targetFileName: string, sourceFileName: string, options: InitFileOptions = {}): InitFile {
+  public static fromFileInline(
+    targetFileName: string,
+    sourceFileName: string,
+    options: InitFileOptions = {}
+  ): InitFile {
     const encoding = options.base64Encoded ? 'base64' : 'utf8';
     const fileContents = fs.readFileSync(sourceFileName).toString(encoding);
     return InitFile.fromString(targetFileName, fileContents, options);
@@ -389,7 +415,7 @@ export abstract class InitFile extends InitElement {
    * Download from a URL at instance startup time
    */
   public static fromUrl(fileName: string, url: string, options: InitFileOptions = {}): InitFile {
-    return new class extends InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         return {
           config: this._standardConfig(options, bindOptions.platform, {
@@ -397,14 +423,19 @@ export abstract class InitFile extends InitElement {
           }),
         };
       }
-    }(fileName, options);
+    })(fileName, options);
   }
 
   /**
    * Download a file from an S3 bucket at instance startup time
    */
-  public static fromS3Object(fileName: string, bucket: s3.IBucket, key: string, options: InitFileOptions = {}): InitFile {
-    return new class extends InitFile {
+  public static fromS3Object(
+    fileName: string,
+    bucket: s3.IBucket,
+    key: string,
+    options: InitFileOptions = {}
+  ): InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         bucket.grantRead(bindOptions.instanceRole, key);
         return {
@@ -414,7 +445,7 @@ export abstract class InitFile extends InitElement {
           authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
         };
       }
-    }(fileName, options);
+    })(fileName, options);
   }
 
   /**
@@ -422,15 +453,23 @@ export abstract class InitFile extends InitElement {
    *
    * This is appropriate for files that are too large to embed into the template.
    */
-  public static fromAsset(targetFileName: string, path: string, options: InitFileAssetOptions = {}): InitFile {
-    return new class extends InitFile {
+  public static fromAsset(
+    targetFileName: string,
+    path: string,
+    options: InitFileAssetOptions = {}
+  ): InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         // md5 hash uses bindOptions.scope.node.children to get a unique value for each InitFile
         // using bindOptions.scope.node.id would cause naming collisions if multiple InitFiles were created in the same stack, as the id would be the same stack id
-        const asset = new s3_assets.Asset(bindOptions.scope, `${md5hash(bindOptions.scope.node.children.toString())}${targetFileName}Asset`, {
-          path,
-          ...options,
-        });
+        const asset = new s3_assets.Asset(
+          bindOptions.scope,
+          `${md5hash(bindOptions.scope.node.children.toString())}${targetFileName}Asset`,
+          {
+            path,
+            ...options,
+          }
+        );
         asset.grantRead(bindOptions.instanceRole);
 
         return {
@@ -441,14 +480,18 @@ export abstract class InitFile extends InitElement {
           assetHash: asset.assetHash,
         };
       }
-    }(targetFileName, options);
+    })(targetFileName, options);
   }
 
   /**
    * Use a file from an asset at instance startup time
    */
-  public static fromExistingAsset(targetFileName: string, asset: s3_assets.Asset, options: InitFileOptions = {}): InitFile {
-    return new class extends InitFile {
+  public static fromExistingAsset(
+    targetFileName: string,
+    asset: s3_assets.Asset,
+    options: InitFileOptions = {}
+  ): InitFile {
+    return new (class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         asset.grantRead(bindOptions.instanceRole);
         return {
@@ -459,12 +502,15 @@ export abstract class InitFile extends InitElement {
           assetHash: asset.assetHash,
         };
       }
-    }(targetFileName, options);
+    })(targetFileName, options);
   }
 
   public readonly elementType = InitElementType.FILE.toString();
 
-  protected constructor(private readonly fileName: string, private readonly options: InitFileOptions) {
+  protected constructor(
+    private readonly fileName: string,
+    private readonly options: InitFileOptions
+  ) {
     super();
   }
 
@@ -490,7 +536,11 @@ export abstract class InitFile extends InitElement {
    * Render the standard config block, given content vars
    * @internal
    */
-  protected _standardConfig(fileOptions: InitFileOptions, platform: InitPlatform, contentVars: Record<string, any>): Record<string, any> {
+  protected _standardConfig(
+    fileOptions: InitFileOptions,
+    platform: InitPlatform,
+    contentVars: Record<string, any>
+  ): Record<string, any> {
     if (platform === InitPlatform.WINDOWS) {
       if (fileOptions.group || fileOptions.owner || fileOptions.mode) {
         throw new Error('Owner, group, and mode options not supported for Windows.');
@@ -517,7 +567,6 @@ export abstract class InitFile extends InitElement {
  * Not supported for Windows systems.
  */
 export class InitGroup extends InitElement {
-
   /**
    * Create a group from its name, and optionally, group id
    */
@@ -527,7 +576,10 @@ export class InitGroup extends InitElement {
 
   public readonly elementType = InitElementType.GROUP.toString();
 
-  protected constructor(private groupName: string, private groupId?: number) {
+  protected constructor(
+    private groupName: string,
+    private groupId?: number
+  ) {
     super();
   }
 
@@ -543,7 +595,6 @@ export class InitGroup extends InitElement {
       },
     };
   }
-
 }
 
 /**
@@ -592,7 +643,10 @@ export class InitUser extends InitElement {
 
   public readonly elementType = InitElementType.USER.toString();
 
-  protected constructor(private readonly userName: string, private readonly userOptions: InitUserOptions) {
+  protected constructor(
+    private readonly userName: string,
+    private readonly userOptions: InitUserOptions
+  ) {
     super();
   }
 
@@ -669,28 +723,48 @@ export class InitPackage extends InitElement {
    * Install a package using Yum
    */
   public static yum(packageName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage('yum', options.version ?? [], packageName, options.serviceRestartHandles);
+    return new InitPackage(
+      'yum',
+      options.version ?? [],
+      packageName,
+      options.serviceRestartHandles
+    );
   }
 
   /**
    * Install a package from RubyGems
    */
   public static rubyGem(gemName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage('rubygems', options.version ?? [], gemName, options.serviceRestartHandles);
+    return new InitPackage(
+      'rubygems',
+      options.version ?? [],
+      gemName,
+      options.serviceRestartHandles
+    );
   }
 
   /**
    * Install a package from PyPI
    */
   public static python(packageName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage('python', options.version ?? [], packageName, options.serviceRestartHandles);
+    return new InitPackage(
+      'python',
+      options.version ?? [],
+      packageName,
+      options.serviceRestartHandles
+    );
   }
 
   /**
    * Install a package using APT
    */
   public static apt(packageName: string, options: NamedPackageOptions = {}): InitPackage {
-    return new InitPackage('apt', options.version ?? [], packageName, options.serviceRestartHandles);
+    return new InitPackage(
+      'apt',
+      options.version ?? [],
+      packageName,
+      options.serviceRestartHandles
+    );
   }
 
   /**
@@ -698,9 +772,11 @@ export class InitPackage extends InitElement {
    */
   public static msi(location: string, options: LocationPackageOptions = {}): InitPackage {
     // The MSI package version must be a string, not an array.
-    return new class extends InitPackage {
-      protected renderPackageVersions() { return location; }
-    }('msi', [location], options.key, options.serviceRestartHandles);
+    return new (class extends InitPackage {
+      protected renderPackageVersions() {
+        return location;
+      }
+    })('msi', [location], options.key, options.serviceRestartHandles);
   }
 
   public readonly elementType = InitElementType.PACKAGE.toString();
@@ -709,7 +785,7 @@ export class InitPackage extends InitElement {
     private readonly type: string,
     private readonly versions: string[],
     private readonly packageName?: string,
-    private readonly serviceHandles?: InitServiceRestartHandle[],
+    private readonly serviceHandles?: InitServiceRestartHandle[]
   ) {
     super();
   }
@@ -830,36 +906,36 @@ export class InitService extends InitElement {
    * can use `InitFile` to create exactly the configuration file you need
    * at `/etc/systemd/system/${serviceName}.service`.
    */
-  public static systemdConfigFile(serviceName: string, options: SystemdConfigFileOptions): InitFile {
+  public static systemdConfigFile(
+    serviceName: string,
+    options: SystemdConfigFileOptions
+  ): InitFile {
     if (!options.command.startsWith('/')) {
       throw new Error(`SystemD executables must use an absolute path, got '${options.command}'`);
     }
 
-    if (options.environmentFiles?.some(file => !file.startsWith('/'))) {
+    if (options.environmentFiles?.some((file) => !file.startsWith('/'))) {
       throw new Error('SystemD environment files must use absolute paths');
     }
 
     const lines = [
       '[Unit]',
       ...(options.description ? [`Description=${options.description}`] : []),
-      ...(options.afterNetwork ?? true ? ['After=network.target'] : []),
+      ...((options.afterNetwork ?? true) ? ['After=network.target'] : []),
       '[Service]',
       `ExecStart=${options.command}`,
       ...(options.cwd ? [`WorkingDirectory=${options.cwd}`] : []),
       ...(options.user ? [`User=${options.user}`] : []),
       ...(options.group ? [`Group=${options.user}`] : []),
-      ...(options.keepRunning ?? true ? ['Restart=always'] : []),
-      ...(
-        options.environmentFiles
-          ? options.environmentFiles.map(file => `EnvironmentFile=${file}`)
-          : []
-      ),
-      ...(
-        options.environmentVariables
-          ? Object.entries(options.environmentVariables)
-            .map(([key, value]) => `Environment="${key}=${value}"`)
-          : []
-      ),
+      ...((options.keepRunning ?? true) ? ['Restart=always'] : []),
+      ...(options.environmentFiles
+        ? options.environmentFiles.map((file) => `EnvironmentFile=${file}`)
+        : []),
+      ...(options.environmentVariables
+        ? Object.entries(options.environmentVariables).map(
+            ([key, value]) => `Environment="${key}=${value}"`
+          )
+        : []),
       '[Install]',
       'WantedBy=multi-user.target',
     ];
@@ -869,14 +945,18 @@ export class InitService extends InitElement {
 
   public readonly elementType = InitElementType.SERVICE.toString();
 
-  private constructor(private readonly serviceName: string, private readonly serviceOptions: InitServiceOptions) {
+  private constructor(
+    private readonly serviceName: string,
+    private readonly serviceOptions: InitServiceOptions
+  ) {
     super();
   }
 
   /** @internal */
   public _bind(options: InitBindOptions): InitElementConfig {
-    const serviceManager = this.serviceOptions.serviceManager
-     ?? (options.platform === InitPlatform.LINUX ? ServiceManager.SYSVINIT : ServiceManager.WINDOWS);
+    const serviceManager =
+      this.serviceOptions.serviceManager ??
+      (options.platform === InitPlatform.LINUX ? ServiceManager.SYSVINIT : ServiceManager.WINDOWS);
 
     return {
       config: {
@@ -890,14 +970,12 @@ export class InitService extends InitElement {
       },
     };
   }
-
 }
 
 /**
  * Additional options for an InitSource
  */
 export interface InitSourceOptions {
-
   /**
    * Restart the given services after this archive has been extracted
    *
@@ -909,9 +987,7 @@ export interface InitSourceOptions {
 /**
  * Additional options for an InitSource that builds an asset from local files.
  */
-export interface InitSourceAssetOptions extends InitSourceOptions, s3_assets.AssetOptions {
-
-}
+export interface InitSourceAssetOptions extends InitSourceOptions, s3_assets.AssetOptions {}
 
 /**
  * Extract an archive into a directory
@@ -920,28 +996,47 @@ export abstract class InitSource extends InitElement {
   /**
    * Retrieve a URL and extract it into the given directory
    */
-  public static fromUrl(targetDirectory: string, url: string, options: InitSourceOptions = {}): InitSource {
-    return new class extends InitSource {
+  public static fromUrl(
+    targetDirectory: string,
+    url: string,
+    options: InitSourceOptions = {}
+  ): InitSource {
+    return new (class extends InitSource {
       protected _doBind() {
         return {
           config: { [this.targetDirectory]: url },
         };
       }
-    }(targetDirectory, options.serviceRestartHandles);
+    })(targetDirectory, options.serviceRestartHandles);
   }
 
   /**
    * Extract a GitHub branch into a given directory
    */
-  public static fromGitHub(targetDirectory: string, owner: string, repo: string, refSpec?: string, options: InitSourceOptions = {}): InitSource {
-    return InitSource.fromUrl(targetDirectory, `https://github.com/${owner}/${repo}/tarball/${refSpec ?? 'master'}`, options);
+  public static fromGitHub(
+    targetDirectory: string,
+    owner: string,
+    repo: string,
+    refSpec?: string,
+    options: InitSourceOptions = {}
+  ): InitSource {
+    return InitSource.fromUrl(
+      targetDirectory,
+      `https://github.com/${owner}/${repo}/tarball/${refSpec ?? 'master'}`,
+      options
+    );
   }
 
   /**
    * Extract an archive stored in an S3 bucket into the given directory
    */
-  public static fromS3Object(targetDirectory: string, bucket: s3.IBucket, key: string, options: InitSourceOptions = {}): InitSource {
-    return new class extends InitSource {
+  public static fromS3Object(
+    targetDirectory: string,
+    bucket: s3.IBucket,
+    key: string,
+    options: InitSourceOptions = {}
+  ): InitSource {
+    return new (class extends InitSource {
       protected _doBind(bindOptions: InitBindOptions) {
         bucket.grantRead(bindOptions.instanceRole, key);
 
@@ -950,21 +1045,29 @@ export abstract class InitSource extends InitElement {
           authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
         };
       }
-    }(targetDirectory, options.serviceRestartHandles);
+    })(targetDirectory, options.serviceRestartHandles);
   }
 
   /**
    * Create an InitSource from an asset created from the given path.
    */
-  public static fromAsset(targetDirectory: string, path: string, options: InitSourceAssetOptions = {}): InitSource {
-    return new class extends InitSource {
+  public static fromAsset(
+    targetDirectory: string,
+    path: string,
+    options: InitSourceAssetOptions = {}
+  ): InitSource {
+    return new (class extends InitSource {
       protected _doBind(bindOptions: InitBindOptions) {
         // md5 hash uses bindOptions.scope.node.children to get a unique value for each InitFile
         // using bindOptions.scope.node.id would cause naming collisions if multiple InitFiles were created in the same stack, as the id would be the same stack id
-        const asset = new s3_assets.Asset(bindOptions.scope, `${md5hash(bindOptions.scope.node.children.toString())}${targetDirectory}Asset`, {
-          path,
-          ...bindOptions,
-        });
+        const asset = new s3_assets.Asset(
+          bindOptions.scope,
+          `${md5hash(bindOptions.scope.node.children.toString())}${targetDirectory}Asset`,
+          {
+            path,
+            ...bindOptions,
+          }
+        );
         asset.grantRead(bindOptions.instanceRole);
 
         return {
@@ -973,14 +1076,18 @@ export abstract class InitSource extends InitElement {
           assetHash: asset.assetHash,
         };
       }
-    }(targetDirectory, options.serviceRestartHandles);
+    })(targetDirectory, options.serviceRestartHandles);
   }
 
   /**
    * Extract a directory from an existing directory asset.
    */
-  public static fromExistingAsset(targetDirectory: string, asset: s3_assets.Asset, options: InitSourceOptions = {}): InitSource {
-    return new class extends InitSource {
+  public static fromExistingAsset(
+    targetDirectory: string,
+    asset: s3_assets.Asset,
+    options: InitSourceOptions = {}
+  ): InitSource {
+    return new (class extends InitSource {
       protected _doBind(bindOptions: InitBindOptions) {
         asset.grantRead(bindOptions.instanceRole);
 
@@ -990,12 +1097,15 @@ export abstract class InitSource extends InitElement {
           assetHash: asset.assetHash,
         };
       }
-    }(targetDirectory, options.serviceRestartHandles);
+    })(targetDirectory, options.serviceRestartHandles);
   }
 
   public readonly elementType = InitElementType.SOURCE.toString();
 
-  protected constructor(private readonly targetDirectory: string, private readonly serviceHandles?: InitServiceRestartHandle[]) {
+  protected constructor(
+    private readonly targetDirectory: string,
+    private readonly serviceHandles?: InitServiceRestartHandle[]
+  ) {
     super();
   }
 
@@ -1064,9 +1174,12 @@ export enum ServiceManager {
 
 function serviceManagerToString(x: ServiceManager): string {
   switch (x) {
-    case ServiceManager.SYSTEMD: return 'systemd';
-    case ServiceManager.SYSVINIT: return 'sysvinit';
-    case ServiceManager.WINDOWS: return 'windows';
+    case ServiceManager.SYSTEMD:
+      return 'systemd';
+    case ServiceManager.SYSVINIT:
+      return 'sysvinit';
+    case ServiceManager.WINDOWS:
+      return 'windows';
   }
 }
 

@@ -9,25 +9,27 @@ import { ApiBase } from '../common/base';
 /**
  * Represents a WebSocket API
  */
-export interface IWebSocketApi extends IApi {
-}
+export interface IWebSocketApi extends IApi {}
 
 /**
  * Represents the currently available API Key Selection Expressions
  */
 export class WebSocketApiKeySelectionExpression {
-
   /**
    * The API will extract the key value from the `x-api-key` header in the user request.
    */
-  public static readonly HEADER_X_API_KEY = new WebSocketApiKeySelectionExpression('$request.header.x-api-key');
+  public static readonly HEADER_X_API_KEY = new WebSocketApiKeySelectionExpression(
+    '$request.header.x-api-key'
+  );
 
   /**
    * The API will extract the key value from the `usageIdentifierKey` attribute in the `context` map,
    * returned by the Lambda Authorizer.
    * See https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
    */
-  public static readonly AUTHORIZER_USAGE_IDENTIFIER_KEY = new WebSocketApiKeySelectionExpression('$context.authorizer.usageIdentifierKey');
+  public static readonly AUTHORIZER_USAGE_IDENTIFIER_KEY = new WebSocketApiKeySelectionExpression(
+    '$context.authorizer.usageIdentifierKey'
+  );
 
   /**
    * @param customApiKeySelector The expression used by API Gateway
@@ -109,7 +111,11 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   /**
    * Import an existing WebSocket API into this CDK app.
    */
-  public static fromWebSocketApiAttributes(scope: Construct, id: string, attrs: WebSocketApiAttributes): IWebSocketApi {
+  public static fromWebSocketApiAttributes(
+    scope: Construct,
+    id: string,
+    attrs: WebSocketApiAttributes
+  ): IWebSocketApi {
     class Import extends ApiBase {
       public readonly apiId = attrs.webSocketId;
       public readonly websocketApiId = attrs.webSocketId;

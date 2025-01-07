@@ -21,31 +21,37 @@ export class AssetManifestBuilder {
    * Derive the region from the stack, use the asset hash as the key, copy the
    * file extension over, and set the prefix.
    */
-  public defaultAddFileAsset(stack: Stack, asset: FileAssetSource, target: AssetManifestFileDestination) {
+  public defaultAddFileAsset(
+    stack: Stack,
+    asset: FileAssetSource,
+    target: AssetManifestFileDestination
+  ) {
     validateFileAssetSource(asset);
 
-    const extension =
-      asset.fileName != undefined ? path.extname(asset.fileName) : '';
+    const extension = asset.fileName != undefined ? path.extname(asset.fileName) : '';
     const objectKey =
       (target.bucketPrefix ?? '') +
       asset.sourceHash +
-      (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY
-        ? '.zip'
-        : extension);
+      (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : extension);
 
     // Add to manifest
-    return this.addFileAsset(stack, asset.sourceHash, {
-      path: asset.fileName,
-      executable: asset.executable,
-      packaging: asset.packaging,
-    }, {
-      bucketName: target.bucketName,
-      objectKey,
-      region: resolvedOr(stack.region, undefined),
-      assumeRoleArn: target.role?.assumeRoleArn,
-      assumeRoleExternalId: target.role?.assumeRoleExternalId,
-      assumeRoleAdditionalOptions: target.role?.assumeRoleAdditionalOptions,
-    });
+    return this.addFileAsset(
+      stack,
+      asset.sourceHash,
+      {
+        path: asset.fileName,
+        executable: asset.executable,
+        packaging: asset.packaging,
+      },
+      {
+        bucketName: target.bucketName,
+        objectKey,
+        region: resolvedOr(stack.region, undefined),
+        assumeRoleArn: target.role?.assumeRoleArn,
+        assumeRoleExternalId: target.role?.assumeRoleExternalId,
+        assumeRoleAdditionalOptions: target.role?.assumeRoleAdditionalOptions,
+      }
+    );
   }
 
   /**
@@ -56,35 +62,42 @@ export class AssetManifestBuilder {
   public defaultAddDockerImageAsset(
     stack: Stack,
     asset: DockerImageAssetSource,
-    target: AssetManifestDockerImageDestination,
+    target: AssetManifestDockerImageDestination
   ) {
     validateDockerImageAssetSource(asset);
     const imageTag = `${target.dockerTagPrefix ?? ''}${asset.sourceHash}`;
 
     // Add to manifest
-    const sourceHash = asset.assetName ? `${asset.assetName}-${asset.sourceHash}` : asset.sourceHash;
-    return this.addDockerImageAsset(stack, sourceHash, {
-      executable: asset.executable,
-      directory: asset.directoryName,
-      dockerBuildArgs: asset.dockerBuildArgs,
-      dockerBuildSecrets: asset.dockerBuildSecrets,
-      dockerBuildSsh: asset.dockerBuildSsh,
-      dockerBuildTarget: asset.dockerBuildTarget,
-      dockerFile: asset.dockerFile,
-      networkMode: asset.networkMode,
-      platform: asset.platform,
-      dockerOutputs: asset.dockerOutputs,
-      cacheFrom: asset.dockerCacheFrom,
-      cacheTo: asset.dockerCacheTo,
-      cacheDisabled: asset.dockerCacheDisabled,
-    }, {
-      repositoryName: target.repositoryName,
-      imageTag,
-      region: resolvedOr(stack.region, undefined),
-      assumeRoleArn: target.role?.assumeRoleArn,
-      assumeRoleExternalId: target.role?.assumeRoleExternalId,
-      assumeRoleAdditionalOptions: target.role?.assumeRoleAdditionalOptions,
-    });
+    const sourceHash = asset.assetName
+      ? `${asset.assetName}-${asset.sourceHash}`
+      : asset.sourceHash;
+    return this.addDockerImageAsset(
+      stack,
+      sourceHash,
+      {
+        executable: asset.executable,
+        directory: asset.directoryName,
+        dockerBuildArgs: asset.dockerBuildArgs,
+        dockerBuildSecrets: asset.dockerBuildSecrets,
+        dockerBuildSsh: asset.dockerBuildSsh,
+        dockerBuildTarget: asset.dockerBuildTarget,
+        dockerFile: asset.dockerFile,
+        networkMode: asset.networkMode,
+        platform: asset.platform,
+        dockerOutputs: asset.dockerOutputs,
+        cacheFrom: asset.dockerCacheFrom,
+        cacheTo: asset.dockerCacheTo,
+        cacheDisabled: asset.dockerCacheDisabled,
+      },
+      {
+        repositoryName: target.repositoryName,
+        imageTag,
+        region: resolvedOr(stack.region, undefined),
+        assumeRoleArn: target.role?.assumeRoleArn,
+        assumeRoleExternalId: target.role?.assumeRoleExternalId,
+        assumeRoleAdditionalOptions: target.role?.assumeRoleAdditionalOptions,
+      }
+    );
   }
 
   /**
@@ -92,7 +105,12 @@ export class AssetManifestBuilder {
    *
    * sourceHash should be unique for every source.
    */
-  public addFileAsset(stack: Stack, sourceHash: string, source: cxschema.FileSource, dest: cxschema.FileDestination) {
+  public addFileAsset(
+    stack: Stack,
+    sourceHash: string,
+    source: cxschema.FileSource,
+    dest: cxschema.FileDestination
+  ) {
     if (!this.files[sourceHash]) {
       this.files[sourceHash] = {
         source,
@@ -108,7 +126,12 @@ export class AssetManifestBuilder {
    *
    * sourceHash should be unique for every source.
    */
-  public addDockerImageAsset(stack: Stack, sourceHash: string, source: cxschema.DockerImageSource, dest: cxschema.DockerImageDestination) {
+  public addDockerImageAsset(
+    stack: Stack,
+    sourceHash: string,
+    source: cxschema.DockerImageSource,
+    dest: cxschema.DockerImageDestination
+  ) {
     if (!this.dockerImages[sourceHash]) {
       this.dockerImages[sourceHash] = {
         source,
@@ -136,7 +159,7 @@ export class AssetManifestBuilder {
     stack: Stack,
     session: ISynthesisSession,
     options: cxschema.AssetManifestOptions = {},
-    dependencies: string[] = [],
+    dependencies: string[] = []
   ): string {
     const artifactId = `${stack.artifactId}.assets`;
     const manifestFile = `${artifactId}.json`;
@@ -245,22 +268,27 @@ export interface RoleOptions {
    * @default - No additional options.
    */
   readonly assumeRoleAdditionalOptions?: { [key: string]: any };
-
 }
 
 function validateFileAssetSource(asset: FileAssetSource) {
   if (!!asset.executable === !!asset.fileName) {
-    throw new Error(`Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
+    throw new Error(
+      `Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`
+    );
   }
 
   if (!!asset.packaging !== !!asset.fileName) {
-    throw new Error(`'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`);
+    throw new Error(
+      `'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`
+    );
   }
 }
 
 function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
   if (!!asset.executable === !!asset.directoryName) {
-    throw new Error(`Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
+    throw new Error(
+      `Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`
+    );
   }
 
   check('dockerBuildArgs');
@@ -270,7 +298,9 @@ function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
 
   function check<K extends keyof DockerImageAssetSource>(key: K) {
     if (asset[key] && !asset.directoryName) {
-      throw new Error(`'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
+      throw new Error(
+        `'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`
+      );
     }
   }
 }

@@ -61,6 +61,11 @@ export class RunEcsFargateTask extends EcsRunTaskBase {
       },
     });
 
-    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.subnets, props.securityGroup);
+    this.configureAwsVpcNetworking(
+      props.cluster.vpc,
+      props.assignPublicIp,
+      props.subnets,
+      props.securityGroup
+    );
   }
 }

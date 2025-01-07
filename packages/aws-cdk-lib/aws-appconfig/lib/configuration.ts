@@ -6,7 +6,14 @@ import { CfnConfigurationProfile, CfnHostedConfigurationVersion } from './appcon
 import { IApplication } from './application';
 import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
 import { IEnvironment } from './environment';
-import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
+import {
+  ActionPoint,
+  IEventDestination,
+  ExtensionOptions,
+  IExtension,
+  IExtensible,
+  ExtensibleBase,
+} from './extension';
 import * as cp from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -190,10 +197,12 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
   constructor(scope: Construct, id: string, props: ConfigurationProps) {
     super(scope, id);
 
-    this.name = props.name || Names.uniqueResourceName(this, {
-      maxLength: 128,
-      separator: '-',
-    });
+    this.name =
+      props.name ||
+      Names.uniqueResourceName(this, {
+        maxLength: 128,
+        separator: '-',
+      });
     this.application = props.application;
     this.applicationId = this.application.applicationId;
     this.type = props.type;
@@ -201,9 +210,11 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.description = props.description;
     this.deployTo = props.deployTo;
     this.deploymentKey = props.deploymentKey;
-    this.deploymentStrategy = props.deploymentStrategy || new DeploymentStrategy(this, 'DeploymentStrategy', {
-      rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
-    });
+    this.deploymentStrategy =
+      props.deploymentStrategy ||
+      new DeploymentStrategy(this, 'DeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
+      });
   }
 
   /**
@@ -214,7 +225,11 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  public on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions) {
+  public on(
+    actionPoint: ActionPoint,
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ) {
     this.extensible.on(actionPoint, eventDestination, options);
   }
 
@@ -225,7 +240,10 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * @param eventDestination The event that occurs during the extension
    * @param options Options for the extension
    */
-  public preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions) {
+  public preCreateHostedConfigurationVersion(
+    eventDestination: IEventDestination,
+    options?: ExtensionOptions
+  ) {
     this.extensible.preCreateHostedConfigurationVersion(eventDestination, options);
   }
 
@@ -329,7 +347,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     }
 
     this.application.environments().forEach((environment) => {
-      if ((this.deployTo && !this.deployTo.includes(environment))) {
+      if (this.deployTo && !this.deployTo.includes(environment)) {
         return;
       }
       environment.addDeployment(this);
@@ -568,7 +586,7 @@ export class SourcedConfiguration extends ConfigurationBase {
   private readonly locationUri: string;
   private readonly _cfnConfigurationProfile: CfnConfigurationProfile;
 
-  constructor (scope: Construct, id: string, props: SourcedConfigurationProps) {
+  constructor(scope: Construct, id: string, props: SourcedConfigurationProps) {
     super(scope, id, props);
 
     this.location = props.location;
@@ -627,28 +645,28 @@ export class SourcedConfiguration extends ConfigurationBase {
       policy.addResources(this.locationUri);
     } else if (this.location.type == ConfigurationSourceType.SSM_DOCUMENT) {
       policy.addActions('ssm:GetDocument');
-      policy.addResources(Stack.of(this).formatArn({
-        service: 'ssm',
-        resource: 'document',
-        resourceName: this.locationUri.split('://')[1],
-      }));
+      policy.addResources(
+        Stack.of(this).formatArn({
+          service: 'ssm',
+          resource: 'document',
+          resourceName: this.locationUri.split('://')[1],
+        })
+      );
     } else if (this.location.type == ConfigurationSourceType.S3) {
       const bucketAndObjectKey = this.locationUri.split('://')[1];
       const sep = bucketAndObjectKey.search('/');
       const bucketName = bucketAndObjectKey.substring(0, sep);
       const objectKey = bucketAndObjectKey.substring(sep + 1);
-      policy.addActions(
-        's3:GetObject',
-        's3:GetObjectMetadata',
-        's3:GetObjectVersion',
+      policy.addActions('s3:GetObject', 's3:GetObjectMetadata', 's3:GetObjectVersion');
+      policy.addResources(
+        Stack.of(this).formatArn({
+          region: '',
+          account: '',
+          service: 's3',
+          arnFormat: ArnFormat.NO_RESOURCE_NAME,
+          resource: `${bucketName}/${objectKey}`,
+        })
       );
-      policy.addResources(Stack.of(this).formatArn({
-        region: '',
-        account: '',
-        service: 's3',
-        arnFormat: ArnFormat.NO_RESOURCE_NAME,
-        resource: `${bucketName}/${objectKey}`,
-      }));
       const bucketPolicy = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: [
@@ -896,7 +914,11 @@ export abstract class ConfigurationSource {
    * @param objectKey The path to the configuration
    * @param key The KMS Key that the bucket is encrypted with
    */
-  public static fromBucket(bucket: s3.IBucket, objectKey: string, key?: kms.IKey): ConfigurationSource {
+  public static fromBucket(
+    bucket: s3.IBucket,
+    objectKey: string,
+    key?: kms.IKey
+  ): ConfigurationSource {
     return {
       locationUri: bucket.s3UrlForObject(objectKey),
       type: ConfigurationSourceType.S3,

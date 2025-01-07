@@ -17,41 +17,47 @@ export class AssetSingletonRole extends iam.Role {
     super(scope, id, props);
 
     // Logging permissions
-    this.addToPolicy(new iam.PolicyStatement({
-      resources: [Stack.of(this).formatArn({
-        service: 'logs',
-        resource: 'log-group',
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        resourceName: '/aws/codebuild/*',
-      })],
-      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-    }));
+    this.addToPolicy(
+      new iam.PolicyStatement({
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'logs',
+            resource: 'log-group',
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            resourceName: '/aws/codebuild/*',
+          }),
+        ],
+        actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+      })
+    );
 
     // CodeBuild report groups
-    this.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'codebuild:CreateReportGroup',
-        'codebuild:CreateReport',
-        'codebuild:UpdateReport',
-        'codebuild:BatchPutTestCases',
-        'codebuild:BatchPutCodeCoverages',
-      ],
-      resources: [Stack.of(this).formatArn({
-        service: 'codebuild',
-        resource: 'report-group',
-        resourceName: '*',
-      })],
-    }));
+    this.addToPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'codebuild:CreateReportGroup',
+          'codebuild:CreateReport',
+          'codebuild:UpdateReport',
+          'codebuild:BatchPutTestCases',
+          'codebuild:BatchPutCodeCoverages',
+        ],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'codebuild',
+            resource: 'report-group',
+            resourceName: '*',
+          }),
+        ],
+      })
+    );
 
     // CodeBuild start/stop
-    this.addToPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'codebuild:BatchGetBuilds',
-        'codebuild:StartBuild',
-        'codebuild:StopBuild',
-      ],
-    }));
+    this.addToPolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['codebuild:BatchGetBuilds', 'codebuild:StartBuild', 'codebuild:StopBuild'],
+      })
+    );
 
     this._rejectDuplicates = true;
   }
@@ -69,7 +75,7 @@ export class AssetSingletonRole extends iam.Role {
 
     if (this._rejectDuplicates && alreadyAdded.includes(acts)) {
       // Pretend we did it
-      return { statementAdded: true, policyDependable: new class implements IDependable { } };
+      return { statementAdded: true, policyDependable: new (class implements IDependable {})() };
     }
 
     // These are added in duplicate (specifically these come from
@@ -78,7 +84,7 @@ export class AssetSingletonRole extends iam.Role {
     // unnecessary diffs, recognize and drop them there as well.
     if (acts === '["kms:Decrypt","kms:Encrypt","kms:ReEncrypt*","kms:GenerateDataKey*"]') {
       // Pretend we did it
-      return { statementAdded: true, policyDependable: new class implements IDependable { } };
+      return { statementAdded: true, policyDependable: new (class implements IDependable {})() };
     }
 
     return super.addToPrincipalPolicy(statement);

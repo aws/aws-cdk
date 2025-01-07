@@ -144,17 +144,22 @@ export abstract class IntegRunner {
     this.snapshotDir = this.test.snapshotDir;
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
 
-    this.cdk = options.cdk ?? new CdkCliWrapper({
-      directory: this.directory,
-      showOutput: options.showOutput,
-      env: {
-        ...options.env,
-      },
-    });
+    this.cdk =
+      options.cdk ??
+      new CdkCliWrapper({
+        directory: this.directory,
+        showOutput: options.showOutput,
+        env: {
+          ...options.env,
+        },
+      });
     this.cdkOutDir = options.integOutDir ?? this.test.temporaryOutputDir;
 
     const testRunCommand = this.test.appCommand;
-    this.cdkApp = testRunCommand.replace('{filePath}', path.relative(this.directory, this.test.fileName));
+    this.cdkApp = testRunCommand.replace(
+      '{filePath}',
+      path.relative(this.directory, this.test.fileName)
+    );
 
     this.profile = options.profile;
     if (this.hasSnapshot()) {
@@ -251,14 +256,15 @@ export abstract class IntegRunner {
   private renderTraceData(): ManifestTrace {
     const traceData: ManifestTrace = new Map();
     const destructiveChanges = this._destructiveChanges ?? [];
-    destructiveChanges.forEach(change => {
+    destructiveChanges.forEach((change) => {
       const trace = traceData.get(change.stackName);
       if (trace) {
         trace.set(change.logicalId, `${DESTRUCTIVE_CHANGES} ${change.impact}`);
       } else {
-        traceData.set(change.stackName, new Map([
-          [change.logicalId, `${DESTRUCTIVE_CHANGES} ${change.impact}`],
-        ]));
+        traceData.set(
+          change.stackName,
+          new Map([[change.logicalId, `${DESTRUCTIVE_CHANGES} ${change.impact}`]])
+        );
       }
     });
     return traceData;
@@ -276,11 +282,13 @@ export abstract class IntegRunner {
   protected removeAssetsFromSnapshot(): void {
     const stacks = this.actualTestSuite.getStacksWithoutUpdateWorkflow() ?? [];
     const manifest = AssemblyManifestReader.fromPath(this.snapshotDir);
-    const assets = flatten(stacks.map(stack => {
-      return manifest.getAssetLocationsForStack(stack) ?? [];
-    }));
+    const assets = flatten(
+      stacks.map((stack) => {
+        return manifest.getAssetLocationsForStack(stack) ?? [];
+      })
+    );
 
-    assets.forEach(asset => {
+    assets.forEach((asset) => {
       const fileName = path.join(this.snapshotDir, asset);
       if (fs.existsSync(fileName)) {
         if (fs.lstatSync(fileName).isDirectory()) {
@@ -299,7 +307,7 @@ export abstract class IntegRunner {
    */
   protected removeAssetsCacheFromSnapshot(): void {
     const files = fs.readdirSync(this.snapshotDir);
-    files.forEach(file => {
+    files.forEach((file) => {
       const fileName = path.join(this.snapshotDir, file);
       if (fs.lstatSync(fileName).isDirectory() && file === '.cache') {
         fs.emptyDirSync(fileName);
@@ -360,7 +368,10 @@ export abstract class IntegRunner {
     // update workflow. Save any legacyContext as well so that it can be read
     // the next time
     if (this.actualTestSuite.type === 'legacy-test-suite') {
-      (this.actualTestSuite as LegacyIntegTestSuite).saveManifest(this.snapshotDir, this.legacyContext);
+      (this.actualTestSuite as LegacyIntegTestSuite).saveManifest(
+        this.snapshotDir,
+        this.legacyContext
+      );
     }
   }
 
@@ -389,39 +400,52 @@ export abstract class IntegRunner {
 // account of the exercising user.
 export const DEFAULT_SYNTH_OPTIONS = {
   context: {
-    [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: ['test-region-1a', 'test-region-1b', 'test-region-1c'],
-    'availability-zones:account=12345678:region=test-region': ['test-region-1a', 'test-region-1b', 'test-region-1c'],
-    'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
-    'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
-    'ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region': '{"image_id": "ami-1234"}',
+    [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: [
+      'test-region-1a',
+      'test-region-1b',
+      'test-region-1c',
+    ],
+    'availability-zones:account=12345678:region=test-region': [
+      'test-region-1a',
+      'test-region-1b',
+      'test-region-1c',
+    ],
+    'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region':
+      'ami-1234',
+    'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region':
+      'ami-1234',
+    'ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region':
+      '{"image_id": "ami-1234"}',
     // eslint-disable-next-line max-len
-    'ami:account=12345678:filters.image-type.0=machine:filters.name.0=amzn-ami-vpc-nat-*:filters.state.0=available:owners.0=amazon:region=test-region': 'ami-1234',
-    'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true': {
-      vpcId: 'vpc-60900905',
-      subnetGroups: [
-        {
-          type: 'Public',
-          name: 'Public',
-          subnets: [
-            {
-              subnetId: 'subnet-e19455ca',
-              availabilityZone: 'us-east-1a',
-              routeTableId: 'rtb-e19455ca',
-            },
-            {
-              subnetId: 'subnet-e0c24797',
-              availabilityZone: 'us-east-1b',
-              routeTableId: 'rtb-e0c24797',
-            },
-            {
-              subnetId: 'subnet-ccd77395',
-              availabilityZone: 'us-east-1c',
-              routeTableId: 'rtb-ccd77395',
-            },
-          ],
-        },
-      ],
-    },
+    'ami:account=12345678:filters.image-type.0=machine:filters.name.0=amzn-ami-vpc-nat-*:filters.state.0=available:owners.0=amazon:region=test-region':
+      'ami-1234',
+    'vpc-provider:account=12345678:filter.isDefault=true:region=test-region:returnAsymmetricSubnets=true':
+      {
+        vpcId: 'vpc-60900905',
+        subnetGroups: [
+          {
+            type: 'Public',
+            name: 'Public',
+            subnets: [
+              {
+                subnetId: 'subnet-e19455ca',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rtb-e19455ca',
+              },
+              {
+                subnetId: 'subnet-e0c24797',
+                availabilityZone: 'us-east-1b',
+                routeTableId: 'rtb-e0c24797',
+              },
+              {
+                subnetId: 'subnet-ccd77395',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rtb-ccd77395',
+              },
+            ],
+          },
+        ],
+      },
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
@@ -429,7 +453,8 @@ export const DEFAULT_SYNTH_OPTIONS = {
     CDK_INTEG_HOSTED_ZONE_ID: 'Z23ABC4XYZL05B',
     CDK_INTEG_HOSTED_ZONE_NAME: 'example.com',
     CDK_INTEG_DOMAIN_NAME: '*.example.com',
-    CDK_INTEG_CERT_ARN: 'arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z',
+    CDK_INTEG_CERT_ARN:
+      'arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z',
     CDK_INTEG_SUBNET_ID: 'subnet-0dff1a399d8f6f92c',
   },
 };

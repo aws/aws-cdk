@@ -1,11 +1,6 @@
-import {
-  IUserPool,
-  IUserPoolClient,
-} from 'aws-cdk-lib/aws-cognito';
+import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { Stack } from 'aws-cdk-lib/core';
-import {
-  Construct, Node,
-} from 'constructs';
+import { Construct, Node } from 'constructs';
 import { IIdentityPool } from './identitypool';
 
 /**
@@ -46,7 +41,6 @@ export interface UserPoolAuthenticationProviderProps {
    * @default false
    */
   readonly disableServerSideTokenCheck?: boolean;
-
 }
 
 /**
@@ -78,7 +72,6 @@ export interface UserPoolAuthenticationProviderBindConfig {
  * Defines a User Pool Authentication Provider
  */
 export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationProvider {
-
   /**
    * The User Pool of the Associated Identity Providers
    */
@@ -95,14 +88,15 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   private disableServerSideTokenCheck: boolean;
   constructor(props: UserPoolAuthenticationProviderProps) {
     this.userPool = props.userPool;
-    this.userPoolClient = props.userPoolClient || this.userPool.addClient('UserPoolAuthenticationProviderClient');
+    this.userPoolClient =
+      props.userPoolClient || this.userPool.addClient('UserPoolAuthenticationProviderClient');
     this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ?? false;
   }
 
   public bind(
     scope: Construct,
     identityPool: IIdentityPool,
-    _options?: UserPoolAuthenticationProviderBindOptions,
+    _options?: UserPoolAuthenticationProviderBindOptions
   ): UserPoolAuthenticationProviderBindConfig {
     Node.of(identityPool).addDependency(this.userPool);
     Node.of(identityPool).addDependency(this.userPoolClient);

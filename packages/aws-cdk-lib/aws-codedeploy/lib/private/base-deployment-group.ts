@@ -118,11 +118,15 @@ export class DeploymentGroupBase extends Resource {
       physicalName: props.deploymentGroupName,
     });
 
-    this._role = props.role || new iam.Role(this, props.roleConstructId, {
-      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
-    });
+    this._role =
+      props.role ||
+      new iam.Role(this, props.roleConstructId, {
+        assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
+      });
 
-    this.node.addValidation({ validate: () => validateName('Deployment group', this.physicalName) });
+    this.node.addValidation({
+      validate: () => validateName('Deployment group', this.physicalName),
+    });
   }
 
   /**
@@ -143,16 +147,19 @@ export class DeploymentGroupBase extends Resource {
    */
   protected _setNameAndArn(resource: CfnDeploymentGroup, application: IApplicationLike) {
     (this as any).deploymentGroupName = this.getResourceNameAttribute(resource.ref);
-    (this as any).deploymentGroupArn = this.getResourceArnAttribute(this.stack.formatArn({
-      service: 'codedeploy',
-      resource: 'deploymentgroup',
-      resourceName: `${application.applicationName}/${resource.ref}`,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    }), {
-      service: 'codedeploy',
-      resource: 'deploymentgroup',
-      resourceName: `${application.applicationName}/${this.physicalName}`,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
+    (this as any).deploymentGroupArn = this.getResourceArnAttribute(
+      this.stack.formatArn({
+        service: 'codedeploy',
+        resource: 'deploymentgroup',
+        resourceName: `${application.applicationName}/${resource.ref}`,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      }),
+      {
+        service: 'codedeploy',
+        resource: 'deploymentgroup',
+        resourceName: `${application.applicationName}/${this.physicalName}`,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      }
+    );
   }
 }

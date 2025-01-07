@@ -5,7 +5,7 @@ import { IBucket } from '../../aws-s3';
 /**
  * Properties for configuring a origin using a S3 bucket configured as a website endpoint
  */
-export interface S3StaticWebsiteOriginProps extends HttpOriginProps { }
+export interface S3StaticWebsiteOriginProps extends HttpOriginProps {}
 
 /**
  * An Origin for a S3 bucket configured as a website endpoint

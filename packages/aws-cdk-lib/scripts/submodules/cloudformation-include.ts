@@ -1,4 +1,3 @@
-
 import * as path from 'node:path';
 import * as fs from 'fs-extra';
 import { ModuleMap } from '../codegen';
@@ -12,7 +11,9 @@ export default async function cloudformationInclude(moduleMap: ModuleMap, outPat
     });
   });
 
-  const sortedClassMap = Object.fromEntries(Object.entries(classMap).sort(([resA], [resB]) => resA.localeCompare(resB)));
+  const sortedClassMap = Object.fromEntries(
+    Object.entries(classMap).sort(([resA], [resB]) => resA.localeCompare(resB))
+  );
 
   const filePath = path.join(outPath, 'cloudformation-include', 'cfn-types-2-classes.json');
   await fs.writeJson(filePath, sortedClassMap, { spaces: 2 });

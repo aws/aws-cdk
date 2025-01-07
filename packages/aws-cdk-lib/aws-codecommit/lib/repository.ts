@@ -138,7 +138,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   notifyOn(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options: RepositoryNotifyOnOptions,
+    options: RepositoryNotifyOnOptions
   ): notifications.INotificationRule;
 
   /**
@@ -147,7 +147,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   notifyOnPullRequestComment(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -156,7 +156,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   notifyOnApprovalStatusChanged(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -165,7 +165,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   notifyOnApprovalRuleOverridden(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -174,7 +174,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   notifyOnPullRequestCreated(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -184,7 +184,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   notifiyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -193,7 +193,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   notifyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -202,7 +202,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   notifyOnBranchOrTagCreated(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 
   /**
@@ -211,7 +211,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   notifyOnBranchOrTagDeleted(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule;
 }
 
@@ -364,17 +364,18 @@ abstract class RepositoryBase extends Resource implements IRepository {
 
   public grantRead(grantee: iam.IGrantable) {
     this.grantPull(grantee);
-    return this.grant(grantee,
+    return this.grant(
+      grantee,
       'codecommit:EvaluatePullRequestApprovalRules',
       'codecommit:Get*',
-      'codecommit:Describe*',
+      'codecommit:Describe*'
     );
   }
 
   public notifyOn(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options: RepositoryNotifyOnOptions,
+    options: RepositoryNotifyOnOptions
   ): notifications.INotificationRule {
     return new notifications.NotificationRule(this, id, {
       ...options,
@@ -386,7 +387,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public notifyOnPullRequestComment(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
@@ -397,7 +398,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public notifyOnApprovalStatusChanged(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
@@ -408,7 +409,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public notifyOnApprovalRuleOverridden(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
@@ -419,7 +420,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public notifyOnPullRequestCreated(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
@@ -430,7 +431,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public notifiyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOnPullRequestMerged(id, target, options);
   }
@@ -438,7 +439,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public notifyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
@@ -449,7 +450,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public notifyOnBranchOrTagCreated(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
@@ -460,7 +461,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public notifyOnBranchOrTagDeleted(
     id: string,
     target: notifications.INotificationRuleTarget,
-    options?: notifications.NotificationRuleOptions,
+    options?: notifications.NotificationRuleOptions
   ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
@@ -468,7 +469,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
     });
   }
 
-  public bindAsNotificationRuleSource(_scope: Construct): notifications.NotificationRuleSourceConfig {
+  public bindAsNotificationRuleSource(
+    _scope: Construct
+  ): notifications.NotificationRuleSourceConfig {
     return {
       sourceArn: this.repositoryArn,
     };
@@ -510,12 +513,15 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository.
  */
 export class Repository extends RepositoryBase {
-
   /**
    * Imports a codecommit repository.
    * @param repositoryArn (e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)
    */
-  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
+  public static fromRepositoryArn(
+    scope: Construct,
+    id: string,
+    repositoryArn: string
+  ): IRepository {
     const stack = Stack.of(scope);
     const arn = stack.splitArn(repositoryArn, ArnFormat.NO_RESOURCE_NAME);
     const repositoryName = arn.resource;
@@ -535,7 +541,11 @@ export class Repository extends RepositoryBase {
     });
   }
 
-  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
+  public static fromRepositoryName(
+    scope: Construct,
+    id: string,
+    repositoryName: string
+  ): IRepository {
     const stack = Stack.of(scope);
 
     class Import extends RepositoryBase {
@@ -568,7 +578,7 @@ export class Repository extends RepositoryBase {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
-      code: (props.code?.bind(this))?.code,
+      code: props.code?.bind(this)?.code,
       kmsKeyId: props.kmsKey?.keyArn,
     });
 
@@ -588,7 +598,6 @@ export class Repository extends RepositoryBase {
    * @param options Trigger options to run actions
    */
   public notify(arn: string, options?: RepositoryTriggerOptions): Repository {
-
     let evt = options && options.events;
     if (evt && evt.length > 1 && evt.indexOf(RepositoryEventTrigger.ALL) > -1) {
       evt = [RepositoryEventTrigger.ALL];
@@ -602,8 +611,10 @@ export class Repository extends RepositoryBase {
       name = this.node.path + '/' + arn;
     }
 
-    if (this.triggers.find(prop => prop.name === name)) {
-      throw new Error(`Unable to set repository trigger named ${name} because trigger names must be unique`);
+    if (this.triggers.find((prop) => prop.name === name)) {
+      throw new Error(
+        `Unable to set repository trigger named ${name} because trigger names must be unique`
+      );
     }
 
     this.triggers.push({
@@ -660,7 +671,12 @@ export enum RepositoryEventTrigger {
 /**
  * Returns the clone URL for a protocol.
  */
-function makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh' | 'grc', region?: string) {
+function makeCloneUrl(
+  stack: Stack,
+  repositoryName: string,
+  protocol: 'https' | 'ssh' | 'grc',
+  region?: string
+) {
   switch (protocol) {
     case 'https':
     case 'ssh':

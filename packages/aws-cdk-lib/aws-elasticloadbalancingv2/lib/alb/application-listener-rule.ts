@@ -204,7 +204,7 @@ export class ApplicationListenerRule extends Construct {
   public readonly listenerRuleArn: string;
 
   private readonly conditions: ListenerCondition[];
-  private readonly legacyConditions: {[key: string]: string[]} = {};
+  private readonly legacyConditions: { [key: string]: string[] } = {};
 
   private readonly listener: IApplicationListener;
   private action?: IListenerAction;
@@ -216,11 +216,18 @@ export class ApplicationListenerRule extends Construct {
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
     if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns) {
-      throw new Error('At least one of \'conditions\', \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.');
+      throw new Error(
+        "At least one of 'conditions', 'hostHeader', 'pathPattern' or 'pathPatterns' is required when defining a load balancing rule."
+      );
     }
 
-    const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['action', 'targetGroups', 'fixedResponse', 'redirectResponse'];
-    const providedActions = possibleActions.filter(action => props[action] !== undefined);
+    const possibleActions: Array<keyof ApplicationListenerRuleProps> = [
+      'action',
+      'targetGroups',
+      'fixedResponse',
+      'redirectResponse',
+    ];
+    const providedActions = possibleActions.filter((action) => props[action] !== undefined);
     if (providedActions.length > 1) {
       throw new Error(`'${providedActions}' specified together, specify only one`);
     }
@@ -235,7 +242,9 @@ export class ApplicationListenerRule extends Construct {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
       conditions: cdk.Lazy.any({ produce: () => this.renderConditions() }),
-      actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderRuleActions() : [] }),
+      actions: cdk.Lazy.any({
+        produce: () => (this.action ? this.action.renderRuleActions() : []),
+      }),
     });
 
     if (props.hostHeader) {
@@ -306,7 +315,10 @@ export class ApplicationListenerRule extends Construct {
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
     if (this.action) {
-      cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albListnerRuleDefaultActionReplaced', 'An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.');
+      cdk.Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-elbv2:albListnerRuleDefaultActionReplaced',
+        'An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.'
+      );
     }
 
     action.bind(this, this.listener, this);
@@ -330,10 +342,12 @@ export class ApplicationListenerRule extends Construct {
   public addFixedResponse(fixedResponse: FixedResponse) {
     validateFixedResponse(fixedResponse);
 
-    this.configureAction(ListenerAction.fixedResponse(cdk.Token.asNumber(fixedResponse.statusCode), {
-      contentType: fixedResponse.contentType,
-      messageBody: fixedResponse.messageBody,
-    }));
+    this.configureAction(
+      ListenerAction.fixedResponse(cdk.Token.asNumber(fixedResponse.statusCode), {
+        contentType: fixedResponse.contentType,
+        messageBody: fixedResponse.messageBody,
+      })
+    );
   }
 
   /**
@@ -344,14 +358,16 @@ export class ApplicationListenerRule extends Construct {
   public addRedirectResponse(redirectResponse: RedirectResponse) {
     validateRedirectResponse(redirectResponse);
 
-    this.configureAction(ListenerAction.redirect({
-      host: redirectResponse.host,
-      path: redirectResponse.path,
-      permanent: redirectResponse.statusCode === 'HTTP_301',
-      port: redirectResponse.port,
-      protocol: redirectResponse.protocol,
-      query: redirectResponse.query,
-    }));
+    this.configureAction(
+      ListenerAction.redirect({
+        host: redirectResponse.host,
+        path: redirectResponse.path,
+        permanent: redirectResponse.statusCode === 'HTTP_301',
+        port: redirectResponse.port,
+        protocol: redirectResponse.protocol,
+        query: redirectResponse.query,
+      })
+    );
   }
 
   /**
@@ -377,12 +393,9 @@ export class ApplicationListenerRule extends Construct {
     const legacyConditions = Object.entries(this.legacyConditions).map(([field, values]) => {
       return { field, values };
     });
-    const conditions = this.conditions.map(condition => condition.renderRawCondition());
+    const conditions = this.conditions.map((condition) => condition.renderRawCondition());
 
-    return [
-      ...legacyConditions,
-      ...conditions,
-    ];
+    return [...legacyConditions, ...conditions];
   }
 }
 

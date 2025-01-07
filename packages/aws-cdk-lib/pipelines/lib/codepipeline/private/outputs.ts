@@ -11,7 +11,11 @@ export function makeCodePipelineOutput(step: Step, variableName: string) {
 /**
  * If the step is producing outputs, determine a variableNamespace for it, and configure that on the outputs
  */
-export function namespaceStepOutputs(step: Step, stage: cp.IStage, name: string): string | undefined {
+export function namespaceStepOutputs(
+  step: Step,
+  stage: cp.IStage,
+  name: string
+): string | undefined {
   let ret: string | undefined;
   for (const output of StepOutput.producedStepOutputs(step)) {
     ret = namespaceName(stage, name);
@@ -20,7 +24,9 @@ export function namespaceStepOutputs(step: Step, stage: cp.IStage, name: string)
     }
 
     if (typeof output.engineSpecificInformation !== 'string') {
-      throw new Error(`CodePipeline requires that 'engineSpecificInformation' is a string, got: ${JSON.stringify(output.engineSpecificInformation)}`);
+      throw new Error(
+        `CodePipeline requires that 'engineSpecificInformation' is a string, got: ${JSON.stringify(output.engineSpecificInformation)}`
+      );
     }
     output.defineResolution(`#{${ret}.${output.engineSpecificInformation}}`);
   }

@@ -21,9 +21,11 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha-new');
 
 const vpc = new vpc_v2.VpcV2(stack, 'SubnetTest', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
-  secondaryAddressBlocks: [vpc_v2.IpAddresses.amazonProvidedIpv6( {
-    cidrBlockName: 'SecondaryTest',
-  })],
+  secondaryAddressBlocks: [
+    vpc_v2.IpAddresses.amazonProvidedIpv6({
+      cidrBlockName: 'SecondaryTest',
+    }),
+  ],
   enableDnsHostnames: true,
   enableDnsSupport: true,
 });
@@ -72,4 +74,3 @@ new SubnetV2(stack, 'testSubnet2', {
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
 });
-

@@ -74,7 +74,9 @@ export class Duration {
    * @returns the parsed `Duration`.
    */
   public static parse(duration: string): Duration {
-    const matches = duration.match(/^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)\.?(\d{1,3})?S)?)?$/);
+    const matches = duration.match(
+      /^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)\.?(\d{1,3})?S)?)?$/
+    );
     if (!matches) {
       throw new Error(`Not a valid ISO duration: ${duration}`);
     }
@@ -84,15 +86,17 @@ export class Duration {
     }
     const millis = milliseconds ? milliseconds.padEnd(3, '0') : '';
     return Duration.millis(
-      _toInt(millis)
-      + _toInt(seconds) * TimeUnit.Seconds.inMillis
-      + (_toInt(minutes) * TimeUnit.Minutes.inMillis)
-      + (_toInt(hours) * TimeUnit.Hours.inMillis)
-      + (_toInt(days) * TimeUnit.Days.inMillis),
+      _toInt(millis) +
+        _toInt(seconds) * TimeUnit.Seconds.inMillis +
+        _toInt(minutes) * TimeUnit.Minutes.inMillis +
+        _toInt(hours) * TimeUnit.Hours.inMillis +
+        _toInt(days) * TimeUnit.Days.inMillis
     );
 
     function _toInt(str: string): number {
-      if (!str) { return 0; }
+      if (!str) {
+        return 0;
+      }
       return Number(str);
     }
   }
@@ -114,7 +118,9 @@ export class Duration {
    */
   public plus(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
-    const res = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
+    const res =
+      convert(this.amount, this.unit, targetUnit, {}) +
+      convert(rhs.amount, rhs.unit, targetUnit, {});
     return new Duration(res, targetUnit);
   }
 
@@ -123,7 +129,9 @@ export class Duration {
    */
   public minus(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
-    const res = convert(this.amount, this.unit, targetUnit, {}) - convert(rhs.amount, rhs.unit, targetUnit, {});
+    const res =
+      convert(this.amount, this.unit, targetUnit, {}) -
+      convert(rhs.amount, rhs.unit, targetUnit, {});
     return new Duration(res, targetUnit);
   }
 
@@ -179,7 +187,9 @@ export class Duration {
    * @see https://www.iso.org/standard/70907.html
    */
   public toIsoString(): string {
-    if (this.amount === 0) { return 'PT0S'; }
+    if (this.amount === 0) {
+      return 'PT0S';
+    }
 
     const ret = ['P'];
     let tee = false;
@@ -210,14 +220,20 @@ export class Duration {
    * Turn this duration into a human-readable string
    */
   public toHumanString(): string {
-    if (this.amount === 0) { return fmtUnit(0, this.unit); }
-    if (Token.isUnresolved(this.amount)) { return `<token> ${this.unit.label}`; }
+    if (this.amount === 0) {
+      return fmtUnit(0, this.unit);
+    }
+    if (Token.isUnresolved(this.amount)) {
+      return `<token> ${this.unit.label}`;
+    }
 
-    return this.components(false)
-      // 2 significant parts, that's totally enough for humans
-      .slice(0, 2)
-      .map(([amount, unit]) => fmtUnit(amount, unit))
-      .join(' ');
+    return (
+      this.components(false)
+        // 2 significant parts, that's totally enough for humans
+        .slice(0, 2)
+        .map(([amount, unit]) => fmtUnit(amount, unit))
+        .join(' ')
+    );
 
     function fmtUnit(amount: number, unit: TimeUnit) {
       if (amount === 1) {
@@ -253,7 +269,8 @@ export class Duration {
     for (const unit of [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds]) {
       const count = convert(millis, TimeUnit.Milliseconds, unit, { integral: false });
       // Round down to a whole number UNLESS we're combining millis and seconds and we got to the seconds
-      const wholeCount = unit === TimeUnit.Seconds && combineMillisWithSeconds ? count : Math.floor(count);
+      const wholeCount =
+        unit === TimeUnit.Seconds && combineMillisWithSeconds ? count : Math.floor(count);
       if (wholeCount > 0) {
         ret.push([wholeCount, unit]);
         millis -= wholeCount * unit.inMillis;
@@ -310,7 +327,11 @@ class TimeUnit {
   public static readonly Hours = new TimeUnit('hours', 'H', 3_600_000);
   public static readonly Days = new TimeUnit('days', 'D', 86_400_000);
 
-  private constructor(public readonly label: string, public readonly isoLabel: string, public readonly inMillis: number) {
+  private constructor(
+    public readonly label: string,
+    public readonly isoLabel: string,
+    public readonly inMillis: number
+  ) {
     // MAX_SAFE_INTEGER is 2^53, so by representing our duration in millis (the lowest
     // common unit) the highest duration we can represent is
     // 2^53 / 86*10^6 ~= 104 * 10^6 days (about 100 million days).
@@ -321,7 +342,12 @@ class TimeUnit {
   }
 }
 
-function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
+function convert(
+  amount: number,
+  fromUnit: TimeUnit,
+  toUnit: TimeUnit,
+  { integral = true }: TimeConversionOptions
+) {
   if (fromUnit.inMillis === toUnit.inMillis) {
     if (integral && !Token.isUnresolved(amount) && !Number.isInteger(amount)) {
       throw new Error(`${amount} must be a whole number of ${toUnit}.`);
@@ -329,11 +355,15 @@ function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integra
     return amount;
   }
   if (Token.isUnresolved(amount)) {
-    throw new Error(`Duration must be specified as 'Duration.${toUnit}()' here since its value comes from a token and cannot be converted (got Duration.${fromUnit})`);
+    throw new Error(
+      `Duration must be specified as 'Duration.${toUnit}()' here since its value comes from a token and cannot be converted (got Duration.${fromUnit})`
+    );
   }
   const value = (amount * fromUnit.inMillis) / toUnit.inMillis;
   if (!Number.isInteger(value) && integral) {
-    throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
+    throw new Error(
+      `'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`
+    );
   }
   return value;
 }

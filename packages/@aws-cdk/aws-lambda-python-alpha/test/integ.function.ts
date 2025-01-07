@@ -55,7 +55,6 @@ class TestStack extends Stack {
     new CfnOutput(this, 'functionWithCustomPypi', {
       value: functionWithCustomPypi.functionArn,
     });
-
   }
 }
 
@@ -66,14 +65,16 @@ const integ = new IntegTest(app, 'lambda-python-function', {
   stackUpdateWorkflow: false,
 });
 
-testCase.functionNames.forEach(functionName => {
+testCase.functionNames.forEach((functionName) => {
   const invoke = integ.assertions.invokeFunction({
     functionName: functionName,
   });
 
-  invoke.expect(ExpectedResult.objectLike({
-    Payload: '200',
-  }));
+  invoke.expect(
+    ExpectedResult.objectLike({
+      Payload: '200',
+    })
+  );
 });
 
 app.synth();

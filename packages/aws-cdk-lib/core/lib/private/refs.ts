@@ -42,10 +42,18 @@ export function resolveReferences(scope: IConstruct): void {
  */
 function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   const producer = Stack.of(reference.target);
-  const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : cxapi.UNKNOWN_ACCOUNT;
-  const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
-  const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
-  const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : cxapi.UNKNOWN_REGION;
+  const producerAccount = !Token.isUnresolved(producer.account)
+    ? producer.account
+    : cxapi.UNKNOWN_ACCOUNT;
+  const producerRegion = !Token.isUnresolved(producer.region)
+    ? producer.region
+    : cxapi.UNKNOWN_REGION;
+  const consumerAccount = !Token.isUnresolved(consumer.account)
+    ? consumer.account
+    : cxapi.UNKNOWN_ACCOUNT;
+  const consumerRegion = !Token.isUnresolved(consumer.region)
+    ? consumer.region
+    : cxapi.UNKNOWN_REGION;
 
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
@@ -54,22 +62,26 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // unsupported: stacks from different apps
   if (producer.node.root !== consumer.node.root) {
-    throw new Error('Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
+    throw new Error(
+      'Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.'
+    );
   }
 
   // unsupported: stacks are not in the same account
   if (producerAccount !== consumerAccount) {
     throw new Error(
       `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-      'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack');
+        'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack'
+    );
   }
 
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion && !consumer._crossRegionReferences) {
     throw new Error(
       `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-      'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
-      'Set crossRegionReferences=true to enable cross region references');
+        'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
+        'Set crossRegionReferences=true to enable cross region references'
+    );
   }
 
   // ----------------------------------------------------------------------
@@ -112,10 +124,13 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
       throw new Error(
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-        'Cross stack/region references are only supported for stacks with an explicit region defined. ');
+          'Cross stack/region references are only supported for stacks with an explicit region defined. '
+      );
     }
-    consumer.addDependency(producer,
-      `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+    consumer.addDependency(
+      producer,
+      `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`
+    );
     return createCrossRegionImportValue(reference, consumer);
   }
 
@@ -125,8 +140,10 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // add a dependency between the producer and the consumer. dependency logic
   // will take care of applying the dependency at the right level (e.g. the
   // top-level stacks).
-  consumer.addDependency(producer,
-    `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+  consumer.addDependency(
+    producer,
+    `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`
+  );
 
   return createImportValue(reference);
 }
@@ -144,7 +161,6 @@ function renderReference(ref: CfnReference) {
 function findAllReferences(root: IConstruct) {
   const result = new Array<{ source: CfnElement; value: CfnReference }>();
   for (const consumer of root.node.findAll()) {
-
     // include only CfnElements (i.e. resources)
     if (!CfnElement.isCfnElement(consumer)) {
       continue;
@@ -156,7 +172,6 @@ function findAllReferences(root: IConstruct) {
       // iterate over all the tokens (e.g. intrinsic functions, lazies, etc) that
       // were found in the cloudformation representation of this resource.
       for (const token of tokens) {
-
         // include only CfnReferences (i.e. "Ref" and "Fn::GetAtt")
         if (!CfnReference.isCfnReference(token)) {
           continue;
@@ -226,7 +241,9 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
   const id = JSON.stringify(exportingStack.resolve(exportable));
   const exportName = generateExportName(importStack, reference, id);
   if (Token.isUnresolved(exportName)) {
-    throw new Error(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
+    throw new Error(
+      `unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`
+    );
   }
 
   // get or create the export writer
@@ -237,7 +254,7 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
 
   const exported = exportWriter.exportValue(exportName, reference, importStack);
   if (importStack.nestedStackParent) {
-    return createNestedStackParameter(importStack, (exported as CfnReference), exported);
+    return createNestedStackParameter(importStack, exported as CfnReference, exported);
   }
   return exported;
 }
@@ -248,11 +265,7 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
 function generateExportName(importStack: Stack, reference: Reference, id: string): string {
   const referenceStack = Stack.of(reference.target);
 
-  const components = [
-    referenceStack.stackName ?? '',
-    referenceStack.region,
-    id,
-  ];
+  const components = [referenceStack.stackName ?? '', referenceStack.region, id];
   const prefix = `${importStack.nestedStackParent?.stackName ?? importStack.stackName}/`;
   const localPart = makeUniqueId(components);
   // max name length for a system manager parameter is 1011 characters
@@ -326,7 +339,9 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
 export function referenceNestedStackValueInParent(reference: Reference, targetStack: Stack) {
   let currentStack = Stack.of(reference.target);
   if (currentStack !== targetStack && !isNested(currentStack, targetStack)) {
-    throw new Error(`Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`);
+    throw new Error(
+      `Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`
+    );
   }
 
   while (currentStack !== targetStack) {

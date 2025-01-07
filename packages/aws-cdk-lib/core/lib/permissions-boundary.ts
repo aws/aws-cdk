@@ -87,8 +87,10 @@ export class PermissionsBoundary {
     return new PermissionsBoundary(undefined, arn);
   }
 
-  private constructor(private readonly policyName?: string, private readonly policyArn?: string) {
-  }
+  private constructor(
+    private readonly policyName?: string,
+    private readonly policyArn?: string
+  ) {}
 
   /**
    * Apply the permissions boundary to the given scope

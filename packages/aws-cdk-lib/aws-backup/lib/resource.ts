@@ -73,22 +73,26 @@ export class BackupResource {
    * An EC2 instance
    */
   public static fromEc2Instance(instance: ec2.IInstance) {
-    return BackupResource.fromArn(Stack.of(instance).formatArn({
-      service: 'ec2',
-      resource: 'instance',
-      resourceName: instance.instanceId,
-    }));
+    return BackupResource.fromArn(
+      Stack.of(instance).formatArn({
+        service: 'ec2',
+        resource: 'instance',
+        resourceName: instance.instanceId,
+      })
+    );
   }
 
   /**
    * An EFS file system
    */
   public static fromEfsFileSystem(fileSystem: efs.IFileSystem) {
-    return BackupResource.fromArn(Stack.of(fileSystem).formatArn({
-      service: 'elasticfilesystem',
-      resource: 'file-system',
-      resourceName: fileSystem.fileSystemId,
-    }));
+    return BackupResource.fromArn(
+      Stack.of(fileSystem).formatArn({
+        service: 'elasticfilesystem',
+        resource: 'file-system',
+        resourceName: fileSystem.fileSystemId,
+      })
+    );
   }
 
   /**
@@ -103,7 +107,9 @@ export class BackupResource {
    */
   public static fromRdsDatabaseCluster(cluster: rds.IDatabaseCluster) {
     const stack = Stack.of(cluster);
-    return BackupResource.fromArn(`arn:${stack.partition}:rds:${stack.region}:${stack.account}:cluster:${cluster.clusterIdentifier}`);
+    return BackupResource.fromArn(
+      `arn:${stack.partition}:rds:${stack.region}:${stack.account}:cluster:${cluster.clusterIdentifier}`
+    );
   }
 
   /**

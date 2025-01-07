@@ -8,7 +8,11 @@ type StateOrConversion = TypeCoercionStateMachine[number][string];
  * Given a minimal AWS SDKv3 call definition (service, action, parameters),
  * coerces nested parameter values into a Uint8Array if that's what the SDKv3 expects.
  */
-export function coerceApiParameters(v3service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
+export function coerceApiParameters(
+  v3service: string,
+  action: string,
+  parameters: ApiParameters = {}
+): ApiParameters {
   const typeMachine = typeCoercionStateMachine();
   return new Coercer(typeMachine).coerceApiParameters(v3service, action, parameters);
 }
@@ -17,11 +21,18 @@ export function coerceApiParameters(v3service: string, action: string, parameter
  * Make this a class in order to have multiple entry points for testing that can all share convenience functions
  */
 export class Coercer {
-  constructor(private readonly typeMachine: TypeCoercionStateMachine) { }
+  constructor(private readonly typeMachine: TypeCoercionStateMachine) {}
 
-  public coerceApiParameters(v3service: string, action: string, parameters: ApiParameters = {}): ApiParameters {
+  public coerceApiParameters(
+    v3service: string,
+    action: string,
+    parameters: ApiParameters = {}
+  ): ApiParameters {
     // Get the initial state corresponding to the current service+action, then recurse through the parameters
-    const actionState = this.progress(action.toLowerCase(), this.progress(v3service.toLowerCase(), 0));
+    const actionState = this.progress(
+      action.toLowerCase(),
+      this.progress(v3service.toLowerCase(), 0)
+    );
     return this.recurse(parameters, actionState) as any;
   }
 
@@ -31,17 +42,19 @@ export class Coercer {
 
   private recurse(value: unknown, state: StateOrConversion | undefined): any {
     switch (state) {
-      case undefined: return value;
-      case 'b': return coerceValueToUint8Array(value);
-      case 'n': return coerceValueToNumber(value);
-      case 'd': return coerceValueToDate(value);
+      case undefined:
+        return value;
+      case 'b':
+        return coerceValueToUint8Array(value);
+      case 'n':
+        return coerceValueToNumber(value);
+      case 'd':
+        return coerceValueToDate(value);
     }
 
     if (Array.isArray(value)) {
       const elState = this.progress('*', state);
-      return elState !== undefined
-        ? value.map((e) => this.recurse(e, elState))
-        : value;
+      return elState !== undefined ? value.map((e) => this.recurse(e, elState)) : value;
     }
 
     if (value && typeof value === 'object') {

@@ -1,6 +1,12 @@
 import { PropertyScrutinyType, ResourceScrutinyType } from '@aws-cdk/service-spec-types';
 import * as chalk from 'chalk';
-import { ISsoInstanceACAConfig, ISsoPermissionSet, SsoAssignment, SsoInstanceACAConfig, SsoPermissionSet } from './iam-identity-center';
+import {
+  ISsoInstanceACAConfig,
+  ISsoPermissionSet,
+  SsoAssignment,
+  SsoInstanceACAConfig,
+  SsoPermissionSet,
+} from './iam-identity-center';
 import { ManagedPolicyAttachment, ManagedPolicyJson } from './managed-policy';
 import { parseLambdaPermission, parseStatements, Statement, StatementJson } from './statement';
 import { MaybeParsed } from '../diff/maybe-parsed';
@@ -56,11 +62,13 @@ export class IamChanges {
   }
 
   public get hasChanges() {
-    return (this.statements.hasChanges
-      || this.managedPolicies.hasChanges
-      || this.ssoPermissionSets.hasChanges
-      || this.ssoAssignments.hasChanges
-      || this.ssoInstanceACAConfigs.hasChanges);
+    return (
+      this.statements.hasChanges ||
+      this.managedPolicies.hasChanges ||
+      this.ssoPermissionSets.hasChanges ||
+      this.ssoAssignments.hasChanges ||
+      this.ssoInstanceACAConfigs.hasChanges
+    );
   }
 
   /**
@@ -70,12 +78,14 @@ export class IamChanges {
    * negative statements are removed, or if managed policies are added.
    */
   public get permissionsBroadened(): boolean {
-    return this.statements.additions.some(s => !s.isNegativeStatement)
-        || this.statements.removals.some(s => s.isNegativeStatement)
-        || this.managedPolicies.hasAdditions
-        || this.ssoPermissionSets.hasAdditions
-        || this.ssoAssignments.hasAdditions
-        || this.ssoInstanceACAConfigs.hasAdditions;
+    return (
+      this.statements.additions.some((s) => !s.isNegativeStatement) ||
+      this.statements.removals.some((s) => s.isNegativeStatement) ||
+      this.managedPolicies.hasAdditions ||
+      this.ssoPermissionSets.hasAdditions ||
+      this.ssoAssignments.hasAdditions ||
+      this.ssoInstanceACAConfigs.hasAdditions
+    );
   }
 
   /**
@@ -89,25 +99,29 @@ export class IamChanges {
     // First generate all lines, then sort on Resource so that similar resources are together
     for (const statement of this.statements.additions) {
       const renderedStatement = statement.render();
-      ret.push([
-        '+',
-        renderedStatement.resource,
-        renderedStatement.effect,
-        renderedStatement.action,
-        renderedStatement.principal,
-        renderedStatement.condition,
-      ].map(s => chalk.green(s)));
+      ret.push(
+        [
+          '+',
+          renderedStatement.resource,
+          renderedStatement.effect,
+          renderedStatement.action,
+          renderedStatement.principal,
+          renderedStatement.condition,
+        ].map((s) => chalk.green(s))
+      );
     }
     for (const statement of this.statements.removals) {
       const renderedStatement = statement.render();
-      ret.push([
-        '-',
-        renderedStatement.resource,
-        renderedStatement.effect,
-        renderedStatement.action,
-        renderedStatement.principal,
-        renderedStatement.condition,
-      ].map(s => chalk.red(s)));
+      ret.push(
+        [
+          '-',
+          renderedStatement.resource,
+          renderedStatement.effect,
+          renderedStatement.action,
+          renderedStatement.principal,
+          renderedStatement.condition,
+        ].map((s) => chalk.red(s))
+      );
     }
 
     // Sort by 2nd column
@@ -123,18 +137,10 @@ export class IamChanges {
     const header = ['', 'Resource', 'Managed Policy ARN'];
 
     for (const att of this.managedPolicies.additions) {
-      ret.push([
-        '+',
-        att.identityArn,
-        att.managedPolicyArn,
-      ].map(s => chalk.green(s)));
+      ret.push(['+', att.identityArn, att.managedPolicyArn].map((s) => chalk.green(s)));
     }
     for (const att of this.managedPolicies.removals) {
-      ret.push([
-        '-',
-        att.identityArn,
-        att.managedPolicyArn,
-      ].map(s => chalk.red(s)));
+      ret.push(['-', att.identityArn, att.managedPolicyArn].map((s) => chalk.red(s)));
     }
 
     // Sort by 2nd column
@@ -147,31 +153,44 @@ export class IamChanges {
 
   public summarizeSsoAssignments(): string[][] {
     const ret: string[][] = [];
-    const header = ['', 'Resource', 'InstanceArn', 'PermissionSetArn', 'PrincipalId', 'PrincipalType', 'TargetId', 'TargetType'];
+    const header = [
+      '',
+      'Resource',
+      'InstanceArn',
+      'PermissionSetArn',
+      'PrincipalId',
+      'PrincipalType',
+      'TargetId',
+      'TargetType',
+    ];
 
     for (const att of this.ssoAssignments.additions) {
-      ret.push([
-        '+',
-        att.cfnLogicalId || '',
-        att.ssoInstanceArn || '',
-        att.permissionSetArn || '',
-        att.principalId || '',
-        att.principalType || '',
-        att.targetId || '',
-        att.targetType || '',
-      ].map(s => chalk.green(s)));
+      ret.push(
+        [
+          '+',
+          att.cfnLogicalId || '',
+          att.ssoInstanceArn || '',
+          att.permissionSetArn || '',
+          att.principalId || '',
+          att.principalType || '',
+          att.targetId || '',
+          att.targetType || '',
+        ].map((s) => chalk.green(s))
+      );
     }
     for (const att of this.ssoAssignments.removals) {
-      ret.push([
-        '-',
-        att.cfnLogicalId || '',
-        att.ssoInstanceArn || '',
-        att.permissionSetArn || '',
-        att.principalId || '',
-        att.principalType || '',
-        att.targetId || '',
-        att.targetType || '',
-      ].map(s => chalk.red(s)));
+      ret.push(
+        [
+          '-',
+          att.cfnLogicalId || '',
+          att.ssoInstanceArn || '',
+          att.permissionSetArn || '',
+          att.principalId || '',
+          att.principalType || '',
+          att.targetId || '',
+          att.targetType || '',
+        ].map((s) => chalk.red(s))
+      );
     }
 
     // Sort by resource name to ensure a unique value is used for sorting
@@ -185,25 +204,31 @@ export class IamChanges {
     const ret: string[][] = [];
     const header = ['', 'Resource', 'InstanceArn', 'AccessControlAttributes'];
 
-    function formatAccessControlAttribute(aca: ISsoInstanceACAConfig.AccessControlAttribute): string {
+    function formatAccessControlAttribute(
+      aca: ISsoInstanceACAConfig.AccessControlAttribute
+    ): string {
       return `Key: ${aca?.Key}, Values: [${aca?.Value?.Source.join(', ')}]`;
     }
 
     for (const att of this.ssoInstanceACAConfigs.additions) {
-      ret.push([
-        '+',
-        att.cfnLogicalId || '',
-        att.ssoInstanceArn || '',
-        att.accessControlAttributes?.map(formatAccessControlAttribute).join('\n') || '',
-      ].map(s => chalk.green(s)));
+      ret.push(
+        [
+          '+',
+          att.cfnLogicalId || '',
+          att.ssoInstanceArn || '',
+          att.accessControlAttributes?.map(formatAccessControlAttribute).join('\n') || '',
+        ].map((s) => chalk.green(s))
+      );
     }
     for (const att of this.ssoInstanceACAConfigs.removals) {
-      ret.push([
-        '-',
-        att.cfnLogicalId || '',
-        att.ssoInstanceArn || '',
-        att.accessControlAttributes?.map(formatAccessControlAttribute).join('\n') || '',
-      ].map(s => chalk.red(s)));
+      ret.push(
+        [
+          '-',
+          att.cfnLogicalId || '',
+          att.ssoInstanceArn || '',
+          att.accessControlAttributes?.map(formatAccessControlAttribute).join('\n') || '',
+        ].map((s) => chalk.red(s))
+      );
     }
 
     // Sort by resource name to ensure a unique value is used for sorting
@@ -215,13 +240,24 @@ export class IamChanges {
 
   public summarizeSsoPermissionSets(): string[][] {
     const ret: string[][] = [];
-    const header = ['', 'Resource', 'InstanceArn', 'PermissionSet name', 'PermissionsBoundary', 'CustomerManagedPolicyReferences'];
+    const header = [
+      '',
+      'Resource',
+      'InstanceArn',
+      'PermissionSet name',
+      'PermissionsBoundary',
+      'CustomerManagedPolicyReferences',
+    ];
 
-    function formatManagedPolicyRef(s: ISsoPermissionSet.CustomerManagedPolicyReference | undefined): string {
+    function formatManagedPolicyRef(
+      s: ISsoPermissionSet.CustomerManagedPolicyReference | undefined
+    ): string {
       return `Name: ${s?.Name || ''}, Path: ${s?.Path || ''}`;
     }
 
-    function formatSsoPermissionsBoundary(ssoPb: ISsoPermissionSet.PermissionsBoundary | undefined): string {
+    function formatSsoPermissionsBoundary(
+      ssoPb: ISsoPermissionSet.PermissionsBoundary | undefined
+    ): string {
       // ManagedPolicyArn OR CustomerManagedPolicyReference can be specified -- but not both.
       if (ssoPb?.ManagedPolicyArn !== undefined) {
         return `ManagedPolicyArn: ${ssoPb?.ManagedPolicyArn || ''}`;
@@ -233,24 +269,28 @@ export class IamChanges {
     }
 
     for (const att of this.ssoPermissionSets.additions) {
-      ret.push([
-        '+',
-        att.cfnLogicalId || '',
-        att.ssoInstanceArn || '',
-        att.name || '',
-        formatSsoPermissionsBoundary(att.ssoPermissionsBoundary),
-        att.ssoCustomerManagedPolicyReferences?.map(formatManagedPolicyRef).join('\n') || '',
-      ].map(s => chalk.green(s)));
+      ret.push(
+        [
+          '+',
+          att.cfnLogicalId || '',
+          att.ssoInstanceArn || '',
+          att.name || '',
+          formatSsoPermissionsBoundary(att.ssoPermissionsBoundary),
+          att.ssoCustomerManagedPolicyReferences?.map(formatManagedPolicyRef).join('\n') || '',
+        ].map((s) => chalk.green(s))
+      );
     }
     for (const att of this.ssoPermissionSets.removals) {
-      ret.push([
-        '-',
-        att.cfnLogicalId || '',
-        att.ssoInstanceArn || '',
-        att.name || '',
-        formatSsoPermissionsBoundary(att.ssoPermissionsBoundary),
-        att.ssoCustomerManagedPolicyReferences?.map(formatManagedPolicyRef).join('\n') || '',
-      ].map(s => chalk.red(s)));
+      ret.push(
+        [
+          '-',
+          att.cfnLogicalId || '',
+          att.ssoInstanceArn || '',
+          att.name || '',
+          formatSsoPermissionsBoundary(att.ssoPermissionsBoundary),
+          att.ssoCustomerManagedPolicyReferences?.map(formatManagedPolicyRef).join('\n') || '',
+        ].map((s) => chalk.red(s))
+      );
     }
 
     // Sort by resource name to ensure a unique value is used for sorting
@@ -268,10 +308,10 @@ export class IamChanges {
    */
   public _toJson(): IamChangesJson {
     return deepRemoveUndefined({
-      statementAdditions: dropIfEmpty(this.statements.additions.map(s => s._toJson())),
-      statementRemovals: dropIfEmpty(this.statements.removals.map(s => s._toJson())),
-      managedPolicyAdditions: dropIfEmpty(this.managedPolicies.additions.map(s => s._toJson())),
-      managedPolicyRemovals: dropIfEmpty(this.managedPolicies.removals.map(s => s._toJson())),
+      statementAdditions: dropIfEmpty(this.statements.additions.map((s) => s._toJson())),
+      statementRemovals: dropIfEmpty(this.statements.removals.map((s) => s._toJson())),
+      managedPolicyAdditions: dropIfEmpty(this.managedPolicies.additions.map((s) => s._toJson())),
+      managedPolicyRemovals: dropIfEmpty(this.managedPolicies.removals.map((s) => s._toJson())),
     });
   }
 
@@ -279,18 +319,30 @@ export class IamChanges {
     switch (propertyChange.scrutinyType) {
       case PropertyScrutinyType.InlineIdentityPolicies:
         // AWS::IAM::{ Role | User | Group }.Policies
-        this.statements.addOld(...this.readIdentityPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId));
-        this.statements.addNew(...this.readIdentityPolicies(propertyChange.newValue, propertyChange.resourceLogicalId));
+        this.statements.addOld(
+          ...this.readIdentityPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId)
+        );
+        this.statements.addNew(
+          ...this.readIdentityPolicies(propertyChange.newValue, propertyChange.resourceLogicalId)
+        );
         break;
       case PropertyScrutinyType.InlineResourcePolicy:
         // Any PolicyDocument on a resource (including AssumeRolePolicyDocument)
-        this.statements.addOld(...this.readResourceStatements(propertyChange.oldValue, propertyChange.resourceLogicalId));
-        this.statements.addNew(...this.readResourceStatements(propertyChange.newValue, propertyChange.resourceLogicalId));
+        this.statements.addOld(
+          ...this.readResourceStatements(propertyChange.oldValue, propertyChange.resourceLogicalId)
+        );
+        this.statements.addNew(
+          ...this.readResourceStatements(propertyChange.newValue, propertyChange.resourceLogicalId)
+        );
         break;
       case PropertyScrutinyType.ManagedPolicies:
         // Just a list of managed policies
-        this.managedPolicies.addOld(...this.readManagedPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId));
-        this.managedPolicies.addNew(...this.readManagedPolicies(propertyChange.newValue, propertyChange.resourceLogicalId));
+        this.managedPolicies.addOld(
+          ...this.readManagedPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId)
+        );
+        this.managedPolicies.addNew(
+          ...this.readManagedPolicies(propertyChange.newValue, propertyChange.resourceLogicalId)
+        );
         break;
     }
   }
@@ -312,16 +364,40 @@ export class IamChanges {
         this.statements.addNew(...this.readLambdaStatements(resourceChange.newProperties));
         break;
       case ResourceScrutinyType.SsoPermissionSet:
-        this.ssoPermissionSets.addOld(...this.readSsoPermissionSet(resourceChange.oldProperties, resourceChange.resourceLogicalId));
-        this.ssoPermissionSets.addNew(...this.readSsoPermissionSet(resourceChange.newProperties, resourceChange.resourceLogicalId));
+        this.ssoPermissionSets.addOld(
+          ...this.readSsoPermissionSet(
+            resourceChange.oldProperties,
+            resourceChange.resourceLogicalId
+          )
+        );
+        this.ssoPermissionSets.addNew(
+          ...this.readSsoPermissionSet(
+            resourceChange.newProperties,
+            resourceChange.resourceLogicalId
+          )
+        );
         break;
       case ResourceScrutinyType.SsoAssignmentResource:
-        this.ssoAssignments.addOld(...this.readSsoAssignments(resourceChange.oldProperties, resourceChange.resourceLogicalId));
-        this.ssoAssignments.addNew(...this.readSsoAssignments(resourceChange.newProperties, resourceChange.resourceLogicalId));
+        this.ssoAssignments.addOld(
+          ...this.readSsoAssignments(resourceChange.oldProperties, resourceChange.resourceLogicalId)
+        );
+        this.ssoAssignments.addNew(
+          ...this.readSsoAssignments(resourceChange.newProperties, resourceChange.resourceLogicalId)
+        );
         break;
       case ResourceScrutinyType.SsoInstanceACAConfigResource:
-        this.ssoInstanceACAConfigs.addOld(...this.readSsoInstanceACAConfigs(resourceChange.oldProperties, resourceChange.resourceLogicalId));
-        this.ssoInstanceACAConfigs.addNew(...this.readSsoInstanceACAConfigs(resourceChange.newProperties, resourceChange.resourceLogicalId));
+        this.ssoInstanceACAConfigs.addOld(
+          ...this.readSsoInstanceACAConfigs(
+            resourceChange.oldProperties,
+            resourceChange.resourceLogicalId
+          )
+        );
+        this.ssoInstanceACAConfigs.addNew(
+          ...this.readSsoInstanceACAConfigs(
+            resourceChange.newProperties,
+            resourceChange.resourceLogicalId
+          )
+        );
         break;
     }
   }
@@ -330,7 +406,9 @@ export class IamChanges {
    * Parse a list of policies on an identity
    */
   private readIdentityPolicies(policies: any, logicalId: string): Statement[] {
-    if (policies === undefined || !Array.isArray(policies)) { return []; }
+    if (policies === undefined || !Array.isArray(policies)) {
+      return [];
+    }
 
     const appliesToPrincipal = 'AWS:${' + logicalId + '}';
 
@@ -339,7 +417,10 @@ export class IamChanges {
       const unparsedStatement = policy.PolicyDocument?.Statement
         ? policy.PolicyDocument.Statement
         : policy;
-      return defaultPrincipal(appliesToPrincipal, parseStatements(renderIntrinsics(unparsedStatement)));
+      return defaultPrincipal(
+        appliesToPrincipal,
+        parseStatements(renderIntrinsics(unparsedStatement))
+      );
     });
   }
 
@@ -347,11 +428,15 @@ export class IamChanges {
    * Parse an IAM::Policy resource
    */
   private readIdentityPolicyResource(properties: any): Statement[] {
-    if (properties === undefined) { return []; }
+    if (properties === undefined) {
+      return [];
+    }
 
     properties = renderIntrinsics(properties);
 
-    const principals = (properties.Groups || []).concat(properties.Users || []).concat(properties.Roles || []);
+    const principals = (properties.Groups || [])
+      .concat(properties.Users || [])
+      .concat(properties.Roles || []);
     return flatMap(principals, (principal: string) => {
       const ref = 'AWS:' + principal;
       return defaultPrincipal(ref, parseStatements(properties.PolicyDocument.Statement));
@@ -359,49 +444,63 @@ export class IamChanges {
   }
 
   private readSsoInstanceACAConfigs(properties: any, logicalId: string): SsoInstanceACAConfig[] {
-    if (properties === undefined) { return []; }
+    if (properties === undefined) {
+      return [];
+    }
 
     properties = renderIntrinsics(properties);
 
-    return [new SsoInstanceACAConfig({
-      cfnLogicalId: '${' + logicalId + '}',
-      ssoInstanceArn: properties.InstanceArn,
-      accessControlAttributes: properties.AccessControlAttributes,
-    })];
+    return [
+      new SsoInstanceACAConfig({
+        cfnLogicalId: '${' + logicalId + '}',
+        ssoInstanceArn: properties.InstanceArn,
+        accessControlAttributes: properties.AccessControlAttributes,
+      }),
+    ];
   }
 
   private readSsoAssignments(properties: any, logicalId: string): SsoAssignment[] {
-    if (properties === undefined) { return []; }
+    if (properties === undefined) {
+      return [];
+    }
 
     properties = renderIntrinsics(properties);
 
-    return [new SsoAssignment({
-      cfnLogicalId: '${' + logicalId + '}',
-      ssoInstanceArn: properties.InstanceArn,
-      permissionSetArn: properties.PermissionSetArn,
-      principalId: properties.PrincipalId,
-      principalType: properties.PrincipalType,
-      targetId: properties.TargetId,
-      targetType: properties.TargetType,
-    })];
+    return [
+      new SsoAssignment({
+        cfnLogicalId: '${' + logicalId + '}',
+        ssoInstanceArn: properties.InstanceArn,
+        permissionSetArn: properties.PermissionSetArn,
+        principalId: properties.PrincipalId,
+        principalType: properties.PrincipalType,
+        targetId: properties.TargetId,
+        targetType: properties.TargetType,
+      }),
+    ];
   }
 
   private readSsoPermissionSet(properties: any, logicalId: string): SsoPermissionSet[] {
-    if (properties === undefined) { return []; }
+    if (properties === undefined) {
+      return [];
+    }
 
     properties = renderIntrinsics(properties);
 
-    return [new SsoPermissionSet({
-      cfnLogicalId: '${' + logicalId + '}',
-      name: properties.Name,
-      ssoInstanceArn: properties.InstanceArn,
-      ssoCustomerManagedPolicyReferences: properties.CustomerManagedPolicyReferences,
-      ssoPermissionsBoundary: properties.PermissionsBoundary,
-    })];
+    return [
+      new SsoPermissionSet({
+        cfnLogicalId: '${' + logicalId + '}',
+        name: properties.Name,
+        ssoInstanceArn: properties.InstanceArn,
+        ssoCustomerManagedPolicyReferences: properties.CustomerManagedPolicyReferences,
+        ssoPermissionsBoundary: properties.PermissionsBoundary,
+      }),
+    ];
   }
 
   private readResourceStatements(policy: any, logicalId: string): Statement[] {
-    if (policy === undefined) { return []; }
+    if (policy === undefined) {
+      return [];
+    }
 
     const appliesToResource = '${' + logicalId + '.Arn}';
     return defaultResource(appliesToResource, parseStatements(renderIntrinsics(policy.Statement)));
@@ -411,14 +510,18 @@ export class IamChanges {
    * Parse an AWS::*::{Bucket,Topic,Queue}policy
    */
   private readResourcePolicyResource(properties: any): Statement[] {
-    if (properties === undefined) { return []; }
+    if (properties === undefined) {
+      return [];
+    }
 
     properties = renderIntrinsics(properties);
 
-    const policyKeys = Object.keys(properties).filter(key => key.indexOf('Policy') > -1);
+    const policyKeys = Object.keys(properties).filter((key) => key.indexOf('Policy') > -1);
 
     // Find the key that identifies the resource(s) this policy applies to
-    const resourceKeys = Object.keys(properties).filter(key => !policyKeys.includes(key) && !key.endsWith('Name'));
+    const resourceKeys = Object.keys(properties).filter(
+      (key) => !policyKeys.includes(key) && !key.endsWith('Name')
+    );
     let resources = resourceKeys.length === 1 ? properties[resourceKeys[0]] : ['???'];
 
     // For some resources, this is a singleton string, for some it's an array
@@ -432,14 +535,18 @@ export class IamChanges {
   }
 
   private readManagedPolicies(policyArns: any, logicalId: string): ManagedPolicyAttachment[] {
-    if (!policyArns) { return []; }
+    if (!policyArns) {
+      return [];
+    }
 
     const rep = '${' + logicalId + '}';
     return ManagedPolicyAttachment.parseManagedPolicies(rep, renderIntrinsics(policyArns));
   }
 
   private readLambdaStatements(properties?: PropertyMap): Statement[] {
-    if (!properties) { return []; }
+    if (!properties) {
+      return [];
+    }
 
     return [parseLambdaPermission(renderIntrinsics(properties))];
   }
@@ -449,8 +556,8 @@ export class IamChanges {
  * Set an undefined or wildcarded principal on these statements
  */
 function defaultPrincipal(principal: string, statements: Statement[]) {
-  statements.forEach(s => s.principals.replaceEmpty(principal));
-  statements.forEach(s => s.principals.replaceStar(principal));
+  statements.forEach((s) => s.principals.replaceEmpty(principal));
+  statements.forEach((s) => s.principals.replaceStar(principal));
   return statements;
 }
 
@@ -458,8 +565,8 @@ function defaultPrincipal(principal: string, statements: Statement[]) {
  * Set an undefined or wildcarded resource on these statements
  */
 function defaultResource(resource: string, statements: Statement[]) {
-  statements.forEach(s => s.resources.replaceEmpty(resource));
-  statements.forEach(s => s.resources.replaceStar(resource));
+  statements.forEach((s) => s.resources.replaceEmpty(resource));
+  statements.forEach((s) => s.resources.replaceStar(resource));
   return statements;
 }
 

@@ -102,7 +102,10 @@ class HostHeaderListenerCondition extends ListenerCondition {
  * HTTP header config of the listener rule condition
  */
 class HttpHeaderListenerCondition extends ListenerCondition {
-  constructor(public readonly name: string, public readonly values: string[]) {
+  constructor(
+    public readonly name: string,
+    public readonly values: string[]
+  ) {
     super();
   }
 

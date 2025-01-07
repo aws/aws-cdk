@@ -67,7 +67,6 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
  */
 export class AthenaStartQueryExecution extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -78,11 +77,18 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: AthenaStartQueryExecutionProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: AthenaStartQueryExecutionProps
+  ) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(this.integrationPattern, AthenaStartQueryExecution.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(
+      this.integrationPattern,
+      AthenaStartQueryExecution.SUPPORTED_INTEGRATION_PATTERNS
+    );
     this.validateExecutionParameters(props.executionParameters);
     this.validateMaxAgeInMinutes(props.resultReuseConfigurationMaxAge);
 
@@ -92,24 +98,34 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
   private validateExecutionParameters(executionParameters?: string[]) {
     if (executionParameters === undefined || cdk.Token.isUnresolved(executionParameters)) return;
     if (executionParameters.length == 0) {
-      throw new Error('\'executionParameters\' must be a non-empty list');
+      throw new Error("'executionParameters' must be a non-empty list");
     }
-    const invalidExecutionParameters = executionParameters.some(p => p.length < 1 || p.length > 1024);
+    const invalidExecutionParameters = executionParameters.some(
+      (p) => p.length < 1 || p.length > 1024
+    );
     if (invalidExecutionParameters) {
-      throw new Error('\'executionParameters\' items\'s length must be between 1 and 1024 characters');
+      throw new Error("'executionParameters' items's length must be between 1 and 1024 characters");
     }
   }
 
   private validateMaxAgeInMinutes(resultReuseConfigurationMaxAge?: cdk.Duration) {
-    if (resultReuseConfigurationMaxAge === undefined || cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)) return;
+    if (
+      resultReuseConfigurationMaxAge === undefined ||
+      cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)
+    )
+      return;
     const maxAgeInMillis = resultReuseConfigurationMaxAge.toMilliseconds();
     if (maxAgeInMillis > 0 && maxAgeInMillis < cdk.Duration.minutes(1).toMilliseconds()) {
-      throw new Error(`resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or be equal to 0, got ${maxAgeInMillis} ms`);
+      throw new Error(
+        `resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or be equal to 0, got ${maxAgeInMillis} ms`
+      );
     }
     const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
     if (maxAgeInMinutes > 10080) {
-      throw new Error(`resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`);
-    };
+      throw new Error(
+        `resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`
+      );
+    }
   }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
@@ -126,54 +142,57 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
             resource: 'workgroup',
             resourceName: this.props.workGroup ?? 'primary',
           }),
-
         ],
-        actions: ['athena:getDataCatalog', 'athena:startQueryExecution', 'athena:getQueryExecution'],
+        actions: [
+          'athena:getDataCatalog',
+          'athena:startQueryExecution',
+          'athena:getQueryExecution',
+        ],
       }),
     ];
 
     policyStatements.push(
       new iam.PolicyStatement({
-        actions: ['s3:CreateBucket',
-          's3:ListBucket',
-          's3:GetBucketLocation',
-          's3:GetObject'],
+        actions: ['s3:CreateBucket', 's3:ListBucket', 's3:GetBucketLocation', 's3:GetObject'],
         resources: ['*'], // Need * permissions to create new output location https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
-      }),
+      })
     );
 
     policyStatements.push(
       new iam.PolicyStatement({
-        actions: ['s3:AbortMultipartUpload',
+        actions: [
+          's3:AbortMultipartUpload',
           's3:ListBucketMultipartUploads',
           's3:ListMultipartUploadParts',
-          's3:PutObject'],
+          's3:PutObject',
+        ],
         resources: [
           this.props.resultConfiguration?.outputLocation?.bucketName
             ? cdk.Stack.of(this).formatArn({
-              // S3 Bucket names are globally unique in a partition,
-              // and so their ARNs have empty region and account components
-              region: '',
-              account: '',
-              service: 's3',
-              resource: this.props.resultConfiguration?.outputLocation?.bucketName,
-              resourceName: `${this.props.resultConfiguration?.outputLocation?.objectKey}/*`,
-            })
+                // S3 Bucket names are globally unique in a partition,
+                // and so their ARNs have empty region and account components
+                region: '',
+                account: '',
+                service: 's3',
+                resource: this.props.resultConfiguration?.outputLocation?.bucketName,
+                resourceName: `${this.props.resultConfiguration?.outputLocation?.objectKey}/*`,
+              })
             : '*',
         ],
-      }),
+      })
     );
 
     policyStatements.push(
       new iam.PolicyStatement({
         actions: ['lakeformation:GetDataAccess'],
         resources: ['*'], // State machines scoped to output location fail and * permissions are required as per documentation https://docs.aws.amazon.com/lake-formation/latest/dg/permissions-reference.html
-      }),
+      })
     );
 
     policyStatements.push(
       new iam.PolicyStatement({
-        actions: ['glue:BatchCreatePartition',
+        actions: [
+          'glue:BatchCreatePartition',
           'glue:BatchDeletePartition',
           'glue:BatchDeleteTable',
           'glue:BatchGetPartition',
@@ -191,7 +210,8 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           'glue:GetTables',
           'glue:UpdateDatabase',
           'glue:UpdatePartition',
-          'glue:UpdateTable'],
+          'glue:UpdateTable',
+        ],
         resources: [
           cdk.Stack.of(this).formatArn({
             service: 'glue',
@@ -213,19 +233,21 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
             resourceName: (this.props.queryExecutionContext?.databaseName ?? 'default') + '/*', // grant access to get all user defined functions for the particular database in the request or the default database https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsglue.html
           }),
         ],
-      }),
+      })
     );
 
     return policyStatements;
   }
 
   private renderEncryption(): any {
-    const encryptionConfiguration = this.props.resultConfiguration?.encryptionConfiguration !== undefined
-      ? {
-        EncryptionOption: this.props.resultConfiguration.encryptionConfiguration.encryptionOption,
-        KmsKey: this.props.resultConfiguration.encryptionConfiguration.encryptionKey,
-      }
-      : undefined;
+    const encryptionConfiguration =
+      this.props.resultConfiguration?.encryptionConfiguration !== undefined
+        ? {
+            EncryptionOption:
+              this.props.resultConfiguration.encryptionConfiguration.encryptionOption,
+            KmsKey: this.props.resultConfiguration.encryptionConfiguration.encryptionKey,
+          }
+        : undefined;
 
     return encryptionConfiguration;
   }
@@ -242,22 +264,30 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
       Parameters: sfn.FieldUtils.renderObject({
         QueryString: this.props.queryString,
         ClientRequestToken: this.props.clientRequestToken,
-        QueryExecutionContext: (this.props.queryExecutionContext?.catalogName || this.props.queryExecutionContext?.databaseName) ? {
-          Catalog: this.props.queryExecutionContext?.catalogName,
-          Database: this.props.queryExecutionContext?.databaseName,
-        } : undefined,
+        QueryExecutionContext:
+          this.props.queryExecutionContext?.catalogName ||
+          this.props.queryExecutionContext?.databaseName
+            ? {
+                Catalog: this.props.queryExecutionContext?.catalogName,
+                Database: this.props.queryExecutionContext?.databaseName,
+              }
+            : undefined,
         ResultConfiguration: {
           EncryptionConfiguration: this.renderEncryption(),
-          OutputLocation: this.props.resultConfiguration?.outputLocation ? `s3://${this.props.resultConfiguration.outputLocation.bucketName}/${this.props.resultConfiguration.outputLocation.objectKey}/` : undefined,
+          OutputLocation: this.props.resultConfiguration?.outputLocation
+            ? `s3://${this.props.resultConfiguration.outputLocation.bucketName}/${this.props.resultConfiguration.outputLocation.objectKey}/`
+            : undefined,
         },
         WorkGroup: this.props.workGroup,
         ExecutionParameters: this.props.executionParameters,
-        ResultReuseConfiguration: this.props.resultReuseConfigurationMaxAge ? {
-          ResultReuseByAgeConfiguration: {
-            Enabled: true,
-            MaxAgeInMinutes: this.props.resultReuseConfigurationMaxAge.toMinutes(),
-          },
-        } : undefined,
+        ResultReuseConfiguration: this.props.resultReuseConfigurationMaxAge
+          ? {
+              ResultReuseByAgeConfiguration: {
+                Enabled: true,
+                MaxAgeInMinutes: this.props.resultReuseConfigurationMaxAge.toMinutes(),
+              },
+            }
+          : undefined,
       }),
     };
   }
@@ -269,14 +299,13 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_ResultConfiguration.html
  */
 export interface ResultConfiguration {
-
   /**
    * S3 path of query results
    *
    * Example value: `s3://query-results-bucket/folder/`
    *
    * @default - Query Result Location set in Athena settings for this workgroup
-  */
+   */
   readonly outputLocation?: s3.Location;
 
   /**
@@ -293,7 +322,6 @@ export interface ResultConfiguration {
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_EncryptionConfiguration.html
  */
 export interface EncryptionConfiguration {
-
   /**
    * Type of S3 server-side encryption enabled
    *
@@ -343,7 +371,6 @@ export enum EncryptionOption {
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_QueryExecutionContext.html
  */
 export interface QueryExecutionContext {
-
   /**
    * Name of catalog used in query execution
    *

@@ -44,8 +44,7 @@ export abstract class BuildSpec {
    */
   public abstract readonly isImmediate: boolean;
 
-  protected constructor() {
-  }
+  protected constructor() {}
 
   /**
    * Render the represented BuildSpec
@@ -60,7 +59,10 @@ class AssetBuildSpec extends BuildSpec {
   public readonly isImmediate: boolean = true;
   public asset?: s3_assets.Asset;
 
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(
+    public readonly path: string,
+    private readonly options: s3_assets.AssetOptions = {}
+  ) {
     super();
   }
 
@@ -76,8 +78,10 @@ class AssetBuildSpec extends BuildSpec {
         ...this.options,
       });
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${Stack.of(this.asset).stackName}'. ` +
-        'Create a new BuildSpec instance for every stack.');
+      throw new Error(
+        `Asset is already associated with another stack '${Stack.of(this.asset).stackName}'. ` +
+          'Create a new BuildSpec instance for every stack.'
+      );
     }
 
     this.asset.grantRead(scope);
@@ -122,8 +126,7 @@ class ObjectBuildSpec extends BuildSpec {
     // We have to pretty-print the buildspec, otherwise
     // CodeBuild will not recognize it as an inline buildspec.
     return Lazy.uncachedString({
-      produce: (ctx: IResolveContext) =>
-        Stack.of(ctx.scope).toJsonString(this.spec, 2),
+      produce: (ctx: IResolveContext) => Stack.of(ctx.scope).toJsonString(this.spec, 2),
     });
   }
 }
@@ -152,14 +155,16 @@ class YamlBuildSpec extends BuildSpec {
  * In case of multiple outputs they must have identifiers but we won't have that information.
  *
  * In case of test reports we replace the whole object with the RHS (instead of recursively merging)
-*/
+ */
 export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
   if (!(lhs instanceof ObjectBuildSpec) || !(rhs instanceof ObjectBuildSpec)) {
     throw new Error('Can only merge buildspecs created using BuildSpec.fromObject()');
   }
 
   if (lhs.spec.version === '0.1') {
-    throw new Error('Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
+    throw new Error(
+      'Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.'
+    );
   }
   if (lhs.spec.artifacts && rhs.spec.artifacts) {
     // We decided to disallow merging of artifact specs, which is
@@ -256,4 +261,4 @@ function mergeDeep(lhs: any, rhs: any): any {
   }
 
   return rhs;
-};
+}

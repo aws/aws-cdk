@@ -27,7 +27,10 @@ export abstract class ContainerImage {
   /**
    * Reference an image in an ECR repository
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): ContainerImage {
+  public static fromEcrRepository(
+    repository: ecr.IRepository,
+    tag: string = 'latest'
+  ): ContainerImage {
     return new EcrImage(repository, tag);
   }
 
@@ -36,7 +39,10 @@ export abstract class ContainerImage {
    * @param directory The directory where the Dockerfile is stored
    * @param options The options to further configure the selected image
    */
-  public static fromAsset(directory: string, options: assets.DockerImageAssetOptions = {}): ContainerImage {
+  public static fromAsset(
+    directory: string,
+    options: assets.DockerImageAssetOptions = {}
+  ): ContainerImage {
     return new AssetImage(directory, options);
   }
 
@@ -54,7 +60,10 @@ export abstract class ContainerImage {
 }
 
 class EcrImage extends ContainerImage {
-  constructor(private readonly repository: ecr.IRepository, private readonly tag: string) {
+  constructor(
+    private readonly repository: ecr.IRepository,
+    private readonly tag: string
+  ) {
     super();
   }
 
@@ -70,7 +79,10 @@ class EcrImage extends ContainerImage {
 class AssetImage extends ContainerImage {
   private asset?: assets.DockerImageAsset;
 
-  constructor(private readonly directory: string, private readonly options: assets.DockerImageAssetOptions = {}) {
+  constructor(
+    private readonly directory: string,
+    private readonly options: assets.DockerImageAssetOptions = {}
+  ) {
     super();
   }
 
@@ -92,21 +104,21 @@ class AssetImage extends ContainerImage {
 }
 
 class DlcEcrImage extends ContainerImage {
-
-  constructor(private readonly repositoryName: string, private readonly tag: string, private readonly accountId?: string) {
+  constructor(
+    private readonly repositoryName: string,
+    private readonly tag: string,
+    private readonly accountId?: string
+  ) {
     super();
   }
 
   public bind(scope: Construct, model: Model): ContainerImageConfig {
-    const accountId = this.accountId ?? Stack.of(scope).regionalFact(FactName.DLC_REPOSITORY_ACCOUNT);
+    const accountId =
+      this.accountId ?? Stack.of(scope).regionalFact(FactName.DLC_REPOSITORY_ACCOUNT);
 
     const repository = ecr.Repository.fromRepositoryAttributes(scope, 'DlcRepository', {
       repositoryName: this.repositoryName,
-      repositoryArn: ecr.Repository.arnForLocalRepository(
-        this.repositoryName,
-        scope,
-        accountId,
-      ),
+      repositoryArn: ecr.Repository.arnForLocalRepository(this.repositoryName, scope, accountId),
     });
 
     repository.grantPull(model);

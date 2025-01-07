@@ -1,7 +1,14 @@
 import { Construct, Node } from 'constructs';
 import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
 import { CfnNodegroup } from './eks.generated';
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
+import {
+  InstanceType,
+  ISecurityGroup,
+  SubnetSelection,
+  InstanceArchitecture,
+  InstanceClass,
+  InstanceSize,
+} from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -398,14 +405,18 @@ export class Nodegroup extends Resource implements INodegroup {
     this.minSize = props.minSize ?? 1;
 
     withResolved(this.desiredSize, this.maxSize, (desired, max) => {
-      if (desired === undefined) {return ;}
+      if (desired === undefined) {
+        return;
+      }
       if (desired > max) {
         throw new Error(`Desired capacity ${desired} can't be greater than max size ${max}`);
       }
     });
 
     withResolved(this.desiredSize, this.minSize, (desired, min) => {
-      if (desired === undefined) {return ;}
+      if (desired === undefined) {
+        return;
+      }
       if (desired < min) {
         throw new Error(`Minimum capacity ${min} can't be greater than desired size ${desired}`);
       }
@@ -422,9 +433,13 @@ export class Nodegroup extends Resource implements INodegroup {
     }
 
     if (props.instanceType) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:managedNodeGroupDeprecatedInstanceType', '"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-eks:managedNodeGroupDeprecatedInstanceType',
+        '"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead'
+      );
     }
-    const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
+    const instanceTypes =
+      props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
     let possibleAmiTypes: NodegroupAmiType[] = [];
 
     if (instanceTypes && instanceTypes.length > 0) {
@@ -439,15 +454,22 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
+        throw new Error(
+          `The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`
+        );
       }
 
       //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
-      if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
-      instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
-        throw new Error('The specified instanceType does not support Windows workloads. '
-        + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
-        + 'R3 instances aren\'t supported for Windows workloads.');
+      if (
+        props.amiType &&
+        windowsAmiTypes.includes(props.amiType) &&
+        instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length
+      ) {
+        throw new Error(
+          'The specified instanceType does not support Windows workloads. ' +
+            'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and ' +
+            "R3 instances aren't supported for Windows workloads."
+        );
       }
     }
 
@@ -458,20 +480,21 @@ export class Nodegroup extends Resource implements INodegroup {
 
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
-      ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
+      ngRole.addManagedPolicy(
+        ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly')
+      );
 
       // Grant additional IPv6 networking permissions if running in IPv6
       // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
       if (props.cluster.ipFamily == IpFamily.IP_V6) {
-        ngRole.addToPrincipalPolicy(new PolicyStatement({
-          // eslint-disable-next-line @cdklabs/no-literal-partition
-          resources: ['arn:aws:ec2:*:*:network-interface/*'],
-          actions: [
-            'ec2:AssignIpv6Addresses',
-            'ec2:UnassignIpv6Addresses',
-          ],
-        }));
-      };
+        ngRole.addToPrincipalPolicy(
+          new PolicyStatement({
+            // eslint-disable-next-line @cdklabs/no-literal-partition
+            resources: ['arn:aws:ec2:*:*:network-interface/*'],
+            actions: ['ec2:AssignIpv6Addresses', 'ec2:UnassignIpv6Addresses'],
+          })
+        );
+      }
       this.role = ngRole;
     } else {
       this.role = props.nodeRole;
@@ -501,26 +524,32 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // note that we don't check if a launch template is configured here (even though it might configure instance types as well)
       // because this doesn't have a default value, meaning the user had to explicitly configure this.
-      instanceTypes: instanceTypes?.map(t => t.toString()),
+      instanceTypes: instanceTypes?.map((t) => t.toString()),
       labels: props.labels,
       taints: props.taints,
       launchTemplate: props.launchTemplateSpec,
       releaseVersion: props.releaseVersion,
-      remoteAccess: props.remoteAccess ? {
-        ec2SshKey: props.remoteAccess.sshKeyName,
-        sourceSecurityGroups: props.remoteAccess.sourceSecurityGroups ?
-          props.remoteAccess.sourceSecurityGroups.map(m => m.securityGroupId) : undefined,
-      } : undefined,
+      remoteAccess: props.remoteAccess
+        ? {
+            ec2SshKey: props.remoteAccess.sshKeyName,
+            sourceSecurityGroups: props.remoteAccess.sourceSecurityGroups
+              ? props.remoteAccess.sourceSecurityGroups.map((m) => m.securityGroupId)
+              : undefined,
+          }
+        : undefined,
       scalingConfig: {
         desiredSize: this.desiredSize,
         maxSize: this.maxSize,
         minSize: this.minSize,
       },
       tags: props.tags,
-      updateConfig: props.maxUnavailable || props.maxUnavailablePercentage ? {
-        maxUnavailable: props.maxUnavailable,
-        maxUnavailablePercentage: props.maxUnavailablePercentage,
-      } : undefined,
+      updateConfig:
+        props.maxUnavailable || props.maxUnavailablePercentage
+          ? {
+              maxUnavailable: props.maxUnavailable,
+              maxUnavailablePercentage: props.maxUnavailablePercentage,
+            }
+          : undefined,
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
@@ -528,14 +557,12 @@ export class Nodegroup extends Resource implements INodegroup {
     if (this.cluster instanceof Cluster) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       // only when ConfigMap is supported
-      const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+      const supportConfigMap =
+        props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
       if (supportConfigMap) {
         this.cluster.awsAuth.addRoleMapping(this.role, {
           username: 'system:node:{{EC2PrivateDNSName}}',
-          groups: [
-            'system:bootstrappers',
-            'system:nodes',
-          ],
+          groups: ['system:bootstrappers', 'system:nodes'],
         });
       }
       // the controller runs on the worker nodes so they cannot
@@ -561,14 +588,23 @@ export class Nodegroup extends Resource implements INodegroup {
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
     if (!maxUnavailable && !maxUnavailablePercentage) return;
     if (maxUnavailable && maxUnavailablePercentage) {
-      throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together');
+      throw new Error(
+        'maxUnavailable and maxUnavailablePercentage are not allowed to be defined together'
+      );
     }
-    if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
-      throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`);
+    if (
+      maxUnavailablePercentage &&
+      (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)
+    ) {
+      throw new Error(
+        `maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`
+      );
     }
     if (maxUnavailable) {
       if (maxUnavailable > this.maxSize) {
-        throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`);
+        throw new Error(
+          `maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`
+        );
       }
       if (maxUnavailable < 1 || maxUnavailable > 100) {
         throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
@@ -617,10 +653,23 @@ const gpuAmiTypes: NodegroupAmiType[] = [
 function isWindowsSupportedInstanceType(instanceType: InstanceType): boolean {
   //compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
   //NOTE: i2 instance class is not present in the InstanceClass enum.
-  const forbiddenInstanceClasses: InstanceClass[] = [InstanceClass.C3, InstanceClass.C4, InstanceClass.D2, InstanceClass.M4,
-    InstanceClass.M6A, InstanceClass.R3];
-  return instanceType.toString() === InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||
-    forbiddenInstanceClasses.every((c) => !instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)) && !instanceType.toString().match(/^i2/));
+  const forbiddenInstanceClasses: InstanceClass[] = [
+    InstanceClass.C3,
+    InstanceClass.C4,
+    InstanceClass.D2,
+    InstanceClass.M4,
+    InstanceClass.M6A,
+    InstanceClass.R3,
+  ];
+  return (
+    instanceType.toString() ===
+      InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||
+    forbiddenInstanceClasses.every(
+      (c) =>
+        !instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)) &&
+        !instanceType.toString().match(/^i2/)
+    )
+  );
 }
 
 type AmiArchitecture = InstanceArchitecture | 'GPU';
@@ -642,8 +691,11 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   ]);
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
-  if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
+  if (architectures.size === 0) {
+    // protective code, the current implementation will never result in this.
+    throw new Error(
+      `Cannot determine any ami type compatible with instance types: ${instanceTypes.map((i) => i.toString).join(', ')}`
+    );
   }
 
   if (architectures.size > 1) {

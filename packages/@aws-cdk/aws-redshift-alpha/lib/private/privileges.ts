@@ -62,13 +62,14 @@ export class UserTablePrivileges extends Construct {
         username: props.user.username,
         tablePrivileges: cdk.Lazy.any({
           produce: () =>
-            Object.entries(groupPrivilegesByTable(this.privileges))
-              .map(([tableId, tablePrivileges]) => ({
+            Object.entries(groupPrivilegesByTable(this.privileges)).map(
+              ([tableId, tablePrivileges]) => ({
                 tableId,
                 // The first element always exists since the groupBy element is at least a singleton.
                 tableName: tablePrivileges[0]!.table.tableName,
-                actions: unifyTableActions(tablePrivileges).map(action => TableAction[action]),
-              })),
+                actions: unifyTableActions(tablePrivileges).map((action) => TableAction[action]),
+              })
+            ),
         }) as any,
       },
     });
@@ -83,7 +84,7 @@ export class UserTablePrivileges extends Construct {
 }
 
 const unifyTableActions = (tablePrivileges: TablePrivilege[]): TableAction[] => {
-  const set = new Set<TableAction>(tablePrivileges.flatMap(x => x.actions));
+  const set = new Set<TableAction>(tablePrivileges.flatMap((x) => x.actions));
 
   if (set.has(TableAction.ALL)) {
     return [TableAction.ALL];
@@ -97,13 +98,16 @@ const unifyTableActions = (tablePrivileges: TablePrivilege[]): TableAction[] => 
 };
 
 const groupPrivilegesByTable = (privileges: TablePrivilege[]): Record<string, TablePrivilege[]> => {
-  return privileges.reduce((grouped, privilege) => {
-    const { table } = privilege;
-    const tableId = table.node.id;
-    const tablePrivileges = grouped[tableId] ?? [];
-    return {
-      ...grouped,
-      [tableId]: [...tablePrivileges, privilege],
-    };
-  }, {} as Record<string, TablePrivilege[]>);
+  return privileges.reduce(
+    (grouped, privilege) => {
+      const { table } = privilege;
+      const tableId = table.node.id;
+      const tablePrivileges = grouped[tableId] ?? [];
+      return {
+        ...grouped,
+        [tableId]: [...tablePrivileges, privilege],
+      };
+    },
+    {} as Record<string, TablePrivilege[]>
+  );
 };

@@ -64,10 +64,7 @@ const cdkBuildProject = new codebuild.Project(pipelineStack, 'CdkBuildProject', 
         commands: 'npm install',
       },
       build: {
-        commands: [
-          'npm run build',
-          'npm run cdk synth LambdaStack -- -o .',
-        ],
+        commands: ['npm run build', 'npm run cdk synth LambdaStack -- -o .'],
       },
     },
     artifacts: {
@@ -101,10 +98,7 @@ const lambdaBuildProject = new codebuild.Project(pipelineStack, 'LambdaBuildProj
       },
     },
     artifacts: {
-      files: [
-        'index.js',
-        'node_modules/**/*',
-      ],
+      files: ['index.js', 'node_modules/**/*'],
     },
   }),
 });
@@ -131,9 +125,7 @@ pipeline.addStage({
       stackName: 'LambdaStackDeployedName',
       adminPermissions: true,
       parameterOverrides: lambdaCode.assign(lambdaBuildOutput.s3Location),
-      extraInputs: [
-        lambdaBuildOutput,
-      ],
+      extraInputs: [lambdaBuildOutput],
     }),
   ],
 });

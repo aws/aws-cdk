@@ -14,4 +14,3 @@ export * from './sqs-queue-action';
 export * from './sns-topic-action';
 export * from './https-action';
 export * from './step-functions-state-machine-action';
-

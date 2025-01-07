@@ -18,7 +18,6 @@ export interface IClusterParameterGroup extends IResource {
  * A new cluster or instance parameter group
  */
 abstract class ClusterParameterGroupBase extends Resource implements IClusterParameterGroup {
-
   /**
    * The name of the parameter group
    */
@@ -51,7 +50,11 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
   /**
    * Imports a parameter group
    */
-  public static fromClusterParameterGroupName(scope: Construct, id: string, clusterParameterGroupName: string): IClusterParameterGroup {
+  public static fromClusterParameterGroupName(
+    scope: Construct,
+    id: string,
+    clusterParameterGroupName: string
+  ): IClusterParameterGroup {
     class Import extends Resource implements IClusterParameterGroup {
       public readonly clusterParameterGroupName = clusterParameterGroupName;
     }
@@ -65,12 +68,12 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
 
   /**
    * The parameters in the parameter group
-  */
+   */
   readonly parameters: { [name: string]: string };
 
   /**
    * The underlying CfnClusterParameterGroup
-  */
+   */
   private readonly resource: CfnClusterParameterGroup;
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
@@ -102,7 +105,9 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
       this.parameters[name] = value;
       this.resource.parameters = this.parseParameters();
     } else if (existingValue !== value) {
-      throw new Error(`The parameter group already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`);
+      throw new Error(
+        `The parameter group already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`
+      );
     }
   }
 }

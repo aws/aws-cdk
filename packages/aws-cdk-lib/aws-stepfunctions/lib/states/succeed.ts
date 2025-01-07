@@ -40,7 +40,6 @@ export interface SucceedProps {
    * @default $
    */
   readonly outputPath?: string;
-
 }
 
 /**

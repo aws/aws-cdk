@@ -1,14 +1,20 @@
 import { Construct, IConstruct } from 'constructs';
 import { MessageLanguage } from './common';
 import {
-  CloudFormationRuleConstraintOptions, CommonConstraintOptions,
-  StackSetsConstraintOptions, TagUpdateConstraintOptions,
+  CloudFormationRuleConstraintOptions,
+  CommonConstraintOptions,
+  StackSetsConstraintOptions,
+  TagUpdateConstraintOptions,
 } from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { IProduct } from './product';
-import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
+import {
+  CfnPortfolio,
+  CfnPortfolioPrincipalAssociation,
+  CfnPortfolioShare,
+} from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
 import * as iam from '../../aws-iam';
 import { IBucket } from '../../aws-s3';
@@ -99,14 +105,21 @@ export interface IPortfolio extends cdk.IResource {
    * @param product A service catalog product.
    * @param topic A SNS Topic to receive notifications on events related to the provisioned product.
    */
-  notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options?: CommonConstraintOptions): void;
+  notifyOnStackEvents(
+    product: IProduct,
+    topic: sns.ITopic,
+    options?: CommonConstraintOptions
+  ): void;
 
   /**
    * Set provisioning rules for the product.
    * @param product A service catalog product.
    * @param options options for the constraint.
    */
-  constrainCloudFormationParameters(product: IProduct, options: CloudFormationRuleConstraintOptions): void;
+  constrainCloudFormationParameters(
+    product: IProduct,
+    options: CloudFormationRuleConstraintOptions
+  ): void;
 
   /**
    * Force users to assume a certain role when launching a product.
@@ -130,7 +143,11 @@ export interface IPortfolio extends cdk.IResource {
    * @param launchRoleName The name of the IAM role a user must assume when provisioning the product. A role with this name must exist in the account where the portolio is created and the accounts it is shared with.
    * @param options options for the constraint.
    */
-  setLocalLaunchRoleName(product: IProduct, launchRoleName: string, options?: CommonConstraintOptions): iam.IRole;
+  setLocalLaunchRoleName(
+    product: IProduct,
+    launchRoleName: string,
+    options?: CommonConstraintOptions
+  ): iam.IRole;
 
   /**
    * Force users to assume a certain role when launching a product.
@@ -141,7 +158,11 @@ export interface IPortfolio extends cdk.IResource {
    * @param launchRole The IAM role a user must assume when provisioning the product. A role with this name must exist in the account where the portolio is created and the accounts it is shared with. The role name must be set explicitly.
    * @param options options for the constraint.
    */
-  setLocalLaunchRole(product: IProduct, launchRole: iam.IRole, options?: CommonConstraintOptions): void;
+  setLocalLaunchRole(
+    product: IProduct,
+    launchRole: iam.IRole,
+    options?: CommonConstraintOptions
+  ): void;
 
   /**
    * Configure deployment options using AWS Cloudformation StackSets
@@ -199,19 +220,34 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     AssociationManager.constrainTagUpdates(this, product, options);
   }
 
-  public notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions = {}): void {
+  public notifyOnStackEvents(
+    product: IProduct,
+    topic: sns.ITopic,
+    options: CommonConstraintOptions = {}
+  ): void {
     AssociationManager.notifyOnStackEvents(this, product, topic, options);
   }
 
-  public constrainCloudFormationParameters(product: IProduct, options: CloudFormationRuleConstraintOptions): void {
+  public constrainCloudFormationParameters(
+    product: IProduct,
+    options: CloudFormationRuleConstraintOptions
+  ): void {
     AssociationManager.constrainCloudFormationParameters(this, product, options);
   }
 
-  public setLaunchRole(product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions = {}): void {
+  public setLaunchRole(
+    product: IProduct,
+    launchRole: iam.IRole,
+    options: CommonConstraintOptions = {}
+  ): void {
     AssociationManager.setLaunchRole(this, product, launchRole, options);
   }
 
-  public setLocalLaunchRoleName(product: IProduct, launchRoleName: string, options: CommonConstraintOptions = {}): iam.IRole {
+  public setLocalLaunchRoleName(
+    product: IProduct,
+    launchRoleName: string,
+    options: CommonConstraintOptions = {}
+  ): iam.IRole {
     const launchRole: iam.IRole = new iam.Role(this, `LaunchRole${launchRoleName}`, {
       roleName: launchRoleName,
       assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
@@ -220,7 +256,11 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     return launchRole;
   }
 
-  public setLocalLaunchRole(product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions = {}): void {
+  public setLocalLaunchRole(
+    product: IProduct,
+    launchRole: iam.IRole,
+    options: CommonConstraintOptions = {}
+  ): void {
     InputValidator.validateRoleNameSetForLocalLaunchRole(launchRole);
     AssociationManager.setLocalLaunchRoleName(this, product, launchRole.roleName, options);
   }
@@ -252,7 +292,10 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   protected addBucketPermissionsToSharedAccounts() {
     if (this.sharedAccounts.length > 0) {
       for (const bucket of this.assetBuckets) {
-        bucket.grantRead(new iam.CompositePrincipal(...this.sharedAccounts.map(account => new iam.AccountPrincipal(account))),
+        bucket.grantRead(
+          new iam.CompositePrincipal(
+            ...this.sharedAccounts.map((account) => new iam.AccountPrincipal(account))
+          )
         );
       }
     }
@@ -360,13 +403,16 @@ export class Portfolio extends PortfolioBase {
     }
 
     const portfolioNodeId = this.node.id;
-    cdk.Aspects.of(this).add({
-      visit(c: IConstruct) {
-        if (c.node.id === portfolioNodeId) {
-          (c as Portfolio).addBucketPermissionsToSharedAccounts();
-        };
+    cdk.Aspects.of(this).add(
+      {
+        visit(c: IConstruct) {
+          if (c.node.id === portfolioNodeId) {
+            (c as Portfolio).addBucketPermissionsToSharedAccounts();
+          }
+        },
       },
-    }, { priority: cdk.AspectPriority.MUTATING });
+      { priority: cdk.AspectPriority.MUTATING }
+    );
   }
 
   protected generateUniqueHash(value: string): string {
@@ -374,8 +420,26 @@ export class Portfolio extends PortfolioBase {
   }
 
   private validatePortfolioProps(props: PortfolioProps) {
-    InputValidator.validateLength(this.node.path, 'portfolio display name', 1, 100, props.displayName);
-    InputValidator.validateLength(this.node.path, 'portfolio provider name', 1, 50, props.providerName);
-    InputValidator.validateLength(this.node.path, 'portfolio description', 0, 2000, props.description);
+    InputValidator.validateLength(
+      this.node.path,
+      'portfolio display name',
+      1,
+      100,
+      props.displayName
+    );
+    InputValidator.validateLength(
+      this.node.path,
+      'portfolio provider name',
+      1,
+      50,
+      props.providerName
+    );
+    InputValidator.validateLength(
+      this.node.path,
+      'portfolio description',
+      0,
+      2000,
+      props.description
+    );
   }
 }

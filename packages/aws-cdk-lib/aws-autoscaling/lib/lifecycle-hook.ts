@@ -96,7 +96,9 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    */
   public get role() {
     if (!this._role) {
-      throw new Error('\'role\' is undefined. Please specify a \'role\' or specify a \'notificationTarget\' to have a role provided for you.');
+      throw new Error(
+        "'role' is undefined. Please specify a 'role' or specify a 'notificationTarget' to have a role provided for you."
+      );
     }
 
     return this._role;
@@ -113,13 +115,17 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       physicalName: props.lifecycleHookName,
     });
 
-    const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, { lifecycleHook: this, role: props.role }) : undefined;
+    const targetProps = props.notificationTarget
+      ? props.notificationTarget.bind(this, { lifecycleHook: this, role: props.role })
+      : undefined;
 
     if (props.role) {
       this._role = props.role;
 
       if (!props.notificationTarget) {
-        throw new Error("'notificationTarget' parameter required when 'role' parameter is specified");
+        throw new Error(
+          "'notificationTarget' parameter required when 'role' parameter is specified"
+        );
       }
     } else {
       this._role = targetProps ? targetProps.createdRole : undefined;

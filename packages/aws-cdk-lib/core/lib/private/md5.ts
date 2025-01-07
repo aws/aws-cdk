@@ -40,7 +40,10 @@ export function jsMd5(s: string) {
 }
 
 function md5Round(x: number[], k: ReadonlyArray<number>) {
-  let a = x[0], b = x[1], c = x[2], d = x[3];
+  let a = x[0],
+    b = x[1],
+    c = x[2],
+    d = x[3];
 
   a = F(a, b, c, d, k[0], 7, -680876936);
   d = F(d, a, b, c, k[1], 12, -389564586);
@@ -157,8 +160,8 @@ function md5Buffer(buf: Buffer) {
 
   const bitLength = n * 8;
   padding.writeUint32LE(n << 3, padding.length - 8);
-  if (bitLength >= 0xFFFFFFFF) {
-    padding.writeUint32LE(Math.floor(bitLength / 0xFFFFFFFF), padding.length - 4);
+  if (bitLength >= 0xffffffff) {
+    padding.writeUint32LE(Math.floor(bitLength / 0xffffffff), padding.length - 4);
   }
 
   md5Round(state, bytesToWordsBuf(padding, 0));
@@ -171,7 +174,8 @@ function md5Buffer(buf: Buffer) {
 
 function bytesToWordsBuf(buf: Buffer, byteOffset: number) {
   const ret = new Array<number>(16);
-  let i = 0, j = byteOffset;
+  let i = 0,
+    j = byteOffset;
 
   for (; i < 16; i++, j += 4) {
     ret[i] = buf.readUint32LE(j);

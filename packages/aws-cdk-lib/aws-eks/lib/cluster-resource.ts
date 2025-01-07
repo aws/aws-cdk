@@ -25,7 +25,7 @@ export interface ClusterResourceProps {
   readonly onEventLayer?: lambda.ILayerVersion;
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   readonly tags?: { [key: string]: string };
-  readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+  readonly logging?: { [key: string]: [{ [key: string]: any }] };
   readonly accessconfig?: CfnCluster.AccessConfigProperty;
 }
 
@@ -81,8 +81,10 @@ export class ClusterResource extends Construct {
           encryptionConfig: props.encryptionConfig,
           kubernetesNetworkConfig: props.kubernetesNetworkConfig,
           resourcesVpcConfig: {
-            subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).subnetIds,
-            securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).securityGroupIds,
+            subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty)
+              .subnetIds,
+            securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty)
+              .securityGroupIds,
             endpointPublicAccess: props.endpointPublicAccess,
             endpointPrivateAccess: props.endpointPrivateAccess,
             publicAccessCidrs: props.publicAccessCidrs,
@@ -122,15 +124,20 @@ export class ClusterResource extends Construct {
     const creationRole = new iam.Role(this, 'CreationRole', {
       // the role would be assumed by the provider handlers, as they are the ones making
       // the requests.
-      assumedBy: new iam.CompositePrincipal(provider.provider.onEventHandler.role!, provider.provider.isCompleteHandler!.role!),
+      assumedBy: new iam.CompositePrincipal(
+        provider.provider.onEventHandler.role!,
+        provider.provider.isCompleteHandler!.role!
+      ),
     });
 
     // the CreateCluster API will allow the cluster to assume this role, so we
     // need to allow the lambda execution role to pass it.
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['iam:PassRole'],
-      resources: [props.roleArn],
-    }));
+    creationRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [props.roleArn],
+      })
+    );
 
     // if we know the cluster name, restrict the policy to only allow
     // interacting with this specific cluster otherwise, we will have to grant
@@ -147,69 +154,81 @@ export class ClusterResource extends Construct {
     });
 
     const fargateProfileResourceArn = Lazy.string({
-      produce: () => stack.resolve(props.name)
-        ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.name) + '/*' })
-        : '*',
+      produce: () =>
+        stack.resolve(props.name)
+          ? stack.formatArn({
+              service: 'eks',
+              resource: 'fargateprofile',
+              resourceName: stack.resolve(props.name) + '/*',
+            })
+          : '*',
     });
 
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'eks:CreateCluster',
-        'eks:DescribeCluster',
-        'eks:DescribeUpdate',
-        'eks:DeleteCluster',
-        'eks:UpdateClusterVersion',
-        'eks:UpdateClusterConfig',
-        'eks:CreateFargateProfile',
-        'eks:TagResource',
-        'eks:UntagResource',
-      ],
-      resources: resourceArns,
-    }));
+    creationRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'eks:CreateCluster',
+          'eks:DescribeCluster',
+          'eks:DescribeUpdate',
+          'eks:DeleteCluster',
+          'eks:UpdateClusterVersion',
+          'eks:UpdateClusterConfig',
+          'eks:CreateFargateProfile',
+          'eks:TagResource',
+          'eks:UntagResource',
+        ],
+        resources: resourceArns,
+      })
+    );
 
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['eks:DescribeFargateProfile', 'eks:DeleteFargateProfile'],
-      resources: [fargateProfileResourceArn],
-    }));
+    creationRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['eks:DescribeFargateProfile', 'eks:DeleteFargateProfile'],
+        resources: [fargateProfileResourceArn],
+      })
+    );
 
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
-      resources: ['*'],
-    }));
+    creationRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
+        resources: ['*'],
+      })
+    );
 
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['iam:CreateServiceLinkedRole'],
-      resources: ['*'],
-    }));
+    creationRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['iam:CreateServiceLinkedRole'],
+        resources: ['*'],
+      })
+    );
 
     // see https://github.com/aws/aws-cdk/issues/9027
     // these actions are the combined 'ec2:Describe*' actions taken from the EKS SLR policies.
     // (AWSServiceRoleForAmazonEKS, AWSServiceRoleForAmazonEKSForFargate, AWSServiceRoleForAmazonEKSNodegroup)
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'ec2:DescribeInstances',
-        'ec2:DescribeNetworkInterfaces',
-        'ec2:DescribeSecurityGroups',
-        'ec2:DescribeSubnets',
-        'ec2:DescribeRouteTables',
-        'ec2:DescribeDhcpOptions',
-        'ec2:DescribeVpcs',
-      ],
-      resources: ['*'],
-    }));
+    creationRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'ec2:DescribeInstances',
+          'ec2:DescribeNetworkInterfaces',
+          'ec2:DescribeSecurityGroups',
+          'ec2:DescribeSubnets',
+          'ec2:DescribeRouteTables',
+          'ec2:DescribeDhcpOptions',
+          'ec2:DescribeVpcs',
+        ],
+        resources: ['*'],
+      })
+    );
 
     // grant cluster creation role sufficient permission to access the specified key
     // see https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html
     if (props.secretsEncryptionKey) {
-      creationRole.addToPolicy(new iam.PolicyStatement({
-        actions: [
-          'kms:Encrypt',
-          'kms:Decrypt',
-          'kms:DescribeKey',
-          'kms:CreateGrant',
-        ],
-        resources: [props.secretsEncryptionKey.keyArn],
-      }));
+      creationRole.addToPolicy(
+        new iam.PolicyStatement({
+          actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:DescribeKey', 'kms:CreateGrant'],
+          resources: [props.secretsEncryptionKey.keyArn],
+        })
+      );
     }
 
     return creationRole;

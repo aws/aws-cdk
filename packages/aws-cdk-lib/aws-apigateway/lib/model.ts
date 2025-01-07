@@ -177,7 +177,8 @@ export class Model extends Resource implements IModel {
 
     this.modelId = this.getResourceNameAttribute(resource.ref);
 
-    const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
+    const deployment =
+      props.restApi instanceof RestApi ? props.restApi.latestDeployment : undefined;
     if (deployment) {
       deployment.node.addDependency(resource);
       deployment.addToLogicalId({ model: modelProps });

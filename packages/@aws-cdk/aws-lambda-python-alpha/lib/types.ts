@@ -4,7 +4,6 @@ import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from
  * Options for bundling
  */
 export interface BundlingOptions extends DockerRunOptions {
-
   /**
    * Whether to export Poetry dependencies with hashes. Note that this can cause builds to fail if not all dependencies
    * export with a hash.

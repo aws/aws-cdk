@@ -9,16 +9,17 @@ import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 export class KinesisDataFirehosePutRecord extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly deliveryStream: IDeliveryStream,
-    props: ScheduleTargetBaseProps = {},
+    props: ScheduleTargetBaseProps = {}
   ) {
     super(props, deliveryStream.deliveryStreamArn);
   }
 
   protected addTargetActionToRole(role: IRole): void {
-
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['firehose:PutRecord'],
-      resources: [this.deliveryStream.deliveryStreamArn],
-    }));
+    role.addToPrincipalPolicy(
+      new PolicyStatement({
+        actions: ['firehose:PutRecord'],
+        resources: [this.deliveryStream.deliveryStreamArn],
+      })
+    );
   }
 }

@@ -1,5 +1,13 @@
 import { randomUUID } from 'crypto';
-import { IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import {
+  IPipe,
+  ISource,
+  ITarget,
+  InputTransformation,
+  Pipe,
+  SourceConfig,
+  TargetConfig,
+} from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
@@ -56,7 +64,7 @@ class TestTarget implements ITarget {
 // Step Functions Definition
 const enrichmentTask = new sfn.Pass(stack, 'EnrichmentTask', {
   parameters: {
-    body: sfn.JsonPath.stringAt('States.Format(\'{}{}\',$[0].body,\'-enriched\')'),
+    body: sfn.JsonPath.stringAt("States.Format('{}{}',$[0].body,'-enriched')"),
   },
 });
 
@@ -86,16 +94,23 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: uniqueIdentifier,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
-  QueueUrl: targetQueue.queueUrl,
-})).expect(ExpectedResult.objectLike({
-  Messages: [
-    {
-      Body: uniqueIdentifier + '-enriched',
-    },
-  ],
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(30),
-});
+putMessageOnQueue
+  .next(
+    test.assertions.awsApiCall('SQS', 'receiveMessage', {
+      QueueUrl: targetQueue.queueUrl,
+    })
+  )
+  .expect(
+    ExpectedResult.objectLike({
+      Messages: [
+        {
+          Body: uniqueIdentifier + '-enriched',
+        },
+      ],
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.seconds(30),
+  });
 
 app.synth();

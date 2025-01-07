@@ -44,7 +44,6 @@ export interface PrecreatedRoleProps {
    * @default the construct path of this construct
    */
   readonly rolePath?: string;
-
 }
 
 /**
@@ -101,7 +100,7 @@ export class PrecreatedRole extends Resource implements IRole {
   public attachInlinePolicy(policy: Policy): void {
     const statements = policy.document.toJSON()?.Statement;
     if (statements && Array.isArray(statements)) {
-      statements.forEach(statement => {
+      statements.forEach((statement) => {
         this.policyStatements.push(statement);
       });
     }

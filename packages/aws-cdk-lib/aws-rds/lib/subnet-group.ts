@@ -57,14 +57,17 @@ export interface SubnetGroupProps {
  * @resource AWS::RDS::DBSubnetGroup
  */
 export class SubnetGroup extends Resource implements ISubnetGroup {
-
   /**
    * Imports an existing subnet group by name.
    */
-  public static fromSubnetGroupName(scope: Construct, id: string, subnetGroupName: string): ISubnetGroup {
-    return new class extends Resource implements ISubnetGroup {
+  public static fromSubnetGroupName(
+    scope: Construct,
+    id: string,
+    subnetGroupName: string
+  ): ISubnetGroup {
+    return new (class extends Resource implements ISubnetGroup {
       public readonly subnetGroupName = subnetGroupName;
-    }(scope, id);
+    })(scope, id);
   }
 
   public readonly subnetGroupName: string;
@@ -72,7 +75,9 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
   constructor(scope: Construct, id: string, props: SubnetGroupProps) {
     super(scope, id);
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
+    const { subnetIds } = props.vpc.selectSubnets(
+      props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }
+    );
 
     // Using 'Default' as the resource id for historical reasons (usage from `Instance` and `Cluster`).
     const subnetGroup = new CfnDBSubnetGroup(this, 'Default', {

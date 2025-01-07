@@ -61,15 +61,19 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
  * An Origin for an HTTP server or S3 bucket configured for website hosting.
  */
 export class HttpOrigin extends cloudfront.OriginBase {
-
-  constructor(domainName: string, private readonly props: HttpOriginProps = {}) {
+  constructor(
+    domainName: string,
+    private readonly props: HttpOriginProps = {}
+  ) {
     super(domainName, props);
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
-  protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
+  protected renderCustomOriginConfig():
+    | cloudfront.CfnDistribution.CustomOriginConfigProperty
+    | undefined {
     return {
       originSslProtocols: this.props.originSslProtocols ?? [cloudfront.OriginSslPolicy.TLS_V1_2],
       originProtocolPolicy: this.props.protocolPolicy ?? cloudfront.OriginProtocolPolicy.HTTPS_ONLY,

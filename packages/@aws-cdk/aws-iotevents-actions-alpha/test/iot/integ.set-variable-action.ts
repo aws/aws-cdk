@@ -18,16 +18,18 @@ class TestStack extends cdk.Stack {
 
     const state = new iotevents.State({
       stateName: 'MyState',
-      onEnter: [{
-        eventName: 'enter-event',
-        condition: iotevents.Expression.currentInput(input),
-        actions: [
-          new actions.SetVariableAction(
-            'MyVariable',
-            iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-          ),
-        ],
-      }],
+      onEnter: [
+        {
+          eventName: 'enter-event',
+          condition: iotevents.Expression.currentInput(input),
+          actions: [
+            new actions.SetVariableAction(
+              'MyVariable',
+              iotevents.Expression.inputAttribute(input, 'payload.temperature')
+            ),
+          ],
+        },
+      ],
     });
 
     new iotevents.DetectorModel(this, 'MyDetectorModel', {

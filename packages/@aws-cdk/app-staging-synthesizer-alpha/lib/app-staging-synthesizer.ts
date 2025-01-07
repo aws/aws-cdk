@@ -12,13 +12,20 @@ import {
   StackSynthesizer,
   Token,
 } from 'aws-cdk-lib/core';
-import { StringSpecializer, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
+import {
+  StringSpecializer,
+  translateCfnTokenToAssetToken,
+} from 'aws-cdk-lib/core/lib/helpers-internal';
 import { BootstrapRole, BootstrapRoles, DeploymentIdentities } from './bootstrap-roles';
 import { DefaultStagingStack, DefaultStagingStackOptions } from './default-staging-stack';
 import { PerEnvironmentStagingFactory as PerEnvironmentStagingFactory } from './per-env-staging-factory';
 import { AppScopedGlobal } from './private/app-global';
 import { validateNoTokens } from './private/no-tokens';
-import { IStagingResources, IStagingResourcesFactory, ObtainStagingResourcesContext } from './staging-stack';
+import {
+  IStagingResources,
+  IStagingResourcesFactory,
+  ObtainStagingResourcesContext,
+} from './staging-stack';
 
 const AGNOSTIC_STACKS = new AppScopedGlobal(() => new Set<Stack>());
 const ENV_AWARE_STACKS = new AppScopedGlobal(() => new Set<Stack>());
@@ -54,7 +61,9 @@ export interface AppStagingSynthesizerOptions {
 /**
  * Properties for stackPerEnv static method
  */
-export interface DefaultResourcesOptions extends AppStagingSynthesizerOptions, DefaultStagingStackOptions {}
+export interface DefaultResourcesOptions
+  extends AppStagingSynthesizerOptions,
+    DefaultStagingStackOptions {}
 
 /**
  * Properties for customFactory static method
@@ -106,17 +115,20 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
   /**
    * Default CloudFormation role ARN.
    */
-  public static readonly DEFAULT_CLOUDFORMATION_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_CLOUDFORMATION_ROLE_ARN =
+    'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default deploy role ARN.
    */
-  public static readonly DEFAULT_DEPLOY_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_DEPLOY_ROLE_ARN =
+    'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Default lookup role ARN for missing values.
    */
-  public static readonly DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
+  public static readonly DEFAULT_LOOKUP_ROLE_ARN =
+    'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
    * Use the Default Staging Resources, creating a single stack per environment this app is deployed in
@@ -157,7 +169,9 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
    */
   public static customFactory(options: CustomFactoryOptions) {
     const oncePerEnv = options.oncePerEnv ?? true;
-    const factory = oncePerEnv ? new PerEnvironmentStagingFactory(options.factory) : options.factory;
+    const factory = oncePerEnv
+      ? new PerEnvironmentStagingFactory(options.factory)
+      : options.factory;
 
     return new AppStagingSynthesizer({
       factory,
@@ -176,7 +190,8 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
 
     this.roles = {
       deploymentRole: identities.deploymentRole ?? defaultIdentities.deploymentRole!,
-      cloudFormationExecutionRole: identities.cloudFormationExecutionRole ?? defaultIdentities.cloudFormationExecutionRole!,
+      cloudFormationExecutionRole:
+        identities.cloudFormationExecutionRole ?? defaultIdentities.cloudFormationExecutionRole!,
       lookupRole: identities.lookupRole ?? identities.lookupRole!,
     };
   }
@@ -186,7 +201,8 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
    */
   public reusableBind(stack: Stack): IBoundAppStagingSynthesizer {
     this.checkEnvironmentGnosticism(stack);
-    const qualifier = this.props.bootstrapQualifier ??
+    const qualifier =
+      this.props.bootstrapQualifier ??
       stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ??
       AppStagingSynthesizer.DEFAULT_QUALIFIER;
     const spec = new StringSpecializer(stack, qualifier);
@@ -251,15 +267,19 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
 
     (isAgnostic ? agnosticStacks : envAwareStacks).add(stack);
     if (agnosticStacks.size > 0 && envAwareStacks.size > 0) {
+      const describeStacks = (xs: Set<Stack>) =>
+        Array.from(xs)
+          .map((s) => s.node.path)
+          .join(', ');
 
-      const describeStacks = (xs: Set<Stack>) => Array.from(xs).map(s => s.node.path).join(', ');
-
-      throw new Error([
-        'It is not safe to use AppStagingSynthesizer for both environment-agnostic and environment-aware stacks at the same time.',
-        'Please either specify environments for all stacks or no stacks in the CDK App.',
-        `At least these stacks with environment: ${describeStacks(envAwareStacks)}.`,
-        `At least these stacks without environment: ${describeStacks(agnosticStacks)}.`,
-      ].join(' '));
+      throw new Error(
+        [
+          'It is not safe to use AppStagingSynthesizer for both environment-agnostic and environment-aware stacks at the same time.',
+          'Please either specify environments for all stacks or no stacks in the CDK App.',
+          `At least these stacks with environment: ${describeStacks(envAwareStacks)}.`,
+          `At least these stacks without environment: ${describeStacks(agnosticStacks)}.`,
+        ].join(' ')
+      );
     }
   }
 }
@@ -300,7 +320,10 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
   private readonly qualifier: string;
   private readonly dependencyStacks: Set<Stack> = new Set();
 
-  constructor(stack: Stack, private readonly props: BoundAppStagingSynthesizerProps) {
+  constructor(
+    stack: Stack,
+    private readonly props: BoundAppStagingSynthesizerProps
+  ) {
     super();
     super.bind(stack);
 
@@ -316,11 +339,19 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
   }
 
   public synthesize(session: ISynthesisSession): void {
-    const templateAssetSource = this.synthesizeTemplate(session, this.props.lookupRole?._arnForCloudAssembly());
+    const templateAssetSource = this.synthesizeTemplate(
+      session,
+      this.props.lookupRole?._arnForCloudAssembly()
+    );
     const templateAsset = this.addFileAsset(templateAssetSource);
 
     const dependencies = Array.from(this.dependencyStacks).flatMap((d) => d.artifactId);
-    const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {}, dependencies);
+    const assetManifestId = this.assetManifest.emitManifest(
+      this.boundStack,
+      session,
+      {},
+      dependencies
+    );
 
     const lookupRoleArn = this.props.lookupRole?._arnForCloudAssembly();
 
@@ -328,7 +359,8 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
       assumeRoleArn: this.props.deployRole?._arnForCloudAssembly(),
       additionalDependencies: [assetManifestId],
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
-      cloudFormationExecutionRoleArn: this.props.cloudFormationExecutionRole?._arnForCloudAssembly(),
+      cloudFormationExecutionRoleArn:
+        this.props.cloudFormationExecutionRole?._arnForCloudAssembly(),
       lookupRole: lookupRoleArn ? { arn: lookupRoleArn } : undefined,
     });
   }
@@ -341,11 +373,16 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: translateCfnTokenToAssetToken(bucketName),
       bucketPrefix: prefix,
-      role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined,
+      role: assumeRoleArn
+        ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) }
+        : undefined,
     });
 
     if (dependencyStack) {
-      this.boundStack.addDependency(dependencyStack, 'stack depends on the staging stack for staging resources');
+      this.boundStack.addDependency(
+        dependencyStack,
+        'stack depends on the staging stack for staging resources'
+      );
       this.dependencyStacks.add(dependencyStack);
     }
 
@@ -359,11 +396,16 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const { repoName, assumeRoleArn, dependencyStack } = this.stagingStack.addDockerImage(asset);
     const location = this.assetManifest.defaultAddDockerImageAsset(this.boundStack, asset, {
       repositoryName: translateCfnTokenToAssetToken(repoName),
-      role: assumeRoleArn ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) } : undefined,
+      role: assumeRoleArn
+        ? { assumeRoleArn: translateCfnTokenToAssetToken(assumeRoleArn) }
+        : undefined,
     });
 
     if (dependencyStack) {
-      this.boundStack.addDependency(dependencyStack, 'stack depends on the staging stack for staging resources');
+      this.boundStack.addDependency(
+        dependencyStack,
+        'stack depends on the staging stack for staging resources'
+      );
       this.dependencyStacks.add(dependencyStack);
     }
 

@@ -42,8 +42,15 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
    * @param id The name of the deployment strategy construct
    * @param deploymentStrategyArn The Amazon Resource Name (ARN) of the deployment strategy
    */
-  public static fromDeploymentStrategyArn(scope: Construct, id: string, deploymentStrategyArn: string): IDeploymentStrategy {
-    const parsedArn = Stack.of(scope).splitArn(deploymentStrategyArn, ArnFormat.SLASH_RESOURCE_NAME);
+  public static fromDeploymentStrategyArn(
+    scope: Construct,
+    id: string,
+    deploymentStrategyArn: string
+  ): IDeploymentStrategy {
+    const parsedArn = Stack.of(scope).splitArn(
+      deploymentStrategyArn,
+      ArnFormat.SLASH_RESOURCE_NAME
+    );
     const deploymentStrategyId = parsedArn.resourceName;
     if (!deploymentStrategyId) {
       throw new Error('Missing required deployment strategy id from deployment strategy ARN');
@@ -66,7 +73,11 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
    * @param id The name of the deployment strategy construct
    * @param deploymentStrategyId The ID of the deployment strategy
    */
-  public static fromDeploymentStrategyId(scope: Construct, id: string, deploymentStrategyId: DeploymentStrategyId): IDeploymentStrategy {
+  public static fromDeploymentStrategyId(
+    scope: Construct,
+    id: string,
+    deploymentStrategyId: DeploymentStrategyId
+  ): IDeploymentStrategy {
     const stack = Stack.of(scope);
     const deploymentStrategyArn = stack.formatArn({
       service: 'appconfig',
@@ -138,10 +149,12 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     this.description = props.description;
     this.finalBakeTimeInMinutes = props.rolloutStrategy.finalBakeTime?.toMinutes();
     this.growthType = props.rolloutStrategy.growthType;
-    this.name = props.deploymentStrategyName || Names.uniqueResourceName(this, {
-      maxLength: 64,
-      separator: '-',
-    });
+    this.name =
+      props.deploymentStrategyName ||
+      Names.uniqueResourceName(this, {
+        maxLength: 64,
+        separator: '-',
+      });
 
     const resource = new CfnDeploymentStrategy(this, 'Resource', {
       name: this.name,
@@ -192,21 +205,27 @@ export abstract class DeploymentStrategyId {
    * AWS AppConfig recommends using this strategy for production deployments because it aligns with AWS best practices
    * for configuration deployments.
    */
-  public static readonly CANARY_10_PERCENT_20_MINUTES = DeploymentStrategyId.fromString('AppConfig.Canary10Percent20Minutes');
+  public static readonly CANARY_10_PERCENT_20_MINUTES = DeploymentStrategyId.fromString(
+    'AppConfig.Canary10Percent20Minutes'
+  );
 
   /**
    * **Testing/Demonstration**. This strategy deploys the configuration to half of all targets every 30 seconds for a
    * one-minute deployment. AWS AppConfig recommends using this strategy only for testing or demonstration purposes because
    * it has a short duration and bake time.
    */
-  public static readonly LINEAR_50_PERCENT_EVERY_30_SECONDS = DeploymentStrategyId.fromString('AppConfig.Linear50PercentEvery30Seconds');
+  public static readonly LINEAR_50_PERCENT_EVERY_30_SECONDS = DeploymentStrategyId.fromString(
+    'AppConfig.Linear50PercentEvery30Seconds'
+  );
 
   /**
    * **AWS Recommended**. This strategy deploys the configuration to 20% of all targets every six minutes for a 30 minute deployment.
    * AWS AppConfig recommends using this strategy for production deployments because it aligns with AWS best practices
    * for configuration deployments.
    */
-  public static readonly LINEAR_20_PERCENT_EVERY_6_MINUTES = DeploymentStrategyId.fromString('AppConfig.Linear20PercentEvery6Minutes');
+  public static readonly LINEAR_20_PERCENT_EVERY_6_MINUTES = DeploymentStrategyId.fromString(
+    'AppConfig.Linear20PercentEvery6Minutes'
+  );
 
   /**
    * **Quick**. This strategy deploys the configuration to all targets immediately.

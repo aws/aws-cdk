@@ -39,11 +39,8 @@ export class FargateCluster extends Cluster {
     this.defaultProfile = this.addFargateProfile(
       props.defaultProfile?.fargateProfileName ?? (props.defaultProfile ? 'custom' : 'default'),
       props.defaultProfile ?? {
-        selectors: [
-          { namespace: 'default' },
-          { namespace: 'kube-system' },
-        ],
-      },
+        selectors: [{ namespace: 'default' }, { namespace: 'kube-system' }],
+      }
     );
   }
 }

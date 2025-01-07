@@ -17,7 +17,9 @@ export class FileSet implements IFileSetProducer {
 
   constructor(
     /** Human-readable descriptor for this file set (does not need to be unique) */
-    public readonly id: string, producer?: Step) {
+    public readonly id: string,
+    producer?: Step
+  ) {
     this._producer = producer;
   }
 
@@ -38,7 +40,9 @@ export class FileSet implements IFileSetProducer {
    */
   public producedBy(producer?: Step) {
     if (this._producer) {
-      throw new Error(`FileSet '${this.id}' already has a producer (${this._producer}) while setting producer: ${producer}`);
+      throw new Error(
+        `FileSet '${this.id}' already has a producer (${this._producer}) while setting producer: ${producer}`
+      );
     }
     this._producer = producer;
   }

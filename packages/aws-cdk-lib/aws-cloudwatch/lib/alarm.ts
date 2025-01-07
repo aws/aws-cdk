@@ -67,7 +67,7 @@ export enum ComparisonOperator {
   LESS_THAN_LOWER_THRESHOLD = 'LessThanLowerThreshold',
 }
 
-const OPERATOR_SYMBOLS: {[key: string]: string} = {
+const OPERATOR_SYMBOLS: { [key: string]: string } = {
   GreaterThanOrEqualToThreshold: '>=',
   GreaterThanThreshold: '>',
   LessThanThreshold: '<',
@@ -103,7 +103,6 @@ export enum TreatMissingData {
  * An alarm on a CloudWatch metric
  */
 export class Alarm extends AlarmBase {
-
   /**
    * Import an existing CloudWatch alarm provided an Name.
    *
@@ -114,12 +113,16 @@ export class Alarm extends AlarmBase {
   public static fromAlarmName(scope: Construct, id: string, alarmName: string): IAlarm {
     const stack = Stack.of(scope);
 
-    return this.fromAlarmArn(scope, id, stack.formatArn({
-      service: 'cloudwatch',
-      resource: 'alarm',
-      resourceName: alarmName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    }));
+    return this.fromAlarmArn(
+      scope,
+      id,
+      stack.formatArn({
+        service: 'cloudwatch',
+        resource: 'alarm',
+        resourceName: alarmName,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })
+    );
   }
 
   /**
@@ -132,7 +135,8 @@ export class Alarm extends AlarmBase {
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
-      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME)
+        .resourceName!;
     }
     return new Import(scope, id);
   }
@@ -166,7 +170,8 @@ export class Alarm extends AlarmBase {
       physicalName: props.alarmName,
     });
 
-    const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
+    const comparisonOperator =
+      props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
     // Render metric, process potential overrides from the alarm
     // (It would be preferable if the statistic etc. was worked into the metric,
@@ -199,7 +204,7 @@ export class Alarm extends AlarmBase {
       // Actions
       actionsEnabled: props.actionsEnabled,
       alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
-      insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
+      insufficientDataActions: Lazy.list({ produce: () => this.insufficientDataActionArns }),
       okActions: Lazy.list({ produce: () => this.okActionArns }),
 
       // Metric
@@ -257,9 +262,9 @@ export class Alarm extends AlarmBase {
       this.alarmActionArns = [];
     }
 
-    this.alarmActionArns.push(...actions.map(a =>
-      this.validateActionArn(a.bind(this, this).alarmActionArn),
-    ));
+    this.alarmActionArns.push(
+      ...actions.map((a) => this.validateActionArn(a.bind(this, this).alarmActionArn))
+    );
   }
 
   private validateActionArn(actionArn: string): string {
@@ -267,8 +272,13 @@ export class Alarm extends AlarmBase {
     if (ec2ActionsRegexp.test(actionArn)) {
       // Check per-instance metric
       const metricConfig = this.metric.toMetricConfig();
-      if (metricConfig.metricStat?.dimensions?.length != 1 || !metricConfig.metricStat?.dimensions?.some(dimension => dimension.name === 'InstanceId')) {
-        throw new Error(`EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`);
+      if (
+        metricConfig.metricStat?.dimensions?.length != 1 ||
+        !metricConfig.metricStat?.dimensions?.some((dimension) => dimension.name === 'InstanceId')
+      ) {
+        throw new Error(
+          `EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`
+        );
       }
     }
     return actionArn;
@@ -279,7 +289,8 @@ export class Alarm extends AlarmBase {
     return dispatchMetric(metric, {
       withStat(stat, conf) {
         self.validateMetricStat(stat, metric);
-        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined && !self.requiresAccountId(stat);
+        const canRenderAsLegacyMetric =
+          conf.renderingProperties?.label == undefined && !self.requiresAccountId(stat);
         // Do this to disturb existing templates as little as possible
         if (canRenderAsLegacyMetric) {
           return dropUndefined({
@@ -326,46 +337,48 @@ export class Alarm extends AlarmBase {
         }
 
         return {
-          metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
-            withStat(stat, conf) {
-              self.validateMetricStat(stat, entry.metric);
+          metrics: mset.entries.map(
+            (entry) =>
+              dispatchMetric(entry.metric, {
+                withStat(stat, conf) {
+                  self.validateMetricStat(stat, entry.metric);
 
-              return {
-                metricStat: {
-                  metric: {
-                    metricName: stat.metricName,
-                    namespace: stat.namespace,
-                    dimensions: stat.dimensions,
-                  },
-                  period: stat.period.toSeconds(),
-                  stat: stat.statistic,
-                  unit: stat.unitFilter,
+                  return {
+                    metricStat: {
+                      metric: {
+                        metricName: stat.metricName,
+                        namespace: stat.namespace,
+                        dimensions: stat.dimensions,
+                      },
+                      period: stat.period.toSeconds(),
+                      stat: stat.statistic,
+                      unit: stat.unitFilter,
+                    },
+                    id: entry.id || uniqueMetricId(),
+                    accountId: self.requiresAccountId(stat) ? stat.account : undefined,
+                    label: conf.renderingProperties?.label,
+                    returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
+                  };
                 },
-                id: entry.id || uniqueMetricId(),
-                accountId: self.requiresAccountId(stat) ? stat.account : undefined,
-                label: conf.renderingProperties?.label,
-                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
-              };
-            },
-            withExpression(expr, conf) {
+                withExpression(expr, conf) {
+                  const hasSubmetrics = mathExprHasSubmetrics(expr);
 
-              const hasSubmetrics = mathExprHasSubmetrics(expr);
+                  if (hasSubmetrics) {
+                    assertSubmetricsCount(expr);
+                  }
 
-              if (hasSubmetrics) {
-                assertSubmetricsCount(expr);
-              }
+                  self.validateMetricExpression(expr);
 
-              self.validateMetricExpression(expr);
-
-              return {
-                expression: expr.expression,
-                id: entry.id || uniqueMetricId(),
-                label: conf.renderingProperties?.label,
-                period: hasSubmetrics ? undefined : expr.period,
-                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
-              };
-            },
-          }) as CfnAlarm.MetricDataQueryProperty),
+                  return {
+                    expression: expr.expression,
+                    id: entry.id || uniqueMetricId(),
+                    label: conf.renderingProperties?.label,
+                    period: hasSubmetrics ? undefined : expr.period,
+                    returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
+                  };
+                },
+              }) as CfnAlarm.MetricDataQueryProperty
+          ),
         };
       },
     });
@@ -378,7 +391,9 @@ export class Alarm extends AlarmBase {
     const stack = Stack.of(this);
 
     if (definitelyDifferent(stat.region, stack.region)) {
-      throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
+      throw new Error(
+        `Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`
+      );
     }
   }
 
@@ -388,7 +403,9 @@ export class Alarm extends AlarmBase {
    */
   private validateMetricExpression(expr: MetricExpressionConfig) {
     if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
-      throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
+      throw new Error(
+        'Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion'
+      );
     }
   }
 
@@ -420,14 +437,22 @@ function definitelyDifferent(x: string | undefined, y: string) {
  * We know the seconds are always one of a handful of allowed values.
  */
 function describePeriod(seconds: number) {
-  if (seconds === 60) { return '1 minute'; }
-  if (seconds === 1) { return '1 second'; }
-  if (seconds > 60) { return (seconds / 60) + ' minutes'; }
+  if (seconds === 60) {
+    return '1 minute';
+  }
+  if (seconds === 1) {
+    return '1 second';
+  }
+  if (seconds > 60) {
+    return seconds / 60 + ' minutes';
+  }
   return seconds + ' seconds';
 }
 
 function renderIfSimpleStatistic(statistic?: string): string | undefined {
-  if (statistic === undefined) { return undefined; }
+  if (statistic === undefined) {
+    return undefined;
+  }
 
   const parsed = parseStatistic(statistic);
   if (parsed.type === 'simple') {
@@ -437,7 +462,9 @@ function renderIfSimpleStatistic(statistic?: string): string | undefined {
 }
 
 function renderIfExtendedStatistic(statistic?: string): string | undefined {
-  if (statistic === undefined) { return undefined; }
+  if (statistic === undefined) {
+    return undefined;
+  }
 
   const parsed = parseStatistic(statistic);
   if (parsed.type === 'simple') {
@@ -463,7 +490,7 @@ function assertSubmetricsCount(expr: MetricExpressionConfig) {
   if (Object.keys(expr.usingMetrics).length > 10) {
     // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-on-metric-math-expressions
     throw new Error('Alarms on math expressions cannot contain more than 10 individual metrics');
-  };
+  }
 }
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };

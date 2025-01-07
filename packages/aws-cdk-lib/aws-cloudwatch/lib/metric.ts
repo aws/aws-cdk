@@ -1,8 +1,21 @@
 import { Construct, IConstruct } from 'constructs';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
-import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
+import {
+  Dimension,
+  IMetric,
+  MetricAlarmConfig,
+  MetricConfig,
+  MetricGraphConfig,
+  Statistic,
+  Unit,
+} from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
-import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
+import {
+  normalizeStatistic,
+  pairStatisticToString,
+  parseStatistic,
+  singleStatisticToString,
+} from './private/statistic';
 import { Stats } from './stats';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
@@ -135,8 +148,7 @@ export interface MetricProps extends CommonMetricOptions {
 /**
  * Properties of a metric that can be changed
  */
-export interface MetricOptions extends CommonMetricOptions {
-}
+export interface MetricOptions extends CommonMetricOptions {}
 
 /**
  * Configurable options for MathExpressions
@@ -324,8 +336,16 @@ export class Metric implements IMetric {
   constructor(props: MetricProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     const periodSec = this.period.toSeconds();
-    if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
-      throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
+    if (
+      periodSec !== 1 &&
+      periodSec !== 5 &&
+      periodSec !== 10 &&
+      periodSec !== 30 &&
+      periodSec % 60 !== 0
+    ) {
+      throw new Error(
+        `'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`
+      );
     }
 
     this.warnings = undefined;
@@ -337,11 +357,12 @@ export class Metric implements IMetric {
     if (parsedStat.type === 'generic') {
       // Unrecognized statistic, do not throw, just warn
       // There may be a new statistic that this lib does not support yet
-      const label = props.label ? `, label "${props.label}"`: '';
+      const label = props.label ? `, label "${props.label}"` : '';
 
-      const warning = `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
-          ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
-          ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
+      const warning =
+        `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
+        ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
+        ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
       this.warningsV2 = {
         'CloudWatch:Alarm:UnrecognizedStatistic': warning,
       };
@@ -365,17 +386,19 @@ export class Metric implements IMetric {
    */
   public with(props: MetricOptions): Metric {
     // Short-circuit creating a new object if there would be no effective change
-    if ((props.label === undefined || props.label === this.label)
-      && (props.color === undefined || props.color === this.color)
-      && (props.statistic === undefined || props.statistic === this.statistic)
-      && (props.unit === undefined || props.unit === this.unit)
-      && (props.account === undefined || props.account === this.account)
-      && (props.region === undefined || props.region === this.region)
+    if (
+      (props.label === undefined || props.label === this.label) &&
+      (props.color === undefined || props.color === this.color) &&
+      (props.statistic === undefined || props.statistic === this.statistic) &&
+      (props.unit === undefined || props.unit === this.unit) &&
+      (props.account === undefined || props.account === this.account) &&
+      (props.region === undefined || props.region === this.region) &&
       // For these we're not going to do deep equality, misses some opportunity for optimization
       // but that's okay.
-      && (props.dimensions === undefined)
-      && (props.dimensionsMap === undefined)
-      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
+      props.dimensions === undefined &&
+      props.dimensionsMap === undefined &&
+      (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
+    ) {
       return this;
     }
 
@@ -438,7 +461,9 @@ export class Metric implements IMetric {
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+      throw new Error(
+        "Using a math expression is not supported here. Pass a 'Metric' object instead"
+      );
     }
 
     const parsed = parseStatistic(metricConfig.metricStat.statistic);
@@ -455,7 +480,7 @@ export class Metric implements IMetric {
       namespace: metricConfig.metricStat.namespace,
       metricName: metricConfig.metricStat.metricName,
       period: metricConfig.metricStat.period.toSeconds(),
-      statistic: parsed.type === 'simple' ? parsed.statistic as Statistic : undefined,
+      statistic: parsed.type === 'simple' ? (parsed.statistic as Statistic) : undefined,
       extendedStatistic,
       unit: this.unit,
     };
@@ -467,7 +492,9 @@ export class Metric implements IMetric {
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+      throw new Error(
+        "Using a math expression is not supported here. Pass a 'Metric' object instead"
+      );
     }
 
     return {
@@ -527,7 +554,9 @@ export class Metric implements IMetric {
       return [];
     }
 
-    const list = Object.keys(dims).sort().map(key => ({ name: key, value: dims[key] }));
+    const list = Object.keys(dims)
+      .sort()
+      .map((key) => ({ name: key, value: dims[key] }));
 
     return list;
   }
@@ -542,17 +571,21 @@ export class Metric implements IMetric {
       throw new Error(`The maximum number of dimensions is 30, received ${dimsArray.length}`);
     }
 
-    dimsArray.map(key => {
+    dimsArray.map((key) => {
       if (dims[key] === undefined || dims[key] === null) {
         throw new Error(`Dimension value of '${dims[key]}' is invalid`);
-      };
+      }
       if (key.length < 1 || key.length > 255) {
-        throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
-      };
+        throw new Error(
+          `Dimension name must be at least 1 and no more than 255 characters; received ${key}`
+        );
+      }
 
       if (dims[key].length < 1 || dims[key].length > 255) {
-        throw new Error(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
-      };
+        throw new Error(
+          `Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`
+        );
+      }
     });
 
     return dims;
@@ -560,7 +593,9 @@ export class Metric implements IMetric {
 }
 
 function asString(x?: unknown): string | undefined {
-  if (x === undefined) { return undefined; }
+  if (x === undefined) {
+    return undefined;
+  }
   if (typeof x !== 'string') {
     throw new Error(`Expected string, got ${x}`);
   }
@@ -644,12 +679,17 @@ export class MathExpression implements IMetric {
 
     const warnings: { [id: string]: string } = {};
     if (overridden) {
-      warnings['CloudWatch:Math:MetricsPeriodsOverridden'] = `Periods of metrics in 'usingMetrics' for Math expression '${this.expression}' have been overridden to ${this.period.toSeconds()} seconds.`;
+      warnings['CloudWatch:Math:MetricsPeriodsOverridden'] =
+        `Periods of metrics in 'usingMetrics' for Math expression '${this.expression}' have been overridden to ${this.period.toSeconds()} seconds.`;
     }
 
-    const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !validVariableName(x));
+    const invalidVariableNames = Object.keys(this.usingMetrics).filter(
+      (x) => !validVariableName(x)
+    );
     if (invalidVariableNames.length > 0) {
-      throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
+      throw new Error(
+        `Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`
+      );
     }
 
     this.validateNoIdConflicts();
@@ -658,10 +698,16 @@ export class MathExpression implements IMetric {
     // can't throw on this anymore since we didn't use to do this validation from the start
     // and now there will be loads of people who are violating the expected contract, but
     // we can add warnings.
-    const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(i => !this.usingMetrics[i]);
+    const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(
+      (i) => !this.usingMetrics[i]
+    );
 
-    if (!this.expression.toUpperCase().match('\\s*INSIGHT_RULE_METRIC|SELECT|SEARCH|METRICS\\s.*') && missingIdentifiers.length > 0) {
-      warnings['CloudWatch:Math:UnknownIdentifier'] = `Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`;
+    if (
+      !this.expression.toUpperCase().match('\\s*INSIGHT_RULE_METRIC|SELECT|SEARCH|METRICS\\s.*') &&
+      missingIdentifiers.length > 0
+    ) {
+      warnings['CloudWatch:Math:UnknownIdentifier'] =
+        `Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`;
     }
 
     // Also copy warnings from deeper levels so graphs, alarms only have to inspect the top-level objects
@@ -686,11 +732,13 @@ export class MathExpression implements IMetric {
    */
   public with(props: MathExpressionOptions): MathExpression {
     // Short-circuit creating a new object if there would be no effective change
-    if ((props.label === undefined || props.label === this.label)
-      && (props.color === undefined || props.color === this.color)
-      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
-      && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
-      && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
+    if (
+      (props.label === undefined || props.label === this.label) &&
+      (props.color === undefined || props.color === this.color) &&
+      (props.period === undefined || props.period.toSeconds() === this.period.toSeconds()) &&
+      (props.searchAccount === undefined || props.searchAccount === this.searchAccount) &&
+      (props.searchRegion === undefined || props.searchRegion === this.searchRegion)
+    ) {
       return this;
     }
 
@@ -709,14 +757,18 @@ export class MathExpression implements IMetric {
    * @deprecated use toMetricConfig()
    */
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+    throw new Error(
+      "Using a math expression is not supported here. Pass a 'Metric' object instead"
+    );
   }
 
   /**
    * @deprecated use toMetricConfig()
    */
   public toGraphConfig(): MetricGraphConfig {
-    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+    throw new Error(
+      "Using a math expression is not supported here. Pass a 'Metric' object instead"
+    );
   }
 
   public toMetricConfig(): MetricConfig {
@@ -775,7 +827,9 @@ export class MathExpression implements IMetric {
           for (const [id, subMetric] of Object.entries(expr.usingMetrics)) {
             const existing = seen.get(id);
             if (existing && metricKey(existing) !== metricKey(subMetric)) {
-              throw new Error(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
+              throw new Error(
+                `The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`
+              );
             }
             seen.set(id, subMetric);
             visit(subMetric);
@@ -802,7 +856,7 @@ function validVariableName(x: string) {
  * Return all variable names used in an expression
  */
 function allIdentifiersInExpression(x: string) {
-  return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
+  return Array.from(matchAll(x, FIND_VARIABLE)).map((m) => m[0]);
 }
 
 /**
@@ -914,7 +968,10 @@ function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
 /**
  * Change periods of all metrics in the map
  */
-function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration): { record: Record<string, IMetric>; overridden: boolean } {
+function changeAllPeriods(
+  metrics: Record<string, IMetric>,
+  period: cdk.Duration
+): { record: Record<string, IMetric>; overridden: boolean } {
   const retRecord: Record<string, IMetric> = {};
   let retOverridden = false;
   for (const [id, m] of Object.entries(metrics)) {
@@ -934,7 +991,10 @@ function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration
  * Relies on the fact that implementations of `IMetric` are also supposed to have
  * an implementation of `with` that accepts an argument called `period`. See `IModifiableMetric`.
  */
-function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean} {
+function changePeriod(
+  metric: IMetric,
+  period: cdk.Duration
+): { metric: IMetric; overridden: boolean } {
   if (isModifiableMetric(metric)) {
     const overridden =
       isMetricWithPeriod(metric) && // always true, as the period property is set with a default value even if it is not specified
@@ -984,7 +1044,7 @@ function isMetricWithPeriod(m: any): m is IMetricWithPeriod {
 function matchAll(x: string, re: RegExp): RegExpMatchArray[] {
   const ret = new Array<RegExpMatchArray>();
   let m: RegExpExecArray | null;
-  while (m = re.exec(x)) {
+  while ((m = re.exec(x))) {
     ret.push(m);
   }
   return ret;

@@ -25,7 +25,10 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[] {
   mset.addTopLevel('right', ...right);
 
   // Render all metrics from the set.
-  return mset.entries.map(entry => new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id)));
+  return mset.entries.map(
+    (entry) =>
+      new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id))
+  );
 }
 
 function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
@@ -36,35 +39,52 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
 
   dispatchMetric(metric, {
     withStat(stat) {
-      ret.push(
-        stat.namespace,
-        stat.metricName,
-      );
+      ret.push(stat.namespace, stat.metricName);
 
       // Dimensions
-      for (const dim of (stat.dimensions || [])) {
+      for (const dim of stat.dimensions || []) {
         ret.push(dim.name, dim.value);
       }
 
       // Metric attributes that are rendered to graph options
-      if (stat.account) { options.accountId = accountIfDifferentFromStack(stat.account); }
-      if (stat.region) { options.region = regionIfDifferentFromStack(stat.region); }
-      if (stat.period && stat.period.toSeconds() !== 300) { options.period = stat.period.toSeconds(); }
-      if (stat.statistic && stat.statistic !== 'Average') { options.stat = stat.statistic; }
+      if (stat.account) {
+        options.accountId = accountIfDifferentFromStack(stat.account);
+      }
+      if (stat.region) {
+        options.region = regionIfDifferentFromStack(stat.region);
+      }
+      if (stat.period && stat.period.toSeconds() !== 300) {
+        options.period = stat.period.toSeconds();
+      }
+      if (stat.statistic && stat.statistic !== 'Average') {
+        options.stat = stat.statistic;
+      }
     },
 
     withExpression(expr) {
       options.expression = expr.expression;
-      if (expr.searchAccount) { options.accountId = accountIfDifferentFromStack(expr.searchAccount); }
-      if (expr.searchRegion) { options.region = regionIfDifferentFromStack(expr.searchRegion); }
-      if (expr.period && expr.period !== 300) { options.period = expr.period; }
+      if (expr.searchAccount) {
+        options.accountId = accountIfDifferentFromStack(expr.searchAccount);
+      }
+      if (expr.searchRegion) {
+        options.region = regionIfDifferentFromStack(expr.searchRegion);
+      }
+      if (expr.period && expr.period !== 300) {
+        options.period = expr.period;
+      }
     },
   });
 
   // Options
-  if (!yAxis) { options.visible = false; }
-  if (yAxis !== 'left') { options.yAxis = yAxis; }
-  if (id) { options.id = id; }
+  if (!yAxis) {
+    options.visible = false;
+  }
+  if (yAxis !== 'left') {
+    options.yAxis = yAxis;
+  }
+  if (id) {
+    options.id = id;
+  }
 
   if (options.visible !== false && options.expression && !options.label) {
     // Label may be '' or undefined.
@@ -151,7 +171,9 @@ export class MetricSet<A> {
     if (id) {
       existingEntry = this.metricById.get(id);
       if (existingEntry && metricKey(existingEntry.metric) !== key) {
-        throw new Error(`Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`);
+        throw new Error(
+          `Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`
+        );
       }
     }
 
@@ -162,7 +184,9 @@ export class MetricSet<A> {
       // If the one we found already has an id, it must be different from the id
       // we're trying to add and we want to add a new metric. Pretend we didn't
       // find one.
-      if (existingEntry?.id && id) { existingEntry = undefined; }
+      if (existingEntry?.id && id) {
+        existingEntry = undefined;
+      }
     }
 
     // Create a new entry if we didn't find one so far

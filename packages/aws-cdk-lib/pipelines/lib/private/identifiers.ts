@@ -9,7 +9,10 @@ export function hash<A>(obj: A) {
 }
 
 export function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
-  const names = node.ancestorPath(parent).map(n => n.id).map(sanitizeName);
+  const names = node
+    .ancestorPath(parent)
+    .map((n) => n.id)
+    .map(sanitizeName);
 
   // Something slightly complicated here:
   //
@@ -32,7 +35,7 @@ export function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
   const componentMin = 15; // Can't really go shorter than this, becomes unreadable
   const dots = names.length - 1;
   const maxLength = Math.max(componentMin, Math.floor((totalMax - dots) / names.length));
-  const trimmedNames = names.map(name => limitIdentifierLength(name, maxLength));
+  const trimmedNames = names.map((name) => limitIdentifierLength(name, maxLength));
 
   return limitIdentifierLength(trimmedNames.join('.'), totalMax); // Final trim in case we couldn't make it
 }
@@ -52,7 +55,9 @@ function sanitizeName(x: string): string {
  * them with a hash to prevent collissions.
  */
 export function limitIdentifierLength(s: string, n: number): string {
-  if (s.length <= n) { return s; }
+  if (s.length <= n) {
+    return s;
+  }
   const h = hash(s).slice(0, 8);
   const mid = Math.floor((n - h.length) / 2);
 

@@ -1,5 +1,10 @@
 import { Construct } from 'constructs';
-import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import {
+  Ec2Service,
+  Ec2TaskDefinition,
+  PlacementConstraint,
+  PlacementStrategy,
+} from '../../../aws-ecs';
 import { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
@@ -11,7 +16,8 @@ import {
 /**
  * The properties for the NetworkMultipleTargetGroupsEc2Service service.
  */
-export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMultipleTargetGroupsServiceBaseProps {
+export interface NetworkMultipleTargetGroupsEc2ServiceProps
+  extends NetworkMultipleTargetGroupsServiceBaseProps {
   /**
    * The task definition to use for tasks in the service. Only one of TaskDefinition or TaskImageOptions must be specified.
    *
@@ -72,7 +78,7 @@ export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMulti
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 
@@ -80,7 +86,6 @@ export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMulti
  * An EC2 service running on an ECS cluster fronted by a network load balancer.
  */
 export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTargetGroupsServiceBase {
-
   /**
    * The EC2 service in this construct.
    */
@@ -98,7 +103,11 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
   /**
    * Constructs a new instance of the NetworkMultipleTargetGroupsEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsEc2ServiceProps = {}) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: NetworkMultipleTargetGroupsEc2ServiceProps = {}
+  ) {
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
@@ -146,12 +155,18 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
     this.service = this.createEc2Service(props);
     if (props.targetGroups) {
       this.addPortMappingForTargets(this.taskDefinition.defaultContainer, props.targetGroups);
-      this.targetGroup = this.registerECSTargets(this.service, this.taskDefinition.defaultContainer, props.targetGroups);
+      this.targetGroup = this.registerECSTargets(
+        this.service,
+        this.taskDefinition.defaultContainer,
+        props.targetGroups
+      );
     } else {
       const containerPort = this.taskDefinition.defaultContainer.portMappings[0].containerPort;
 
       if (!containerPort) {
-        throw new Error('The first port mapping added to the default container must expose a single port');
+        throw new Error(
+          'The first port mapping added to the default container must expose a single port'
+        );
       }
 
       this.targetGroup = this.listener.addTargets('ECS', {
@@ -162,7 +177,9 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
   }
 
   private createEc2Service(props: NetworkMultipleTargetGroupsEc2ServiceProps): Ec2Service {
-    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)
+      ? this.internalDesiredCount
+      : this.desiredCount;
 
     return new Ec2Service(this, 'Service', {
       cluster: this.cluster,

@@ -46,7 +46,7 @@ export interface SqsEventSourceProps {
    *
    * @default - None
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<{ [key: string]: any }>;
 
   /**
    * Add Customer managed KMS key to encrypt Filter Criteria.
@@ -85,37 +85,58 @@ export class SqsEventSource implements lambda.IEventSource {
   private _eventSourceMappingId?: string = undefined;
   private _eventSourceMappingArn?: string = undefined;
 
-  constructor(readonly queue: sqs.IQueue, private readonly props: SqsEventSourceProps = { }) {
+  constructor(
+    readonly queue: sqs.IQueue,
+    private readonly props: SqsEventSourceProps = {}
+  ) {
     if (this.props.maxBatchingWindow !== undefined) {
       if (queue.fifo) {
         throw new Error('Batching window is not supported for FIFO queues');
       }
-      if (!this.props.maxBatchingWindow.isUnresolved() && this.props.maxBatchingWindow.toSeconds() > 300) {
-        throw new Error(`Maximum batching window must be 300 seconds or less (given ${this.props.maxBatchingWindow.toHumanString()})`);
+      if (
+        !this.props.maxBatchingWindow.isUnresolved() &&
+        this.props.maxBatchingWindow.toSeconds() > 300
+      ) {
+        throw new Error(
+          `Maximum batching window must be 300 seconds or less (given ${this.props.maxBatchingWindow.toHumanString()})`
+        );
       }
     }
     if (this.props.batchSize !== undefined && !Token.isUnresolved(this.props.batchSize)) {
-      if (this.props.maxBatchingWindow !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {
-        throw new Error(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize}) when batching window is specified.`);
+      if (
+        this.props.maxBatchingWindow !== undefined &&
+        (this.props.batchSize < 1 || this.props.batchSize > 10000)
+      ) {
+        throw new Error(
+          `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize}) when batching window is specified.`
+        );
       }
-      if (this.props.maxBatchingWindow === undefined && (this.props.batchSize < 1 || this.props.batchSize > 10)) {
-        throw new Error(`Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize}) when batching window is not specified.`);
+      if (
+        this.props.maxBatchingWindow === undefined &&
+        (this.props.batchSize < 1 || this.props.batchSize > 10)
+      ) {
+        throw new Error(
+          `Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize}) when batching window is not specified.`
+        );
       }
     }
   }
 
   public bind(target: lambda.IFunction) {
-    const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`, {
-      batchSize: this.props.batchSize,
-      maxBatchingWindow: this.props.maxBatchingWindow,
-      maxConcurrency: this.props.maxConcurrency,
-      reportBatchItemFailures: this.props.reportBatchItemFailures,
-      enabled: this.props.enabled,
-      eventSourceArn: this.queue.queueArn,
-      filters: this.props.filters,
-      filterEncryption: this.props.filterEncryption,
-      metricsConfig: this.props.metricsConfig,
-    });
+    const eventSourceMapping = target.addEventSourceMapping(
+      `SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`,
+      {
+        batchSize: this.props.batchSize,
+        maxBatchingWindow: this.props.maxBatchingWindow,
+        maxConcurrency: this.props.maxConcurrency,
+        reportBatchItemFailures: this.props.reportBatchItemFailures,
+        enabled: this.props.enabled,
+        eventSourceArn: this.queue.queueArn,
+        filters: this.props.filters,
+        filterEncryption: this.props.filterEncryption,
+        metricsConfig: this.props.metricsConfig,
+      }
+    );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
     this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
 
@@ -124,8 +145,11 @@ export class SqsEventSource implements lambda.IEventSource {
     if (target.role) {
       this.queue.grantConsumeMessages(target);
     } else {
-      Annotations.of(target).addWarningV2('@aws-cdk/aws-lambda-event-sources:sqsFunctionImportWithoutRole', `Function '${target.node.path}' was imported without an IAM role `+
-        `so it was not granted access to consume messages from '${this.queue.node.path}'`);
+      Annotations.of(target).addWarningV2(
+        '@aws-cdk/aws-lambda-event-sources:sqsFunctionImportWithoutRole',
+        `Function '${target.node.path}' was imported without an IAM role ` +
+          `so it was not granted access to consume messages from '${this.queue.node.path}'`
+      );
     }
   }
 

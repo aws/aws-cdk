@@ -1,15 +1,17 @@
 import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as events from '../../../aws-events';
-import { CodeStarConnectionsSourceAction, CodeStarConnectionsSourceActionProps } from '../codestar-connections/source-action';
+import {
+  CodeStarConnectionsSourceAction,
+  CodeStarConnectionsSourceActionProps,
+} from '../codestar-connections/source-action';
 
 /**
  * Construction properties for `BitBucketSourceAction`.
  *
  * @deprecated use CodeStarConnectionsSourceActionProps instead
  */
-export interface BitBucketSourceActionProps extends CodeStarConnectionsSourceActionProps {
-}
+export interface BitBucketSourceActionProps extends CodeStarConnectionsSourceActionProps {}
 
 /**
  * A CodePipeline source action for BitBucket.
@@ -27,11 +29,19 @@ export class BitBucketSourceAction implements codepipeline.IAction {
     return this.codeStarConnectionsSourceAction.actionProperties;
   }
 
-  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  public bind(
+    scope: Construct,
+    stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     return this.codeStarConnectionsSourceAction.bind(scope, stage, options);
   }
 
-  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
+  public onStateChange(
+    name: string,
+    target?: events.IRuleTarget,
+    options?: events.RuleProps
+  ): events.Rule {
     return this.codeStarConnectionsSourceAction.onStateChange(name, target, options);
   }
 }

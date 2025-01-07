@@ -106,37 +106,43 @@ export class LogQueryWidget extends ConcreteWidget {
     }
 
     if (!!props.queryString === !!props.queryLines) {
-      throw new Error('Specify exactly one of \'queryString\' and \'queryLines\'');
+      throw new Error("Specify exactly one of 'queryString' and 'queryLines'");
     }
   }
 
   public toJson(): any[] {
-    const sources = this.props.logGroupNames.map(l => `SOURCE '${l}'`).join(' | ');
+    const sources = this.props.logGroupNames.map((l) => `SOURCE '${l}'`).join(' | ');
     const query = this.props.queryLines
       ? this.props.queryLines.join('\n| ')
       : this.props.queryString;
 
     const properties: any = {
-      view: this.props.view? this.props.view : LogQueryVisualizationType.TABLE,
+      view: this.props.view ? this.props.view : LogQueryVisualizationType.TABLE,
       title: this.props.title,
       region: this.props.region || cdk.Aws.REGION,
       query: `${sources} | ${query}`,
     };
 
     // adding stacked property in case of LINE or STACKEDAREA
-    if (this.props.view === LogQueryVisualizationType.LINE || this.props.view === LogQueryVisualizationType.STACKEDAREA) {
+    if (
+      this.props.view === LogQueryVisualizationType.LINE ||
+      this.props.view === LogQueryVisualizationType.STACKEDAREA
+    ) {
       // assign the right native view value. both types share the same value
-      properties.view = 'timeSeries',
-      properties.stacked = this.props.view === LogQueryVisualizationType.STACKEDAREA ? true : false;
+      (properties.view = 'timeSeries'),
+        (properties.stacked =
+          this.props.view === LogQueryVisualizationType.STACKEDAREA ? true : false);
     }
 
-    return [{
-      type: 'log',
-      width: this.width,
-      height: this.height,
-      x: this.x,
-      y: this.y,
-      properties: properties,
-    }];
+    return [
+      {
+        type: 'log',
+        width: this.width,
+        height: this.height,
+        x: this.x,
+        y: this.y,
+        properties: properties,
+      },
+    ];
   }
 }

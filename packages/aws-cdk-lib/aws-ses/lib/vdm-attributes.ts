@@ -40,7 +40,11 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
   /**
    * Use an existing Virtual Deliverability Manager attributes resource
    */
-  public static fromVdmAttributesName(scope: Construct, id: string, vdmAttributesName: string): IVdmAttributes {
+  public static fromVdmAttributesName(
+    scope: Construct,
+    id: string,
+    vdmAttributesName: string
+  ): IVdmAttributes {
     class Import extends Resource implements IVdmAttributes {
       public readonly vdmAttributesName = vdmAttributesName;
     }
@@ -74,7 +78,5 @@ export class VdmAttributes extends Resource implements IVdmAttributes {
 }
 
 function booleanToEnabledDisabled(value: boolean): 'ENABLED' | 'DISABLED' {
-  return value === true
-    ? 'ENABLED'
-    : 'DISABLED';
+  return value === true ? 'ENABLED' : 'DISABLED';
 }

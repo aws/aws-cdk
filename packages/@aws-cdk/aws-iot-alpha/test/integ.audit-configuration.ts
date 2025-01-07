@@ -16,18 +16,14 @@ class TestStack extends cdk.Stack {
     new iot.ScheduledAudit(this, 'DailyAudit', {
       accountAuditConfiguration: config,
       frequency: iot.Frequency.DAILY,
-      auditChecks: [
-        iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK,
-      ],
+      auditChecks: [iot.AuditCheck.AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK],
     });
 
     new iot.ScheduledAudit(this, 'WeeklyAudit', {
       accountAuditConfiguration: config,
       frequency: iot.Frequency.WEEKLY,
       dayOfWeek: iot.DayOfWeek.SUNDAY,
-      auditChecks: [
-        iot.AuditCheck.CA_CERTIFICATE_EXPIRING_CHECK,
-      ],
+      auditChecks: [iot.AuditCheck.CA_CERTIFICATE_EXPIRING_CHECK],
     });
 
     new iot.ScheduledAudit(this, 'MonthlyAudit', {

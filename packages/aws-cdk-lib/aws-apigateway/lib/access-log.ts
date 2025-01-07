@@ -26,8 +26,7 @@ export interface AccessLogDestinationConfig {
  * Use CloudWatch Logs as a custom access log destination for API Gateway.
  */
 export class LogGroupLogDestination implements IAccessLogDestination {
-  constructor(private readonly logGroup: ILogGroup) {
-  }
+  constructor(private readonly logGroup: ILogGroup) {}
 
   /**
    * Binds this destination to the CloudWatch Logs.
@@ -43,15 +42,16 @@ export class LogGroupLogDestination implements IAccessLogDestination {
  * Use a Firehose delivery stream as a custom access log destination for API Gateway.
  */
 export class FirehoseLogDestination implements IAccessLogDestination {
-  constructor(private readonly stream: firehose.CfnDeliveryStream) {
-  }
+  constructor(private readonly stream: firehose.CfnDeliveryStream) {}
 
   /**
    * Binds this destination to the Firehose delivery stream.
    */
   public bind(_stage: IStage): AccessLogDestinationConfig {
     if (!this.stream.deliveryStreamName?.startsWith('amazon-apigateway-')) {
-      throw new Error(`Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`);
+      throw new Error(
+        `Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`
+      );
     }
     return {
       destinationArn: this.stream.attrArn,
@@ -717,10 +717,22 @@ export class AccessLogFormat {
    * Generate Common Log Format.
    */
   public static clf(): AccessLogFormat {
-    const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser()].join(' ');
+    const requester = [
+      AccessLogField.contextIdentitySourceIp(),
+      AccessLogField.contextIdentityCaller(),
+      AccessLogField.contextIdentityUser(),
+    ].join(' ');
     const requestTime = AccessLogField.contextRequestTime();
-    const request = [AccessLogField.contextHttpMethod(), AccessLogField.contextResourcePath(), AccessLogField.contextProtocol()].join(' ');
-    const status = [AccessLogField.contextStatus(), AccessLogField.contextResponseLength(), AccessLogField.contextRequestId()].join(' ');
+    const request = [
+      AccessLogField.contextHttpMethod(),
+      AccessLogField.contextResourcePath(),
+      AccessLogField.contextProtocol(),
+    ].join(' ');
+    const status = [
+      AccessLogField.contextStatus(),
+      AccessLogField.contextResponseLength(),
+      AccessLogField.contextRequestId(),
+    ].join(' ');
 
     return new AccessLogFormat(`${requester} [${requestTime}] "${request}" ${status}`);
   }
@@ -740,19 +752,22 @@ export class AccessLogFormat {
       status: true,
       protocol: true,
       responseLength: true,
-    }): AccessLogFormat {
-    return this.custom(JSON.stringify({
-      requestId: AccessLogField.contextRequestId(),
-      ip: fields.ip ? AccessLogField.contextIdentitySourceIp() : undefined,
-      user: fields.user ? AccessLogField.contextIdentityUser() : undefined,
-      caller: fields.caller ? AccessLogField.contextIdentityCaller() : undefined,
-      requestTime: fields.requestTime ? AccessLogField.contextRequestTime() : undefined,
-      httpMethod: fields.httpMethod ? AccessLogField.contextHttpMethod() : undefined,
-      resourcePath: fields.resourcePath ? AccessLogField.contextResourcePath() : undefined,
-      status: fields.status ? AccessLogField.contextStatus() : undefined,
-      protocol: fields.protocol ? AccessLogField.contextProtocol() : undefined,
-      responseLength: fields.responseLength ? AccessLogField.contextResponseLength() : undefined,
-    }));
+    }
+  ): AccessLogFormat {
+    return this.custom(
+      JSON.stringify({
+        requestId: AccessLogField.contextRequestId(),
+        ip: fields.ip ? AccessLogField.contextIdentitySourceIp() : undefined,
+        user: fields.user ? AccessLogField.contextIdentityUser() : undefined,
+        caller: fields.caller ? AccessLogField.contextIdentityCaller() : undefined,
+        requestTime: fields.requestTime ? AccessLogField.contextRequestTime() : undefined,
+        httpMethod: fields.httpMethod ? AccessLogField.contextHttpMethod() : undefined,
+        resourcePath: fields.resourcePath ? AccessLogField.contextResourcePath() : undefined,
+        status: fields.status ? AccessLogField.contextStatus() : undefined,
+        protocol: fields.protocol ? AccessLogField.contextProtocol() : undefined,
+        responseLength: fields.responseLength ? AccessLogField.contextResponseLength() : undefined,
+      })
+    );
   }
 
   /**

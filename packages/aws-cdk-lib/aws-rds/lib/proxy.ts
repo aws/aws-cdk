@@ -56,7 +56,7 @@ export class SessionPinningFilter {
     /**
      * Filter name
      */
-    public readonly filterName: string,
+    public readonly filterName: string
   ) {}
 }
 
@@ -87,8 +87,8 @@ export class ProxyTarget {
 
   private constructor(
     private readonly dbInstance: IDatabaseInstance | undefined,
-    private readonly dbCluster: IDatabaseCluster | undefined) {
-  }
+    private readonly dbCluster: IDatabaseCluster | undefined
+  ) {}
 
   /**
    * Bind this target to the specified database proxy.
@@ -98,19 +98,29 @@ export class ProxyTarget {
 
     if (!engine) {
       const errorResource = this.dbCluster ?? this.dbInstance;
-      throw new Error(`Could not determine engine for proxy target '${errorResource?.node.path}'. ` +
-        'Please provide it explicitly when importing the resource');
+      throw new Error(
+        `Could not determine engine for proxy target '${errorResource?.node.path}'. ` +
+          'Please provide it explicitly when importing the resource'
+      );
     }
 
     const engineFamily = engine.engineFamily;
     if (!engineFamily) {
-      throw new Error('RDS proxies require an engine family to be specified on the database cluster or instance. ' +
-        `No family specified for engine '${engineDescription(engine)}'`);
+      throw new Error(
+        'RDS proxies require an engine family to be specified on the database cluster or instance. ' +
+          `No family specified for engine '${engineDescription(engine)}'`
+      );
     }
 
     // allow connecting to the Cluster/Instance from the Proxy
-    this.dbCluster?.connections.allowDefaultPortFrom(proxy, 'Allow connections to the database Cluster from the Proxy');
-    this.dbInstance?.connections.allowDefaultPortFrom(proxy, 'Allow connections to the database Instance from the Proxy');
+    this.dbCluster?.connections.allowDefaultPortFrom(
+      proxy,
+      'Allow connections to the database Cluster from the Proxy'
+    );
+    this.dbInstance?.connections.allowDefaultPortFrom(
+      proxy,
+      'Allow connections to the database Instance from the Proxy'
+    );
 
     return {
       engineFamily,
@@ -377,7 +387,10 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
       throw new Error('For imported Database Proxies, the dbUser is required in grantConnect()');
     }
     const scopeStack = cdk.Stack.of(this);
-    const proxyGeneratedId = scopeStack.splitArn(this.dbProxyArn, cdk.ArnFormat.COLON_RESOURCE_NAME).resourceName;
+    const proxyGeneratedId = scopeStack.splitArn(
+      this.dbProxyArn,
+      cdk.ArnFormat.COLON_RESOURCE_NAME
+    ).resourceName;
     const userArn = scopeStack.formatArn({
       service: 'rds-db',
       resource: 'dbuser',
@@ -397,15 +410,17 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
  *
  * @resource AWS::RDS::DBProxy
  */
-export class DatabaseProxy extends DatabaseProxyBase
-  implements ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export class DatabaseProxy
+  extends DatabaseProxyBase
+  implements ec2.IConnectable, secretsmanager.ISecretAttachmentTarget
+{
   /**
    * Import an existing database proxy.
    */
   public static fromDatabaseProxyAttributes(
     scope: Construct,
     id: string,
-    attrs: DatabaseProxyAttributes,
+    attrs: DatabaseProxyAttributes
   ): IDatabaseProxy {
     class Import extends DatabaseProxyBase {
       public readonly dbProxyName = attrs.dbProxyName;
@@ -447,14 +462,17 @@ export class DatabaseProxy extends DatabaseProxyBase
   constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
     super(scope, id);
 
-    const physicalName = props.dbProxyName || (
-      cdk.FeatureFlags.of(this).isEnabled(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME) ?
-        cdk.Names.uniqueResourceName(this, { maxLength: 60 }) : id
-    );
+    const physicalName =
+      props.dbProxyName ||
+      (cdk.FeatureFlags.of(this).isEnabled(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME)
+        ? cdk.Names.uniqueResourceName(this, { maxLength: 60 })
+        : id);
 
-    const role = props.role || new iam.Role(this, 'IAMRole', {
-      assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
-    });
+    const role =
+      props.role ||
+      new iam.Role(this, 'IAMRole', {
+        assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+      });
 
     for (const secret of props.secrets) {
       secret.grantRead(role);
@@ -481,7 +499,7 @@ export class DatabaseProxy extends DatabaseProxyBase
     this.validateClientPasswordAuthType(bindResult.engineFamily, props.clientPasswordAuthType);
 
     this.resource = new CfnDBProxy(this, 'Resource', {
-      auth: props.secrets.map(_ => {
+      auth: props.secrets.map((_) => {
         return {
           authScheme: 'SECRETS',
           clientPasswordAuthType: props.clientPasswordAuthType,
@@ -495,7 +513,9 @@ export class DatabaseProxy extends DatabaseProxyBase
       idleClientTimeout: props.idleClientTimeout?.toSeconds(),
       requireTls: props.requireTLS ?? true,
       roleArn: role.roleArn,
-      vpcSecurityGroupIds: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(_ => _.securityGroupId) }),
+      vpcSecurityGroupIds: cdk.Lazy.list({
+        produce: () => this.connections.securityGroups.map((_) => _.securityGroupId),
+      }),
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
     });
 
@@ -565,7 +585,9 @@ export class DatabaseProxy extends DatabaseProxyBase
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
       if (this.secrets.length > 1) {
-        throw new Error('When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect()');
+        throw new Error(
+          'When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect()'
+        );
       }
       // 'username' is the field RDS uses here,
       // see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html#rds-proxy-secrets-arns
@@ -574,19 +596,42 @@ export class DatabaseProxy extends DatabaseProxyBase
     return super.grantConnect(grantee, dbUser);
   }
 
-  private validateClientPasswordAuthType(engineFamily: string, clientPasswordAuthType?: ClientPasswordAuthType) {
+  private validateClientPasswordAuthType(
+    engineFamily: string,
+    clientPasswordAuthType?: ClientPasswordAuthType
+  ) {
     if (!clientPasswordAuthType || cdk.Token.isUnresolved(clientPasswordAuthType)) return;
-    if (clientPasswordAuthType === ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD && engineFamily !== 'MYSQL') {
-      throw new Error(`${ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD} client password authentication type requires MYSQL engineFamily, got ${engineFamily}`);
+    if (
+      clientPasswordAuthType === ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD &&
+      engineFamily !== 'MYSQL'
+    ) {
+      throw new Error(
+        `${ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD} client password authentication type requires MYSQL engineFamily, got ${engineFamily}`
+      );
     }
-    if (clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256 && engineFamily !== 'POSTGRESQL') {
-      throw new Error(`${ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`);
+    if (
+      clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256 &&
+      engineFamily !== 'POSTGRESQL'
+    ) {
+      throw new Error(
+        `${ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`
+      );
     }
-    if (clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_MD5 && engineFamily !== 'POSTGRESQL') {
-      throw new Error(`${ClientPasswordAuthType.POSTGRES_MD5} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`);
+    if (
+      clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_MD5 &&
+      engineFamily !== 'POSTGRESQL'
+    ) {
+      throw new Error(
+        `${ClientPasswordAuthType.POSTGRES_MD5} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`
+      );
     }
-    if (clientPasswordAuthType === ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION && engineFamily !== 'SQLSERVER') {
-      throw new Error(`${ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION} client password authentication type requires SQLSERVER engineFamily, got ${engineFamily}`);
+    if (
+      clientPasswordAuthType === ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION &&
+      engineFamily !== 'SQLSERVER'
+    ) {
+      throw new Error(
+        `${ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION} client password authentication type requires SQLSERVER engineFamily, got ${engineFamily}`
+      );
     }
   }
 }
@@ -595,13 +640,13 @@ export class DatabaseProxy extends DatabaseProxyBase
  * ConnectionPoolConfiguration (L2 => L1)
  */
 function toConnectionPoolConfigurationInfo(
-  props: DatabaseProxyProps,
+  props: DatabaseProxyProps
 ): CfnDBProxyTargetGroup.ConnectionPoolConfigurationInfoFormatProperty {
   return {
     connectionBorrowTimeout: props.borrowTimeout?.toSeconds(),
     initQuery: props.initQuery,
     maxConnectionsPercent: props.maxConnectionsPercent,
     maxIdleConnectionsPercent: props.maxIdleConnectionsPercent,
-    sessionPinningFilters: props.sessionPinningFilters?.map(_ => _.filterName),
+    sessionPinningFilters: props.sessionPinningFilters?.map((_) => _.filterName),
   };
 }

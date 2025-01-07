@@ -26,20 +26,24 @@ const Trailbucket = new s3.Bucket(stack, 'S3', {
   autoDeleteObjects: true,
 });
 
-Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
-  resources: [Trailbucket.bucketArn],
-  actions: ['s3:GetBucketAcl'],
-  principals: [cloudTrailPrincipal],
-}));
+Trailbucket.addToResourcePolicy(
+  new iam.PolicyStatement({
+    resources: [Trailbucket.bucketArn],
+    actions: ['s3:GetBucketAcl'],
+    principals: [cloudTrailPrincipal],
+  })
+);
 
-Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
-  resources: [Trailbucket.arnForObjects(`AWSLogs/${cdk.Stack.of(stack).account}/*`)],
-  actions: ['s3:PutObject'],
-  principals: [cloudTrailPrincipal],
-  conditions: {
-    StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
-  },
-}));
+Trailbucket.addToResourcePolicy(
+  new iam.PolicyStatement({
+    resources: [Trailbucket.arnForObjects(`AWSLogs/${cdk.Stack.of(stack).account}/*`)],
+    actions: ['s3:PutObject'],
+    principals: [cloudTrailPrincipal],
+    conditions: {
+      StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+    },
+  })
+);
 
 const trail = new cloudtrail.Trail(stack, 'Trail', { bucket: Trailbucket });
 

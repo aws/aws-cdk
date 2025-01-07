@@ -1,6 +1,10 @@
 import { Construct } from 'constructs';
 import { DynamoMethod, getDynamoResourceArn, transformAttributeValueMap } from './private/utils';
-import { DynamoAttributeValue, DynamoConsumedCapacity, DynamoProjectionExpression } from './shared-types';
+import {
+  DynamoAttributeValue,
+  DynamoConsumedCapacity,
+  DynamoProjectionExpression,
+} from './shared-types';
 import * as ddb from '../../../aws-dynamodb';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
@@ -71,7 +75,11 @@ export class DynamoGetItem extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: Construct, id: string, private readonly props: DynamoGetItemProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: DynamoGetItemProps
+  ) {
     super(scope, id, props);
 
     this.taskPolicies = [
@@ -105,7 +113,11 @@ export class DynamoGetItem extends sfn.TaskStateBase {
     };
   }
 
-  private configureProjectionExpression(expressions?: DynamoProjectionExpression[]): string | undefined {
-    return expressions ? expressions.map((expression) => expression.toString()).join(',') : undefined;
+  private configureProjectionExpression(
+    expressions?: DynamoProjectionExpression[]
+  ): string | undefined {
+    return expressions
+      ? expressions.map((expression) => expression.toString()).join(',')
+      : undefined;
   }
 }

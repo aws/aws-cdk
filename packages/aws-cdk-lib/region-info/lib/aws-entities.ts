@@ -74,9 +74,9 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
  *
  * Not in the list ==> no built-in data for that region.
  */
-export const AWS_REGIONS = AWS_REGIONS_AND_RULES
-  .filter((x) => typeof x === 'string')
-  .sort() as readonly string[];
+export const AWS_REGIONS = AWS_REGIONS_AND_RULES.filter(
+  (x) => typeof x === 'string'
+).sort() as readonly string[];
 
 /**
  * Whether or not a region predates a given rule (or region).
@@ -105,10 +105,13 @@ export function regionsBefore(ruleOrRegion: string | symbol): string[] {
     .sort() as string[];
 }
 
-export interface Region { readonly partition: string; readonly domainSuffix: string }
+export interface Region {
+  readonly partition: string;
+  readonly domainSuffix: string;
+}
 
-const PARTITION_MAP: {readonly [region: string]: Region } = {
-  'default': { partition: 'aws', domainSuffix: 'amazonaws.com' },
+const PARTITION_MAP: { readonly [region: string]: Region } = {
+  default: { partition: 'aws', domainSuffix: 'amazonaws.com' },
   'cn-': { partition: 'aws-cn', domainSuffix: 'amazonaws.com.cn' },
   'us-gov-': { partition: 'aws-us-gov', domainSuffix: 'amazonaws.com' },
   'us-iso-': { partition: 'aws-iso', domainSuffix: 'c2s.ic.gov' },

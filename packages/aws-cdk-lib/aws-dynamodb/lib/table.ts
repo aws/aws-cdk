@@ -6,9 +6,19 @@ import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
 import {
-  Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
-  Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
-  LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput,
+  Operation,
+  OperationsMetricOptions,
+  SystemErrorsForOperationsMetricOptions,
+  Attribute,
+  BillingMode,
+  ProjectionType,
+  ITable,
+  SecondaryIndexProps,
+  TableClass,
+  LocalSecondaryIndexProps,
+  TableEncryption,
+  StreamViewType,
+  WarmThroughput,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -17,9 +27,20 @@ import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import {
-  ArnFormat, Resource,
-  Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
-  Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
+  ArnFormat,
+  Resource,
+  Aws,
+  CfnCondition,
+  CfnCustomResource,
+  CfnResource,
+  Duration,
+  Fn,
+  Lazy,
+  Names,
+  RemovalPolicy,
+  Stack,
+  Token,
+  CustomResource,
 } from '../../core';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -103,26 +124,32 @@ export abstract class InputFormat {
    * DynamoDB JSON format.
    */
   public static dynamoDBJson(): InputFormat {
-    return new class extends InputFormat {
-      public _render(): Pick<CfnTable.ImportSourceSpecificationProperty, 'inputFormat' | 'inputFormatOptions'> {
+    return new (class extends InputFormat {
+      public _render(): Pick<
+        CfnTable.ImportSourceSpecificationProperty,
+        'inputFormat' | 'inputFormatOptions'
+      > {
         return {
           inputFormat: 'DYNAMODB_JSON',
         };
       }
-    }();
+    })();
   }
 
   /**
    * Amazon Ion format.
    */
   public static ion(): InputFormat {
-    return new class extends InputFormat {
-      public _render(): Pick<CfnTable.ImportSourceSpecificationProperty, 'inputFormat' | 'inputFormatOptions'> {
+    return new (class extends InputFormat {
+      public _render(): Pick<
+        CfnTable.ImportSourceSpecificationProperty,
+        'inputFormat' | 'inputFormatOptions'
+      > {
         return {
           inputFormat: 'ION',
         };
       }
-    }();
+    })();
   }
 
   /**
@@ -132,16 +159,24 @@ export abstract class InputFormat {
     // We are using the .length property to check the length of the delimiter.
     // Note that .length may not return the expected result for multi-codepoint characters like full-width characters or emojis,
     // but such characters are not expected to be used as delimiters in this context.
-    if (options?.delimiter && (!this.validCsvDelimiters.includes(options.delimiter) || options.delimiter.length !== 1)) {
-      throw new Error([
-        'Delimiter must be a single character and one of the following:',
-        `${this.readableValidCsvDelimiters.join(', ')},`,
-        `got '${options.delimiter}'`,
-      ].join(' '));
+    if (
+      options?.delimiter &&
+      (!this.validCsvDelimiters.includes(options.delimiter) || options.delimiter.length !== 1)
+    ) {
+      throw new Error(
+        [
+          'Delimiter must be a single character and one of the following:',
+          `${this.readableValidCsvDelimiters.join(', ')},`,
+          `got '${options.delimiter}'`,
+        ].join(' ')
+      );
     }
 
-    return new class extends InputFormat {
-      public _render(): Pick<CfnTable.ImportSourceSpecificationProperty, 'inputFormat' | 'inputFormatOptions'> {
+    return new (class extends InputFormat {
+      public _render(): Pick<
+        CfnTable.ImportSourceSpecificationProperty,
+        'inputFormat' | 'inputFormatOptions'
+      > {
         return {
           inputFormat: 'CSV',
           inputFormatOptions: {
@@ -152,7 +187,7 @@ export abstract class InputFormat {
           },
         };
       }
-    }();
+    })();
   }
 
   /**
@@ -162,14 +197,24 @@ export abstract class InputFormat {
    */
   private static validCsvDelimiters = [',', '\t', ':', ';', '|', ' '];
 
-  private static readableValidCsvDelimiters = ['comma (,)', 'tab (\\t)', 'colon (:)', 'semicolon (;)', 'pipe (|)', 'space ( )'];
+  private static readableValidCsvDelimiters = [
+    'comma (,)',
+    'tab (\\t)',
+    'colon (:)',
+    'semicolon (;)',
+    'pipe (|)',
+    'space ( )',
+  ];
 
   /**
    * Render the input format and options.
    *
    * @internal
    */
-  public abstract _render(): Pick<CfnTable.ImportSourceSpecificationProperty, 'inputFormat' | 'inputFormatOptions'>;
+  public abstract _render(): Pick<
+    CfnTable.ImportSourceSpecificationProperty,
+    'inputFormat' | 'inputFormatOptions'
+  >;
 }
 
 /**
@@ -252,7 +297,7 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * The maximum read request units for the table. Careful if you add Global Secondary Indexes, as
-     * those will share the table's maximum on-demand throughput.
+   * those will share the table's maximum on-demand throughput.
    *
    * Can only be provided if billingMode is PAY_PER_REQUEST.
    *
@@ -615,11 +660,13 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
       actions,
       resourceArns: [
         this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        Lazy.string({ produce: () => (this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE) }),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
+        ...this.regionalArns.map((arn) =>
+          Lazy.string({
+            produce: () => (this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE),
+          })
+        ),
       ],
       resource: this,
     });
@@ -690,7 +737,10 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    */
   public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
     this.grantTableListStreams(grantee);
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, streamActions: perms.READ_STREAM_DATA_ACTIONS });
+    return this.combinedGrant(grantee, {
+      keyActions: perms.KEY_READ_ACTIONS,
+      streamActions: perms.READ_STREAM_DATA_ACTIONS,
+    });
   }
 
   /**
@@ -719,7 +769,9 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param grantee The principal to grant access to
    */
   public grantReadWriteData(grantee: iam.IGrantable): iam.Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
+    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(
+      perms.DESCRIBE_TABLE
+    );
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions });
   }
@@ -804,8 +856,8 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
 
     const dimensionsMap = {
       TableName: this.tableName,
-      ...props?.dimensions ?? {},
-      ...props?.dimensionsMap ?? {},
+      ...(props?.dimensions ?? {}),
+      ...(props?.dimensionsMap ?? {}),
     };
 
     return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensionsMap });
@@ -857,7 +909,9 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
-      throw new Error("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.");
+      throw new Error(
+        "'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric."
+      );
     }
 
     const dimensionsMap = {
@@ -877,7 +931,10 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    *
    * Default: sum over 5 minutes
    */
-  public metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricThrottledRequestsForOperation(
+    operation: string,
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
       ...props,
@@ -892,7 +949,11 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricThrottledRequestsForOperations(props?: OperationsMetricOptions): cloudwatch.IMetric {
-    return this.sumMetricsForOperations('ThrottledRequests', 'Sum of throttled requests across all operations', props);
+    return this.sumMetricsForOperations(
+      'ThrottledRequests',
+      'Sum of throttled requests across all operations',
+      props
+    );
   }
 
   /**
@@ -902,8 +963,14 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
    */
-  public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
-    return this.sumMetricsForOperations('SystemErrors', 'Sum of errors across all operations', props);
+  public metricSystemErrorsForOperations(
+    props?: SystemErrorsForOperationsMetricOptions
+  ): cloudwatch.IMetric {
+    return this.sumMetricsForOperations(
+      'SystemErrors',
+      'Sum of errors across all operations',
+      props
+    );
   }
 
   /**
@@ -913,14 +980,21 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param expressionLabel Label for expression
    * @param props operation list
    */
-  private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions): cloudwatch.IMetric {
+  private sumMetricsForOperations(
+    metricName: string,
+    expressionLabel: string,
+    props?: OperationsMetricOptions
+  ): cloudwatch.IMetric {
     if (props?.dimensions?.Operation) {
       throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
     }
 
     const operations = props?.operations ?? Object.values(Operation);
 
-    const values = this.createMetricsForOperations(metricName, operations, { statistic: 'sum', ...props });
+    const values = this.createMetricsForOperations(metricName, operations, {
+      statistic: 'sum',
+      ...props,
+    });
 
     const sum = new cloudwatch.MathExpression({
       expression: `${Object.keys(values).join(' + ')}`,
@@ -944,19 +1018,23 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param props Properties for the individual metrics.
    * @param metricNameMapper Mapper function to allow controlling the individual metric name per operation.
    */
-  private createMetricsForOperations(metricName: string, operations: Operation[],
-    props?: cloudwatch.MetricOptions, metricNameMapper?: (op: Operation) => string): Record<string, cloudwatch.IMetric> {
-
+  private createMetricsForOperations(
+    metricName: string,
+    operations: Operation[],
+    props?: cloudwatch.MetricOptions,
+    metricNameMapper?: (op: Operation) => string
+  ): Record<string, cloudwatch.IMetric> {
     const metrics: Record<string, cloudwatch.IMetric> = {};
 
-    const mapper = metricNameMapper ?? (op => op.toLowerCase());
+    const mapper = metricNameMapper ?? ((op) => op.toLowerCase());
 
     if (props?.dimensions?.Operation) {
-      throw new Error('Invalid properties. Operation dimension is not supported when calculating operational metrics');
+      throw new Error(
+        'Invalid properties. Operation dimension is not supported when calculating operational metrics'
+      );
     }
 
     for (const operation of operations) {
-
       const metric = this.metric(metricName, {
         ...props,
         dimensionsMap: {
@@ -971,7 +1049,9 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
 
       if (firstChar === firstChar.toUpperCase()) {
         // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html#metric-math-syntax
-        throw new Error(`Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`);
+        throw new Error(
+          `Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`
+        );
       }
 
       metrics[operationMetricName] = metric;
@@ -990,7 +1070,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    */
   private combinedGrant(
     grantee: iam.IGrantable,
-    opts: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] },
+    opts: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] }
   ): iam.Grant {
     if (this.encryptionKey && opts.keyActions) {
       this.encryptionKey.grant(grantee, ...opts.keyActions);
@@ -998,11 +1078,13 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
     if (opts.tableActions) {
       const resources = [
         this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        Lazy.string({ produce: () => (this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE) }),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
+        ...this.regionalArns.map((arn) =>
+          Lazy.string({
+            produce: () => (this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE),
+          })
+        ),
       ];
       const ret = iam.Grant.addToPrincipalOrResource({
         grantee,
@@ -1030,7 +1112,8 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
 
   private cannedMetric(
     fn: (dims: { TableName: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ TableName: this.tableName }),
       ...props,
@@ -1085,15 +1168,14 @@ export class Table extends TableBase {
    * @param attrs A `TableAttributes` object.
    */
   public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
-
     class Import extends TableBase {
-
       public readonly tableName: string;
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
       public resourcePolicy?: iam.PolicyDocument;
-      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+      protected readonly hasIndex =
+        (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
@@ -1110,14 +1192,23 @@ export class Table extends TableBase {
     let arn: string;
     const stack = Stack.of(scope);
     if (!attrs.tableName) {
-      if (!attrs.tableArn) { throw new Error('One of tableName or tableArn is required!'); }
+      if (!attrs.tableArn) {
+        throw new Error('One of tableName or tableArn is required!');
+      }
 
       arn = attrs.tableArn;
-      const maybeTableName = stack.splitArn(attrs.tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
-      if (!maybeTableName) { throw new Error('ARN for DynamoDB table must be in the form: ...'); }
+      const maybeTableName = stack.splitArn(
+        attrs.tableArn,
+        ArnFormat.SLASH_RESOURCE_NAME
+      ).resourceName;
+      if (!maybeTableName) {
+        throw new Error('ARN for DynamoDB table must be in the form: ...');
+      }
       name = maybeTableName;
     } else {
-      if (attrs.tableArn) { throw new Error('Only one of tableArn or tableName can be provided'); }
+      if (attrs.tableArn) {
+        throw new Error('Only one of tableArn or tableName can be provided');
+      }
       name = attrs.tableName;
       arn = stack.formatArn({
         service: 'dynamodb',
@@ -1183,7 +1274,9 @@ export class Table extends TableBase {
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
       if (props.stream && props.stream !== StreamViewType.NEW_AND_OLD_IMAGES) {
-        throw new Error('`stream` must be set to `NEW_AND_OLD_IMAGES` when specifying `replicationRegions`');
+        throw new Error(
+          '`stream` must be set to `NEW_AND_OLD_IMAGES` when specifying `replicationRegions`'
+        );
       }
       streamSpecification = { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES };
 
@@ -1198,42 +1291,63 @@ export class Table extends TableBase {
 
     const kinesisStreamSpecification = props.kinesisStream
       ? {
-        streamArn: props.kinesisStream.streamArn,
-        ...(props.kinesisPrecisionTimestamp && { approximateCreationDateTimePrecision: props.kinesisPrecisionTimestamp }),
-      }
+          streamArn: props.kinesisStream.streamArn,
+          ...(props.kinesisPrecisionTimestamp && {
+            approximateCreationDateTimePrecision: props.kinesisPrecisionTimestamp,
+          }),
+        }
       : undefined;
 
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
-      globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
-      localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
-      pointInTimeRecoverySpecification: props.pointInTimeRecovery != null ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
+      globalSecondaryIndexes: Lazy.any(
+        { produce: () => this.globalSecondaryIndexes },
+        { omitEmptyArray: true }
+      ),
+      localSecondaryIndexes: Lazy.any(
+        { produce: () => this.localSecondaryIndexes },
+        { omitEmptyArray: true }
+      ),
+      pointInTimeRecoverySpecification:
+        props.pointInTimeRecovery != null
+          ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery }
+          : undefined,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
-      provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
-        readCapacityUnits: props.readCapacity || 5,
-        writeCapacityUnits: props.writeCapacity || 5,
-      },
-      ...(props.maxReadRequestUnits || props.maxWriteRequestUnits ?
-        {
-          onDemandThroughput: this.billingMode === BillingMode.PROVISIONED ? undefined : {
-            maxReadRequestUnits: props.maxReadRequestUnits || undefined,
-            maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
-          },
-        } : undefined),
+      provisionedThroughput:
+        this.billingMode === BillingMode.PAY_PER_REQUEST
+          ? undefined
+          : {
+              readCapacityUnits: props.readCapacity || 5,
+              writeCapacityUnits: props.writeCapacity || 5,
+            },
+      ...(props.maxReadRequestUnits || props.maxWriteRequestUnits
+        ? {
+            onDemandThroughput:
+              this.billingMode === BillingMode.PROVISIONED
+                ? undefined
+                : {
+                    maxReadRequestUnits: props.maxReadRequestUnits || undefined,
+                    maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
+                  },
+          }
+        : undefined),
       sseSpecification,
       streamSpecification,
       tableClass: props.tableClass,
-      timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
-      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
+      timeToLiveSpecification: props.timeToLiveAttribute
+        ? { attributeName: props.timeToLiveAttribute, enabled: true }
+        : undefined,
+      contributorInsightsSpecification:
+        props.contributorInsightsEnabled !== undefined
+          ? { enabled: props.contributorInsightsEnabled }
+          : undefined,
       kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      resourcePolicy: props.resourcePolicy
-        ? { policyDocument: props.resourcePolicy }
-        : undefined,
-      warmThroughput: props.warmThroughput?? undefined,
+      resourcePolicy: props.resourcePolicy ? { policyDocument: props.resourcePolicy } : undefined,
+      warmThroughput: props.warmThroughput ?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1246,7 +1360,9 @@ export class Table extends TableBase {
     });
     this.tableName = this.getResourceNameAttribute(this.table.ref);
 
-    if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName); }
+    if (props.tableName) {
+      this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
+    }
 
     this.tableStreamArn = streamSpecification ? this.table.attrStreamArn : undefined;
 
@@ -1261,7 +1377,11 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish);
+      this.createReplicaTables(
+        props.replicationRegions,
+        props.replicationTimeout,
+        props.waitForReplicationToFinish
+      );
     }
 
     this.node.addValidation({ validate: () => this.validateTable() });
@@ -1281,21 +1401,31 @@ export class Table extends TableBase {
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
-      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
+      contributorInsightsSpecification:
+        props.contributorInsightsEnabled !== undefined
+          ? { enabled: props.contributorInsightsEnabled }
+          : undefined,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
-      provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
-        readCapacityUnits: props.readCapacity || 5,
-        writeCapacityUnits: props.writeCapacity || 5,
-      },
-      ...(props.maxReadRequestUnits || props.maxWriteRequestUnits ?
-        {
-          onDemandThroughput: this.billingMode === BillingMode.PROVISIONED ? undefined : {
-            maxReadRequestUnits: props.maxReadRequestUnits || undefined,
-            maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
-          },
-        } : undefined),
+      provisionedThroughput:
+        this.billingMode === BillingMode.PAY_PER_REQUEST
+          ? undefined
+          : {
+              readCapacityUnits: props.readCapacity || 5,
+              writeCapacityUnits: props.writeCapacity || 5,
+            },
+      ...(props.maxReadRequestUnits || props.maxWriteRequestUnits
+        ? {
+            onDemandThroughput:
+              this.billingMode === BillingMode.PROVISIONED
+                ? undefined
+                : {
+                    maxReadRequestUnits: props.maxReadRequestUnits || undefined,
+                    maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
+                  },
+          }
+        : undefined),
       warmThroughput: props.warmThroughput ?? undefined,
     });
 
@@ -1315,7 +1445,9 @@ export class Table extends TableBase {
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
     if (this.localSecondaryIndexes.length >= MAX_LOCAL_SECONDARY_INDEX_COUNT) {
-      throw new RangeError(`a maximum number of local secondary index per table is ${MAX_LOCAL_SECONDARY_INDEX_COUNT}`);
+      throw new RangeError(
+        `a maximum number of local secondary index per table is ${MAX_LOCAL_SECONDARY_INDEX_COUNT}`
+      );
     }
 
     this.validateIndexName(props.indexName);
@@ -1349,13 +1481,17 @@ export class Table extends TableBase {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
     }
 
-    return this.tableScaling.scalableReadAttribute = new ScalableTableAttribute(this, 'ReadScaling', {
-      serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
-      resourceId: `table/${this.tableName}`,
-      dimension: 'dynamodb:table:ReadCapacityUnits',
-      role: this.scalingRole,
-      ...props,
-    });
+    return (this.tableScaling.scalableReadAttribute = new ScalableTableAttribute(
+      this,
+      'ReadScaling',
+      {
+        serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
+        resourceId: `table/${this.tableName}`,
+        dimension: 'dynamodb:table:ReadCapacityUnits',
+        role: this.scalingRole,
+        ...props,
+      }
+    ));
   }
 
   /**
@@ -1389,7 +1525,10 @@ export class Table extends TableBase {
    *
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
-  public autoScaleGlobalSecondaryIndexReadCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
+  public autoScaleGlobalSecondaryIndexReadCapacity(
+    indexName: string,
+    props: EnableScalingProps
+  ): IScalableTableAttribute {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
     }
@@ -1401,13 +1540,17 @@ export class Table extends TableBase {
       throw new Error('Read AutoScaling already enabled for this index');
     }
 
-    return attributePair.scalableReadAttribute = new ScalableTableAttribute(this, `${indexName}ReadScaling`, {
-      serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
-      resourceId: `table/${this.tableName}/index/${indexName}`,
-      dimension: 'dynamodb:index:ReadCapacityUnits',
-      role: this.scalingRole,
-      ...props,
-    });
+    return (attributePair.scalableReadAttribute = new ScalableTableAttribute(
+      this,
+      `${indexName}ReadScaling`,
+      {
+        serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
+        resourceId: `table/${this.tableName}/index/${indexName}`,
+        dimension: 'dynamodb:index:ReadCapacityUnits',
+        role: this.scalingRole,
+        ...props,
+      }
+    ));
   }
 
   /**
@@ -1415,7 +1558,10 @@ export class Table extends TableBase {
    *
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
-  public autoScaleGlobalSecondaryIndexWriteCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
+  public autoScaleGlobalSecondaryIndexWriteCapacity(
+    indexName: string,
+    props: EnableScalingProps
+  ): IScalableTableAttribute {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
     }
@@ -1427,13 +1573,17 @@ export class Table extends TableBase {
       throw new Error('Write AutoScaling already enabled for this index');
     }
 
-    return attributePair.scalableWriteAttribute = new ScalableTableAttribute(this, `${indexName}WriteScaling`, {
-      serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
-      resourceId: `table/${this.tableName}/index/${indexName}`,
-      dimension: 'dynamodb:index:WriteCapacityUnits',
-      role: this.scalingRole,
-      ...props,
-    });
+    return (attributePair.scalableWriteAttribute = new ScalableTableAttribute(
+      this,
+      `${indexName}WriteScaling`,
+      {
+        serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
+        resourceId: `table/${this.tableName}/index/${indexName}`,
+        dimension: 'dynamodb:index:WriteCapacityUnits',
+        role: this.scalingRole,
+        ...props,
+      }
+    ));
   }
 
   /**
@@ -1450,7 +1600,9 @@ export class Table extends TableBase {
     }
     let schema = this.secondaryIndexSchemas.get(indexName);
     if (!schema) {
-      throw new Error(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`);
+      throw new Error(
+        `Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`
+      );
     }
     return schema;
   }
@@ -1470,14 +1622,21 @@ export class Table extends TableBase {
       errors.push('a sort key of the table must be specified to add local secondary indexes');
     }
 
-    if (this.globalReplicaCustomResources.length > 0 && this.billingMode === BillingMode.PROVISIONED) {
+    if (
+      this.globalReplicaCustomResources.length > 0 &&
+      this.billingMode === BillingMode.PROVISIONED
+    ) {
       const writeAutoScaleAttribute = this.tableScaling.scalableWriteAttribute;
       if (!writeAutoScaleAttribute) {
-        errors.push('A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity. ' +
-          'Use the autoScaleWriteCapacity() method to enable it.');
+        errors.push(
+          'A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity. ' +
+            'Use the autoScaleWriteCapacity() method to enable it.'
+        );
       } else if (!writeAutoScaleAttribute._scalingPolicyCreated) {
-        errors.push('A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity with a policy. ' +
-          'Call one of the scaleOn*() methods of the object returned from autoScaleWriteCapacity()');
+        errors.push(
+          'A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity with a policy. ' +
+            'Call one of the scaleOn*() methods of the object returned from autoScaleWriteCapacity()'
+        );
       }
     }
 
@@ -1492,7 +1651,9 @@ export class Table extends TableBase {
   private validateProvisioning(props: { readCapacity?: number; writeCapacity?: number }): void {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       if (props.readCapacity !== undefined || props.writeCapacity !== undefined) {
-        throw new Error('you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode');
+        throw new Error(
+          'you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode'
+        );
       }
     }
   }
@@ -1517,14 +1678,19 @@ export class Table extends TableBase {
   private validateNonKeyAttributes(nonKeyAttributes: string[]) {
     if (this.nonKeyAttributes.size + nonKeyAttributes.length > 100) {
       // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('a maximum number of nonKeyAttributes across all of secondary indexes is 100');
+      throw new RangeError(
+        'a maximum number of nonKeyAttributes across all of secondary indexes is 100'
+      );
     }
 
     // store all non-key attributes
-    nonKeyAttributes.forEach(att => this.nonKeyAttributes.add(att));
+    nonKeyAttributes.forEach((att) => this.nonKeyAttributes.add(att));
   }
 
-  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {
+  private buildIndexKeySchema(
+    partitionKey: Attribute,
+    sortKey?: Attribute
+  ): CfnTable.KeySchemaProperty[] {
     this.registerAttribute(partitionKey);
     const indexKeySchema: CfnTable.KeySchemaProperty[] = [
       { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE },
@@ -1541,12 +1707,16 @@ export class Table extends TableBase {
   private buildIndexProjection(props: SecondaryIndexProps): CfnTable.ProjectionProperty {
     if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html
-      throw new Error(`non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`);
+      throw new Error(
+        `non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`
+      );
     }
 
     if (props.projectionType !== ProjectionType.INCLUDE && props.nonKeyAttributes) {
       // this combination causes validation exception, status code 400, while trying to create CFN stack
-      throw new Error(`non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`);
+      throw new Error(
+        `non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`
+      );
     }
 
     if (props.nonKeyAttributes) {
@@ -1560,13 +1730,15 @@ export class Table extends TableBase {
   }
 
   private findKey(keyType: string) {
-    return this.keySchema.find(prop => prop.keyType === keyType);
+    return this.keySchema.find((prop) => prop.keyType === keyType);
   }
 
   private addKey(attribute: Attribute, keyType: string) {
     const existingProp = this.findKey(keyType);
     if (existingProp) {
-      throw new Error(`Unable to set ${attribute.name} as a ${keyType} key, because ${existingProp.attributeName} is a ${keyType} key`);
+      throw new Error(
+        `Unable to set ${attribute.name} as a ${keyType} key, because ${existingProp.attributeName} is a ${keyType} key`
+      );
     }
     this.registerAttribute(attribute);
     this.keySchema.push({
@@ -1583,9 +1755,11 @@ export class Table extends TableBase {
    */
   private registerAttribute(attribute: Attribute) {
     const { name, type } = attribute;
-    const existingDef = this.attributeDefinitions.find(def => def.attributeName === name);
+    const existingDef = this.attributeDefinitions.find((def) => def.attributeName === name);
     if (existingDef && existingDef.attributeType !== type) {
-      throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`);
+      throw new Error(
+        `Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`
+      );
     }
     if (!existingDef) {
       this.attributeDefinitions.push({
@@ -1601,12 +1775,16 @@ export class Table extends TableBase {
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
-    return iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
-      service: 'iam',
-      region: '',
-      resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
-      resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable',
-    }));
+    return iam.Role.fromRoleArn(
+      this,
+      'ScalingRole',
+      Stack.of(this).formatArn({
+        service: 'iam',
+        region: '',
+        resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+        resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable',
+      })
+    );
   }
 
   /**
@@ -1614,20 +1792,33 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[], timeout?: Duration, waitForReplicationToFinish?: boolean) {
+  private createReplicaTables(
+    regions: string[],
+    timeout?: Duration,
+    waitForReplicationToFinish?: boolean
+  ) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
-      throw new Error('`replicationRegions` cannot include the region where this stack is deployed.');
+      throw new Error(
+        '`replicationRegions` cannot include the region where this stack is deployed.'
+      );
     }
 
-    const provider = ReplicaProvider.getOrCreate(this, { tableName: this.tableName, regions, timeout });
+    const provider = ReplicaProvider.getOrCreate(this, {
+      tableName: this.tableName,
+      regions,
+      timeout,
+    });
 
     // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
     // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
 
     const onEventHandlerPolicy = new SourceTableAttachedPolicy(this, provider.onEventHandler.role!);
-    const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
+    const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(
+      this,
+      provider.isCompleteHandler.role!
+    );
 
     // Permissions in the source region
     this.grant(onEventHandlerPolicy, 'dynamodb:*');
@@ -1635,7 +1826,8 @@ export class Table extends TableBase {
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;
-    for (const region of new Set(regions)) { // Remove duplicates
+    for (const region of new Set(regions)) {
+      // Remove duplicates
       // Use multiple custom resources because multiple create/delete
       // updates cannot be combined in a single API call.
       const currentRegion = new CustomResource(this, `Replica${region}`, {
@@ -1644,17 +1836,15 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
-          SkipReplicationCompletedWait: waitForReplicationToFinish == null
-            ? undefined
-            // CFN changes Custom Resource properties to strings anyways,
-            // so let's do that ourselves to make it clear in the handler this is a string, not a boolean
-            : (!waitForReplicationToFinish).toString(),
+          SkipReplicationCompletedWait:
+            waitForReplicationToFinish == null
+              ? undefined
+              : // CFN changes Custom Resource properties to strings anyways,
+                // so let's do that ourselves to make it clear in the handler this is a string, not a boolean
+                (!waitForReplicationToFinish).toString(),
         },
       });
-      currentRegion.node.addDependency(
-        onEventHandlerPolicy.policy,
-        isCompleteHandlerPolicy.policy,
-      );
+      currentRegion.node.addDependency(onEventHandlerPolicy.policy, isCompleteHandlerPolicy.policy);
       this.globalReplicaCustomResources.push(currentRegion);
 
       // Deploy time check to prevent from creating a replica in the region
@@ -1670,12 +1860,14 @@ export class Table extends TableBase {
       }
 
       // Save regional arns for grantXxx() methods
-      this.regionalArns.push(stack.formatArn({
-        region,
-        service: 'dynamodb',
-        resource: 'table',
-        resourceName: this.tableName,
-      }));
+      this.regionalArns.push(
+        stack.formatArn({
+          region,
+          service: 'dynamodb',
+          resource: 'table',
+          resourceName: this.tableName,
+        })
+      );
 
       // We need to create/delete regions sequentially because we cannot
       // have multiple table updates at the same time. The `isCompleteHandler`
@@ -1688,8 +1880,14 @@ export class Table extends TableBase {
           // Instead, rely on Ref adding a dependency implicitly!
           const previousRegionCfnResource = previousRegion.node.defaultChild as CfnResource;
           const currentRegionCfnResource = currentRegion.node.defaultChild as CfnResource;
-          currentRegionCfnResource.addMetadata('DynamoDbReplicationDependency',
-            Fn.conditionIf(previousRegionCondition.logicalId, previousRegionCfnResource.ref, Aws.NO_VALUE));
+          currentRegionCfnResource.addMetadata(
+            'DynamoDbReplicationDependency',
+            Fn.conditionIf(
+              previousRegionCondition.logicalId,
+              previousRegionCfnResource.ref,
+              Aws.NO_VALUE
+            )
+          );
         } else {
           currentRegion.node.addDependency(previousRegion);
         }
@@ -1701,10 +1899,12 @@ export class Table extends TableBase {
 
     // Permissions in the destination regions (outside of the loop to
     // minimize statements in the policy)
-    onEventHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['dynamodb:*'],
-      resources: this.regionalArns,
-    }));
+    onEventHandlerPolicy.grantPrincipal.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['dynamodb:*'],
+        resources: this.regionalArns,
+      })
+    );
   }
 
   /**
@@ -1718,42 +1918,62 @@ export class Table extends TableBase {
    * Set up key properties and return the Table encryption property from the
    * user's configuration.
    */
-  private parseEncryption(props: TableProps): { sseSpecification: CfnTableProps['sseSpecification']; encryptionKey?: kms.IKey } {
+  private parseEncryption(props: TableProps): {
+    sseSpecification: CfnTableProps['sseSpecification'];
+    encryptionKey?: kms.IKey;
+  } {
     let encryptionType = props.encryption;
 
     if (encryptionType != null && props.serverSideEncryption != null) {
-      throw new Error('Only one of encryption and serverSideEncryption can be specified, but both were provided');
+      throw new Error(
+        'Only one of encryption and serverSideEncryption can be specified, but both were provided'
+      );
     }
 
     if (props.serverSideEncryption && props.encryptionKey) {
-      throw new Error('encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead');
+      throw new Error(
+        'encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead'
+      );
     }
 
     if (encryptionType === undefined) {
-      encryptionType = props.encryptionKey != null
-        // If there is a configured encryptionKey, the encryption is implicitly CUSTOMER_MANAGED
-        ? TableEncryption.CUSTOMER_MANAGED
-        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else undefined (do not set anything)
-        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : undefined;
+      encryptionType =
+        props.encryptionKey != null
+          ? // If there is a configured encryptionKey, the encryption is implicitly CUSTOMER_MANAGED
+            TableEncryption.CUSTOMER_MANAGED
+          : // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else undefined (do not set anything)
+            props.serverSideEncryption
+            ? TableEncryption.AWS_MANAGED
+            : undefined;
     }
 
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
-      throw new Error(`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`);
+      throw new Error(
+        `encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`
+      );
     }
 
     if (encryptionType === TableEncryption.CUSTOMER_MANAGED && props.replicationRegions) {
-      throw new Error('TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)');
+      throw new Error(
+        'TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)'
+      );
     }
 
     switch (encryptionType) {
       case TableEncryption.CUSTOMER_MANAGED:
-        const encryptionKey = props.encryptionKey ?? new kms.Key(this, 'Key', {
-          description: `Customer-managed key auto-created for encrypting DynamoDB table at ${this.node.path}`,
-          enableKeyRotation: true,
-        });
+        const encryptionKey =
+          props.encryptionKey ??
+          new kms.Key(this, 'Key', {
+            description: `Customer-managed key auto-created for encrypting DynamoDB table at ${this.node.path}`,
+            enableKeyRotation: true,
+          });
 
         return {
-          sseSpecification: { sseEnabled: true, kmsMasterKeyId: encryptionKey.keyArn, sseType: 'KMS' },
+          sseSpecification: {
+            sseEnabled: true,
+            kmsMasterKeyId: encryptionKey.keyArn,
+            sseType: 'KMS',
+          },
           encryptionKey,
         };
 
@@ -1774,7 +1994,7 @@ export class Table extends TableBase {
   }
 
   private renderImportSourceSpecification(
-    importSource?: ImportSourceSpecification,
+    importSource?: ImportSourceSpecification
   ): CfnTable.ImportSourceSpecificationProperty | undefined {
     if (!importSource) return undefined;
 
@@ -1833,7 +2053,10 @@ class SourceTableAttachedPolicy extends Construct implements iam.IGrantable {
  * `SourceTableAttachedPolicy` class so it can act as an `IGrantable`.
  */
 class SourceTableAttachedPrincipal extends iam.PrincipalBase {
-  public constructor(private readonly role: iam.IRole, private readonly policy: iam.ManagedPolicy) {
+  public constructor(
+    private readonly role: iam.IRole,
+    private readonly policy: iam.ManagedPolicy
+  ) {
     super();
   }
 

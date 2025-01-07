@@ -9,7 +9,6 @@ import { getResourceArn } from '../resource-arn-suffix';
  * @deprecated use `GlueStartJobRun`
  */
 export interface RunGlueJobTaskProps {
-
   /**
    * The service integration pattern indicates different ways to start the Glue job.
    *
@@ -71,8 +70,12 @@ export interface RunGlueJobTaskProps {
 export class RunGlueJobTask implements sfn.IStepFunctionsTask {
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly glueJobName: string, private readonly props: RunGlueJobTaskProps = {}) {
-    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+  constructor(
+    private readonly glueJobName: string,
+    private readonly props: RunGlueJobTaskProps = {}
+  ) {
+    this.integrationPattern =
+      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -80,12 +83,16 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Glue.`);
+      throw new Error(
+        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Glue.`
+      );
     }
   }
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
-    const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
+    const notificationProperty = this.props.notifyDelayAfter
+      ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() }
+      : null;
     let iamActions: string[] | undefined;
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.FIRE_AND_FORGET) {
       iamActions = ['glue:StartJobRun'];
@@ -99,16 +106,18 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
     }
     return {
       resourceArn: getResourceArn('glue', 'startJobRun', this.integrationPattern),
-      policyStatements: [new iam.PolicyStatement({
-        resources: [
-          Stack.of(task).formatArn({
-            service: 'glue',
-            resource: 'job',
-            resourceName: this.glueJobName,
-          }),
-        ],
-        actions: iamActions,
-      })],
+      policyStatements: [
+        new iam.PolicyStatement({
+          resources: [
+            Stack.of(task).formatArn({
+              service: 'glue',
+              resource: 'job',
+              resourceName: this.glueJobName,
+            }),
+          ],
+          actions: iamActions,
+        }),
+      ],
       metricPrefixSingular: 'GlueJob',
       metricPrefixPlural: 'GlueJobs',
       metricDimensions: { GlueJobName: this.glueJobName },

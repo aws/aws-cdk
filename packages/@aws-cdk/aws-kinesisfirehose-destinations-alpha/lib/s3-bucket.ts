@@ -3,38 +3,50 @@ import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
-import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import {
+  createBackupConfig,
+  createBufferingHints,
+  createEncryptionConfig,
+  createLoggingOptions,
+  createProcessingConfig,
+} from './private/helpers';
 
 /**
  * Props for defining an S3 destination of a Kinesis Data Firehose delivery stream.
  */
-export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinationProps {
-}
+export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinationProps {}
 
 /**
  * An S3 bucket destination for data from a Kinesis Data Firehose delivery stream.
  */
 export class S3Bucket implements firehose.IDestination {
-  constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
+  constructor(
+    private readonly bucket: s3.IBucket,
+    private readonly props: S3BucketProps = {}
+  ) {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
       throw new Error('S3 destinations do not support BackupMode.FAILED');
     }
   }
 
   bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
-    const role = this.props.role ?? new iam.Role(scope, 'S3 Destination Role', {
-      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
-    });
+    const role =
+      this.props.role ??
+      new iam.Role(scope, 'S3 Destination Role', {
+        assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+      });
 
     const bucketGrant = this.bucket.grantReadWrite(role);
 
-    const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {
-      loggingConfig: this.props.loggingConfig,
-      role,
-      streamId: 'S3Destination',
-    }) ?? {};
+    const { loggingOptions, dependables: loggingDependables } =
+      createLoggingOptions(scope, {
+        loggingConfig: this.props.loggingConfig,
+        role,
+        streamId: 'S3Destination',
+      }) ?? {};
 
-    const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
+    const { backupConfig, dependables: backupDependables } =
+      createBackupConfig(scope, role, this.props.s3Backup) ?? {};
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
@@ -42,7 +54,10 @@ export class S3Bucket implements firehose.IDestination {
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),
-        bufferingHints: createBufferingHints(this.props.bufferingInterval, this.props.bufferingSize),
+        bufferingHints: createBufferingHints(
+          this.props.bufferingInterval,
+          this.props.bufferingSize
+        ),
         bucketArn: this.bucket.bucketArn,
         compressionFormat: this.props.compression?.value,
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),

@@ -9,19 +9,19 @@ class TestStack extends Stack {
   public readonly lambdaFunctions: IFunction[] = [];
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
-    const runtimes: Runtime[]= [
-      Runtime.PROVIDED_AL2, Runtime.PROVIDED_AL2023,
-    ];
+    const runtimes: Runtime[] = [Runtime.PROVIDED_AL2, Runtime.PROVIDED_AL2023];
 
     runtimes.forEach((runtime, index) => {
-      this.lambdaFunctions.push(new lambda.GoFunction(this, `go-handler-${runtime.name}-${index}`, {
-        entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
-        runtime: runtime,
-        bundling: {
-          forcedDockerBundling: true,
-          goBuildFlags: ['-mod=readonly', '-ldflags "-s -w"'],
-        },
-      }));
+      this.lambdaFunctions.push(
+        new lambda.GoFunction(this, `go-handler-${runtime.name}-${index}`, {
+          entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
+          runtime: runtime,
+          bundling: {
+            forcedDockerBundling: true,
+            goBuildFlags: ['-mod=readonly', '-ldflags "-s -w"'],
+          },
+        })
+      );
     });
   }
 }
@@ -37,9 +37,11 @@ stack.lambdaFunctions.forEach((fn) => {
   const response = integTest.assertions.invokeFunction({
     functionName: fn.functionName,
   });
-  response.expect(integ.ExpectedResult.objectLike({
-    StatusCode: 200,
-    ExecutedVersion: '$LATEST',
-    Payload: '256',
-  }));
+  response.expect(
+    integ.ExpectedResult.objectLike({
+      StatusCode: 200,
+      ExecutedVersion: '$LATEST',
+      Payload: '256',
+    })
+  );
 });

@@ -24,8 +24,10 @@ export interface SqsSubscriptionProps extends SubscriptionProps {
  * Use an SQS queue as a subscription target
  */
 export class SqsSubscription implements sns.ITopicSubscription {
-  constructor(private readonly queue: sqs.IQueue, private readonly props: SqsSubscriptionProps = {}) {
-  }
+  constructor(
+    private readonly queue: sqs.IQueue,
+    private readonly props: SqsSubscriptionProps = {}
+  ) {}
 
   /**
    * Returns a configuration for an SQS queue to subscribe to an SNS topic
@@ -41,37 +43,50 @@ export class SqsSubscription implements sns.ITopicSubscription {
     // if the queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
     if (this.queue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
-      throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription');
+      throw new Error(
+        'SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription'
+      );
     }
 
     // if the dead-letter queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
-    if (this.props.deadLetterQueue && this.props.deadLetterQueue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
-      throw new Error('SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue');
+    if (
+      this.props.deadLetterQueue &&
+      this.props.deadLetterQueue.encryptionType === sqs.QueueEncryption.KMS_MANAGED
+    ) {
+      throw new Error(
+        'SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue'
+      );
     }
 
     // add a statement to the queue resource policy which allows this topic
     // to send messages to the queue.
-    const queuePolicyDependable = this.queue.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [this.queue.queueArn],
-      actions: ['sqs:SendMessage'],
-      principals: [snsServicePrincipal],
-      conditions: {
-        ArnEquals: { 'aws:SourceArn': topic.topicArn },
-      },
-    })).policyDependable;
+    const queuePolicyDependable = this.queue.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: [this.queue.queueArn],
+        actions: ['sqs:SendMessage'],
+        principals: [snsServicePrincipal],
+        conditions: {
+          ArnEquals: { 'aws:SourceArn': topic.topicArn },
+        },
+      })
+    ).policyDependable;
 
     // if the queue is encrypted, add a statement to the key resource policy
     // which allows this topic to decrypt KMS keys
     if (this.queue.encryptionMasterKey) {
-      this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
-        principals: [snsServicePrincipal],
-        conditions: FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)
-          ? { ArnEquals: { 'aws:SourceArn': topic.topicArn } }
-          : undefined,
-      }));
+      this.queue.encryptionMasterKey.addToResourcePolicy(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+          principals: [snsServicePrincipal],
+          conditions: FeatureFlags.of(topic).isEnabled(
+            cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY
+          )
+            ? { ArnEquals: { 'aws:SourceArn': topic.topicArn } }
+            : undefined,
+        })
+      );
     }
 
     // if the topic and queue are created in different stacks
@@ -100,8 +115,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
       if (topic.stack !== this.queue.stack) {
         // only if we know the region, will not work for
         // env agnostic stacks
-        if (!Token.isUnresolved(topic.env.region) &&
-          (topic.env.region !== this.queue.env.region)) {
+        if (!Token.isUnresolved(topic.env.region) && topic.env.region !== this.queue.env.region) {
           return topic.env.region;
         }
       }

@@ -6,15 +6,24 @@ export function diffAttribute(oldValue: any, newValue: any): types.Difference<st
   return new types.Difference<string>(_asString(oldValue), _asString(newValue));
 }
 
-export function diffCondition(oldValue: types.Condition, newValue: types.Condition): types.ConditionDifference {
+export function diffCondition(
+  oldValue: types.Condition,
+  newValue: types.Condition
+): types.ConditionDifference {
   return new types.ConditionDifference(oldValue, newValue);
 }
 
-export function diffMapping(oldValue: types.Mapping, newValue: types.Mapping): types.MappingDifference {
+export function diffMapping(
+  oldValue: types.Mapping,
+  newValue: types.Mapping
+): types.MappingDifference {
   return new types.MappingDifference(oldValue, newValue);
 }
 
-export function diffMetadata(oldValue: types.Metadata, newValue: types.Metadata): types.MetadataDifference {
+export function diffMetadata(
+  oldValue: types.Metadata,
+  newValue: types.Metadata
+): types.MetadataDifference {
   return new types.MetadataDifference(oldValue, newValue);
 }
 
@@ -22,11 +31,17 @@ export function diffOutput(oldValue: types.Output, newValue: types.Output): type
   return new types.OutputDifference(oldValue, newValue);
 }
 
-export function diffParameter(oldValue: types.Parameter, newValue: types.Parameter): types.ParameterDifference {
+export function diffParameter(
+  oldValue: types.Parameter,
+  newValue: types.Parameter
+): types.ParameterDifference {
   return new types.ParameterDifference(oldValue, newValue);
 }
 
-export function diffResource(oldValue?: types.Resource, newValue?: types.Resource): types.ResourceDifference {
+export function diffResource(
+  oldValue?: types.Resource,
+  newValue?: types.Resource
+): types.ResourceDifference {
   const resourceType = {
     oldType: oldValue && oldValue.Type,
     newType: newValue && newValue.Type,
@@ -37,16 +52,20 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
   if (resourceType.oldType !== undefined && resourceType.oldType === resourceType.newType) {
     // Only makes sense to inspect deeper if the types stayed the same
     const impl = loadResourceModel(resourceType.oldType);
-    propertyDiffs = diffKeyedEntities(oldValue!.Properties,
+    propertyDiffs = diffKeyedEntities(
+      oldValue!.Properties,
       newValue!.Properties,
-      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
+      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl)
+    );
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
   }
 
   return new types.ResourceDifference(oldValue, newValue, {
-    resourceType, propertyDiffs, otherDiffs,
+    resourceType,
+    propertyDiffs,
+    otherDiffs,
   });
 
   function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource) {

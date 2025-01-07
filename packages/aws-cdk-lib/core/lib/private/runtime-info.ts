@@ -6,9 +6,16 @@ import { IPolicyValidationPluginBeta1 } from '../validation';
 
 const ALLOWED_FQN_PREFIXES = [
   // SCOPES
-  '@aws-cdk/', '@aws-cdk-containers/', '@aws-solutions-konstruk/', '@aws-solutions-constructs/', '@amzn/', '@cdklabs/',
+  '@aws-cdk/',
+  '@aws-cdk-containers/',
+  '@aws-solutions-konstruk/',
+  '@aws-solutions-constructs/',
+  '@amzn/',
+  '@cdklabs/',
   // PACKAGES
-  'aws-rfdk.', 'aws-cdk-lib.', 'cdk8s.',
+  'aws-rfdk.',
+  'aws-cdk-lib.',
+  'cdk8s.',
 ];
 
 /**
@@ -28,10 +35,12 @@ export interface ConstructInfo {
 
 export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo | undefined {
   const jsiiRuntimeInfo = Object.getPrototypeOf(construct).constructor[JSII_RUNTIME_SYMBOL];
-  if (typeof jsiiRuntimeInfo === 'object'
-    && jsiiRuntimeInfo !== null
-    && typeof jsiiRuntimeInfo.fqn === 'string'
-    && typeof jsiiRuntimeInfo.version === 'string') {
+  if (
+    typeof jsiiRuntimeInfo === 'object' &&
+    jsiiRuntimeInfo !== null &&
+    typeof jsiiRuntimeInfo.fqn === 'string' &&
+    typeof jsiiRuntimeInfo.version === 'string'
+  ) {
     return { fqn: jsiiRuntimeInfo.fqn, version: jsiiRuntimeInfo.version };
   } else if (jsiiRuntimeInfo) {
     // There is something defined, but doesn't match our expectations. Fail fast and hard.
@@ -53,14 +62,14 @@ function addValidationPluginInfo(stack: Stack, allConstructInfos: ConstructInfo[
       done = true;
     }
     if (stage) {
-      allConstructInfos.push(...stage.policyValidationBeta1.map(
-        plugin => {
+      allConstructInfos.push(
+        ...stage.policyValidationBeta1.map((plugin) => {
           return {
             fqn: pluginFqn(plugin),
             version: plugin.version ?? '0.0.0',
           };
-        },
-      ));
+        })
+      );
       stage = Stage.of(stage);
     }
   } while (!done && stage);
@@ -74,15 +83,9 @@ function addValidationPluginInfo(stack: Stack, allConstructInfos: ConstructInfo[
  * where <rule-ids> is a pipe-separated list of rule IDs.
  */
 function pluginFqn(plugin: IPolicyValidationPluginBeta1): string {
-  let components = [
-    'policyValidation',
-    plugin.name,
-    plugin.ruleIds?.join('|'),
-  ];
+  let components = ['policyValidation', plugin.name, plugin.ruleIds?.join('|')];
 
-  return components
-    .filter(x => x != null)
-    .join('.');
+  return components.filter((x) => x != null).join('.');
 }
 
 /**
@@ -91,12 +94,13 @@ function pluginFqn(plugin: IPolicyValidationPluginBeta1): string {
  * as long as the construct fully-qualified names match the defined allow list.
  */
 export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
-  const isDefined = (value: ConstructInfo | undefined): value is ConstructInfo => value !== undefined;
+  const isDefined = (value: ConstructInfo | undefined): value is ConstructInfo =>
+    value !== undefined;
 
   const allConstructInfos = constructsInStack(stack)
-    .map(construct => constructInfoFromConstruct(construct))
+    .map((construct) => constructInfoFromConstruct(construct))
     .filter(isDefined)
-    .filter(info => ALLOWED_FQN_PREFIXES.find(prefix => info.fqn.startsWith(prefix)));
+    .filter((info) => ALLOWED_FQN_PREFIXES.find((prefix) => info.fqn.startsWith(prefix)));
 
   // Adds the jsii runtime as a psuedo construct for reporting purposes.
   allConstructInfos.push({
@@ -108,7 +112,7 @@ export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
 
   // Filter out duplicate values
   const uniqKeys = new Set();
-  return allConstructInfos.filter(construct => {
+  return allConstructInfos.filter((construct) => {
     const constructKey = `${construct.fqn}@${construct.version}`;
     const isDuplicate = uniqKeys.has(constructKey);
     uniqKeys.add(constructKey);
@@ -123,8 +127,8 @@ export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
 function constructsInStack(construct: IConstruct): IConstruct[] {
   const constructs = [construct];
   construct.node.children
-    .filter(child => !Stage.isStage(child) && !Stack.isStack(child))
-    .forEach(child => constructs.push(...constructsInStack(child)));
+    .filter((child) => !Stage.isStage(child) && !Stack.isStack(child))
+    .forEach((child) => constructs.push(...constructsInStack(child)));
   return constructs;
 }
 

@@ -41,7 +41,7 @@ export abstract class Secret {
   public static fromSsmParameter(parameter: ssm.IParameter): Secret {
     return {
       arn: parameter.parameterArn,
-      grantRead: grantee => parameter.grantRead(grantee),
+      grantRead: (grantee) => parameter.grantRead(grantee),
     };
   }
 
@@ -59,7 +59,7 @@ export abstract class Secret {
     return {
       arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
       hasField: !!field,
-      grantRead: grantee => secret.grantRead(grantee),
+      grantRead: (grantee) => secret.grantRead(grantee),
     };
   }
 
@@ -74,11 +74,15 @@ export abstract class Secret {
    * If you do not specify a JSON field, then the full content of the secret is
    * used.
    */
-  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+  public static fromSecretsManagerVersion(
+    secret: secretsmanager.ISecret,
+    versionInfo: SecretVersionInfo,
+    field?: string
+  ): Secret {
     return {
       arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
       hasField: !!field,
-      grantRead: grantee => secret.grantRead(grantee),
+      grantRead: (grantee) => secret.grantRead(grantee),
     };
   }
 
@@ -234,8 +238,8 @@ export class EfsVolume extends EcsVolume {
   /**
    * Returns true if x is an EfsVolume, false otherwise
    */
-  public static isEfsVolume(x: any) : x is EfsVolume {
-    return x !== null && typeof(x) === 'object' && EFS_VOLUME_SYMBOL in x;
+  public static isEfsVolume(x: any): x is EfsVolume {
+    return x !== null && typeof x === 'object' && EFS_VOLUME_SYMBOL in x;
   }
 
   /**
@@ -335,7 +339,7 @@ export class HostVolume extends EcsVolume {
    * returns `true` if `x` is a `HostVolume`, `false` otherwise
    */
   public static isHostVolume(x: any): x is HostVolume {
-    return x !== null && typeof (x) === 'object' && HOST_VOLUME_SYMBOL in x;
+    return x !== null && typeof x === 'object' && HOST_VOLUME_SYMBOL in x;
   }
 
   /**
@@ -392,7 +396,7 @@ export interface IEcsContainerDefinition extends IConstruct {
    *
    * @default - no environment variables
    */
-  readonly environment?: { [key:string]: string };
+  readonly environment?: { [key: string]: string };
 
   /**
    * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
@@ -505,7 +509,7 @@ export interface EcsContainerDefinitionProps {
    *
    * @default - no environment variables
    */
-  readonly environment?: { [key:string]: string };
+  readonly environment?: { [key: string]: string };
 
   /**
    * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
@@ -579,7 +583,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly cpu: number;
   public readonly memory: Size;
   public readonly command?: string[];
-  public readonly environment?: { [key:string]: string };
+  public readonly environment?: { [key: string]: string };
   public readonly executionRole: iam.IRole;
   public readonly jobRole?: iam.IRole;
   public readonly linuxParameters?: LinuxParameters;
@@ -598,14 +602,16 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.cpu = props.cpu;
     this.command = props.command;
     this.environment = props.environment;
-    this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole', props.logging ? true : false);
+    this.executionRole =
+      props.executionRole ??
+      createExecutionRole(this, 'ExecutionRole', props.logging ? true : false);
     this.jobRole = props.jobRole;
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
 
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, {
-        ...this as any,
+        ...(this as any),
         // TS!
         taskDefinition: {
           obtainExecutionRole: () => this.executionRole,
@@ -619,7 +625,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.volumes = props.volumes ?? [];
 
     this.imageConfig = props.image.bind(this, {
-      ...this as any,
+      ...(this as any),
       taskDefinition: {
         obtainExecutionRole: () => this.executionRole,
       },
@@ -643,14 +649,16 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       logConfiguration: this.logDriverConfig,
       readonlyRootFilesystem: this.readonlyRootFilesystem,
       resourceRequirements: this._renderResourceRequirements(),
-      secrets: this.secrets ? Object.entries(this.secrets).map(([name, secret]) => {
-        secret.grantRead(this.executionRole);
+      secrets: this.secrets
+        ? Object.entries(this.secrets).map(([name, secret]) => {
+            secret.grantRead(this.executionRole);
 
-        return {
-          name,
-          valueFrom: secret.arn,
-        };
-      }) : undefined,
+            return {
+              name,
+              valueFrom: secret.arn,
+            };
+          })
+        : undefined,
       mountPoints: Lazy.any({
         produce: () => {
           if (this.volumes.length === 0) {
@@ -678,12 +686,23 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
                 efsVolumeConfiguration: {
                   fileSystemId: volume.fileSystem.fileSystemId,
                   rootDirectory: volume.rootDirectory,
-                  transitEncryption: volume.enableTransitEncryption ? 'ENABLED' : (volume.enableTransitEncryption === false ? 'DISABLED' : undefined),
+                  transitEncryption: volume.enableTransitEncryption
+                    ? 'ENABLED'
+                    : volume.enableTransitEncryption === false
+                      ? 'DISABLED'
+                      : undefined,
                   transitEncryptionPort: volume.transitEncryptionPort,
-                  authorizationConfig: volume.accessPointId || volume.useJobRole ? {
-                    accessPointId: volume.accessPointId,
-                    iam: volume.useJobRole ? 'ENABLED' : (volume.useJobRole === false ? 'DISABLED' : undefined),
-                  } : undefined,
+                  authorizationConfig:
+                    volume.accessPointId || volume.useJobRole
+                      ? {
+                          accessPointId: volume.accessPointId,
+                          iam: volume.useJobRole
+                            ? 'ENABLED'
+                            : volume.useJobRole === false
+                              ? 'DISABLED'
+                              : undefined,
+                        }
+                      : undefined,
                 },
               };
             } else if (HostVolume.isHostVolume(volume)) {
@@ -892,7 +911,10 @@ export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionPr
 /**
  * A container orchestrated by ECS that uses EC2 resources
  */
-export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implements IEcsEc2ContainerDefinition {
+export class EcsEc2ContainerDefinition
+  extends EcsContainerDefinitionBase
+  implements IEcsEc2ContainerDefinition
+{
   public readonly privileged?: boolean;
   public readonly ulimits: Ulimit[];
   public readonly gpu?: number;
@@ -926,7 +948,7 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implem
       privileged: this.privileged,
       resourceRequirements: this._renderResourceRequirements(),
     };
-  };
+  }
 
   /**
    * Add a ulimit to this container
@@ -1042,7 +1064,10 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
 /**
  * A container orchestrated by ECS that uses Fargate resources
  */
-export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
+export class EcsFargateContainerDefinition
+  extends EcsContainerDefinitionBase
+  implements IEcsFargateContainerDefinition
+{
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
   public readonly ephemeralStorageSize?: Size;
@@ -1059,15 +1084,21 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
 
     if (this.fargateOperatingSystemFamily?.isWindows() && this.readonlyRootFilesystem) {
       // see https://kubernetes.io/docs/concepts/windows/intro/
-      throw new Error('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container');
+      throw new Error(
+        'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container'
+      );
     }
 
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
       if (props.ephemeralStorageSize.toGibibytes() > 200) {
-        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`);
+        throw new Error(
+          `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`
+        );
       } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
-        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`);
+        throw new Error(
+          `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`
+        );
       }
     }
   }
@@ -1078,9 +1109,11 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     let containerDef = {
       ...super._renderContainerDefinition(),
-      ephemeralStorage: this.ephemeralStorageSize? {
-        sizeInGiB: this.ephemeralStorageSize?.toGibibytes(),
-      } : undefined,
+      ephemeralStorage: this.ephemeralStorageSize
+        ? {
+            sizeInGiB: this.ephemeralStorageSize?.toGibibytes(),
+          }
+        : undefined,
       fargatePlatformConfiguration: {
         platformVersion: this.fargatePlatformVersion?.toString(),
       },
@@ -1099,7 +1132,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     }
 
     return containerDef;
-  };
+  }
 }
 
 function createExecutionRole(scope: Construct, id: string, logging: boolean): iam.IRole {

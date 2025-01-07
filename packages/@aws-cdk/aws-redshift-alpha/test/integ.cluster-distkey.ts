@@ -54,7 +54,12 @@ class RedshiftDistKeyStack extends cdk.Stack {
     new redshift.Table(this, 'Table', {
       ...databaseOptions,
       tableColumns: [
-        { name: 'col1', dataType: 'varchar(4)', distKey: props.hasDistKey, comment: 'A test column' },
+        {
+          name: 'col1',
+          dataType: 'varchar(4)',
+          distKey: props.hasDistKey,
+          comment: 'A test column',
+        },
       ],
       ...tableOptions,
     });
@@ -71,7 +76,7 @@ const updateStack = new RedshiftDistKeyStack(app, 'aws-cdk-redshift-distkey-upda
 
 updateStack.addDependency(createStack);
 const stacks = [createStack, updateStack];
-stacks.forEach(s => {
+stacks.forEach((s) => {
   cdk.Aspects.of(s).add({
     visit(node: constructs.IConstruct) {
       if (cdk.CfnResource.isCfnResource(node)) {

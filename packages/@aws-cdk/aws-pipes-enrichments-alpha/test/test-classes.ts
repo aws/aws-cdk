@@ -29,8 +29,7 @@ export class TestTarget implements ITarget {
       this.targetParameters = parameters;
     }
   }
-  public bind = (_pipe: IPipe)=>({
+  public bind = (_pipe: IPipe) => ({
     targetParameters: this.targetParameters,
   });
 }
-

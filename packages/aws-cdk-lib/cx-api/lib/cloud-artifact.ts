@@ -42,9 +42,13 @@ export class CloudArtifact {
    * @param artifact The artifact manifest
    * @returns the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.
    */
-  public static fromManifest(assembly: CloudAssembly, id: string, artifact: cxschema.ArtifactManifest): CloudArtifact | undefined {
+  public static fromManifest(
+    assembly: CloudAssembly,
+    id: string,
+    artifact: cxschema.ArtifactManifest
+  ): CloudArtifact | undefined {
     // Implementation is defined in a separate file to break cyclic dependencies
-    void(assembly), void(id), void(artifact);
+    void assembly, void id, void artifact;
     throw new Error('Implementation not overridden yet');
   }
 
@@ -69,7 +73,11 @@ export class CloudArtifact {
    */
   private _deps?: CloudArtifact[];
 
-  protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: cxschema.ArtifactManifest) {
+  protected constructor(
+    public readonly assembly: CloudAssembly,
+    public readonly id: string,
+    manifest: cxschema.ArtifactManifest
+  ) {
     this.manifest = manifest;
     this.messages = this.renderMessages();
     this._dependencyIDs = manifest.dependencies || [];
@@ -79,9 +87,11 @@ export class CloudArtifact {
    * Returns all the artifacts that this artifact depends on.
    */
   public get dependencies(): CloudArtifact[] {
-    if (this._deps) { return this._deps; }
+    if (this._deps) {
+      return this._deps;
+    }
 
-    this._deps = this._dependencyIDs.map(id => {
+    this._deps = this._dependencyIDs.map((id) => {
       const dep = this.assembly.tryGetArtifact(id);
       if (!dep) {
         throw new Error(`Artifact ${this.id} depends on non-existing artifact ${id}`);
@@ -111,7 +121,7 @@ export class CloudArtifact {
   private renderMessages() {
     const messages = new Array<SynthesisMessage>();
 
-    for (const [id, metadata] of Object.entries(this.manifest.metadata || { })) {
+    for (const [id, metadata] of Object.entries(this.manifest.metadata || {})) {
       for (const entry of metadata) {
         let level: SynthesisMessageLevel;
         switch (entry.type) {

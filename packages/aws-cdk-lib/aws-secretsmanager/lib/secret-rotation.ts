@@ -24,86 +24,135 @@ export class SecretRotationApplication {
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS MariaDB using the single user rotation scheme
    */
-  public static readonly MARIADB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationSingleUser', '1.1.367');
+  public static readonly MARIADB_ROTATION_SINGLE_USER = new SecretRotationApplication(
+    'SecretsManagerRDSMariaDBRotationSingleUser',
+    '1.1.367'
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS MariaDB using the multi user rotation scheme
    */
-  public static readonly MARIADB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationMultiUser', '1.1.367', {
-    isMultiUser: true,
-  });
+  public static readonly MARIADB_ROTATION_MULTI_USER = new SecretRotationApplication(
+    'SecretsManagerRDSMariaDBRotationMultiUser',
+    '1.1.367',
+    {
+      isMultiUser: true,
+    }
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS MySQL using the single user rotation scheme
    */
-  public static readonly MYSQL_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationSingleUser', '1.1.367');
+  public static readonly MYSQL_ROTATION_SINGLE_USER = new SecretRotationApplication(
+    'SecretsManagerRDSMySQLRotationSingleUser',
+    '1.1.367'
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS MySQL using the multi user rotation scheme
    */
-  public static readonly MYSQL_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationMultiUser', '1.1.367', {
-    isMultiUser: true,
-  });
+  public static readonly MYSQL_ROTATION_MULTI_USER = new SecretRotationApplication(
+    'SecretsManagerRDSMySQLRotationMultiUser',
+    '1.1.367',
+    {
+      isMultiUser: true,
+    }
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS Oracle using the single user rotation scheme
    */
-  public static readonly ORACLE_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationSingleUser', '1.1.367');
+  public static readonly ORACLE_ROTATION_SINGLE_USER = new SecretRotationApplication(
+    'SecretsManagerRDSOracleRotationSingleUser',
+    '1.1.367'
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS Oracle using the multi user rotation scheme
    */
-  public static readonly ORACLE_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationMultiUser', '1.1.367', {
-    isMultiUser: true,
-  });
+  public static readonly ORACLE_ROTATION_MULTI_USER = new SecretRotationApplication(
+    'SecretsManagerRDSOracleRotationMultiUser',
+    '1.1.367',
+    {
+      isMultiUser: true,
+    }
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS PostgreSQL using the single user rotation scheme
    */
-  public static readonly POSTGRES_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.1.367');
+  public static readonly POSTGRES_ROTATION_SINGLE_USER = new SecretRotationApplication(
+    'SecretsManagerRDSPostgreSQLRotationSingleUser',
+    '1.1.367'
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS PostgreSQL using the multi user rotation scheme
    */
-  public static readonly POSTGRES_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser', '1.1.367', {
-    isMultiUser: true,
-  });
+  public static readonly POSTGRES_ROTATION_MULTI_USER = new SecretRotationApplication(
+    'SecretsManagerRDSPostgreSQLRotationMultiUser',
+    '1.1.367',
+    {
+      isMultiUser: true,
+    }
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS SQL Server using the single user rotation scheme
    */
-  public static readonly SQLSERVER_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationSingleUser', '1.1.367');
+  public static readonly SQLSERVER_ROTATION_SINGLE_USER = new SecretRotationApplication(
+    'SecretsManagerRDSSQLServerRotationSingleUser',
+    '1.1.367'
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for RDS SQL Server using the multi user rotation scheme
    */
-  public static readonly SQLSERVER_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationMultiUser', '1.1.367', {
-    isMultiUser: true,
-  });
+  public static readonly SQLSERVER_ROTATION_MULTI_USER = new SecretRotationApplication(
+    'SecretsManagerRDSSQLServerRotationMultiUser',
+    '1.1.367',
+    {
+      isMultiUser: true,
+    }
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for Amazon Redshift using the single user rotation scheme
    */
-  public static readonly REDSHIFT_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRedshiftRotationSingleUser', '1.1.367');
+  public static readonly REDSHIFT_ROTATION_SINGLE_USER = new SecretRotationApplication(
+    'SecretsManagerRedshiftRotationSingleUser',
+    '1.1.367'
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for Amazon Redshift using the multi user rotation scheme
    */
-  public static readonly REDSHIFT_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRedshiftRotationMultiUser', '1.1.367', {
-    isMultiUser: true,
-  });
+  public static readonly REDSHIFT_ROTATION_MULTI_USER = new SecretRotationApplication(
+    'SecretsManagerRedshiftRotationMultiUser',
+    '1.1.367',
+    {
+      isMultiUser: true,
+    }
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for MongoDB using the single user rotation scheme
    */
-  public static readonly MONGODB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerMongoDBRotationSingleUser', '1.1.367');
+  public static readonly MONGODB_ROTATION_SINGLE_USER = new SecretRotationApplication(
+    'SecretsManagerMongoDBRotationSingleUser',
+    '1.1.367'
+  );
 
   /**
    * Conducts an AWS SecretsManager secret rotation for MongoDB using the multi user rotation scheme
    */
-  public static readonly MONGODB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerMongoDBRotationMultiUser', '1.1.367', {
-    isMultiUser: true,
-  });
+  public static readonly MONGODB_ROTATION_MULTI_USER = new SecretRotationApplication(
+    'SecretsManagerMongoDBRotationMultiUser',
+    '1.1.367',
+    {
+      isMultiUser: true,
+    }
+  );
 
   /**
    * The application identifier of the rotation application
@@ -129,7 +178,11 @@ export class SecretRotationApplication {
    */
   private readonly applicationName: string;
 
-  constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
+  constructor(
+    applicationId: string,
+    semanticVersion: string,
+    options?: SecretRotationApplicationOptions
+  ) {
     // partitions are handled explicitly via applicationArnForPartition()
     // eslint-disable-next-line @cdklabs/no-literal-partition
     this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
@@ -281,16 +334,23 @@ export class SecretRotation extends Construct {
     }
 
     if (props.application.isMultiUser && !props.masterSecret) {
-      throw new Error('The `masterSecret` must be specified for application using the multi user scheme.');
+      throw new Error(
+        'The `masterSecret` must be specified for application using the multi user scheme.'
+      );
     }
 
     // Max length of 64 chars, get the last 64 chars
     const uniqueId = Names.uniqueId(this);
-    const rotationFunctionName = uniqueId.substring(Math.max(uniqueId.length - 64, 0), uniqueId.length);
+    const rotationFunctionName = uniqueId.substring(
+      Math.max(uniqueId.length - 64, 0),
+      uniqueId.length
+    );
 
-    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc,
-    });
+    const securityGroup =
+      props.securityGroup ||
+      new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+      });
     props.target.connections.allowDefaultPortFrom(securityGroup);
 
     const parameters: { [key: string]: string } = {
@@ -318,7 +378,7 @@ export class SecretRotation extends Construct {
 
     const sarMapping = new CfnMapping(this, 'SARMapping', {
       mapping: {
-        'aws': {
+        aws: {
           applicationId: props.application.applicationArnForPartition('aws'),
           semanticVersion: props.application.semanticVersionForPartition('aws'),
         },
@@ -345,7 +405,11 @@ export class SecretRotation extends Construct {
     // serverless application. This is needed because it's the application
     // that creates the Lambda permission to invoke the function.
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_cloudformation.html
-    const rotationLambda = lambda.Function.fromFunctionArn(this, 'RotationLambda', Token.asString(application.getAtt('Outputs.RotationLambdaARN')));
+    const rotationLambda = lambda.Function.fromFunctionArn(
+      this,
+      'RotationLambda',
+      Token.asString(application.getAtt('Outputs.RotationLambdaARN'))
+    );
 
     props.secret.addRotationSchedule('RotationSchedule', {
       rotationLambda,

@@ -18,7 +18,6 @@ const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for no
  * Initialization properties for the `Provider` construct.
  */
 export interface ProviderProps {
-
   /**
    * The AWS Lambda function to invoke for all resource lifecycle operations
    * (CREATE/UPDATE/DELETE).
@@ -159,7 +158,6 @@ export interface ProviderProps {
  * Defines an AWS CloudFormation custom resource provider.
  */
 export class Provider extends Construct implements ICustomResourceProvider {
-
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
    * lifecycle operations (CREATE/UPDATE/DELETE).
@@ -192,14 +190,16 @@ export class Provider extends Construct implements ICustomResourceProvider {
 
     if (!props.isCompleteHandler) {
       if (
-        props.queryInterval
-        || props.totalTimeout
-        || props.waiterStateMachineLogOptions
-        || props.disableWaiterStateMachineLogging !== undefined
+        props.queryInterval ||
+        props.totalTimeout ||
+        props.waiterStateMachineLogOptions ||
+        props.disableWaiterStateMachineLogging !== undefined
       ) {
-        throw new Error('"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
-          + 'can only be configured if "isCompleteHandler" is specified. '
-          + 'Otherwise, they have no meaning');
+        throw new Error(
+          '"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" ' +
+            'can only be configured if "isCompleteHandler" is specified. ' +
+            'Otherwise, they have no meaning'
+        );
       }
     }
 
@@ -215,7 +215,10 @@ export class Provider extends Construct implements ICustomResourceProvider {
     this.role = props.role;
     this.providerFunctionEnvEncryption = props.providerFunctionEnvEncryption;
 
-    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName);
+    const onEventFunction = this.createFunction(
+      consts.FRAMEWORK_ON_EVENT_HANDLER_NAME,
+      props.providerFunctionName
+    );
 
     if (this.isCompleteHandler) {
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME);
@@ -232,7 +235,10 @@ export class Provider extends Construct implements ICustomResourceProvider {
         disableLogging: props.disableWaiterStateMachineLogging,
       });
       // the on-event entrypoint is going to start the execution of the waiter
-      onEventFunction.addEnvironment(consts.WAITER_STATE_MACHINE_ARN_ENV, waiterStateMachine.stateMachineArn);
+      onEventFunction.addEnvironment(
+        consts.WAITER_STATE_MACHINE_ARN_ENV,
+        waiterStateMachine.stateMachineArn
+      );
       waiterStateMachine.grantStartExecution(onEventFunction);
     }
 
@@ -255,7 +261,10 @@ export class Provider extends Construct implements ICustomResourceProvider {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH, {
         exclude: ['*.ts'],
       }),
-      description: `AWS CDK resource provider framework - ${entrypoint} (${this.node.path})`.slice(0, 256),
+      description: `AWS CDK resource provider framework - ${entrypoint} (${this.node.path})`.slice(
+        0,
+        256
+      ),
       runtime: lambda.determineLatestNodeRuntime(this),
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
@@ -275,7 +284,10 @@ export class Provider extends Construct implements ICustomResourceProvider {
     this.onEventHandler.grantInvoke(fn);
 
     if (this.isCompleteHandler) {
-      fn.addEnvironment(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, this.isCompleteHandler.functionArn);
+      fn.addEnvironment(
+        consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV,
+        this.isCompleteHandler.functionArn
+      );
       this.isCompleteHandler.grantInvoke(fn);
     }
 

@@ -204,8 +204,11 @@ export class BackupPlanRule {
 
   /** @param props Rule properties */
   constructor(props: BackupPlanRuleProps) {
-    if (props.deleteAfter && props.moveToColdStorageAfter &&
-      props.deleteAfter.toDays() < props.moveToColdStorageAfter.toDays()) {
+    if (
+      props.deleteAfter &&
+      props.moveToColdStorageAfter &&
+      props.deleteAfter.toDays() < props.moveToColdStorageAfter.toDays()
+    ) {
       throw new Error('`deleteAfter` must be greater than `moveToColdStorageAfter`');
     }
 
@@ -213,26 +216,40 @@ export class BackupPlanRule {
       throw new Error('`scheduleExpression` must be of type `cron`');
     }
 
-    const deleteAfter = (props.enableContinuousBackup && !props.deleteAfter) ? Duration.days(35) : props.deleteAfter;
+    const deleteAfter =
+      props.enableContinuousBackup && !props.deleteAfter ? Duration.days(35) : props.deleteAfter;
 
     if (props.enableContinuousBackup && props.moveToColdStorageAfter) {
-      throw new Error('`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
+      throw new Error(
+        '`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled'
+      );
     }
 
-    if (props.enableContinuousBackup && props.deleteAfter &&
-      (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)) {
-      throw new Error(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
+    if (
+      props.enableContinuousBackup &&
+      props.deleteAfter &&
+      (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)
+    ) {
+      throw new Error(
+        `'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`
+      );
     }
 
     if (props.copyActions && props.copyActions.length > 0) {
-      props.copyActions.forEach(copyAction => {
-        if (copyAction.deleteAfter && !Token.isUnresolved(copyAction.deleteAfter) &&
-          copyAction.moveToColdStorageAfter && !Token.isUnresolved(copyAction.moveToColdStorageAfter) &&
-          copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays() + 90) {
-          throw new Error([
-            '\'deleteAfter\' must at least 90 days later than corresponding \'moveToColdStorageAfter\'',
-            `received 'deleteAfter: ${copyAction.deleteAfter.toDays()}' and 'moveToColdStorageAfter: ${copyAction.moveToColdStorageAfter.toDays()}'`,
-          ].join('\n'));
+      props.copyActions.forEach((copyAction) => {
+        if (
+          copyAction.deleteAfter &&
+          !Token.isUnresolved(copyAction.deleteAfter) &&
+          copyAction.moveToColdStorageAfter &&
+          !Token.isUnresolved(copyAction.moveToColdStorageAfter) &&
+          copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays() + 90
+        ) {
+          throw new Error(
+            [
+              "'deleteAfter' must at least 90 days later than corresponding 'moveToColdStorageAfter'",
+              `received 'deleteAfter: ${copyAction.deleteAfter.toDays()}' and 'moveToColdStorageAfter: ${copyAction.moveToColdStorageAfter.toDays()}'`,
+            ].join('\n')
+          );
         }
       });
     }
@@ -241,6 +258,5 @@ export class BackupPlanRule {
       ...props,
       deleteAfter,
     };
-
   }
 }

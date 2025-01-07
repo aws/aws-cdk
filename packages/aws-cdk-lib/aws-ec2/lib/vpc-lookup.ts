@@ -30,7 +30,7 @@ export interface VpcLookupOptions {
    *
    * @default Don't filter on tags
    */
-  readonly tags?: {[key: string]: string};
+  readonly tags?: { [key: string]: string };
 
   /**
    * Whether to match the default VPC

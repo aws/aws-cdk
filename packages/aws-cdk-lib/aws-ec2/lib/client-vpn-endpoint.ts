@@ -1,6 +1,14 @@
 import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
-import { IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
+import {
+  ClientVpnAuthorizationRule,
+  ClientVpnAuthorizationRuleOptions,
+} from './client-vpn-authorization-rule';
+import {
+  IClientVpnConnectionHandler,
+  IClientVpnEndpoint,
+  TransportProtocol,
+  VpnPort,
+} from './client-vpn-endpoint-types';
 import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
 import { Connections } from './connections';
 import { CfnClientVpnEndpoint, CfnClientVpnTargetNetworkAssociation } from './ec2.generated';
@@ -195,7 +203,10 @@ export abstract class ClientVpnUserBasedAuthentication {
   }
 
   /** Federated authentication */
-  public static federated(samlProvider: ISamlProvider, selfServiceSamlProvider?: ISamlProvider): ClientVpnUserBasedAuthentication {
+  public static federated(
+    samlProvider: ISamlProvider,
+    selfServiceSamlProvider?: ISamlProvider
+  ): ClientVpnUserBasedAuthentication {
     return new FederatedAuthentication(samlProvider, selfServiceSamlProvider);
   }
 
@@ -223,7 +234,10 @@ class ActiveDirectoryAuthentication extends ClientVpnUserBasedAuthentication {
  * Federated authentication
  */
 class FederatedAuthentication extends ClientVpnUserBasedAuthentication {
-  constructor(private readonly samlProvider: ISamlProvider, private readonly selfServiceSamlProvider?: ISamlProvider) {
+  constructor(
+    private readonly samlProvider: ISamlProvider,
+    private readonly selfServiceSamlProvider?: ISamlProvider
+  ) {
     super();
   }
 
@@ -270,7 +284,11 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
    * Import an existing client VPN endpoint
    */
-  public static fromEndpointAttributes(scope: Construct, id: string, attrs: ClientVpnEndpointAttributes): IClientVpnEndpoint {
+  public static fromEndpointAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ClientVpnEndpointAttributes
+  ): IClientVpnEndpoint {
     class Import extends Resource implements IClientVpnEndpoint {
       public readonly endpointId = attrs.endpointId;
       public readonly connections = new Connections({ securityGroups: attrs.securityGroups });
@@ -309,36 +327,45 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       throw new Error('Cannot specify `logGroup` or `logStream` when logging is disabled');
     }
 
-    if (props.clientConnectionHandler
-      && !Token.isUnresolved(props.clientConnectionHandler.functionName)
-      && !props.clientConnectionHandler.functionName.startsWith('AWSClientVPN-')) {
+    if (
+      props.clientConnectionHandler &&
+      !Token.isUnresolved(props.clientConnectionHandler.functionName) &&
+      !props.clientConnectionHandler.functionName.startsWith('AWSClientVPN-')
+    ) {
       throw new Error('The name of the Lambda function must begin with the `AWSClientVPN-` prefix');
     }
 
-    if (props.clientLoginBanner
-      && !Token.isUnresolved(props.clientLoginBanner)
-      && props.clientLoginBanner.length > 1400) {
-      throw new Error(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`);
+    if (
+      props.clientLoginBanner &&
+      !Token.isUnresolved(props.clientLoginBanner) &&
+      props.clientLoginBanner.length > 1400
+    ) {
+      throw new Error(
+        `The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`
+      );
     }
 
     const logging = props.logging ?? true;
-    const logGroup = logging
-      ? props.logGroup ?? new logs.LogGroup(this, 'LogGroup')
-      : undefined;
+    const logGroup = logging ? (props.logGroup ?? new logs.LogGroup(this, 'LogGroup')) : undefined;
 
-    const securityGroups = props.securityGroups ?? [new SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc,
-    })];
+    const securityGroups = props.securityGroups ?? [
+      new SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+      }),
+    ];
     this.connections = new Connections({ securityGroups });
 
     const endpoint = new CfnClientVpnEndpoint(this, 'Resource', {
-      authenticationOptions: renderAuthenticationOptions(props.clientCertificateArn, props.userBasedAuthentication),
+      authenticationOptions: renderAuthenticationOptions(
+        props.clientCertificateArn,
+        props.userBasedAuthentication
+      ),
       clientCidrBlock: props.cidr,
       clientConnectOptions: props.clientConnectionHandler
         ? {
-          enabled: true,
-          lambdaFunctionArn: props.clientConnectionHandler.functionArn,
-        }
+            enabled: true,
+            lambdaFunctionArn: props.clientConnectionHandler.functionArn,
+          }
         : undefined,
       connectionLogOptions: {
         enabled: logging,
@@ -347,7 +374,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       },
       description: props.description,
       dnsServers: props.dnsServers,
-      securityGroupIds: securityGroups.map(s => s.securityGroupId),
+      securityGroupIds: securityGroups.map((s) => s.securityGroupId),
       selfServicePortal: booleanToEnabledDisabled(props.selfServicePortal),
       serverCertificateArn: props.serverCertificateArn,
       splitTunnel: props.splitTunnel,
@@ -357,9 +384,9 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       sessionTimeoutHours: props.sessionTimeout,
       clientLoginBannerOptions: props.clientLoginBanner
         ? {
-          enabled: true,
-          bannerText: props.clientLoginBanner,
-        }
+            enabled: true,
+            bannerText: props.clientLoginBanner,
+          }
         : undefined,
     });
 
@@ -376,14 +403,18 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     const subnetIds = props.vpc.selectSubnets(props.vpcSubnets).subnetIds;
 
     if (Token.isUnresolved(subnetIds)) {
-      throw new Error('Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.');
+      throw new Error(
+        'Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.'
+      );
     }
 
     for (const [idx, subnetId] of Object.entries(subnetIds)) {
-      this._targetNetworksAssociated.add(new CfnClientVpnTargetNetworkAssociation(this, `Association${idx}`, {
-        clientVpnEndpointId: this.endpointId,
-        subnetId,
-      }));
+      this._targetNetworksAssociated.add(
+        new CfnClientVpnTargetNetworkAssociation(this, `Association${idx}`, {
+          clientVpnEndpointId: this.endpointId,
+          subnetId,
+        })
+      );
     }
     this.targetNetworksAssociated = this._targetNetworksAssociated;
 
@@ -397,7 +428,10 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
    * Adds an authorization rule to this endpoint
    */
-  public addAuthorizationRule(id: string, props: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
+  public addAuthorizationRule(
+    id: string,
+    props: ClientVpnAuthorizationRuleOptions
+  ): ClientVpnAuthorizationRule {
     return new ClientVpnAuthorizationRule(this, id, {
       ...props,
       clientVpnEndpoint: this,
@@ -417,7 +451,8 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
 function renderAuthenticationOptions(
   clientCertificateArn?: string,
-  userBasedAuthentication?: ClientVpnUserBasedAuthentication): CfnClientVpnEndpoint.ClientAuthenticationRequestProperty[] {
+  userBasedAuthentication?: ClientVpnUserBasedAuthentication
+): CfnClientVpnEndpoint.ClientAuthenticationRequestProperty[] {
   const authenticationOptions: CfnClientVpnEndpoint.ClientAuthenticationRequestProperty[] = [];
 
   if (clientCertificateArn) {

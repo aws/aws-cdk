@@ -11,7 +11,6 @@ import * as cdk from '../../core';
  * @see https://docs.aws.amazon.com/lambda/latest/dg/API_SourceAccessConfiguration.html#SSS-Type-SourceAccessConfiguration-Type
  */
 export class SourceAccessConfigurationType {
-
   /**
    * (MQ) The Secrets Manager secret that stores your broker credentials.
    */
@@ -25,28 +24,38 @@ export class SourceAccessConfigurationType {
   /**
    * The VPC security group used to manage access to your Self-Managed Apache Kafka brokers.
    */
-  public static readonly VPC_SECURITY_GROUP = new SourceAccessConfigurationType('VPC_SECURITY_GROUP');
+  public static readonly VPC_SECURITY_GROUP = new SourceAccessConfigurationType(
+    'VPC_SECURITY_GROUP'
+  );
 
   /**
    * The Secrets Manager ARN of your secret key used for SASL SCRAM-256 authentication of your Self-Managed Apache Kafka brokers.
    */
-  public static readonly SASL_SCRAM_256_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_256_AUTH');
+  public static readonly SASL_SCRAM_256_AUTH = new SourceAccessConfigurationType(
+    'SASL_SCRAM_256_AUTH'
+  );
 
   /**
    * The Secrets Manager ARN of your secret key used for SASL SCRAM-512 authentication of your Self-Managed Apache Kafka brokers.
    */
-  public static readonly SASL_SCRAM_512_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_512_AUTH');
+  public static readonly SASL_SCRAM_512_AUTH = new SourceAccessConfigurationType(
+    'SASL_SCRAM_512_AUTH'
+  );
 
   /**
    * The Secrets Manager ARN of your secret key containing the certificate chain (X.509 PEM), private key (PKCS#8 PEM),
    * and private key password (optional) used for mutual TLS authentication of your MSK/Apache Kafka brokers.
    */
-  public static readonly CLIENT_CERTIFICATE_TLS_AUTH = new SourceAccessConfigurationType('CLIENT_CERTIFICATE_TLS_AUTH');
+  public static readonly CLIENT_CERTIFICATE_TLS_AUTH = new SourceAccessConfigurationType(
+    'CLIENT_CERTIFICATE_TLS_AUTH'
+  );
 
   /**
    * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your Apache Kafka brokers.
    */
-  public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
+  public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType(
+    'SERVER_ROOT_CA_CERTIFICATE'
+  );
 
   /** A custom source access configuration property */
   public static of(name: string): SourceAccessConfigurationType {
@@ -269,7 +278,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<{ [key: string]: any }>;
 
   /**
    * Add Customer managed KMS key to encrypt Filter Criteria.
@@ -319,8 +328,8 @@ export enum MetricType {
  */
 export interface MetricsConfig {
   /**
-  * List of metric types to enable for this event source
-  */
+   * List of metric types to enable for this event source
+   */
   readonly metrics: MetricType[];
 }
 
@@ -371,14 +380,15 @@ export interface IEventSourceMapping extends cdk.IResource {
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
 export class EventSourceMapping extends cdk.Resource implements IEventSourceMapping {
-
   /**
    * Import an event source into this stack from its event source id.
    */
-  public static fromEventSourceMappingId(scope: Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
-    const eventSourceMappingArn = EventSourceMapping.formatArn(scope,
-      eventSourceMappingId,
-    );
+  public static fromEventSourceMappingId(
+    scope: Construct,
+    id: string,
+    eventSourceMappingId: string
+  ): IEventSourceMapping {
+    const eventSourceMappingArn = EventSourceMapping.formatArn(scope, eventSourceMappingId);
     class Import extends cdk.Resource implements IEventSourceMapping {
       public readonly eventSourceMappingId = eventSourceMappingId;
       public readonly eventSourceMappingArn = eventSourceMappingArn;
@@ -423,49 +433,80 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       }
       if (minimumPollers != undefined && maximumPollers != undefined) {
         if (minimumPollers > maximumPollers) {
-          throw new Error('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
+          throw new Error(
+            'Minimum provisioned pollers must be less than or equal to maximum provisioned pollers'
+          );
         }
       }
     }
 
-    if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
+    if (props.kafkaBootstrapServers && props.kafkaBootstrapServers?.length < 1) {
       throw new Error('kafkaBootStrapServers must not be empty if set');
     }
 
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
-      throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
+      throw new Error(
+        `maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`
+      );
     }
 
-    if (props.maxConcurrency && !cdk.Token.isUnresolved(props.maxConcurrency) && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
+    if (
+      props.maxConcurrency &&
+      !cdk.Token.isUnresolved(props.maxConcurrency) &&
+      (props.maxConcurrency < 2 || props.maxConcurrency > 1000)
+    ) {
       throw new Error('maxConcurrency must be between 2 and 1000 concurrent instances');
     }
 
-    if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
+    if (
+      props.maxRecordAge &&
+      (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)
+    ) {
       throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
     }
 
-    props.retryAttempts !== undefined && cdk.withResolved(props.retryAttempts, (attempts) => {
-      if (attempts < 0 || attempts > 10000) {
-        throw new Error(`retryAttempts must be between 0 and 10000 inclusive, got ${attempts}`);
-      }
-    });
+    props.retryAttempts !== undefined &&
+      cdk.withResolved(props.retryAttempts, (attempts) => {
+        if (attempts < 0 || attempts > 10000) {
+          throw new Error(`retryAttempts must be between 0 and 10000 inclusive, got ${attempts}`);
+        }
+      });
 
-    props.parallelizationFactor !== undefined && cdk.withResolved(props.parallelizationFactor, (factor) => {
-      if (factor < 1 || factor > 10) {
-        throw new Error(`parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`);
-      }
-    });
+    props.parallelizationFactor !== undefined &&
+      cdk.withResolved(props.parallelizationFactor, (factor) => {
+        if (factor < 1 || factor > 10) {
+          throw new Error(
+            `parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`
+          );
+        }
+      });
 
-    if (props.tumblingWindow && !cdk.Token.isUnresolved(props.tumblingWindow) && props.tumblingWindow.toSeconds() > 900) {
-      throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
+    if (
+      props.tumblingWindow &&
+      !cdk.Token.isUnresolved(props.tumblingWindow) &&
+      props.tumblingWindow.toSeconds() > 900
+    ) {
+      throw new Error(
+        `tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`
+      );
     }
 
-    if (props.startingPosition === StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+    if (
+      props.startingPosition === StartingPosition.AT_TIMESTAMP &&
+      !props.startingPositionTimestamp
+    ) {
+      throw new Error(
+        'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP'
+      );
     }
 
-    if (props.startingPosition !== StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new Error('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    if (
+      props.startingPosition !== StartingPosition.AT_TIMESTAMP &&
+      props.startingPositionTimestamp
+    ) {
+      throw new Error(
+        'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP'
+      );
     }
 
     if (props.kafkaConsumerGroupId) {
@@ -473,7 +514,9 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     if (props.filterEncryption !== undefined && props.filters == undefined) {
-      throw new Error('filter criteria must be provided to enable setting filter criteria encryption');
+      throw new Error(
+        'filter criteria must be provided to enable setting filter criteria encryption'
+      );
     }
 
     /**
@@ -499,10 +542,14 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
     let selfManagedEventSource;
     if (props.kafkaBootstrapServers) {
-      selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
+      selfManagedEventSource = {
+        endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers },
+      };
     }
 
-    let consumerGroupConfig = props.kafkaConsumerGroupId ? { consumerGroupId: props.kafkaConsumerGroupId } : undefined;
+    let consumerGroupConfig = props.kafkaConsumerGroupId
+      ? { consumerGroupId: props.kafkaConsumerGroupId }
+      : undefined;
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
@@ -513,19 +560,27 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
       startingPositionTimestamp: props.startingPositionTimestamp,
-      functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
+      functionResponseTypes: props.reportBatchItemFailures
+        ? ['ReportBatchItemFailures']
+        : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
-      scalingConfig: props.maxConcurrency ? { maximumConcurrency: props.maxConcurrency } : undefined,
-      sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
+      scalingConfig: props.maxConcurrency
+        ? { maximumConcurrency: props.maxConcurrency }
+        : undefined,
+      sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {
+        return { type: o.type.type, uri: o.uri };
+      }),
       selfManagedEventSource,
-      filterCriteria: props.filters ? { filters: props.filters }: undefined,
+      filterCriteria: props.filters ? { filters: props.filters } : undefined,
       kmsKeyArn: props.filterEncryption?.keyArn,
-      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers ? consumerGroupConfig : undefined,
+      selfManagedKafkaEventSourceConfig: props.kafkaBootstrapServers
+        ? consumerGroupConfig
+        : undefined,
       amazonManagedKafkaEventSourceConfig: props.eventSourceArn ? consumerGroupConfig : undefined,
       provisionedPollerConfig: props.provisionedPollerConfig,
       metricsConfig: props.metricsConfig,
@@ -546,7 +601,9 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
     const patternMatch = regex.exec(kafkaConsumerGroupId);
     if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
-      throw new Error('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"');
+      throw new Error(
+        'kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"'
+      );
     }
   }
 }

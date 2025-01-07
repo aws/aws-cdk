@@ -60,7 +60,7 @@ export interface GitLabSourceCodeProviderProps {
  * GitLab source code provider
  */
 export class GitLabSourceCodeProvider implements ISourceCodeProvider {
-  constructor(private readonly props: GitLabSourceCodeProviderProps) { }
+  constructor(private readonly props: GitLabSourceCodeProviderProps) {}
 
   public bind(_app: App): SourceCodeProviderConfig {
     return {

@@ -11,7 +11,9 @@ import * as elbv2 from '../../aws-elasticloadbalancingv2';
  * If you register a target of this type, you are responsible for making
  * sure the load balancer's security group can send packets to the IP address.
  */
-export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
+export class IpTarget
+  implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget
+{
   /**
    * Create a new IPAddress target
    *
@@ -34,8 +36,11 @@ export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INe
    * @param port Override the group's default port
    * @param availabilityZone Availability zone to send traffic from
    */
-  constructor(private readonly ipAddress: string, private readonly port?: number, private readonly availabilityZone?: string) {
-  }
+  constructor(
+    private readonly ipAddress: string,
+    private readonly port?: number,
+    private readonly availabilityZone?: string
+  ) {}
 
   /**
    * Register this instance target with a load balancer
@@ -43,7 +48,9 @@ export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INe
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(
+    targetGroup: elbv2.IApplicationTargetGroup
+  ): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 
@@ -53,7 +60,9 @@ export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INe
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(
+    targetGroup: elbv2.INetworkTargetGroup
+  ): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 

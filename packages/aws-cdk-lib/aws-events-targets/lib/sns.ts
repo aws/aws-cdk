@@ -27,8 +27,10 @@ export interface SnsTopicProps extends TargetBaseProps {
  *
  */
 export class SnsTopic implements events.IRuleTarget {
-  constructor(public readonly topic: sns.ITopic, private readonly props: SnsTopicProps = {}) {
-  }
+  constructor(
+    public readonly topic: sns.ITopic,
+    private readonly props: SnsTopicProps = {}
+  ) {}
 
   /**
    * Returns a RuleTarget that can be used to trigger this SNS topic as a

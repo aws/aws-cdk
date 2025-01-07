@@ -30,15 +30,18 @@ export class S3Origin implements cloudfront.IOrigin {
   private readonly origin: cloudfront.IOrigin;
 
   constructor(bucket: s3.IBucket, props: S3OriginProps = {}) {
-    this.origin = bucket.isWebsite ?
-      new HttpOrigin(bucket.bucketWebsiteDomainName, {
-        protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
-        ...props,
-      }) :
-      new S3BucketOrigin(bucket, props);
+    this.origin = bucket.isWebsite
+      ? new HttpOrigin(bucket.bucketWebsiteDomainName, {
+          protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
+          ...props,
+        })
+      : new S3BucketOrigin(bucket, props);
   }
 
-  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+  public bind(
+    scope: Construct,
+    options: cloudfront.OriginBindOptions
+  ): cloudfront.OriginBindConfig {
     return this.origin.bind(scope, options);
   }
 }
@@ -51,14 +54,20 @@ export class S3Origin implements cloudfront.IOrigin {
 class S3BucketOrigin extends cloudfront.OriginBase {
   private originAccessIdentity!: cloudfront.IOriginAccessIdentity;
 
-  constructor(private readonly bucket: s3.IBucket, { originAccessIdentity, ...props }: S3OriginProps) {
+  constructor(
+    private readonly bucket: s3.IBucket,
+    { originAccessIdentity, ...props }: S3OriginProps
+  ) {
     super(bucket.bucketRegionalDomainName, props);
     if (originAccessIdentity) {
       this.originAccessIdentity = originAccessIdentity;
     }
   }
 
-  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+  public bind(
+    scope: Construct,
+    options: cloudfront.OriginBindOptions
+  ): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
       // Using a bucket from another stack creates a cyclic reference with
       // the bucket taking a dependency on the generated S3CanonicalUserId for the grant principal,
@@ -77,15 +86,19 @@ class S3BucketOrigin extends cloudfront.OriginBase {
     // Only GetObject is needed to retrieve objects for the distribution.
     // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
     // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
-    this.bucket.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [this.bucket.arnForObjects('*')],
-      actions: ['s3:GetObject'],
-      principals: [this.originAccessIdentity.grantPrincipal],
-    }));
+    this.bucket.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: [this.bucket.arnForObjects('*')],
+        actions: ['s3:GetObject'],
+        principals: [this.originAccessIdentity.grantPrincipal],
+      })
+    );
     return super.bind(scope, options);
   }
 
   protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
-    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}` };
+    return {
+      originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}`,
+    };
   }
 }

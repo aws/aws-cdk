@@ -1,5 +1,10 @@
 import { CloudAssemblyBuilder } from '../../../cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import {
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+} from '../assets';
 import { Stack } from '../stack';
 
 /**
@@ -71,8 +76,7 @@ export interface IReusableStackSynthesizer extends IStackSynthesizer {
  *
  * Just a type alias with a very concrete contract.
  */
-export interface IBoundStackSynthesizer extends IStackSynthesizer {
-}
+export interface IBoundStackSynthesizer extends IStackSynthesizer {}
 
 /**
  * Represents a single session of synthesis. Passed into `Construct.synthesize()` methods.
@@ -89,10 +93,10 @@ export interface ISynthesisSession {
   assembly: CloudAssemblyBuilder;
 
   /**
-  * Whether the stack should be validated after synthesis to check for error metadata
-  *
-  * @default - false
-  */
+   * Whether the stack should be validated after synthesis to check for error metadata
+   *
+   * @default - false
+   */
   validateOnSynth?: boolean;
 }
 

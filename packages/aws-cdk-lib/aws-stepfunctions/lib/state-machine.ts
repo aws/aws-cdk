@@ -10,7 +10,16 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
-import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import {
+  Arn,
+  ArnFormat,
+  Duration,
+  IResource,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Token,
+} from '../../core';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -172,7 +181,11 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Import a state machine
    */
-  public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
+  public static fromStateMachineArn(
+    scope: Construct,
+    id: string,
+    stateMachineArn: string
+  ): IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
@@ -185,7 +198,11 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Import a state machine via resource name
    */
-  public static fromStateMachineName(scope: Construct, id: string, stateMachineName: string): IStateMachine {
+  public static fromStateMachineName(
+    scope: Construct,
+    id: string,
+    stateMachineName: string
+  ): IStateMachine {
     const stateMachineArn = Stack.of(scope).formatArn({
       service: 'states',
       resource: 'stateMachine',
@@ -233,10 +250,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public grantRead(identity: iam.IGrantable): iam.Grant {
     iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: [
-        'states:ListExecutions',
-        'states:ListStateMachines',
-      ],
+      actions: ['states:ListExecutions', 'states:ListStateMachines'],
       resourceArns: [this.stateMachineArn],
     });
     iam.Grant.addToPrincipal({
@@ -250,11 +264,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     });
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: [
-        'states:ListActivities',
-        'states:DescribeStateMachine',
-        'states:DescribeActivity',
-      ],
+      actions: ['states:ListActivities', 'states:DescribeStateMachine', 'states:DescribeActivity'],
       resourceArns: ['*'],
     });
   }
@@ -265,11 +275,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: [
-        'states:SendTaskSuccess',
-        'states:SendTaskFailure',
-        'states:SendTaskHeartbeat',
-      ],
+      actions: ['states:SendTaskSuccess', 'states:SendTaskFailure', 'states:SendTaskHeartbeat'],
       resourceArns: [this.stateMachineArn],
     });
   }
@@ -389,7 +395,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   private cannedMetric(
     fn: (dims: { StateMachineArn: string }) => cloudwatch.MetricProps,
-    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({ StateMachineArn: this.stateMachineArn }),
       ...props,
@@ -445,9 +452,11 @@ export class StateMachine extends StateMachineBase {
       this.validateStateMachineName(props.stateMachineName);
     }
 
-    this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
-    });
+    this.role =
+      props.role ||
+      new iam.Role(this, 'Role', {
+        assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
+      });
 
     const definitionBody = props.definitionBody ?? DefinitionBody.fromChainable(props.definition!);
 
@@ -463,46 +472,48 @@ export class StateMachine extends StateMachineBase {
     }
 
     if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: [
-          'kms:Decrypt', 'kms:GenerateDataKey',
-        ],
-        resources: [`${props.encryptionConfiguration.kmsKey.keyArn}`],
-        conditions: {
-          StringEquals: {
-            'kms:EncryptionContext:aws:states:stateMachineArn': Stack.of(this).formatArn({
-              service: 'states',
-              resource: 'stateMachine',
-              sep: ':',
-              resourceName: this.physicalName,
-            }),
-          },
-        },
-      }));
-
-      if (props.logs && props.logs.level !== LogLevel.OFF) {
-        this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      this.role.addToPrincipalPolicy(
+        new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
-          actions: [
-            'kms:GenerateDataKey',
-          ],
+          actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
           resources: [`${props.encryptionConfiguration.kmsKey.keyArn}`],
           conditions: {
             StringEquals: {
-              'kms:EncryptionContext:SourceArn': Stack.of(this).formatArn({
-                service: 'logs',
-                resource: '*',
+              'kms:EncryptionContext:aws:states:stateMachineArn': Stack.of(this).formatArn({
+                service: 'states',
+                resource: 'stateMachine',
                 sep: ':',
+                resourceName: this.physicalName,
               }),
             },
           },
-        }));
-        props.encryptionConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
-          resources: ['*'],
-          actions: ['kms:Decrypt*'],
-          principals: [new iam.ServicePrincipal('delivery.logs.amazonaws.com')],
-        }));
+        })
+      );
+
+      if (props.logs && props.logs.level !== LogLevel.OFF) {
+        this.role.addToPrincipalPolicy(
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ['kms:GenerateDataKey'],
+            resources: [`${props.encryptionConfiguration.kmsKey.keyArn}`],
+            conditions: {
+              StringEquals: {
+                'kms:EncryptionContext:SourceArn': Stack.of(this).formatArn({
+                  service: 'logs',
+                  resource: '*',
+                  sep: ':',
+                }),
+              },
+            },
+          })
+        );
+        props.encryptionConfiguration.kmsKey.addToResourcePolicy(
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: ['kms:Decrypt*'],
+            principals: [new iam.ServicePrincipal('delivery.logs.amazonaws.com')],
+          })
+        );
       }
     }
 
@@ -551,58 +562,72 @@ export class StateMachine extends StateMachineBase {
   private validateStateMachineName(stateMachineName: string) {
     if (!Token.isUnresolved(stateMachineName)) {
       if (stateMachineName.length < 1 || stateMachineName.length > 80) {
-        throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
+        throw new Error(
+          `State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`
+        );
       }
 
       if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
-        throw new Error(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`);
+        throw new Error(
+          `State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`
+        );
       }
     }
   }
 
-  private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
+  private buildLoggingConfiguration(
+    logOptions: LogOptions
+  ): CfnStateMachine.LoggingConfigurationProperty {
     // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
-    this.addToRolePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: [
-        'logs:CreateLogDelivery',
-        'logs:GetLogDelivery',
-        'logs:UpdateLogDelivery',
-        'logs:DeleteLogDelivery',
-        'logs:ListLogDeliveries',
-        'logs:PutResourcePolicy',
-        'logs:DescribeResourcePolicies',
-        'logs:DescribeLogGroups',
-      ],
-      resources: ['*'],
-    }));
+    this.addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'logs:CreateLogDelivery',
+          'logs:GetLogDelivery',
+          'logs:UpdateLogDelivery',
+          'logs:DeleteLogDelivery',
+          'logs:ListLogDeliveries',
+          'logs:PutResourcePolicy',
+          'logs:DescribeResourcePolicies',
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      })
+    );
 
     return {
-      destinations: [{
-        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
-      }],
+      destinations: [
+        {
+          cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+        },
+      ],
       includeExecutionData: logOptions.includeExecutionData,
       level: logOptions.level || 'ERROR',
     };
   }
 
-  private buildTracingConfiguration(isTracing?: boolean): CfnStateMachine.TracingConfigurationProperty | undefined {
+  private buildTracingConfiguration(
+    isTracing?: boolean
+  ): CfnStateMachine.TracingConfigurationProperty | undefined {
     if (isTracing === undefined) {
       return undefined;
     }
 
     if (isTracing) {
-      this.addToRolePolicy(new iam.PolicyStatement({
-        // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
-        // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
-        actions: [
-          'xray:PutTraceSegments',
-          'xray:PutTelemetryRecords',
-          'xray:GetSamplingRules',
-          'xray:GetSamplingTargets',
-        ],
-        resources: ['*'],
-      }));
+      this.addToRolePolicy(
+        new iam.PolicyStatement({
+          // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
+          // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
+          actions: [
+            'xray:PutTraceSegments',
+            'xray:PutTelemetryRecords',
+            'xray:GetSamplingRules',
+            'xray:GetSamplingTargets',
+          ],
+          resources: ['*'],
+        })
+      );
     }
 
     return {
@@ -746,15 +771,28 @@ export abstract class DefinitionBody {
     return new ChainDefinitionBody(chainable);
   }
 
-  public abstract bind(scope: Construct, sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig;
+  public abstract bind(
+    scope: Construct,
+    sfnPrincipal: iam.IPrincipal,
+    sfnProps: StateMachineProps,
+    graph?: StateGraph
+  ): DefinitionConfig;
 }
 
 export class FileDefinitionBody extends DefinitionBody {
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
+  constructor(
+    public readonly path: string,
+    private readonly options: s3_assets.AssetOptions = {}
+  ) {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(
+    scope: Construct,
+    _sfnPrincipal: iam.IPrincipal,
+    _sfnProps: StateMachineProps,
+    _graph?: StateGraph
+  ): DefinitionConfig {
     const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
       path: this.path,
       ...this.options,
@@ -773,7 +811,12 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(
+    _scope: Construct,
+    _sfnPrincipal: iam.IPrincipal,
+    _sfnProps: StateMachineProps,
+    _graph?: StateGraph
+  ): DefinitionConfig {
     return {
       definitionString: this.body,
     };
@@ -785,7 +828,12 @@ export class ChainDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig {
+  public bind(
+    scope: Construct,
+    _sfnPrincipal: iam.IPrincipal,
+    sfnProps: StateMachineProps,
+    graph?: StateGraph
+  ): DefinitionConfig {
     const graphJson = graph!.toGraphJson();
     return {
       definitionString: Stack.of(scope).toJsonString({ ...graphJson, Comment: sfnProps.comment }),

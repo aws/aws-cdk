@@ -42,7 +42,9 @@ export class Wave {
 
   constructor(
     /** Identifier for this Wave */
-    public readonly id: string, props: WaveProps = {}) {
+    public readonly id: string,
+    props: WaveProps = {}
+  ) {
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];
   }

@@ -52,7 +52,10 @@ export interface IKey extends IResource {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult;
+  addToResourcePolicy(
+    statement: iam.PolicyStatement,
+    allowNoOp?: boolean
+  ): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -157,12 +160,19 @@ abstract class KeyBase extends Resource implements IKey {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(
+    statement: iam.PolicyStatement,
+    allowNoOp = true
+  ): iam.AddToResourcePolicyResult {
     const stack = Stack.of(this);
 
     if (!this.policy) {
-      if (allowNoOp) { return { statementAdded: false }; }
-      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
+      if (allowNoOp) {
+        return { statementAdded: false };
+      }
+      throw new Error(
+        `Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`
+      );
     }
 
     this.policy.addStatements(statement);
@@ -287,9 +297,7 @@ abstract class KeyBase extends Resource implements IKey {
       return undefined;
     }
 
-    return granteeStack.dependencies.includes(keyStack)
-      ? granteeStack.account
-      : undefined;
+    return granteeStack.dependencies.includes(keyStack) ? granteeStack.account : undefined;
   }
 
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
@@ -302,7 +310,9 @@ abstract class KeyBase extends Resource implements IKey {
     if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
       // if two compared stacks have the same region, this should return 'false' since it's from the
       // same region; if two stacks have different region, then compare env.region
-      return bucketStack.region !== identityStack.region && this.env.region !== identityStack.region;
+      return (
+        bucketStack.region !== identityStack.region && this.env.region !== identityStack.region
+      );
     }
     return bucketStack.region !== identityStack.region;
   }
@@ -317,7 +327,9 @@ abstract class KeyBase extends Resource implements IKey {
     if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
       // if two compared stacks have the same region, this should return 'false' since it's from the
       // same region; if two stacks have different region, then compare env.account
-      return bucketStack.account !== identityStack.account && this.env.account !== identityStack.account;
+      return (
+        bucketStack.account !== identityStack.account && this.env.account !== identityStack.account
+      );
     }
     return bucketStack.account !== identityStack.account;
   }
@@ -627,9 +639,14 @@ export class Key extends KeyBase {
       }
     }
 
-    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    const keyResourceName = Stack.of(scope).splitArn(
+      keyArn,
+      ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName;
     if (!keyResourceName) {
-      throw new Error(`KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`);
+      throw new Error(
+        `KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`
+      );
     }
 
     return new Import(keyResourceName, {
@@ -670,20 +687,22 @@ export class Key extends KeyBase {
       // throw an exception suggesting to use the other importing methods instead.
       // We might make this parsing logic smarter later,
       // but let's start by erroring out.
-      throw new Error('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
-        'This makes it impossible to create a mutable IKey from that Policy. ' +
-        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey');
+      throw new Error(
+        'Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+          'This makes it impossible to create a mutable IKey from that Policy. ' +
+          'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey'
+      );
     }
 
     // change the key policy of the L1, so that all changes done in the L2 are reflected in the resulting template
     cfnKey.keyPolicy = Lazy.any({ produce: () => keyPolicy.toJSON() });
 
-    return new class extends KeyBase {
+    return new (class extends KeyBase {
       public readonly keyArn = cfnKey.attrArn;
       public readonly keyId = cfnKey.ref;
       protected readonly policy = keyPolicy;
       protected readonly trustAccountIdentities = false;
-    }(cfnKey, id);
+    })(cfnKey, id);
   }
 
   /**
@@ -743,8 +762,13 @@ export class Key extends KeyBase {
       ignoreErrorOnMissingContext: options.returnDummyKeyOnMissing,
     }).value;
 
-    return new Import(attributes.keyId,
-      Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope)));
+    return new Import(
+      attributes.keyId,
+      Arn.format(
+        { resource: 'key', service: 'kms', resourceName: attributes.keyId },
+        Stack.of(scope)
+      )
+    );
   }
 
   /**
@@ -826,10 +850,14 @@ export class Key extends KeyBase {
 
     if (props.rotationPeriod) {
       if (props.enableKeyRotation === false) {
-        throw new Error('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled');
+        throw new Error(
+          "'rotationPeriod' cannot be specified when 'enableKeyRotation' is disabled"
+        );
       }
       if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
-        throw new Error(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`);
+        throw new Error(
+          `'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`
+        );
       }
       // If rotationPeriod is specified, enableKeyRotation is set to true by default
       if (props.enableKeyRotation === undefined) {
@@ -837,12 +865,16 @@ export class Key extends KeyBase {
       }
     }
 
-    const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
+    const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(
+      cxapi.KMS_DEFAULT_KEY_POLICIES
+    );
 
     this.policy = props.policy ?? new iam.PolicyDocument();
     if (defaultKeyPoliciesFeatureEnabled) {
       if (props.trustAccountIdentities === false) {
-        throw new Error('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+        throw new Error(
+          '`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set'
+        );
       }
 
       this.trustAccountIdentities = true;
@@ -863,7 +895,9 @@ export class Key extends KeyBase {
     if (props.pendingWindow) {
       pendingWindowInDays = props.pendingWindow.toDays();
       if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
-        throw new Error(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`);
+        throw new Error(
+          `'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`
+        );
       }
     }
 
@@ -907,11 +941,13 @@ export class Key extends KeyBase {
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
    */
   private addDefaultAdminPolicy() {
-    this.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: ['kms:*'],
-      principals: [new iam.AccountRootPrincipal()],
-    }));
+    this.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: ['kms:*'],
+        principals: [new iam.AccountRootPrincipal()],
+      })
+    );
   }
 
   /**
@@ -944,10 +980,12 @@ export class Key extends KeyBase {
       'kms:UntagResource',
     ];
 
-    this.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions,
-      principals: [new iam.AccountRootPrincipal()],
-    }));
+    this.addToResourcePolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions,
+        principals: [new iam.AccountRootPrincipal()],
+      })
+    );
   }
 }

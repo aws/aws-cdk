@@ -7,7 +7,6 @@ import * as cdk from '../../../core';
  * Options in common between both StackSet actions
  */
 export interface CommonCloudFormationStackSetOptions {
-
   /**
    * The percentage of accounts per Region for which this stack operation can fail before AWS CloudFormation stops the operation in that Region. If
    * the operation is stopped in a Region, AWS CloudFormation doesn't attempt the operation in subsequent Regions. When calculating the number
@@ -48,13 +47,15 @@ export abstract class StackSetTemplate {
    * Use a file in an artifact as Stack Template.
    */
   public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath): StackSetTemplate {
-    return new class extends StackSetTemplate {
-      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
+    return new (class extends StackSetTemplate {
+      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [
+        artifactPath.artifact,
+      ];
 
       public _render() {
         return artifactPath.location;
       }
-    }();
+    })();
   }
 
   /**
@@ -130,13 +131,18 @@ export abstract class StackInstances {
    * If this is set of Organizational Units, you must have selected `StackSetDeploymentModel.organizations()`
    * as deployment model.
    */
-  public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath, regions: string[]): StackInstances {
+  public static fromArtifactPath(
+    artifactPath: codepipeline.ArtifactPath,
+    regions: string[]
+  ): StackInstances {
     if (regions.length === 0) {
       throw new Error("'regions' may not be an empty list");
     }
 
-    return new class extends StackInstances {
-      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
+    return new (class extends StackInstances {
+      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [
+        artifactPath.artifact,
+      ];
       public _bind(_scope: Construct): StackInstancesBindResult {
         return {
           stackSetConfiguration: {
@@ -145,7 +151,7 @@ export abstract class StackInstances {
           },
         };
       }
-    }();
+    })();
   }
 
   /**
@@ -166,7 +172,7 @@ export abstract class StackInstances {
       throw new Error("'regions' may not be an empty list");
     }
 
-    return new class extends StackInstances {
+    return new (class extends StackInstances {
       public _bind(_scope: Construct): StackInstancesBindResult {
         return {
           stackSetConfiguration: {
@@ -175,7 +181,7 @@ export abstract class StackInstances {
           },
         };
       }
-    }();
+    })();
   }
 
   /**
@@ -234,19 +240,22 @@ export abstract class StackSetParameters {
    *  Asset1: 'true',
    * });
    */
-  public static fromLiteral(parameters: Record<string, string>, usePreviousValues?: string[]): StackSetParameters {
-    return new class extends StackSetParameters {
+  public static fromLiteral(
+    parameters: Record<string, string>,
+    usePreviousValues?: string[]
+  ): StackSetParameters {
+    return new (class extends StackSetParameters {
       public readonly _artifactsReferenced: codepipeline.Artifact[] = [];
 
       _render(): string {
         return [
-          ...Object.entries(parameters).map(([key, value]) =>
-            `ParameterKey=${key},ParameterValue=${value}`),
-          ...(usePreviousValues ?? []).map((key) =>
-            `ParameterKey=${key},UsePreviousValue=true`),
+          ...Object.entries(parameters).map(
+            ([key, value]) => `ParameterKey=${key},ParameterValue=${value}`
+          ),
+          ...(usePreviousValues ?? []).map((key) => `ParameterKey=${key},UsePreviousValue=true`),
         ].join(' ');
       }
-    }();
+    })();
   }
 
   /**
@@ -282,13 +291,13 @@ export abstract class StackSetParameters {
    * parameter values unmanaged.
    */
   public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath): StackSetParameters {
-    return new class extends StackSetParameters {
+    return new (class extends StackSetParameters {
       public _artifactsReferenced: codepipeline.Artifact[] = [artifactPath.artifact];
 
       public _render(): string {
         return artifactPath.location;
       }
-    }();
+    })();
   }
 
   /**
@@ -321,7 +330,7 @@ export abstract class StackSetDeploymentModel {
    * Organization Unit Ids in the `stackInstances` parameter.
    */
   public static organizations(props: OrganizationsDeploymentProps = {}): StackSetDeploymentModel {
-    return new class extends StackSetDeploymentModel {
+    return new (class extends StackSetDeploymentModel {
       _bind() {
         return {
           stackSetConfiguration: {
@@ -330,7 +339,7 @@ export abstract class StackSetDeploymentModel {
           },
         };
       }
-    }();
+    })();
   }
 
   /**
@@ -366,7 +375,7 @@ export abstract class StackSetDeploymentModel {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html
    */
   public static selfManaged(props: SelfManagedDeploymentProps = {}): StackSetDeploymentModel {
-    return new class extends StackSetDeploymentModel {
+    return new (class extends StackSetDeploymentModel {
       _bind(scope: Construct) {
         let administrationRole = props.administrationRole;
         if (!administrationRole) {
@@ -380,10 +389,14 @@ export abstract class StackSetDeploymentModel {
               },
             }),
           });
-          administrationRole.addToPrincipalPolicy(new iam.PolicyStatement({
-            actions: ['sts:AssumeRole'],
-            resources: [`arn:${cdk.Aws.PARTITION}:iam::*:role/${props.executionRoleName ?? 'AWSCloudFormationStackSetExecutionRole'}`],
-          }));
+          administrationRole.addToPrincipalPolicy(
+            new iam.PolicyStatement({
+              actions: ['sts:AssumeRole'],
+              resources: [
+                `arn:${cdk.Aws.PARTITION}:iam::*:role/${props.executionRoleName ?? 'AWSCloudFormationStackSetExecutionRole'}`,
+              ],
+            })
+          );
         }
 
         return {
@@ -395,7 +408,7 @@ export abstract class StackSetDeploymentModel {
           passedRoles: [administrationRole],
         } as StackSetDeploymentModelBindResult;
       }
-    }();
+    })();
   }
 
   /**

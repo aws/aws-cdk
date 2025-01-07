@@ -105,7 +105,6 @@ export interface IQueue extends IResource {
  * Reference to a new or existing Amazon SQS queue
  */
 export abstract class QueueBase extends Resource implements IQueue {
-
   /**
    * The ARN of this queue
    */
@@ -148,7 +147,9 @@ export abstract class QueueBase extends Resource implements IQueue {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
-    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+    this.node.addValidation({
+      validate: () => this.policy?.document.validateForResourcePolicy() ?? [],
+    });
   }
 
   /**
@@ -191,12 +192,14 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant consume rights to
    */
   public grantConsumeMessages(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee,
+    const ret = this.grant(
+      grantee,
       'sqs:ReceiveMessage',
       'sqs:ChangeMessageVisibility',
       'sqs:GetQueueUrl',
       'sqs:DeleteMessage',
-      'sqs:GetQueueAttributes');
+      'sqs:GetQueueAttributes'
+    );
 
     if (this.encryptionMasterKey) {
       this.encryptionMasterKey.grantDecrypt(grantee);
@@ -226,10 +229,7 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant send rights to
    */
   public grantSendMessages(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee,
-      'sqs:SendMessage',
-      'sqs:GetQueueAttributes',
-      'sqs:GetQueueUrl');
+    const ret = this.grant(grantee, 'sqs:SendMessage', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl');
 
     if (this.encryptionMasterKey) {
       // kms:Decrypt necessary to execute grantsendMessages to an SSE enabled SQS queue
@@ -250,10 +250,7 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant send rights to
    */
   public grantPurge(grantee: iam.IGrantable) {
-    return this.grant(grantee,
-      'sqs:PurgeQueue',
-      'sqs:GetQueueAttributes',
-      'sqs:GetQueueUrl');
+    return this.grant(grantee, 'sqs:PurgeQueue', 'sqs:GetQueueAttributes', 'sqs:GetQueueUrl');
   }
 
   /**

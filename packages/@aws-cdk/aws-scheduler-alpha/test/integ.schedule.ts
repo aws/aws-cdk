@@ -11,8 +11,8 @@ class SomeSqsTarget implements scheduler.IScheduleTarget {
   public constructor(
     private readonly queue: sqs.IQueue,
     private readonly role: iam.IRole,
-    private readonly input?: scheduler.ScheduleTargetInput) {
-  }
+    private readonly input?: scheduler.ScheduleTargetInput
+  ) {}
 
   public bind(): scheduler.ScheduleTargetConfig {
     return {
@@ -38,14 +38,20 @@ queue.grantSendMessages(role);
 new scheduler.Schedule(stack, 'ScheduleToSendMessageToQueue', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
   description: 'test description from the ScheduleToSendMessageToQueue',
-  target: new SomeSqsTarget(queue, role,
-    scheduler.ScheduleTargetInput.fromText(`valueA-${stack.region}`)),
+  target: new SomeSqsTarget(
+    queue,
+    role,
+    scheduler.ScheduleTargetInput.fromText(`valueA-${stack.region}`)
+  ),
 });
 const key = new kms.Key(stack, 'ScheduleKey');
 new scheduler.Schedule(stack, 'ScheduleWithCMK', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
-  target: new SomeSqsTarget(queue, role,
-    scheduler.ScheduleTargetInput.fromText(`valueB-${stack.region}`)),
+  target: new SomeSqsTarget(
+    queue,
+    role,
+    scheduler.ScheduleTargetInput.fromText(`valueB-${stack.region}`)
+  ),
   key,
 });
 
@@ -99,15 +105,20 @@ const integ = new IntegTest(app, 'integtest-schedule', {
   testCases: [stack],
 });
 
-integ.assertions.awsApiCall('SQS', 'receiveMessage', {
-  QueueUrl: queue.queueUrl,
-  MaxNumberOfMessages: 10,
-}).expect(ExpectedResult.objectLike({
-  Messages: Match.arrayWith([
-    Match.objectLike({ Body: `valueA-${stack.region}` }),
-    Match.objectLike({ Body: `valueB-${stack.region}` }),
-  ]),
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(5),
-  interval: cdk.Duration.seconds(20),
-});
+integ.assertions
+  .awsApiCall('SQS', 'receiveMessage', {
+    QueueUrl: queue.queueUrl,
+    MaxNumberOfMessages: 10,
+  })
+  .expect(
+    ExpectedResult.objectLike({
+      Messages: Match.arrayWith([
+        Match.objectLike({ Body: `valueA-${stack.region}` }),
+        Match.objectLike({ Body: `valueB-${stack.region}` }),
+      ]),
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(5),
+    interval: cdk.Duration.seconds(20),
+  });

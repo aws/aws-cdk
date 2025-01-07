@@ -2,7 +2,10 @@ import { Construct } from 'constructs';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
-import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
+import {
+  BasicTargetTrackingScalingPolicyProps,
+  TargetTrackingScalingPolicy,
+} from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
 import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
 
@@ -72,8 +75,11 @@ export interface ScalableTargetProps {
  * Define a scalable target
  */
 export class ScalableTarget extends Resource implements IScalableTarget {
-
-  public static fromScalableTargetId(scope: Construct, id: string, scalableTargetId: string): IScalableTarget {
+  public static fromScalableTargetId(
+    scope: Construct,
+    id: string,
+    scalableTargetId: string
+  ): IScalableTarget {
     class Import extends Resource implements IScalableTarget {
       public readonly scalableTargetId = scalableTargetId;
     }
@@ -99,13 +105,13 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   constructor(scope: Construct, id: string, props: ScalableTargetProps) {
     super(scope, id);
 
-    withResolved(props.maxCapacity, max => {
+    withResolved(props.maxCapacity, (max) => {
       if (max < 0) {
         throw new RangeError(`maxCapacity cannot be negative, got: ${props.maxCapacity}`);
       }
     });
 
-    withResolved(props.minCapacity, min => {
+    withResolved(props.minCapacity, (min) => {
       if (min < 0) {
         throw new RangeError(`minCapacity cannot be negative, got: ${props.minCapacity}`);
       }
@@ -113,13 +119,17 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
     withResolved(props.minCapacity, props.maxCapacity, (min, max) => {
       if (max < min) {
-        throw new RangeError(`minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`);
+        throw new RangeError(
+          `minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`
+        );
       }
     });
 
-    this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
-    });
+    this.role =
+      props.role ||
+      new iam.Role(this, 'Role', {
+        assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
+      });
 
     const resource = new CfnScalableTarget(this, 'Resource', {
       maxCapacity: props.maxCapacity,
@@ -146,7 +156,9 @@ export class ScalableTarget extends Resource implements IScalableTarget {
    */
   public scaleOnSchedule(id: string, action: ScalingSchedule) {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
-      throw new Error(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`);
+      throw new Error(
+        `You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`
+      );
     }
 
     // add a warning on synth when minute is not defined in a cron schedule

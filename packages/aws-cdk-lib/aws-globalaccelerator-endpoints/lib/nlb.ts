@@ -35,7 +35,10 @@ export interface NetworkLoadBalancerEndpointProps {
 export class NetworkLoadBalancerEndpoint implements ga.IEndpoint {
   public readonly region?: string;
 
-  constructor(private readonly loadBalancer: elbv2.INetworkLoadBalancer, private readonly options: NetworkLoadBalancerEndpointProps = {}) {
+  constructor(
+    private readonly loadBalancer: elbv2.INetworkLoadBalancer,
+    private readonly options: NetworkLoadBalancerEndpointProps = {}
+  ) {
     validateWeight(options.weight);
     this.region = loadBalancer.env.region;
   }

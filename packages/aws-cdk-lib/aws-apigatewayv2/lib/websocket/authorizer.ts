@@ -85,7 +85,11 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
   /**
    * Import an existing WebSocket Authorizer into this CDK app.
    */
-  public static fromWebSocketAuthorizerAttributes(scope: Construct, id: string, attrs: WebSocketAuthorizerAttributes): IWebSocketRouteAuthorizer {
+  public static fromWebSocketAuthorizerAttributes(
+    scope: Construct,
+    id: string,
+    attrs: WebSocketAuthorizerAttributes
+  ): IWebSocketRouteAuthorizer {
     class Import extends Resource implements IWebSocketRouteAuthorizer {
       public readonly authorizerId = attrs.authorizerId;
       public readonly authorizerType = attrs.authorizerType;

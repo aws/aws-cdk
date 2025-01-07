@@ -6,8 +6,7 @@ import { IResource, Resource } from '../../core';
 /**
  * Represents gateway response resource.
  */
-export interface IGatewayResponse extends IResource {
-}
+export interface IGatewayResponse extends IResource {}
 
 /**
  * Properties for a new gateway response.
@@ -46,7 +45,6 @@ export interface GatewayResponseOptions {
    * @default - Response from api will be returned without applying any transformation.
    */
   readonly templates?: { [key: string]: string };
-
 }
 
 /**
@@ -81,7 +79,9 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
     this.node.defaultChild = resource;
   }
 
-  private buildResponseParameters(responseHeaders?: { [key: string]: string }): { [key: string]: string } | undefined {
+  private buildResponseParameters(responseHeaders?: {
+    [key: string]: string;
+  }): { [key: string]: string } | undefined {
     if (!responseHeaders) {
       return undefined;
     }
@@ -117,7 +117,9 @@ export class ResponseType {
   /**
    * The gateway response for failing to connect to a custom or Amazon Cognito authorizer.
    */
-  public static readonly AUTHORIZER_CONFIGURATION_ERROR = new ResponseType('AUTHORIZER_CONFIGURATION_ERROR');
+  public static readonly AUTHORIZER_CONFIGURATION_ERROR = new ResponseType(
+    'AUTHORIZER_CONFIGURATION_ERROR'
+  );
 
   /**
    * The gateway response when the request parameter cannot be validated according to an enabled request validator.
@@ -168,7 +170,9 @@ export class ResponseType {
    * The gateway response for a missing authentication token error,
    * including the cases when the client attempts to invoke an unsupported API method or resource.
    */
-  public static readonly MISSING_AUTHENTICATION_TOKEN = new ResponseType('MISSING_AUTHENTICATION_TOKEN');
+  public static readonly MISSING_AUTHENTICATION_TOKEN = new ResponseType(
+    'MISSING_AUTHENTICATION_TOKEN'
+  );
 
   /**
    * The gateway response for the usage plan quota exceeded error.
@@ -219,5 +223,4 @@ export class ResponseType {
   private constructor(type: string) {
     this.responseType = type;
   }
-
 }

@@ -24,9 +24,11 @@ class TestStack extends cdk.Stack {
       sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
     });
 
-    topicRule.addAction(new actions.CloudWatchSetAlarmStateAction(alarm, {
-      alarmStateToSet: cloudwatch.AlarmState.ALARM,
-    }));
+    topicRule.addAction(
+      new actions.CloudWatchSetAlarmStateAction(alarm, {
+        alarmStateToSet: cloudwatch.AlarmState.ALARM,
+      })
+    );
   }
 }
 

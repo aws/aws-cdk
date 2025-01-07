@@ -13,8 +13,7 @@ import { IConstruct } from 'constructs';
 export class AppScopedGlobal<A> {
   private readonly map = new WeakMap<App, A>();
 
-  constructor(private readonly factory: () => A) {
-  }
+  constructor(private readonly factory: () => A) {}
 
   public for(ctr: IConstruct): A {
     const app = App.of(ctr);

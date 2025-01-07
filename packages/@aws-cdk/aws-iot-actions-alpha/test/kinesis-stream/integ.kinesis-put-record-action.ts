@@ -8,17 +8,17 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const topicRule = new iot.TopicRule(this, 'TopicRule', {
-      sql: iot.IotSql.fromStringAsVer20160323(
-        "SELECT * FROM 'device/+/data'",
-      ),
+      sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
     });
 
     const stream = new kinesis.Stream(this, 'MyStream', {
       shardCount: 3,
     });
-    topicRule.addAction(new actions.KinesisPutRecordAction(stream, {
-      partitionKey: '${timestamp()}',
-    }));
+    topicRule.addAction(
+      new actions.KinesisPutRecordAction(stream, {
+        partitionKey: '${timestamp()}',
+      })
+    );
   }
 }
 

@@ -12,9 +12,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const topicRule = new iot.TopicRule(this, 'TopicRule', {
-      sql: iot.IotSql.fromStringAsVer20160323(
-        "SELECT * FROM 'device/+/data'",
-      ),
+      sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
     });
 
     const bucket = new s3.Bucket(this, 'MyBucket', {
@@ -27,7 +25,7 @@ class TestStack extends cdk.Stack {
       new actions.FirehosePutRecordAction(stream, {
         batchMode: true,
         recordSeparator: actions.FirehoseRecordSeparator.NEWLINE,
-      }),
+      })
     );
   }
 }

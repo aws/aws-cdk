@@ -9,7 +9,6 @@ export interface BucketPingerProps {
   readonly timeout?: Duration;
 }
 export class BucketPinger extends Construct {
-
   private _resource: CustomResource;
 
   constructor(scope: Construct, id: string, props: BucketPingerProps) {
@@ -29,10 +28,12 @@ export class BucketPinger extends Construct {
       throw new Error('pinger lambda has no execution role!');
     }
 
-    func.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:DeleteBucket', 's3:ListBucket'],
-      resources: [`arn:aws:s3:::${props.bucketName}`],
-    }));
+    func.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:DeleteBucket', 's3:ListBucket'],
+        resources: [`arn:aws:s3:::${props.bucketName}`],
+      })
+    );
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: func,

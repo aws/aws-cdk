@@ -1,4 +1,9 @@
-import { IScheduleTarget, ISchedule, ScheduleTargetInput, ScheduleTargetConfig } from '@aws-cdk/aws-scheduler-alpha';
+import {
+  IScheduleTarget,
+  ISchedule,
+  ScheduleTargetInput,
+  ScheduleTargetConfig,
+} from '@aws-cdk/aws-scheduler-alpha';
 import * as events from 'aws-cdk-lib/aws-events';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
@@ -49,11 +54,13 @@ export interface EventBridgePutEventsEntry {
 export class EventBridgePutEvents extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly entry: EventBridgePutEventsEntry,
-    private readonly props: ScheduleTargetBaseProps = {},
+    private readonly props: ScheduleTargetBaseProps = {}
   ) {
     super(props, entry.eventBus.eventBusArn);
     if (this.props.input) {
-      throw new Error('ScheduleTargetBaseProps.input is not supported for EventBridgePutEvents. Please use entry.detail instead.');
+      throw new Error(
+        'ScheduleTargetBaseProps.input is not supported for EventBridgePutEvents. Please use entry.detail instead.'
+      );
     }
   }
 

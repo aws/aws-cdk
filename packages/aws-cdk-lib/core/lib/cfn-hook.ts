@@ -54,7 +54,7 @@ export class CfnHook extends CfnElement {
     };
   }
 
-  protected renderProperties(props?: {[key: string]: any}): { [key: string]: any } | undefined {
+  protected renderProperties(props?: { [key: string]: any }): { [key: string]: any } | undefined {
     return props;
   }
 }

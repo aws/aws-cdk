@@ -1,8 +1,20 @@
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import * as perms from './perms';
-import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
+import {
+  Operation,
+  SystemErrorsForOperationsMetricOptions,
+  OperationsMetricOptions,
+  ITable,
+} from './shared';
 import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
-import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
+import {
+  AddToResourcePolicyResult,
+  Grant,
+  IGrantable,
+  IResourceWithPolicy,
+  PolicyDocument,
+  PolicyStatement,
+} from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { Resource } from '../../core';
 
@@ -184,7 +196,9 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param grantee the principal to grant access to
    */
   public grantReadWriteData(grantee: IGrantable): Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
+    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(
+      perms.DESCRIBE_TABLE
+    );
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions });
   }
@@ -281,7 +295,9 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public metricSuccessfulRequestLatency(props?: MetricOptions): Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
-      throw new Error('`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric');
+      throw new Error(
+        '`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric'
+      );
     }
 
     const dimensionsMap = {
@@ -303,7 +319,10 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * By default, the metric will be calculated as an average over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
    */
-  public metricThrottledRequestsForOperation(operation: string, props?: OperationsMetricOptions): IMetric {
+  public metricThrottledRequestsForOperation(
+    operation: string,
+    props?: OperationsMetricOptions
+  ): IMetric {
     const metricProps: MetricProps = {
       ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
       ...props,
@@ -318,7 +337,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricThrottledRequestsForOperations(props?: OperationsMetricOptions): IMetric {
-    return this.sumMetricsForOperations('ThrottledRequests', 'Sum of throttled requests across all operations', props);
+    return this.sumMetricsForOperations(
+      'ThrottledRequests',
+      'Sum of throttled requests across all operations',
+      props
+    );
   }
 
   /**
@@ -328,7 +351,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): IMetric {
-    return this.sumMetricsForOperations('SystemErrors', 'Sum of errors across all operations', props);
+    return this.sumMetricsForOperations(
+      'SystemErrors',
+      'Sum of errors across all operations',
+      props
+    );
   }
 
   /**
@@ -356,8 +383,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
 
     const dimensionsMap = {
       TableName: this.tableName,
-      ...props?.dimensions ?? {},
-      ...props?.dimensionsMap ?? {},
+      ...(props?.dimensions ?? {}),
+      ...(props?.dimensionsMap ?? {}),
     };
 
     return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensionsMap });
@@ -366,13 +393,20 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   /**
    * Create a math expression for operations.
    */
-  private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions) {
+  private sumMetricsForOperations(
+    metricName: string,
+    expressionLabel: string,
+    props?: OperationsMetricOptions
+  ) {
     if (props?.dimensions?.Operation) {
       throw new Error('The Operation dimension is not supported. Use the `operations` property');
     }
 
     const operations = props?.operations ?? Object.values(Operation);
-    const values = this.createMetricForOperations(metricName, operations, { statistic: 'sum', ...props });
+    const values = this.createMetricForOperations(metricName, operations, {
+      statistic: 'sum',
+      ...props,
+    });
     const sum = new MathExpression({
       expression: `${Object.keys(values).join(' + ')}`,
       usingMetrics: { ...values },
@@ -390,13 +424,19 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Using the return value of this function as the `usingMetrics` property in `cloudwatch.MathExpression` allows you to
    * use the keys of this map as metric names inside you expression.
    */
-  private createMetricForOperations(metricName: string, operations: Operation[], props?: MetricOptions,
-    metricNameMapper?: (op: Operation) => string) {
+  private createMetricForOperations(
+    metricName: string,
+    operations: Operation[],
+    props?: MetricOptions,
+    metricNameMapper?: (op: Operation) => string
+  ) {
     const metrics: Record<string, IMetric> = {};
-    const mapper = metricNameMapper ?? (op => op.toLowerCase());
+    const mapper = metricNameMapper ?? ((op) => op.toLowerCase());
 
     if (props?.dimensions?.Operation) {
-      throw new Error('Invalid properties. Operation dimension is not supported when calculating operational metrics');
+      throw new Error(
+        'Invalid properties. Operation dimension is not supported when calculating operational metrics'
+      );
     }
 
     for (const operation of operations) {
@@ -408,7 +448,9 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       const operationMetricName = mapper(operation);
       const firstChar = operationMetricName.charAt(0);
       if (firstChar === firstChar.toUpperCase()) {
-        throw new Error(`Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`);
+        throw new Error(
+          `Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`
+        );
       }
 
       metrics[operationMetricName] = metric;
@@ -423,7 +465,10 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param grantee the principal (no-op if undefined)
    * @param options options for keyActions, tableActions, and streamActions
    */
-  private combinedGrant(grantee: IGrantable, options: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] }) {
+  private combinedGrant(
+    grantee: IGrantable,
+    options: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] }
+  ) {
     if (options.keyActions && this.encryptionKey) {
       this.encryptionKey.grant(grantee, ...options.keyActions);
     }
@@ -472,7 +517,6 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param statement The policy statement to add
    */
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-
     this.resourcePolicy = this.resourcePolicy ?? new PolicyDocument({ statements: [] });
     this.resourcePolicy.addStatements(statement);
     return {

@@ -1,10 +1,10 @@
 import * as core from 'aws-cdk-lib/core';
 import { LogLevel, MetricsLevel } from '../types';
 
-interface FlinkApplicationConfiguration extends
-  CheckpointConfiguration,
-  MonitoringConfiguration,
-  ParallelismConfiguration {}
+interface FlinkApplicationConfiguration
+  extends CheckpointConfiguration,
+    MonitoringConfiguration,
+    ParallelismConfiguration {}
 
 interface CheckpointConfiguration {
   checkpointingEnabled?: boolean;
@@ -62,7 +62,7 @@ export function flinkApplicationConfiguration(config: FlinkApplicationConfigurat
   return applicationConfiguration;
 }
 
-function configFor(config: {[key: string]: unknown}) {
+function configFor(config: { [key: string]: unknown }) {
   if (isEmptyObj(config)) {
     return;
   }
@@ -73,6 +73,6 @@ function configFor(config: {[key: string]: unknown}) {
   };
 }
 
-function isEmptyObj(obj: {[key: string]: unknown}) {
-  return Object.values(obj).every(v => v === undefined);
+function isEmptyObj(obj: { [key: string]: unknown }) {
+  return Object.values(obj).every((v) => v === undefined);
 }

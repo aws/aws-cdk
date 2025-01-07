@@ -1,6 +1,10 @@
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
-import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
+import {
+  IComputeEnvironment,
+  ComputeEnvironmentBase,
+  ComputeEnvironmentProps,
+} from './compute-environment-base';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
 
@@ -41,15 +45,23 @@ export interface UnmanagedComputeEnvironmentProps extends ComputeEnvironmentProp
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
-export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implements IUnmanagedComputeEnvironment {
+export class UnmanagedComputeEnvironment
+  extends ComputeEnvironmentBase
+  implements IUnmanagedComputeEnvironment
+{
   /**
    * Import an UnmanagedComputeEnvironment by its arn
    */
   public static fromUnmanagedComputeEnvironmentArn(
-    scope: Construct, id: string, unmanagedComputeEnvironmentArn: string,
+    scope: Construct,
+    id: string,
+    unmanagedComputeEnvironmentArn: string
   ): IUnmanagedComputeEnvironment {
     const stack = Stack.of(scope);
-    const computeEnvironmentName = stack.splitArn(unmanagedComputeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    const computeEnvironmentName = stack.splitArn(
+      unmanagedComputeEnvironmentArn,
+      ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName!;
 
     class Import extends ComputeEnvironmentBase implements IUnmanagedComputeEnvironment {
       public readonly computeEnvironmentArn = unmanagedComputeEnvironmentArn;
@@ -74,13 +86,14 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
       state: this.enabled ? 'ENABLED' : 'DISABLED',
       computeEnvironmentName: props?.computeEnvironmentName,
       unmanagedvCpus: this.unmanagedvCPUs,
-      serviceRole: props?.serviceRole?.roleArn
-      ?? new Role(this, 'BatchServiceRole', {
-        managedPolicies: [
-          ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
-        ],
-        assumedBy: new ServicePrincipal('batch.amazonaws.com'),
-      }).roleArn,
+      serviceRole:
+        props?.serviceRole?.roleArn ??
+        new Role(this, 'BatchServiceRole', {
+          managedPolicies: [
+            ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
+          ],
+          assumedBy: new ServicePrincipal('batch.amazonaws.com'),
+        }).roleArn,
     });
     this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {

@@ -179,23 +179,27 @@ export abstract class HttpGatewayRoutePathMatch {
 class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly prefixPathMatch: string,
-    private readonly rewriteTo?: string,
+    private readonly rewriteTo?: string
   ) {
     super();
 
     if (prefixPathMatch[0] !== '/') {
-      throw new Error('Prefix path for the match must start with \'/\', '
-        + `got: ${prefixPathMatch}`);
+      throw new Error(
+        "Prefix path for the match must start with '/', " + `got: ${prefixPathMatch}`
+      );
     }
 
     if (rewriteTo) {
       if (prefixPathMatch[prefixPathMatch.length - 1] !== '/') {
-        throw new Error('When prefix path for the rewrite is specified, prefix path for the match must end with \'/\', '
-          + `got: ${prefixPathMatch}`);
+        throw new Error(
+          "When prefix path for the rewrite is specified, prefix path for the match must end with '/', " +
+            `got: ${prefixPathMatch}`
+        );
       }
       if (rewriteTo[0] !== '/' || rewriteTo[rewriteTo.length - 1] !== '/') {
-        throw new Error('Prefix path for the rewrite must start and end with \'/\', '
-          + `got: ${rewriteTo}`);
+        throw new Error(
+          "Prefix path for the rewrite must start and end with '/', " + `got: ${rewriteTo}`
+        );
       }
     }
   }
@@ -203,12 +207,13 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       prefixPathMatch: this.prefixPathMatch,
-      prefixPathRewrite: this.rewriteTo === undefined
-        ? undefined
-        : {
-          defaultPrefix: this.rewriteTo === '' ? 'DISABLED' : undefined,
-          value: this.rewriteTo === '' ? undefined : this.rewriteTo,
-        },
+      prefixPathRewrite:
+        this.rewriteTo === undefined
+          ? undefined
+          : {
+              defaultPrefix: this.rewriteTo === '' ? 'DISABLED' : undefined,
+              value: this.rewriteTo === '' ? undefined : this.rewriteTo,
+            },
     };
   }
 }
@@ -216,25 +221,30 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
 class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
   constructor(
     private readonly wholePathMatch: CfnGatewayRoute.HttpPathMatchProperty,
-    private readonly exactPathRewrite?: string | undefined,
+    private readonly exactPathRewrite?: string | undefined
   ) {
     super();
 
     if (wholePathMatch.exact && wholePathMatch.exact[0] !== '/') {
-      throw new Error(`Exact Path for the match must start with \'/\', got: ${ wholePathMatch.exact }`);
+      throw new Error(
+        `Exact Path for the match must start with \'/\', got: ${wholePathMatch.exact}`
+      );
     }
     if (exactPathRewrite === '') {
-      throw new Error('Exact Path for the rewrite cannot be empty. Unlike startsWith() method, no automatic rewrite on whole path match');
+      throw new Error(
+        'Exact Path for the rewrite cannot be empty. Unlike startsWith() method, no automatic rewrite on whole path match'
+      );
     }
     if (exactPathRewrite && exactPathRewrite[0] !== '/') {
-      throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${ exactPathRewrite }`);
+      throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${exactPathRewrite}`);
     }
   }
 
   bind(_scope: Construct): HttpGatewayRoutePathMatchConfig {
     return {
       wholePathMatch: this.wholePathMatch,
-      wholePathRewrite: this.exactPathRewrite === undefined ? undefined : { exact: this.exactPathRewrite },
+      wholePathRewrite:
+        this.exactPathRewrite === undefined ? undefined : { exact: this.exactPathRewrite },
     };
   }
 }

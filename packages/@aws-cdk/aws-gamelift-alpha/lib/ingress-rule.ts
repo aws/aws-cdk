@@ -125,7 +125,6 @@ export class Port {
  * Interface for classes that provide the peer-specification parts of an inbound permission
  */
 export interface IPeer {
-
   /**
    * A unique identifier for this connection peer
    */
@@ -138,13 +137,13 @@ export interface IPeer {
 }
 
 /**
-   * Peer object factories
-   *
-   * The static methods on this object can be used to create peer objects
-   * which represent a connection partner in inbound permission rules.
-   *
-   * Use this object if you need to represent connection partners using plain IP addresses.
-   */
+ * Peer object factories
+ *
+ * The static methods on this object can be used to create peer objects
+ * which represent a connection partner in inbound permission rules.
+ *
+ * Use this object if you need to represent connection partners using plain IP addresses.
+ */
 export class Peer {
   /**
    * Create an IPv4 peer from a CIDR
@@ -160,13 +159,12 @@ export class Peer {
     return new AnyIPv4();
   }
 
-  protected constructor() {
-  }
+  protected constructor() {}
 }
 
 /**
-   * A connection to and from a given IP range
-   */
+ * A connection to and from a given IP range
+ */
 class CidrIPv4 implements IPeer {
   public readonly canInlineRule = true;
   public readonly uniqueId: string;
@@ -196,8 +194,8 @@ class CidrIPv4 implements IPeer {
 }
 
 /**
-   * Any IPv4 address
-   */
+ * Any IPv4 address
+ */
 class AnyIPv4 extends CidrIPv4 {
   constructor() {
     super('0.0.0.0/0');

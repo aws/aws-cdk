@@ -159,7 +159,10 @@ export abstract class ParamsAndSecretsLayerVersion {
    *
    * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html#retrieving-secrets_lambda_ARNs
    */
-  public static fromVersionArn(arn: string, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
+  public static fromVersionArn(
+    arn: string,
+    options: ParamsAndSecretsOptions = {}
+  ): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
       public _bind(_scope: Construct, _fn: IFunction): ParamsAndSecretsBindConfig {
         return {
@@ -173,7 +176,10 @@ export abstract class ParamsAndSecretsLayerVersion {
   /**
    * Use a specific version of the Parameters and Secrets Extension to generate a layer version.
    */
-  public static fromVersion(version: ParamsAndSecretsVersions, options: ParamsAndSecretsOptions = {}): ParamsAndSecretsLayerVersion {
+  public static fromVersion(
+    version: ParamsAndSecretsVersions,
+    options: ParamsAndSecretsOptions = {}
+  ): ParamsAndSecretsLayerVersion {
     return new (class extends ParamsAndSecretsLayerVersion {
       public _bind(scope: Construct, fn: IFunction): ParamsAndSecretsBindConfig {
         return {
@@ -197,32 +203,55 @@ export abstract class ParamsAndSecretsLayerVersion {
    * Configure environment variables for Parameters and Secrets Extension based on configuration options
    */
   private get environmentVariablesFromOptions(): { [key: string]: any } {
-    if (this.options.cacheSize !== undefined && (this.options.cacheSize < 0 || this.options.cacheSize > 1000)) {
-      throw new Error(`Cache size must be between 0 and 1000 inclusive - provided: ${this.options.cacheSize}`);
+    if (
+      this.options.cacheSize !== undefined &&
+      (this.options.cacheSize < 0 || this.options.cacheSize > 1000)
+    ) {
+      throw new Error(
+        `Cache size must be between 0 and 1000 inclusive - provided: ${this.options.cacheSize}`
+      );
     }
 
-    if (this.options.httpPort !== undefined && (this.options.httpPort < 1 || this.options.httpPort > 65535)) {
-      throw new Error(`HTTP port must be between 1 and 65535 inclusive - provided: ${this.options.httpPort}`);
+    if (
+      this.options.httpPort !== undefined &&
+      (this.options.httpPort < 1 || this.options.httpPort > 65535)
+    ) {
+      throw new Error(
+        `HTTP port must be between 1 and 65535 inclusive - provided: ${this.options.httpPort}`
+      );
     }
 
     // max connections has no maximum limit
     if (this.options.maxConnections !== undefined && this.options.maxConnections < 1) {
-      throw new Error(`Maximum connections must be at least 1 - provided: ${this.options.maxConnections}`);
+      throw new Error(
+        `Maximum connections must be at least 1 - provided: ${this.options.maxConnections}`
+      );
     }
 
-    if (this.options.secretsManagerTtl !== undefined && this.options.secretsManagerTtl.toSeconds() > 300) {
-      throw new Error(`Maximum TTL for a cached secret is 300 seconds - provided: ${this.options.secretsManagerTtl.toSeconds()} seconds`);
+    if (
+      this.options.secretsManagerTtl !== undefined &&
+      this.options.secretsManagerTtl.toSeconds() > 300
+    ) {
+      throw new Error(
+        `Maximum TTL for a cached secret is 300 seconds - provided: ${this.options.secretsManagerTtl.toSeconds()} seconds`
+      );
     }
 
-    if (this.options.parameterStoreTtl !== undefined && this.options.parameterStoreTtl.toSeconds() > 300) {
-      throw new Error(`Maximum TTL for a cached parameter is 300 seconds - provided: ${this.options.parameterStoreTtl.toSeconds()} seconds`);
+    if (
+      this.options.parameterStoreTtl !== undefined &&
+      this.options.parameterStoreTtl.toSeconds() > 300
+    ) {
+      throw new Error(
+        `Maximum TTL for a cached parameter is 300 seconds - provided: ${this.options.parameterStoreTtl.toSeconds()} seconds`
+      );
     }
 
     return {
       PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED: this.options.cacheEnabled ?? true,
       PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE: this.options.cacheSize ?? 1000,
       PARAMETERS_SECRETS_EXTENSION_HTTP_PORT: this.options.httpPort ?? 2773,
-      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL: this.options.logLevel ?? ParamsAndSecretsLogLevel.INFO,
+      PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL:
+        this.options.logLevel ?? ParamsAndSecretsLogLevel.INFO,
       PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS: this.options.maxConnections ?? 3,
       SECRETS_MANAGER_TIMEOUT_MILLIS: this.options.secretsManagerTimeout?.toMilliseconds() ?? 0,
       SECRETS_MANAGER_TTL: this.options.secretsManagerTtl?.toSeconds() ?? 300,
@@ -245,7 +274,9 @@ export abstract class ParamsAndSecretsLayerVersion {
     if (region !== undefined && !Token.isUnresolved(region)) {
       const layerArn = RegionInfo.get(region).paramsAndSecretsLambdaLayerArn(version, architecture);
       if (layerArn === undefined) {
-        throw new Error(`Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`);
+        throw new Error(
+          `Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`
+        );
       }
       return layerArn;
     }

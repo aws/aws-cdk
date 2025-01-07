@@ -53,7 +53,7 @@ export class Stage implements IStage {
   }
 
   public get actions(): IAction[] {
-    return this._actions.map(actionDescriptor => actionDescriptor.action);
+    return this._actions.map((actionDescriptor) => actionDescriptor.action);
   }
 
   public get pipeline(): IPipeline {
@@ -65,13 +65,13 @@ export class Stage implements IStage {
     for (const action of this._actions) {
       const outputArtifacts = action.outputs;
 
-      const unnamedOutputs = outputArtifacts.filter(o => !o.artifactName);
+      const unnamedOutputs = outputArtifacts.filter((o) => !o.artifactName);
 
       for (const outputArtifact of outputArtifacts) {
         if (!outputArtifact.artifactName) {
-          const unsanitizedArtifactName = `Artifact_${this.stageName}_${action.actionName}` + (unnamedOutputs.length === 1
-            ? ''
-            : '_' + (unnamedOutputs.indexOf(outputArtifact) + 1));
+          const unsanitizedArtifactName =
+            `Artifact_${this.stageName}_${action.actionName}` +
+            (unnamedOutputs.length === 1 ? '' : '_' + (unnamedOutputs.indexOf(outputArtifact) + 1));
           const artifactName = sanitizeArtifactName(unsanitizedArtifactName);
           (outputArtifact as any)._setName(artifactName);
         }
@@ -80,7 +80,7 @@ export class Stage implements IStage {
 
     return {
       name: this.stageName,
-      actions: this._actions.map(action => this.renderAction(action)),
+      actions: this._actions.map((action) => this.renderAction(action)),
     };
   }
 
@@ -90,14 +90,20 @@ export class Stage implements IStage {
     validation.validateName('Action', actionName);
 
     // check for duplicate Actions and names
-    if (this._actions.find(a => a.actionName === actionName)) {
-      throw new Error(`Stage ${this.stageName} already contains an action with name '${actionName}'`);
+    if (this._actions.find((a) => a.actionName === actionName)) {
+      throw new Error(
+        `Stage ${this.stageName} already contains an action with name '${actionName}'`
+      );
     }
 
     this._actions.push(this.attachActionToPipeline(action));
   }
 
-  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
+  public onStateChange(
+    name: string,
+    target?: events.IRuleTarget,
+    options?: events.RuleProps
+  ): events.Rule {
     const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
@@ -112,10 +118,7 @@ export class Stage implements IStage {
   }
 
   public validate(): string[] {
-    return [
-      ...this.validateHasActions(),
-      ...this.validateActions(),
-    ];
+    return [...this.validateHasActions(), ...this.validateActions()];
   }
 
   private validateHasActions(): string[] {
@@ -134,10 +137,24 @@ export class Stage implements IStage {
   }
 
   private validateAction(action: FullActionDescriptor): string[] {
-    return validation.validateArtifactBounds('input', action.inputs, action.artifactBounds.minInputs,
-      action.artifactBounds.maxInputs, action.category, action.provider)
-      .concat(validation.validateArtifactBounds('output', action.outputs, action.artifactBounds.minOutputs,
-        action.artifactBounds.maxOutputs, action.category, action.provider),
+    return validation
+      .validateArtifactBounds(
+        'input',
+        action.inputs,
+        action.artifactBounds.minInputs,
+        action.artifactBounds.maxInputs,
+        action.category,
+        action.provider
+      )
+      .concat(
+        validation.validateArtifactBounds(
+          'output',
+          action.outputs,
+          action.artifactBounds.minOutputs,
+          action.artifactBounds.maxOutputs,
+          action.category,
+          action.provider
+        )
       );
   }
 
@@ -148,7 +165,9 @@ export class Stage implements IStage {
     // may do this to maintain construct tree compatibility between versions).
     //
     // If so, we simply reuse it.
-    let actionScope = Node.of(this.scope).tryFindChild(action.actionProperties.actionName) as Construct | undefined;
+    let actionScope = Node.of(this.scope).tryFindChild(action.actionProperties.actionName) as
+      | Construct
+      | undefined;
     if (!actionScope) {
       let id = action.actionProperties.actionName;
       if (Token.isUnresolved(id)) {
@@ -160,8 +179,14 @@ export class Stage implements IStage {
   }
 
   private renderAction(action: FullActionDescriptor): CfnPipeline.ActionDeclarationProperty {
-    const outputArtifacts = cdk.Lazy.any({ produce: () => this.renderArtifacts(action.outputs) }, { omitEmptyArray: true });
-    const inputArtifacts = cdk.Lazy.any({ produce: () => this.renderArtifacts(action.inputs) }, { omitEmptyArray: true });
+    const outputArtifacts = cdk.Lazy.any(
+      { produce: () => this.renderArtifacts(action.outputs) },
+      { omitEmptyArray: true }
+    );
+    const inputArtifacts = cdk.Lazy.any(
+      { produce: () => this.renderArtifacts(action.inputs) },
+      { omitEmptyArray: true }
+    );
     return {
       name: action.actionName,
       inputArtifacts,
@@ -181,9 +206,7 @@ export class Stage implements IStage {
   }
 
   private renderArtifacts(artifacts: Artifact[]): CfnPipeline.InputArtifactProperty[] {
-    return artifacts
-      .filter(a => a.artifactName)
-      .map(a => ({ name: a.artifactName! }));
+    return artifacts.filter((a) => a.artifactName).map((a) => ({ name: a.artifactName! }));
   }
 }
 

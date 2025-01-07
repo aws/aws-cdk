@@ -91,7 +91,10 @@ export abstract class Values {
       throw new Error(`populateFrom (${components.populateFrom}) is not present in dimensions`);
     }
     const metricSchema = [components.namespace, ...components.dimensions];
-    return Values.fromSearch(`{${metricSchema.join(',')}} MetricName=\"${components.metricName}\"`, components.populateFrom);
+    return Values.fromSearch(
+      `{${metricSchema.join(',')}} MetricName=\"${components.metricName}\"`,
+      components.populateFrom
+    );
   }
 
   /**
@@ -124,7 +127,7 @@ class StaticValues extends Values {
 
   toJson(): any {
     return {
-      values: this.values.map(value => ({ label: value.label, value: value.value })),
+      values: this.values.map((value) => ({ label: value.label, value: value.value })),
     };
   }
 }
@@ -136,7 +139,10 @@ class SearchValues extends Values {
    * @param expression search expression that specifies a namespace, dimension name(s) and a metric name. For example `{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"`
    * @param populateFrom dimension the dimension name, that the search expression retrieves, whose values will be used to populate the values to choose from. For example `InstanceId`
    */
-  public constructor(public readonly expression: string, public readonly populateFrom: string) {
+  public constructor(
+    public readonly expression: string,
+    public readonly populateFrom: string
+  ) {
     super();
   }
 
@@ -165,7 +171,7 @@ export class DefaultValue {
     return new DefaultValue(value);
   }
 
-  private constructor(public readonly val: any) { }
+  private constructor(public readonly val: any) {}
 }
 
 /**
@@ -230,7 +236,9 @@ export class DashboardVariable implements IVariable {
       throw new Error(`Variable with inputType (${options.inputType}) requires values to be set`);
     }
     if (options.inputType == VariableInputType.INPUT && options.values) {
-      throw new Error('inputType INPUT cannot be combined with values. Please choose either SELECT or RADIO or remove \'values\' from options.');
+      throw new Error(
+        "inputType INPUT cannot be combined with values. Please choose either SELECT or RADIO or remove 'values' from options."
+      );
     }
   }
 

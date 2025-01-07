@@ -152,7 +152,7 @@ export class MatchResult {
 
     // Copy captures so we all finalize them together
     inner.captures.forEach((vals, capture) => {
-      vals.forEach(value => this.recordCapture({ capture, value }));
+      vals.forEach((value) => this.recordCapture({ capture, value }));
     });
     return this;
   }
@@ -184,7 +184,7 @@ export class MatchResult {
     const failures = new Array<MatchFailure>();
     recurse(this, []);
 
-    return failures.map(r => {
+    return failures.map((r) => {
       const loc = r.path.length === 0 ? '' : ` at /${r.path.join('/')}`;
       return '' + r.message + loc + ` (using ${r.matcher.name} matcher)`;
     });
@@ -238,14 +238,16 @@ export class MatchResult {
 
     function recurse(r: MatchResult): void {
       // Failures that have been reported against this MatchResult that we didn't print yet
-      const remainingFailures = new Set(Array.from(r.failuresHere.keys()).filter(x => x !== ''));
+      const remainingFailures = new Set(Array.from(r.failuresHere.keys()).filter((x) => x !== ''));
 
       //////////////////////////////////////////////////////////////////////
       if (Array.isArray(r.target)) {
         indents.push('  ');
         emit('[\n');
         for (const [first, i] of enumFirst(range(r.target.length))) {
-          if (!first) { emit(',\n'); }
+          if (!first) {
+            emit(',\n');
+          }
 
           emitFailures(r, `${i}`, remainingFailures);
           const innerMatcher = r.innerMatchFailures.get(`${i}`);
@@ -269,13 +271,14 @@ export class MatchResult {
       if (r.target && typeof r.target === 'object') {
         indents.push('  ');
         emit('{\n');
-        const keys = Array.from(new Set([
-          ...Object.keys(r.target),
-          ...Array.from(remainingFailures),
-        ])).sort();
+        const keys = Array.from(
+          new Set([...Object.keys(r.target), ...Array.from(remainingFailures)])
+        ).sort();
 
         for (const [first, key] of enumFirst(keys)) {
-          if (!first) { emit(',\n'); }
+          if (!first) {
+            emit(',\n');
+          }
 
           emitFailures(r, key, remainingFailures);
           const innerMatcher = r.innerMatchFailures.get(key);
@@ -337,23 +340,29 @@ export class MatchResult {
     function renderAbridged(x: any): string {
       if (Array.isArray(x)) {
         switch (x.length) {
-          case 0: return '[]';
-          case 1: return `[ ${renderAbridged(x[0])} ]`;
+          case 0:
+            return '[]';
+          case 1:
+            return `[ ${renderAbridged(x[0])} ]`;
           case 2:
             // Render if all values are scalars
-            if (x.every(e => ['number', 'boolean', 'string'].includes(typeof e))) {
+            if (x.every((e) => ['number', 'boolean', 'string'].includes(typeof e))) {
               return `[ ${x.map(renderAbridged).join(', ')} ]`;
             }
             return '[ ... ]';
-          default: return '[ ... ]';
+          default:
+            return '[ ... ]';
         }
       }
       if (x && typeof x === 'object') {
         const keys = Object.keys(x);
         switch (keys.length) {
-          case 0: return '{}';
-          case 1: return `{ ${JSON.stringify(keys[0])}: ${renderAbridged(x[keys[0]])} }`;
-          default: return '{ ... }';
+          case 0:
+            return '{}';
+          case 1:
+            return `{ ${JSON.stringify(keys[0])}: ${renderAbridged(x[keys[0]])} }`;
+          default:
+            return '{ ... }';
         }
       }
       return jsonify(x);
@@ -368,7 +377,7 @@ export class MatchResult {
      */
     function moveMarkersToFront(x: string): string {
       const re = /^(\s+)!!/gm;
-      return x.replace(re, (_, spaces: string) => `!!${spaces.substring(0, spaces.length - 2) }`);
+      return x.replace(re, (_, spaces: string) => `!!${spaces.substring(0, spaces.length - 2)}`);
     }
   }
 

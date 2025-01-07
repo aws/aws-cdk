@@ -6,7 +6,11 @@ import * as redshift from '../lib';
 
 const app = new cdk.App({
   context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+    'availability-zones:account=123456789012:region=us-east-1': [
+      'us-east-1a',
+      'us-east-1b',
+      'us-east-1c',
+    ],
   },
 });
 const stack = new cdk.Stack(app, 'MultiAzRedshift', {

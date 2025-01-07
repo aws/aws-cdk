@@ -29,7 +29,20 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
+import {
+  Annotations,
+  ArnFormat,
+  CfnResource,
+  Duration,
+  FeatureFlags,
+  Fn,
+  IAspect,
+  Lazy,
+  Names,
+  Size,
+  Stack,
+  Token,
+} from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
@@ -144,7 +157,7 @@ export enum LoggingFormat {
 export enum RecursiveLoop {
   /**
    * Allows the recursive loop to happen and does not terminate it.
-  */
+   */
   ALLOW = 'Allow',
   /**
    * Terminates the recursive loop.
@@ -354,11 +367,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tracing?: Tracing;
 
   /**
-  * Enable SnapStart for Lambda Function.
-  * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
-  *
-  * @default - No snapstart
-  */
+   * Enable SnapStart for Lambda Function.
+   * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
+   *
+   * @default - No snapstart
+   */
   readonly snapStart?: SnapStartConf;
 
   /**
@@ -562,11 +575,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly loggingFormat?: LoggingFormat;
 
   /**
-  * Sets the Recursive Loop Protection for Lambda Function.
-  * It lets Lambda detect and terminate unintended recursive loops.
-  *
-  * @default RecursiveLoop.Terminate
-  */
+   * Sets the Recursive Loop Protection for Lambda Function.
+   * It lets Lambda detect and terminate unintended recursive loops.
+   *
+   * @default RecursiveLoop.Terminate
+   */
   readonly recursiveLoop?: RecursiveLoop;
 
   /**
@@ -640,7 +653,6 @@ export interface FunctionProps extends FunctionOptions {
  * library.
  */
 export class Function extends FunctionBase {
-
   /**
    * Returns a `lambda.Version` which represents the current version of this
    * Lambda function. A new version will be created every time the function's
@@ -656,7 +668,7 @@ export class Function extends FunctionBase {
 
     if (this._warnIfCurrentVersionCalled) {
       this.warnInvokeFunctionPermissions(this);
-    };
+    }
 
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
@@ -669,13 +681,15 @@ export class Function extends FunctionBase {
     const cfn = this._currentVersion.node.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
-    cfn.overrideLogicalId(Lazy.uncachedString({
-      produce: () => {
-        const hash = calculateFunctionHash(this, this.hashMixins.join(''));
-        const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-        return `${logicalId}${hash}`;
-      },
-    }));
+    cfn.overrideLogicalId(
+      Lazy.uncachedString({
+        produce: () => {
+          const hash = calculateFunctionHash(this, this.hashMixins.join(''));
+          const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+          return `${logicalId}${hash}`;
+        },
+      })
+    );
 
     return this._currentVersion;
   }
@@ -734,7 +748,11 @@ export class Function extends FunctionBase {
    * @param id The name of the lambda construct
    * @param attrs the attributes of the function to import
    */
-  public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
+  public static fromFunctionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: FunctionAttributes
+  ): IFunction {
     const functionArn = attrs.functionArn;
     const functionName = extractNameFromArn(attrs.functionArn);
     const role = attrs.role;
@@ -764,7 +782,9 @@ export class Function extends FunctionBase {
           });
         } else if (attrs.securityGroupId) {
           this._connections = new ec2.Connections({
-            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)],
+            securityGroups: [
+              ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId),
+            ],
           });
         }
       }
@@ -839,7 +859,9 @@ export class Function extends FunctionBase {
    *
    * @default max over 5 minutes
    */
-  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public static metricAllUnreservedConcurrentExecutions(
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
   }
 
@@ -918,33 +940,48 @@ export class Function extends FunctionBase {
 
     if (props.functionName && !Token.isUnresolved(props.functionName)) {
       if (props.functionName.length > 64) {
-        throw new ValidationError(`Function name can not be longer than 64 characters but has ${props.functionName.length} characters.`, this);
+        throw new ValidationError(
+          `Function name can not be longer than 64 characters but has ${props.functionName.length} characters.`,
+          this
+        );
       }
       if (!/^[a-zA-Z0-9-_]+$/.test(props.functionName)) {
-        throw new ValidationError(`Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`, this);
+        throw new ValidationError(
+          `Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`,
+          this
+        );
       }
     }
 
     if (props.description && !Token.isUnresolved(props.description)) {
       if (props.description.length > 256) {
-        throw new ValidationError(`Function description can not be longer than 256 characters but has ${props.description.length} characters.`, this);
+        throw new ValidationError(
+          `Function description can not be longer than 256 characters but has ${props.description.length} characters.`,
+          this
+        );
       }
     }
 
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
+    managedPolicies.push(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
+    );
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+      managedPolicies.push(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole')
+      );
     }
 
-    this.role = props.role || new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies,
-    });
+    this.role =
+      props.role ||
+      new iam.Role(this, 'ServiceRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies,
+      });
     this.grantPrincipal = this.role;
 
     // add additional managed policies when necessary
@@ -952,20 +989,26 @@ export class Function extends FunctionBase {
       const config = props.filesystem.config;
       if (!Token.isUnresolved(config.localMountPath)) {
         if (!/^\/mnt\/[a-zA-Z0-9-_.]+$/.test(config.localMountPath)) {
-          throw new ValidationError(`Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given ${config.localMountPath}.`, this);
+          throw new ValidationError(
+            `Local mount path should match with ^/mnt/[a-zA-Z0-9-_.]+$ but given ${config.localMountPath}.`,
+            this
+          );
         }
         if (config.localMountPath.length > 160) {
-          throw new ValidationError(`Local mount path can not be longer than 160 characters but has ${config.localMountPath.length} characters.`, this);
+          throw new ValidationError(
+            `Local mount path can not be longer than 160 characters but has ${config.localMountPath.length} characters.`,
+            this
+          );
         }
       }
       if (config.policies) {
-        config.policies.forEach(p => {
+        config.policies.forEach((p) => {
           this.role?.addToPrincipalPolicy(p);
         });
       }
     }
 
-    for (const statement of (props.initialPolicy || [])) {
+    for (const statement of props.initialPolicy || []) {
       this.role.addToPrincipalPolicy(statement);
     }
 
@@ -1013,23 +1056,35 @@ export class Function extends FunctionBase {
 
     let fileSystemConfigs: CfnFunction.FileSystemConfigProperty[] | undefined = undefined;
     if (props.filesystem) {
-      fileSystemConfigs = [{
-        arn: props.filesystem.config.arn,
-        localMountPath: props.filesystem.config.localMountPath,
-      }];
+      fileSystemConfigs = [
+        {
+          arn: props.filesystem.config.arn,
+          localMountPath: props.filesystem.config.localMountPath,
+        },
+      ];
     }
 
     if (props.architecture && props.architectures !== undefined) {
-      throw new ValidationError('Either architecture or architectures must be specified but not both.', this);
+      throw new ValidationError(
+        'Either architecture or architectures must be specified but not both.',
+        this
+      );
     }
     if (props.architectures && props.architectures.length > 1) {
       throw new ValidationError('Only one architecture must be specified.', this);
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
-    if (props.ephemeralStorageSize && !props.ephemeralStorageSize.isUnresolved()
-      && (props.ephemeralStorageSize.toMebibytes() < 512 || props.ephemeralStorageSize.toMebibytes() > 10240)) {
-      throw new ValidationError(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`, this);
+    if (
+      props.ephemeralStorageSize &&
+      !props.ephemeralStorageSize.isUnresolved() &&
+      (props.ephemeralStorageSize.toMebibytes() < 512 ||
+        props.ephemeralStorageSize.toMebibytes() > 10240)
+    ) {
+      throw new ValidationError(
+        `Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`,
+        this
+      );
     }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
@@ -1053,9 +1108,11 @@ export class Function extends FunctionBase {
       // Token, actually *modifies* the 'environment' map.
       environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
-      ephemeralStorage: props.ephemeralStorageSize ? {
-        size: props.ephemeralStorageSize.toMebibytes(),
-      } : undefined,
+      ephemeralStorage: props.ephemeralStorageSize
+        ? {
+            size: props.ephemeralStorageSize.toMebibytes(),
+          }
+        : undefined,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
@@ -1074,7 +1131,7 @@ export class Function extends FunctionBase {
       recursiveLoop: props.recursiveLoop,
     });
 
-    if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
+    if (props.tracing !== undefined || props.adotInstrumentation !== undefined) {
       resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
     }
 
@@ -1125,7 +1182,12 @@ export class Function extends FunctionBase {
     props.code.bindToResource(resource);
 
     // Event Invoke Config
-    if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
+    if (
+      props.onFailure ||
+      props.onSuccess ||
+      props.maxEventAge ||
+      props.retryAttempts !== undefined
+    ) {
       this.configureAsyncInvoke({
         onFailure: props.onFailure,
         onSuccess: props.onSuccess,
@@ -1138,7 +1200,7 @@ export class Function extends FunctionBase {
 
     if (props.filesystem) {
       if (!props.vpc) {
-        throw new ValidationError('Cannot configure \'filesystem\' without configuring a VPC.', this);
+        throw new ValidationError("Cannot configure 'filesystem' without configuring a VPC.", this);
       }
       const config = props.filesystem.config;
       if (config.dependency) {
@@ -1147,16 +1209,22 @@ export class Function extends FunctionBase {
       // There could be a race if the Lambda is used in a CustomResource. It is possible for the Lambda to
       // fail to attach to a given FileSystem if we do not have a dependency on the SecurityGroup ingress/egress
       // rules that were created between this Lambda's SG & the Filesystem SG.
-      this.connections.securityGroups.forEach(sg => {
-        sg.node.findAll().forEach(child => {
-          if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupEgress') {
+      this.connections.securityGroups.forEach((sg) => {
+        sg.node.findAll().forEach((child) => {
+          if (
+            child instanceof CfnResource &&
+            child.cfnResourceType === 'AWS::EC2::SecurityGroupEgress'
+          ) {
             resource.node.addDependency(child);
           }
         });
       });
-      config.connections?.securityGroups.forEach(sg => {
-        sg.node.findAll().forEach(child => {
-          if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupIngress') {
+      config.connections?.securityGroups.forEach((sg) => {
+        sg.node.findAll().forEach((child) => {
+          if (
+            child instanceof CfnResource &&
+            child.cfnResourceType === 'AWS::EC2::SecurityGroupIngress'
+          ) {
             resource.node.addDependency(child);
           }
         });
@@ -1202,7 +1270,10 @@ export class Function extends FunctionBase {
       'LAMBDA_RUNTIME_DIR',
     ];
     if (reservedEnvironmentVariables.includes(key)) {
-      throw new ValidationError(`${key} environment variable is reserved by the lambda runtime and can not be set manually. See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html`, this);
+      throw new ValidationError(
+        `${key} environment variable is reserved by the lambda runtime and can not be set manually. See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html`,
+        this
+      );
     }
     this.environment[key] = { value, ...options };
     return this;
@@ -1219,20 +1290,34 @@ export class Function extends FunctionBase {
     }
 
     if (props.applicationLogLevel && props.applicationLogLevelV2) {
-      throw new ValidationError('Only define applicationLogLevel or applicationLogLevelV2, not both.', this);
+      throw new ValidationError(
+        'Only define applicationLogLevel or applicationLogLevelV2, not both.',
+        this
+      );
     }
 
     if (props.systemLogLevel && props.systemLogLevelV2) {
       throw new ValidationError('Only define systemLogLevel or systemLogLevelV2, not both.', this);
     }
 
-    if (props.applicationLogLevel || props.applicationLogLevelV2 || props.systemLogLevel || props.systemLogLevelV2) {
+    if (
+      props.applicationLogLevel ||
+      props.applicationLogLevelV2 ||
+      props.systemLogLevel ||
+      props.systemLogLevelV2
+    ) {
       if (props.logFormat !== LogFormat.JSON && props.loggingFormat === undefined) {
-        throw new ValidationError(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`, this);
+        throw new ValidationError(
+          `To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`,
+          this
+        );
       }
 
       if (props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
-        throw new ValidationError(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`, this);
+        throw new ValidationError(
+          `To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`,
+          this
+        );
       }
     }
 
@@ -1247,7 +1332,7 @@ export class Function extends FunctionBase {
       return loggingConfig;
     }
     return undefined;
-  };
+  }
 
   /**
    * Mix additional information into the hash of the Version object
@@ -1269,7 +1354,10 @@ export class Function extends FunctionBase {
    */
   public invalidateVersionBasedOn(x: string) {
     if (Token.isUnresolved(x)) {
-      throw new ValidationError('invalidateVersionOn: input may not contain unresolved tokens', this);
+      throw new ValidationError(
+        'invalidateVersionOn: input may not contain unresolved tokens',
+        this
+      );
     }
     this.hashMixins.push(x);
   }
@@ -1284,11 +1372,20 @@ export class Function extends FunctionBase {
   public addLayers(...layers: ILayerVersion[]): void {
     for (const layer of layers) {
       if (this._layers.length === 5) {
-        throw new ValidationError('Unable to add layer: this lambda function already uses 5 layers.', this);
+        throw new ValidationError(
+          'Unable to add layer: this lambda function already uses 5 layers.',
+          this
+        );
       }
-      if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
-        const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
-        throw new ValidationError(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`, this);
+      if (
+        layer.compatibleRuntimes &&
+        !layer.compatibleRuntimes.find((runtime) => runtime.runtimeEquals(this.runtime))
+      ) {
+        const runtimes = layer.compatibleRuntimes.map((runtime) => runtime.name).join(', ');
+        throw new ValidationError(
+          `This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`,
+          this
+        );
       }
 
       // Currently no validations for compatible architectures since Lambda service
@@ -1329,8 +1426,8 @@ export class Function extends FunctionBase {
     codeSha256?: string,
     description?: string,
     provisionedExecutions?: number,
-    asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
-
+    asyncInvokeConfig: EventInvokeConfigOptions = {}
+  ): Version {
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
@@ -1382,7 +1479,11 @@ export class Function extends FunctionBase {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: logs.RetentionDays.INFINITE,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logRetention.logGroupArn);
+      this._logGroup = logs.LogGroup.fromLogGroupArn(
+        this,
+        `${this.node.id}-LogGroup`,
+        logRetention.logGroupArn
+      );
     }
     return this._logGroup;
   }
@@ -1394,13 +1495,18 @@ export class Function extends FunctionBase {
     for (const [key, config] of envEntries) {
       if (config.removeInEdge) {
         delete this.environment[key];
-        Annotations.of(this).addInfo(`Removed ${key} environment variable for Lambda@Edge compatibility`);
+        Annotations.of(this).addInfo(
+          `Removed ${key} environment variable for Lambda@Edge compatibility`
+        );
       }
     }
     const envKeys = Object.keys(this.environment);
     if (envKeys.length !== 0) {
-      throw new ValidationError(`The function ${this.node.path} contains environment variables [${envKeys}] and is not compatible with Lambda@Edge. \
-Environment variables can be marked for removal when used in Lambda@Edge by setting the \'removeInEdge\' property in the \'addEnvironment()\' API.`, this);
+      throw new ValidationError(
+        `The function ${this.node.path} contains environment variables [${envKeys}] and is not compatible with Lambda@Edge. \
+Environment variables can be marked for removal when used in Lambda@Edge by setting the \'removeInEdge\' property in the \'addEnvironment()\' API.`,
+        this
+      );
     }
 
     return;
@@ -1419,9 +1525,17 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (props.runtime !== Runtime.FROM_IMAGE) {
       // Layers cannot be added to Lambda container images. The image should have the insights agent installed.
       // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
-      this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion._bind(this, this).arn));
+      this.addLayers(
+        LayerVersion.fromLayerVersionArn(
+          this,
+          'LambdaInsightsLayer',
+          props.insightsVersion._bind(this, this).arn
+        )
+      );
     }
-    this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
+    this.role?.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy')
+    );
   }
 
   /**
@@ -1430,13 +1544,15 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    * @param props properties for the ADOT instrumentation
    */
   private configureAdotInstrumentation(props: FunctionProps): void {
-
     if (props.adotInstrumentation === undefined) {
       return;
     }
 
     if (props.runtime === Runtime.FROM_IMAGE) {
-      throw new ValidationError("ADOT Lambda layer can't be configured with container image package type", this);
+      throw new ValidationError(
+        "ADOT Lambda layer can't be configured with container image package type",
+        this
+      );
     }
 
     // This is not the complete list of incompatible runtimes and layer types. We are only
@@ -1446,12 +1562,23 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     // The Runtime is Python and Adot is set it requires a different EXEC_WRAPPER than the other code bases.
-    if (this.runtime.family === RuntimeFamily.PYTHON &&
-      props.adotInstrumentation.execWrapper.valueOf() !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
-      throw new ValidationError('Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER', this);
+    if (
+      this.runtime.family === RuntimeFamily.PYTHON &&
+      props.adotInstrumentation.execWrapper.valueOf() !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER
+    ) {
+      throw new ValidationError(
+        'Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER',
+        this
+      );
     }
 
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerVersion._bind(this).arn));
+    this.addLayers(
+      LayerVersion.fromLayerVersionArn(
+        this,
+        'AdotLayer',
+        props.adotInstrumentation.layerVersion._bind(this).arn
+      )
+    );
     this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentation.execWrapper);
   }
 
@@ -1464,8 +1591,12 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     const layerVersion = props.paramsAndSecrets._bind(this, this);
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', layerVersion.arn));
-    Object.entries(layerVersion.environmentVars).forEach(([key, value]) => this.addEnvironment(key, value.toString()));
+    this.addLayers(
+      LayerVersion.fromLayerVersionArn(this, 'ParamsAndSecretsLayer', layerVersion.arn)
+    );
+    Object.entries(layerVersion.environmentVars).forEach(([key, value]) =>
+      this.addEnvironment(key, value.toString())
+    );
   }
 
   private renderLayers() {
@@ -1477,7 +1608,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       this._layers.sort();
     }
 
-    return this._layers.map(layer => layer.layerVersionArn);
+    return this._layers.map((layer) => layer.layerVersionArn);
   }
 
   private renderEnvironment() {
@@ -1511,47 +1642,77 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    */
   private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
     if (props.securityGroup && props.securityGroups) {
-      throw new ValidationError('Only one of the function props, securityGroup or securityGroups, is allowed', this);
+      throw new ValidationError(
+        'Only one of the function props, securityGroup or securityGroups, is allowed',
+        this
+      );
     }
 
     const hasSecurityGroups = props.securityGroups && props.securityGroups.length > 0;
     if (!props.vpc) {
       if (props.allowAllOutbound !== undefined) {
-        throw new ValidationError('Cannot configure \'allowAllOutbound\' without configuring a VPC', this);
+        throw new ValidationError(
+          "Cannot configure 'allowAllOutbound' without configuring a VPC",
+          this
+        );
       }
       if (props.securityGroup) {
-        throw new ValidationError('Cannot configure \'securityGroup\' without configuring a VPC', this);
+        throw new ValidationError(
+          "Cannot configure 'securityGroup' without configuring a VPC",
+          this
+        );
       }
       if (hasSecurityGroups) {
-        throw new ValidationError('Cannot configure \'securityGroups\' without configuring a VPC', this);
+        throw new ValidationError(
+          "Cannot configure 'securityGroups' without configuring a VPC",
+          this
+        );
       }
       if (props.vpcSubnets) {
-        throw new ValidationError('Cannot configure \'vpcSubnets\' without configuring a VPC', this);
+        throw new ValidationError("Cannot configure 'vpcSubnets' without configuring a VPC", this);
       }
       if (props.ipv6AllowedForDualStack) {
-        throw new ValidationError('Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC', this);
+        throw new ValidationError(
+          "Cannot configure 'ipv6AllowedForDualStack' without configuring a VPC",
+          this
+        );
       }
       if (props.allowAllIpv6Outbound !== undefined) {
-        throw new ValidationError('Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC', this);
+        throw new ValidationError(
+          "Cannot configure 'allowAllIpv6Outbound' without configuring a VPC",
+          this
+        );
       }
       return undefined;
     }
 
     if (props.allowAllOutbound !== undefined) {
       if (props.securityGroup) {
-        throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
+        throw new ValidationError(
+          "Configure 'allowAllOutbound' directly on the supplied SecurityGroup.",
+          this
+        );
       }
       if (hasSecurityGroups) {
-        throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups.', this);
+        throw new ValidationError(
+          "Configure 'allowAllOutbound' directly on the supplied SecurityGroups.",
+          this
+        );
       }
     }
 
     if (props.allowAllIpv6Outbound !== undefined) {
       if (props.securityGroup) {
-        throw new ValidationError('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroup.', this);
+        throw new ValidationError(
+          "Configure 'allowAllIpv6Outbound' directly on the supplied SecurityGroup.",
+          this
+        );
       }
       if (hasSecurityGroups) {
-        throw new ValidationError('Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups.', this);
+        throw new ValidationError(
+          "Configure 'allowAllIpv6Outbound' directly on the supplied SecurityGroups.",
+          this
+        );
       }
     }
 
@@ -1560,12 +1721,14 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (hasSecurityGroups) {
       securityGroups = props.securityGroups;
     } else {
-      const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
-        vpc: props.vpc,
-        description: 'Automatic security group for Lambda Function ' + Names.uniqueId(this),
-        allowAllOutbound: props.allowAllOutbound,
-        allowAllIpv6Outbound: props.allowAllIpv6Outbound,
-      });
+      const securityGroup =
+        props.securityGroup ||
+        new ec2.SecurityGroup(this, 'SecurityGroup', {
+          vpc: props.vpc,
+          description: 'Automatic security group for Lambda Function ' + Names.uniqueId(this),
+          allowAllOutbound: props.allowAllOutbound,
+          allowAllIpv6Outbound: props.allowAllIpv6Outbound,
+        });
       securityGroups = [securityGroup];
     }
 
@@ -1575,7 +1738,8 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       if (props.filesystem.config.connections) {
         this.connections.allowTo(
           props.filesystem.config.connections,
-          props.filesystem.config.connections.defaultPort ?? ec2.Port.tcp(efs.FileSystem.DEFAULT_PORT),
+          props.filesystem.config.connections.defaultPort ??
+            ec2.Port.tcp(efs.FileSystem.DEFAULT_PORT)
         );
       }
     }
@@ -1583,11 +1747,14 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     const ipv6AllowedForDualStack = props.ipv6AllowedForDualStack;
     const allowPublicSubnet = props.allowPublicSubnet ?? false;
     const selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
-    const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
+    const publicSubnetIds = new Set(props.vpc.publicSubnets.map((s) => s.subnetId));
     for (const subnetId of selectedSubnets.subnetIds) {
       if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
-        throw new ValidationError('Lambda Functions in a public subnet can NOT access the internet. ' +
-          'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true', this);
+        throw new ValidationError(
+          'Lambda Functions in a public subnet can NOT access the internet. ' +
+            'If you are aware of this limitation and would still like to place the function in a public subnet, set `allowPublicSubnet` to true',
+          this
+        );
       }
     }
     this.node.addDependency(selectedSubnets.internetConnectivityEstablished);
@@ -1599,14 +1766,14 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return {
         ipv6AllowedForDualStack: ipv6AllowedForDualStack,
         subnetIds: selectedSubnets.subnetIds,
-        securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+        securityGroupIds: securityGroups.map((sg) => sg.securityGroupId),
       };
     } else {
       return {
         subnetIds: selectedSubnets.subnetIds,
-        securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+        securityGroupIds: securityGroups.map((sg) => sg.securityGroupId),
       };
-    };
+    }
   }
 
   private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {
@@ -1620,10 +1787,16 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // so it can't be checked at function set up time
     // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
     // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only support published Lambda versions. Ignore if function already have published versions');
+    Annotations.of(this).addWarningV2(
+      '@aws-cdk/aws-lambda:snapStartRequirePublish',
+      'SnapStart only support published Lambda versions. Ignore if function already have published versions'
+    );
 
     if (!props.runtime.supportsSnapStart) {
-      throw new ValidationError(`SnapStart currently not supported by runtime ${props.runtime.name}`, this);
+      throw new ValidationError(
+        `SnapStart currently not supported by runtime ${props.runtime.name}`,
+        this
+      );
     }
 
     if (props.filesystem) {
@@ -1631,7 +1804,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     if (props.ephemeralStorageSize && props.ephemeralStorageSize?.toMebibytes() > 512) {
-      throw new ValidationError('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage', this);
+      throw new ValidationError(
+        'SnapStart is currently not supported using more than 512 MiB Ephemeral Storage',
+        this
+      );
     }
 
     return props.snapStart._render();
@@ -1648,25 +1824,37 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
-    if (props.deadLetterTopic && (props.deadLetterQueue || props.deadLetterQueueEnabled !== undefined)) {
-      throw new ValidationError('deadLetterQueue and deadLetterTopic cannot be specified together at the same time', this);
+    if (
+      props.deadLetterTopic &&
+      (props.deadLetterQueue || props.deadLetterQueueEnabled !== undefined)
+    ) {
+      throw new ValidationError(
+        'deadLetterQueue and deadLetterTopic cannot be specified together at the same time',
+        this
+      );
     }
 
     let deadLetterQueue: sqs.IQueue | sns.ITopic;
     if (props.deadLetterTopic) {
       deadLetterQueue = props.deadLetterTopic;
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['sns:Publish'],
-        resources: [deadLetterQueue.topicArn],
-      }));
+      this.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['sns:Publish'],
+          resources: [deadLetterQueue.topicArn],
+        })
+      );
     } else {
-      deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-        retentionPeriod: Duration.days(14),
-      });
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['sqs:SendMessage'],
-        resources: [deadLetterQueue.queueArn],
-      }));
+      deadLetterQueue =
+        props.deadLetterQueue ||
+        new sqs.Queue(this, 'DeadLetterQueue', {
+          retentionPeriod: Duration.days(14),
+        });
+      this.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['sqs:SendMessage'],
+          resources: [deadLetterQueue.queueArn],
+        })
+      );
     }
 
     return deadLetterQueue;
@@ -1675,7 +1863,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue | sns.ITopic) {
     if (deadLetterQueue) {
       return {
-        targetArn: this.isQueue(deadLetterQueue) ? deadLetterQueue.queueArn : deadLetterQueue.topicArn,
+        targetArn: this.isQueue(deadLetterQueue)
+          ? deadLetterQueue.queueArn
+          : deadLetterQueue.topicArn,
       };
     } else {
       return undefined;
@@ -1687,10 +1877,12 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       return undefined;
     }
 
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
-      resources: ['*'],
-    }));
+    this.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
+        resources: ['*'],
+      })
+    );
 
     return {
       mode: tracing,
@@ -1699,13 +1891,21 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
   private validateProfiling(props: FunctionProps) {
     if (!props.runtime.supportsCodeGuruProfiling) {
-      throw new ValidationError(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`, this);
+      throw new ValidationError(
+        `CodeGuru profiling is not supported by runtime ${props.runtime.name}`,
+        this
+      );
     }
-    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_NAME
-      || props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN
-      || props.environment.AWS_CODEGURU_PROFILER_TARGET_REGION
-      || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
-      Annotations.of(this).addWarning('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled');
+    if (
+      props.environment &&
+      (props.environment.AWS_CODEGURU_PROFILER_GROUP_NAME ||
+        props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN ||
+        props.environment.AWS_CODEGURU_PROFILER_TARGET_REGION ||
+        props.environment.AWS_CODEGURU_PROFILER_ENABLED)
+    ) {
+      Annotations.of(this).addWarning(
+        'AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'
+      );
     }
   }
 }
@@ -1752,16 +1952,22 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   // mutually exclusive
   const codeType = [code.inlineCode, code.s3Location, code.image];
 
-  if (codeType.filter(x => !!x).length !== 1) {
-    throw new Error('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
+  if (codeType.filter((x) => !!x).length !== 1) {
+    throw new Error(
+      'lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"'
+    );
   }
 
   if (!!code.image === (props.handler !== Handler.FROM_IMAGE)) {
-    throw new Error('handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
+    throw new Error(
+      'handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function'
+    );
   }
 
   if (!!code.image === (props.runtime !== Runtime.FROM_IMAGE)) {
-    throw new Error('runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
+    throw new Error(
+      'runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function'
+    );
   }
 
   // if this is inline code, check that the runtime supports
@@ -1771,7 +1977,7 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
 }
 
 function undefinedIfNoKeys<A extends { [key: string]: unknown }>(struct: A): A | undefined {
-  const allUndefined = Object.values(struct).every(val => val === undefined);
+  const allUndefined = Object.values(struct).every((val) => val === undefined);
   return allUndefined ? undefined : struct;
 }
 
@@ -1783,14 +1989,22 @@ function undefinedIfNoKeys<A extends { [key: string]: unknown }>(struct: A): A |
  * which "validates" the new function hash.
  */
 export class FunctionVersionUpgrade implements IAspect {
-  constructor(private readonly featureFlag: string, private readonly enabled = true) { }
+  constructor(
+    private readonly featureFlag: string,
+    private readonly enabled = true
+  ) {}
 
   public visit(node: IConstruct): void {
-    if (node instanceof Function &&
-      this.enabled === FeatureFlags.of(node).isEnabled(this.featureFlag)) {
+    if (
+      node instanceof Function &&
+      this.enabled === FeatureFlags.of(node).isEnabled(this.featureFlag)
+    ) {
       const cfnFunction = node.node.defaultChild as CfnFunction;
       const desc = cfnFunction.description ? `${cfnFunction.description} ` : '';
-      cfnFunction.addPropertyOverride('Description', `${desc}version-hash:${calculateFunctionHash(node)}`);
+      cfnFunction.addPropertyOverride(
+        'Description',
+        `${desc}version-hash:${calculateFunctionHash(node)}`
+      );
     }
-  };
+  }
 }

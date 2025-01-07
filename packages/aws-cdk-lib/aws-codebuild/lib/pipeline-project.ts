@@ -3,8 +3,7 @@ import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { CodePipelineSource } from './codepipeline-source';
 import { CommonProjectProps, Project } from './project';
 
-export interface PipelineProjectProps extends CommonProjectProps {
-}
+export interface PipelineProjectProps extends CommonProjectProps {}
 
 /**
  * A convenience class for CodeBuild Projects that are used in CodePipeline.

@@ -28,7 +28,9 @@ export abstract class Code {
 
     const statResult = fs.statSync(resolvedPath);
     if (!statResult || !statResult.isDirectory()) {
-      throw new Error(`'${directoryPath}' needs to be a path to a directory (resolved to: '${resolvedPath }')`);
+      throw new Error(
+        `'${directoryPath}' needs to be a path to a directory (resolved to: '${resolvedPath}')`
+      );
     }
 
     return new PathResolvedCode(resolvedPath, branch);
@@ -44,7 +46,9 @@ export abstract class Code {
 
     const statResult = fs.statSync(resolvedPath);
     if (!statResult || !statResult.isFile()) {
-      throw new Error(`'${filePath}' needs to be a path to a ZIP file (resolved to: '${resolvedPath }')`);
+      throw new Error(
+        `'${filePath}' needs to be a path to a ZIP file (resolved to: '${resolvedPath}')`
+      );
     }
 
     return new PathResolvedCode(resolvedPath, branch);
@@ -68,7 +72,10 @@ export abstract class Code {
 }
 
 class PathResolvedCode extends Code {
-  constructor(private readonly resolvedPath: string, private readonly branch?: string) {
+  constructor(
+    private readonly resolvedPath: string,
+    private readonly branch?: string
+  ) {
     super();
   }
 
@@ -77,18 +84,23 @@ class PathResolvedCode extends Code {
       path: this.resolvedPath,
     });
 
-    return (new AssetCode(asset, this.branch)).bind(scope);
+    return new AssetCode(asset, this.branch).bind(scope);
   }
 }
 
 class AssetCode extends Code {
-  constructor(private readonly asset: assets.Asset, private readonly branch?: string) {
+  constructor(
+    private readonly asset: assets.Asset,
+    private readonly branch?: string
+  ) {
     super();
   }
 
   public bind(_scope: Construct): CodeConfig {
     if (!this.asset.isZipArchive) {
-      throw new Error('Asset must be a .zip file or a directory (resolved to: ' + this.asset.assetPath + ' )');
+      throw new Error(
+        'Asset must be a .zip file or a directory (resolved to: ' + this.asset.assetPath + ' )'
+      );
     }
 
     return {

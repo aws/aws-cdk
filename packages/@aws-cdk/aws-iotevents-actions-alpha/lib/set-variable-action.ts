@@ -9,8 +9,10 @@ export class SetVariableAction implements iotevents.IAction {
    * @param variableName the name of the variable
    * @param value the new value of the variable
    */
-  constructor(private readonly variableName: string, private readonly value: iotevents.Expression) {
-  }
+  constructor(
+    private readonly variableName: string,
+    private readonly value: iotevents.Expression
+  ) {}
 
   /**
    * @internal

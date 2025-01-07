@@ -29,9 +29,14 @@ export function deserialize(str: string): any {
   return parseYamlStrWithCfnTags(str);
 }
 
-function makeTagForCfnIntrinsic(intrinsicName: string, addFnPrefix: boolean): yaml_types.Schema.CustomTag {
+function makeTagForCfnIntrinsic(
+  intrinsicName: string,
+  addFnPrefix: boolean
+): yaml_types.Schema.CustomTag {
   return {
-    identify(value: any) { return typeof value === 'string'; },
+    identify(value: any) {
+      return typeof value === 'string';
+    },
     tag: `!${intrinsicName}`,
     resolve: (_doc: yaml.Document, cstNode: yaml_cst.CST.Node) => {
       const ret: any = {};
@@ -44,12 +49,25 @@ function makeTagForCfnIntrinsic(intrinsicName: string, addFnPrefix: boolean): ya
 }
 
 const shortForms: yaml_types.Schema.CustomTag[] = [
-  'Base64', 'Cidr', 'FindInMap', 'GetAZs', 'ImportValue', 'Join', 'Sub',
-  'Select', 'Split', 'Transform', 'And', 'Equals', 'If', 'Not', 'Or', 'GetAtt',
-].map(name => makeTagForCfnIntrinsic(name, true)).concat(
-  makeTagForCfnIntrinsic('Ref', false),
-  makeTagForCfnIntrinsic('Condition', false),
-);
+  'Base64',
+  'Cidr',
+  'FindInMap',
+  'GetAZs',
+  'ImportValue',
+  'Join',
+  'Sub',
+  'Select',
+  'Split',
+  'Transform',
+  'And',
+  'Equals',
+  'If',
+  'Not',
+  'Or',
+  'GetAtt',
+]
+  .map((name) => makeTagForCfnIntrinsic(name, true))
+  .concat(makeTagForCfnIntrinsic('Ref', false), makeTagForCfnIntrinsic('Condition', false));
 
 function parseYamlStrWithCfnTags(text: string): any {
   return yaml.parse(text, {
@@ -57,4 +75,3 @@ function parseYamlStrWithCfnTags(text: string): any {
     schema: 'core',
   });
 }
-

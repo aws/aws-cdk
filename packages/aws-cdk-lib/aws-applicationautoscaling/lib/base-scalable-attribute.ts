@@ -46,7 +46,11 @@ export interface BaseScalableAttributeProps extends EnableScalingProps {
 export abstract class BaseScalableAttribute extends Construct {
   private target: ScalableTarget;
 
-  public constructor(scope: Construct, id: string, protected readonly props: BaseScalableAttributeProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    protected readonly props: BaseScalableAttributeProps
+  ) {
     super(scope, id);
 
     this.target = new ScalableTarget(this, 'Target', {

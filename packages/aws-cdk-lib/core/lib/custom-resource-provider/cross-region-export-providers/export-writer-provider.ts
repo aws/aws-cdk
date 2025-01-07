@@ -29,11 +29,15 @@ export interface ExportWriterProps {
  * with a list of ARNs instead of having to create a separate policy statement per ARN.
  */
 class CRProvider extends CrossRegionSsmWriterProvider {
-  public static getOrCreateProvider(scope: Construct, uniqueid: string, props?: CustomResourceProviderOptions): CRProvider {
+  public static getOrCreateProvider(
+    scope: Construct,
+    uniqueid: string,
+    props?: CustomResourceProviderOptions
+  ): CRProvider {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
-    const provider = stack.node.tryFindChild(id) as CRProvider
-      ?? new CRProvider(stack, id, props);
+    const provider =
+      (stack.node.tryFindChild(id) as CRProvider) ?? new CRProvider(stack, id, props);
     return provider;
   }
 
@@ -81,14 +85,18 @@ class CRProvider extends CrossRegionSsmWriterProvider {
  * @internal - this is intentionally not exported from core
  */
 export class ExportWriter extends Construct {
-  public static getOrCreate(scope: Construct, uniqueId: string, props: ExportWriterProps): ExportWriter {
+  public static getOrCreate(
+    scope: Construct,
+    uniqueId: string,
+    props: ExportWriterProps
+  ): ExportWriter {
     const stack = Stack.of(scope);
     const existing = stack.node.tryFindChild(uniqueId);
     return existing
-      ? existing as ExportWriter
+      ? (existing as ExportWriter)
       : new ExportWriter(stack, uniqueId, {
-        region: props.region,
-      });
+          region: props.region,
+        });
   }
   private readonly _references: CrossRegionExports = {};
   private readonly provider: CRProvider;
@@ -145,21 +153,30 @@ export class ExportWriter extends Construct {
    */
   private addRegionToPolicy(region: string): void {
     if (!Token.isUnresolved(region)) {
-      this.provider.addResourceArn(Stack.of(this).formatArn({
-        service: 'ssm',
-        resource: 'parameter',
-        region,
-        resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
-      }));
+      this.provider.addResourceArn(
+        Stack.of(this).formatArn({
+          service: 'ssm',
+          resource: 'parameter',
+          region,
+          resourceName: `${SSM_EXPORT_PATH_PREFIX}*`,
+        })
+      );
     }
   }
 
   /**
    * Add the export to the export reader which is created in the importing stack
    */
-  private addToExportReader(exportName: string, exportValueRef: Intrinsic, importStack: Stack): Intrinsic {
+  private addToExportReader(
+    exportName: string,
+    exportValueRef: Intrinsic,
+    importStack: Stack
+  ): Intrinsic {
     const readerConstructName = makeUniqueId(['ExportsReader']);
-    const exportReader = ExportReader.getOrCreate(importStack.nestedStackParent ?? importStack, readerConstructName);
+    const exportReader = ExportReader.getOrCreate(
+      importStack.nestedStackParent ?? importStack,
+      readerConstructName
+    );
     this.addRegionToPolicy(importStack.region);
 
     return exportReader.importValue(exportName, exportValueRef);

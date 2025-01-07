@@ -15,23 +15,35 @@ type HandlerRegistry = { [section: string]: DiffHandler };
 
 const DIFF_HANDLERS: HandlerRegistry = {
   AWSTemplateFormatVersion: (diff, oldValue, newValue) =>
-    diff.awsTemplateFormatVersion = impl.diffAttribute(oldValue, newValue),
+    (diff.awsTemplateFormatVersion = impl.diffAttribute(oldValue, newValue)),
   Description: (diff, oldValue, newValue) =>
-    diff.description = impl.diffAttribute(oldValue, newValue),
+    (diff.description = impl.diffAttribute(oldValue, newValue)),
   Metadata: (diff, oldValue, newValue) =>
-    diff.metadata = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffMetadata)),
+    (diff.metadata = new types.DifferenceCollection(
+      diffKeyedEntities(oldValue, newValue, impl.diffMetadata)
+    )),
   Parameters: (diff, oldValue, newValue) =>
-    diff.parameters = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffParameter)),
+    (diff.parameters = new types.DifferenceCollection(
+      diffKeyedEntities(oldValue, newValue, impl.diffParameter)
+    )),
   Mappings: (diff, oldValue, newValue) =>
-    diff.mappings = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffMapping)),
+    (diff.mappings = new types.DifferenceCollection(
+      diffKeyedEntities(oldValue, newValue, impl.diffMapping)
+    )),
   Conditions: (diff, oldValue, newValue) =>
-    diff.conditions = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffCondition)),
+    (diff.conditions = new types.DifferenceCollection(
+      diffKeyedEntities(oldValue, newValue, impl.diffCondition)
+    )),
   Transform: (diff, oldValue, newValue) =>
-    diff.transform = impl.diffAttribute(oldValue, newValue),
+    (diff.transform = impl.diffAttribute(oldValue, newValue)),
   Resources: (diff, oldValue, newValue) =>
-    diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource)),
+    (diff.resources = new types.DifferenceCollection(
+      diffKeyedEntities(oldValue, newValue, impl.diffResource)
+    )),
   Outputs: (diff, oldValue, newValue) =>
-    diff.outputs = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffOutput)),
+    (diff.outputs = new types.DifferenceCollection(
+      diffKeyedEntities(oldValue, newValue, impl.diffOutput)
+    )),
 };
 
 /**
@@ -49,9 +61,8 @@ export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
   changeSet?: DescribeChangeSetOutput,
-  isImport?: boolean,
+  isImport?: boolean
 ): types.TemplateDiff {
-
   normalize(currentTemplate);
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
@@ -59,7 +70,7 @@ export function fullDiff(
     // These methods mutate the state of theDiff, using the changeSet.
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
     theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
-      changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
+      changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change)
     );
     changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
   } else if (isImport) {
@@ -71,9 +82,8 @@ export function fullDiff(
 
 export function diffTemplate(
   currentTemplate: { [key: string]: any },
-  newTemplate: { [key: string]: any },
+  newTemplate: { [key: string]: any }
 ): types.TemplateDiff {
-
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
 
@@ -100,7 +110,7 @@ export function diffTemplate(
 
   // Copy "replaced" states from `diffWithReplacements` to `theDiff`.
   diffWithReplacements.resources
-    .filter(r => isReplacement(r!.changeImpact))
+    .filter((r) => isReplacement(r!.changeImpact))
     .forEachDifference((logicalId, downstreamReplacement) => {
       const resource = theDiff.resources.get(logicalId);
 
@@ -113,13 +123,18 @@ export function diffTemplate(
 }
 
 function isReplacement(impact: types.ResourceImpact) {
-  return impact === types.ResourceImpact.MAY_REPLACE || impact === types.ResourceImpact.WILL_REPLACE;
+  return (
+    impact === types.ResourceImpact.MAY_REPLACE || impact === types.ResourceImpact.WILL_REPLACE
+  );
 }
 
 /**
  * For all properties in 'source' that have a "replacement" impact, propagate that impact to "dest"
  */
-function propagatePropertyReplacement(source: types.ResourceDifference, dest: types.ResourceDifference) {
+function propagatePropertyReplacement(
+  source: types.ResourceDifference,
+  dest: types.ResourceDifference
+) {
   for (const [propertyName, diff] of Object.entries(source.propertyUpdates)) {
     if (diff.changeImpact && isReplacement(diff.changeImpact)) {
       // Use the propertydiff of source in target. The result of this happens to be clear enough.
@@ -128,7 +143,10 @@ function propagatePropertyReplacement(source: types.ResourceDifference, dest: ty
   }
 }
 
-function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }): types.TemplateDiff {
+function calculateTemplateDiff(
+  currentTemplate: { [key: string]: any },
+  newTemplate: { [key: string]: any }
+): types.TemplateDiff {
   const differences: types.ITemplateDiff = {};
   const unknown: { [key: string]: types.Difference<any> } = {};
   for (const key of unionOf(Object.keys(currentTemplate), Object.keys(newTemplate)).sort()) {
@@ -137,8 +155,8 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
     if (deepEqual(oldValue, newValue)) {
       continue;
     }
-    const handler: DiffHandler = DIFF_HANDLERS[key]
-                  || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
+    const handler: DiffHandler =
+      DIFF_HANDLERS[key] || ((_diff, oldV, newV) => (unknown[key] = impl.diffUnknown(oldV, newV)));
     handler(differences, oldValue, newValue);
   }
   if (Object.keys(unknown).length > 0) {
@@ -170,7 +188,9 @@ function propagateReplacedReferences(template: object, logicalId: string): boole
 
   function replaceReference(obj: any) {
     const keys = Object.keys(obj);
-    if (keys.length !== 1) { return false; }
+    if (keys.length !== 1) {
+      return false;
+    }
     const key = keys[0];
 
     if (key === 'Ref') {
@@ -220,7 +240,7 @@ function makeAllResourceChangesImports(diff: types.TemplateDiff) {
 
 function normalize(template: any) {
   if (typeof template === 'object') {
-    for (const key of (Object.keys(template ?? {}))) {
+    for (const key of Object.keys(template ?? {})) {
       if (key === 'Fn::GetAtt' && typeof template[key] === 'string') {
         template[key] = template[key].split('.');
         continue;
@@ -234,7 +254,7 @@ function normalize(template: any) {
       }
 
       if (Array.isArray(template[key])) {
-        for (const element of (template[key])) {
+        for (const element of template[key]) {
           normalize(element);
         }
       } else {

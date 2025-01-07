@@ -6,17 +6,17 @@ export abstract class SnapStartConf {
   public static readonly ON_PUBLISHED_VERSIONS = SnapStartConf.applyOn('PublishedVersions');
 
   private static applyOn(applyValue: string): SnapStartConf {
-    return new class extends SnapStartConf {
+    return new (class extends SnapStartConf {
       public _render() {
         return {
           applyOn: applyValue,
         } satisfies CfnFunction.SnapStartProperty;
       }
-    };
+    })();
   }
 
   /**
-  * @internal
-  */
+   * @internal
+   */
   public abstract _render(): any;
 }

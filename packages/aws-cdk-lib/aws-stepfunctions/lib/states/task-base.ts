@@ -146,7 +146,6 @@ export interface TaskStateBaseProps {
  * which are more convenient to use.
  */
 export abstract class TaskStateBase extends State implements INextable {
-
   public readonly endStates: INextable[];
 
   protected abstract readonly taskMetrics?: TaskMetricsConfig;
@@ -232,7 +231,10 @@ export abstract class TaskStateBase extends State implements INextable {
    * @default - average over 5 minutes
    */
   public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.taskMetric(this.taskMetrics?.metricPrefixSingular, 'RunTime', { statistic: 'avg', ...props });
+    return this.taskMetric(this.taskMetrics?.metricPrefixSingular, 'RunTime', {
+      statistic: 'avg',
+      ...props,
+    });
   }
 
   /**
@@ -241,7 +243,10 @@ export abstract class TaskStateBase extends State implements INextable {
    * @default - average over 5 minutes
    */
   public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.taskMetric(this.taskMetrics?.metricPrefixSingular, 'ScheduleTime', { statistic: 'avg', ...props });
+    return this.taskMetric(this.taskMetrics?.metricPrefixSingular, 'ScheduleTime', {
+      statistic: 'avg',
+      ...props,
+    });
   }
 
   /**
@@ -250,7 +255,10 @@ export abstract class TaskStateBase extends State implements INextable {
    * @default - average over 5 minutes
    */
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.taskMetric(this.taskMetrics?.metricPrefixSingular, 'Time', { statistic: 'avg', ...props });
+    return this.taskMetric(this.taskMetrics?.metricPrefixSingular, 'Time', {
+      statistic: 'avg',
+      ...props,
+    });
   }
 
   /**
@@ -313,11 +321,13 @@ export abstract class TaskStateBase extends State implements INextable {
       graph.registerPolicyStatement(policyStatement);
     }
     if (this.credentials) {
-      graph.registerPolicyStatement(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['sts:AssumeRole'],
-        resources: [this.credentials.role.resource],
-      }));
+      graph.registerPolicyStatement(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['sts:AssumeRole'],
+          resources: [this.credentials.role.resource],
+        })
+      );
     }
   }
 
@@ -326,15 +336,21 @@ export abstract class TaskStateBase extends State implements INextable {
    */
   protected abstract _renderTask(): any;
 
-  private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  private taskMetric(
+    prefix: string | undefined,
+    suffix: string,
+    props?: cloudwatch.MetricOptions
+  ): cloudwatch.Metric {
     if (prefix === undefined) {
-      throw new Error('Task does not expose metrics. Use the \'metric()\' function to add metrics.');
+      throw new Error("Task does not expose metrics. Use the 'metric()' function to add metrics.");
     }
     return this.metric(prefix + suffix, props);
   }
 
   private renderCredentials() {
-    return this.credentials ? FieldUtils.renderObject({ Credentials: { RoleArn: this.credentials.role.roleArn } }) : undefined;
+    return this.credentials
+      ? FieldUtils.renderObject({ Credentials: { RoleArn: this.credentials.role.roleArn } })
+      : undefined;
   }
 
   private renderTaskBase() {

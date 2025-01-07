@@ -10,7 +10,6 @@ import { ContainerDefinition } from '../container-definition';
  * awslogs provides two modes for delivering messages from the container to the log driver
  */
 export enum AwsLogDriverMode {
-
   /**
    * (default) direct, blocking delivery from container to driver.
    */
@@ -128,9 +127,11 @@ export class AwsLogDriver extends LogDriver {
    * Called when the log driver is configured on a container
    */
   public bind(scope: Construct, containerDefinition: ContainerDefinition): LogDriverConfig {
-    this.logGroup = this.props.logGroup || new logs.LogGroup(scope, 'LogGroup', {
-      retention: this.props.logRetention || Infinity,
-    });
+    this.logGroup =
+      this.props.logGroup ||
+      new logs.LogGroup(scope, 'LogGroup', {
+        retention: this.props.logRetention || Infinity,
+      });
 
     const maxBufferSize = this.props.maxBufferSize
       ? `${this.props.maxBufferSize.toBytes({ rounding: SizeRoundingBehavior.FLOOR })}b`
@@ -142,10 +143,12 @@ export class AwsLogDriver extends LogDriver {
     // use `obtainExecutionRole` instead of `addToExecutionRolePolicy` to grant policies to the Execution role.
     // See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html#enable_awslogs
     const execRole = containerDefinition.taskDefinition.obtainExecutionRole();
-    execRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-      resources: [this.logGroup.logGroupArn],
-    }));
+    execRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        resources: [this.logGroup.logGroupArn],
+      })
+    );
 
     return {
       logDriver: 'awslogs',
@@ -155,7 +158,7 @@ export class AwsLogDriver extends LogDriver {
         'awslogs-region': this.logGroup.env.region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
-        'mode': this.props.mode,
+        mode: this.props.mode,
         'max-buffer-size': maxBufferSize,
       }),
     };

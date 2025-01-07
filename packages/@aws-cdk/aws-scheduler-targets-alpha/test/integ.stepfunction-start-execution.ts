@@ -32,8 +32,8 @@ const putParameterStep = new tasks.CallAwsService(stack, 'PutParameter', {
   parameters: {
     'Name.$': '$.Name',
     'Value.$': '$.Value',
-    'Type': 'String',
-    'Overwrite': true,
+    Type: 'String',
+    Overwrite: true,
   },
 });
 
@@ -58,11 +58,15 @@ const getParameter = integrationTest.assertions.awsApiCall('SSM', 'getParameter'
 });
 
 // Verifies that expected parameter is created by the invoked step function
-getParameter.expect(ExpectedResult.objectLike({
-  Parameter: {
-    Name: payload.Name,
-    Value: payload.Value,
-  },
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(1),
-});
+getParameter
+  .expect(
+    ExpectedResult.objectLike({
+      Parameter: {
+        Name: payload.Name,
+        Value: payload.Value,
+      },
+    })
+  )
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(1),
+  });

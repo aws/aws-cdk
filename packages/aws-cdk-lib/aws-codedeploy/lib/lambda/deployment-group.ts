@@ -143,7 +143,8 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   public static fromLambdaDeploymentGroupAttributes(
     scope: Construct,
     id: string,
-    attrs: LambdaDeploymentGroupAttributes): ILambdaDeploymentGroup {
+    attrs: LambdaDeploymentGroupAttributes
+  ): ILambdaDeploymentGroup {
     return new ImportedLambdaDeploymentGroup(scope, id, attrs);
   }
 
@@ -169,10 +170,16 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
     this.application = props.application || new LambdaApplication(this, 'Application');
     this.alarms = props.alarms || [];
 
-    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRoleForLambdaLimited'));
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
+    this.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRoleForLambdaLimited')
+    );
+    this.deploymentConfig = this._bindDeploymentConfig(
+      props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES
+    );
 
-    const removeAlarmsFromDeploymentGroup = cdk.FeatureFlags.of(this).isEnabled(CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP);
+    const removeAlarmsFromDeploymentGroup = cdk.FeatureFlags.of(this).isEnabled(
+      CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP
+    );
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
@@ -184,14 +191,17 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
         deploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
       alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration({
-          alarms: this.alarms,
-          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
-          removeAlarms: removeAlarmsFromDeploymentGroup,
-          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
-        }),
+        produce: () =>
+          renderAlarmConfiguration({
+            alarms: this.alarms,
+            ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+            removeAlarms: removeAlarmsFromDeploymentGroup,
+            ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+          }),
       }),
-      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      autoRollbackConfiguration: cdk.Lazy.any({
+        produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback),
+      }),
     });
 
     this._setNameAndArn(resource, this.application);
@@ -207,8 +217,12 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
       codeDeployLambdaAliasUpdate: {
         applicationName: this.application.applicationName,
         deploymentGroupName: resource.ref,
-        beforeAllowTrafficHook: cdk.Lazy.string({ produce: () => this.preHook && this.preHook.functionName }),
-        afterAllowTrafficHook: cdk.Lazy.string({ produce: () => this.postHook && this.postHook.functionName }),
+        beforeAllowTrafficHook: cdk.Lazy.string({
+          produce: () => this.preHook && this.preHook.functionName,
+        }),
+        afterAllowTrafficHook: cdk.Lazy.string({
+          produce: () => this.postHook && this.postHook.functionName,
+        }),
       },
     };
 
@@ -296,7 +310,10 @@ export interface LambdaDeploymentGroupAttributes {
   readonly deploymentConfig?: ILambdaDeploymentConfig;
 }
 
-class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implements ILambdaDeploymentGroup {
+class ImportedLambdaDeploymentGroup
+  extends ImportedDeploymentGroupBase
+  implements ILambdaDeploymentGroup
+{
   public readonly application: ILambdaApplication;
   public readonly deploymentConfig: ILambdaDeploymentConfig;
 
@@ -307,6 +324,8 @@ class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implemen
     });
 
     this.application = props.application;
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
+    this.deploymentConfig = this._bindDeploymentConfig(
+      props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES
+    );
   }
 }

@@ -1,7 +1,13 @@
 import * as path from 'path';
 import * as lambda from '../../../aws-lambda';
 import { App, Stack } from '../../../core';
-import { MockIntegration, PassthroughBehavior, RestApi, RequestAuthorizer, IdentitySource } from '../../lib';
+import {
+  MockIntegration,
+  PassthroughBehavior,
+  RestApi,
+  RequestAuthorizer,
+  IdentitySource,
+} from '../../lib';
 
 // Against the RestApi endpoint from the stack output, run
 // `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
@@ -29,32 +35,32 @@ const secondAuthorizer = new RequestAuthorizer(stack, 'MySecondAuthorizer', {
   identitySources: [IdentitySource.header('Authorization'), IdentitySource.queryString('allow')],
 });
 
-restapi.root.addMethod('ANY', new MockIntegration({
-  integrationResponses: [
-    { statusCode: '200' },
-  ],
-  passthroughBehavior: PassthroughBehavior.NEVER,
-  requestTemplates: {
-    'application/json': '{ "statusCode": 200 }',
-  },
-}), {
-  methodResponses: [
-    { statusCode: '200' },
-  ],
-  authorizer,
-});
+restapi.root.addMethod(
+  'ANY',
+  new MockIntegration({
+    integrationResponses: [{ statusCode: '200' }],
+    passthroughBehavior: PassthroughBehavior.NEVER,
+    requestTemplates: {
+      'application/json': '{ "statusCode": 200 }',
+    },
+  }),
+  {
+    methodResponses: [{ statusCode: '200' }],
+    authorizer,
+  }
+);
 
-restapi.root.resourceForPath('auth').addMethod('ANY', new MockIntegration({
-  integrationResponses: [
-    { statusCode: '200' },
-  ],
-  passthroughBehavior: PassthroughBehavior.NEVER,
-  requestTemplates: {
-    'application/json': '{ "statusCode": 200 }',
-  },
-}), {
-  methodResponses: [
-    { statusCode: '200' },
-  ],
-  authorizer: secondAuthorizer,
-});
+restapi.root.resourceForPath('auth').addMethod(
+  'ANY',
+  new MockIntegration({
+    integrationResponses: [{ statusCode: '200' }],
+    passthroughBehavior: PassthroughBehavior.NEVER,
+    requestTemplates: {
+      'application/json': '{ "statusCode": 200 }',
+    },
+  }),
+  {
+    methodResponses: [{ statusCode: '200' }],
+    authorizer: secondAuthorizer,
+  }
+);

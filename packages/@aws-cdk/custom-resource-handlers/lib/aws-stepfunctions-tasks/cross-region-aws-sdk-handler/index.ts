@@ -33,18 +33,22 @@ function findV3ClientConstructor(pkg: object) {
   const filtered = Object.entries(pkg).filter(([name]) => {
     // Services expose a base __Client class that we don't want ever
     return name.endsWith('Client') && name !== '__Client';
-  }) as [string,
+  }) as [
+    string,
     {
       new (config: any): {
         send: (command: any) => Promise<any>;
         config: any;
       };
-    }][];
+    },
+  ][];
   if (filtered.length == 0) {
     throw new Error('There is no *Client class in the package.');
   }
   if (filtered.length > 1) {
-    throw new Error(`There are more than one *Client classes in the package: ${filtered.map(r=>r[0]).join(',')}`);
+    throw new Error(
+      `There are more than one *Client classes in the package: ${filtered.map((r) => r[0]).join(',')}`
+    );
   }
   return filtered[0][1];
 }
@@ -55,11 +59,15 @@ function camelToPascal(str: string) {
 
 function findCommandClass(pkg: object, action: string) {
   const commandName = `${camelToPascal(action)}Command`;
-  const Command = Object.entries(pkg).find(([name]) => name.toLowerCase() === commandName.toLowerCase())?.[1] as {
+  const Command = Object.entries(pkg).find(
+    ([name]) => name.toLowerCase() === commandName.toLowerCase()
+  )?.[1] as {
     new (input: any): any;
   };
   if (!Command) {
-    throw new Error(`Unable to find command named: ${commandName} for action: ${action} in service package`);
+    throw new Error(
+      `Unable to find command named: ${commandName} for action: ${action} in service package`
+    );
   }
   return Command;
 }

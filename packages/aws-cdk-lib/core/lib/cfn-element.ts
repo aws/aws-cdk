@@ -66,9 +66,12 @@ export abstract class CfnElement extends Construct {
 
     this.stack = Stack.of(this);
 
-    this.logicalId = Lazy.uncachedString({ produce: () => this.synthesizeLogicalId() }, {
-      displayHint: `${notTooLong(Node.of(this).path)}.LogicalID`,
-    });
+    this.logicalId = Lazy.uncachedString(
+      { produce: () => this.synthesizeLogicalId() },
+      {
+        displayHint: `${notTooLong(Node.of(this).path)}.LogicalID`,
+      }
+    );
 
     if (!this.node.tryGetContext(cxapi.DISABLE_LOGICAL_ID_METADATA)) {
       Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, {
@@ -84,8 +87,10 @@ export abstract class CfnElement extends Construct {
    */
   public overrideLogicalId(newLogicalId: string) {
     if (this._logicalIdLocked) {
-      throw new Error(`The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
-        'Make sure you are calling "overrideLogicalId" before Stack.exportValue');
+      throw new Error(
+        `The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
+          'Make sure you are calling "overrideLogicalId" before Stack.exportValue'
+      );
     } else {
       this._logicalIdOverride = newLogicalId;
     }
@@ -122,7 +127,9 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStack(): string[] {
-    const trace = Node.of(this).metadata.find(md => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
+    const trace = Node.of(this).metadata.find(
+      (md) => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID
+    )!.trace;
     if (!trace) {
       return [];
     }
@@ -199,7 +206,9 @@ export abstract class CfnRefElement extends CfnElement {
 }
 
 function notTooLong(x: string) {
-  if (x.length < 100) { return x; }
+  if (x.length < 100) {
+    return x;
+  }
   return x.slice(0, 47) + '...' + x.slice(-47);
 }
 

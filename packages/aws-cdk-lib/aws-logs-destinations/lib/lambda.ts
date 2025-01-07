@@ -18,8 +18,10 @@ export interface LambdaDestinationOptions {
  */
 export class LambdaDestination implements logs.ILogSubscriptionDestination {
   /**  LambdaDestinationOptions */
-  constructor(private readonly fn: lambda.IFunction, private readonly options: LambdaDestinationOptions = {}) {
-  }
+  constructor(
+    private readonly fn: lambda.IFunction,
+    private readonly options: LambdaDestinationOptions = {}
+  ) {}
 
   public bind(scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
     const arn = logGroup.logGroupArn;
@@ -34,9 +36,7 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
       });
       // Need to add a dependency, otherwise the SubscriptionFilter can be created before the
       // Permission that allows the interaction.
-      const cfnPermission = scope.node.tryFindChild(
-        permissionId,
-      ) as lambda.CfnPermission;
+      const cfnPermission = scope.node.tryFindChild(permissionId) as lambda.CfnPermission;
       if (cfnPermission) {
         scope.node.addDependency(cfnPermission);
       }

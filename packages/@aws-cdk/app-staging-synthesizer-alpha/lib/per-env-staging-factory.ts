@@ -1,6 +1,10 @@
 import { Stack } from 'aws-cdk-lib/core';
 import { AppScopedGlobal } from './private/app-global';
-import { IStagingResources, IStagingResourcesFactory, ObtainStagingResourcesContext } from './staging-stack';
+import {
+  IStagingResources,
+  IStagingResourcesFactory,
+  ObtainStagingResourcesContext,
+} from './staging-stack';
 
 /**
  * Per-environment cache
@@ -14,9 +18,12 @@ const ENVIRONMENT_CACHE = new AppScopedGlobal(() => new Map<string, IStagingReso
  * Wraps another IStagingResources factory, and caches the result on a per-environment basis.
  */
 export class PerEnvironmentStagingFactory implements IStagingResourcesFactory {
-  constructor(private readonly wrapped: IStagingResourcesFactory) { }
+  constructor(private readonly wrapped: IStagingResourcesFactory) {}
 
-  public obtainStagingResources(stack: Stack, context: ObtainStagingResourcesContext): IStagingResources {
+  public obtainStagingResources(
+    stack: Stack,
+    context: ObtainStagingResourcesContext
+  ): IStagingResources {
     const cacheKey = context.environmentString;
 
     const cache = ENVIRONMENT_CACHE.for(stack);

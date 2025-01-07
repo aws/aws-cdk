@@ -8,7 +8,6 @@ import { CfnTrustStoreRevocation } from '../elasticloadbalancingv2.generated';
  * Properties for the trust store revocation
  */
 export interface TrustStoreRevocationProps {
-
   /**
    * The trust store
    */
@@ -63,13 +62,12 @@ export enum RevocationType {
  * A new Trust Store Revocation
  */
 export class TrustStoreRevocation extends Resource {
-
   constructor(scope: Construct, id: string, props: TrustStoreRevocationProps) {
     super(scope, id);
 
     new CfnTrustStoreRevocation(this, 'Resource', {
       trustStoreArn: props.trustStore.trustStoreArn,
-      revocationContents: props.revocationContents?.map(content => ({
+      revocationContents: props.revocationContents?.map((content) => ({
         revocationType: content.revocationType,
         s3Bucket: content.bucket.bucketName,
         s3Key: content.key,

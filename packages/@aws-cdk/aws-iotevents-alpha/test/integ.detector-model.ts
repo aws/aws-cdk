@@ -13,31 +13,37 @@ class TestStack extends cdk.Stack {
 
     const onlineState = new iotevents.State({
       stateName: 'online',
-      onEnter: [{
-        eventName: 'test-event',
-        // meaning `condition: 'currentInput("test_input") && $input.test_input.payload.temperature == 31.5'`
-        condition: iotevents.Expression.and(
-          iotevents.Expression.currentInput(input),
-          iotevents.Expression.eq(
-            iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-            iotevents.Expression.fromString('31.5'),
+      onEnter: [
+        {
+          eventName: 'test-event',
+          // meaning `condition: 'currentInput("test_input") && $input.test_input.payload.temperature == 31.5'`
+          condition: iotevents.Expression.and(
+            iotevents.Expression.currentInput(input),
+            iotevents.Expression.eq(
+              iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+              iotevents.Expression.fromString('31.5')
+            )
           ),
-        ),
-      }],
-      onInput: [{
-        eventName: 'test-input-event',
-        condition: iotevents.Expression.eq(
-          iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-          iotevents.Expression.fromString('31.6'),
-        ),
-      }],
-      onExit: [{
-        eventName: 'test-exit-event',
-        condition: iotevents.Expression.eq(
-          iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-          iotevents.Expression.fromString('31.7'),
-        ),
-      }],
+        },
+      ],
+      onInput: [
+        {
+          eventName: 'test-input-event',
+          condition: iotevents.Expression.eq(
+            iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+            iotevents.Expression.fromString('31.6')
+          ),
+        },
+      ],
+      onExit: [
+        {
+          eventName: 'test-exit-event',
+          condition: iotevents.Expression.eq(
+            iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+            iotevents.Expression.fromString('31.7')
+          ),
+        },
+      ],
     });
     const offlineState = new iotevents.State({
       stateName: 'offline',
@@ -47,14 +53,14 @@ class TestStack extends cdk.Stack {
     onlineState.transitionTo(offlineState, {
       when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-        iotevents.Expression.fromString('12'),
+        iotevents.Expression.fromString('12')
       ),
     });
     // 2st => 1st
     offlineState.transitionTo(onlineState, {
       when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-        iotevents.Expression.fromString('21'),
+        iotevents.Expression.fromString('21')
       ),
     });
 

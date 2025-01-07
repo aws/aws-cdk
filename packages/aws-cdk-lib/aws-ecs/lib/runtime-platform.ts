@@ -20,13 +20,15 @@ export class CpuArchitecture {
    * @param cpuArchitecture cpu architecture.
    *
    */
-  public static of(cpuArchitecture: string) { return new CpuArchitecture(cpuArchitecture); }
+  public static of(cpuArchitecture: string) {
+    return new CpuArchitecture(cpuArchitecture);
+  }
 
   /**
    *
    * @param _cpuArchitecture The CPU architecture.
    */
-  private constructor(public readonly _cpuArchitecture: string) { }
+  private constructor(public readonly _cpuArchitecture: string) {}
 }
 
 /**
@@ -41,37 +43,51 @@ export class OperatingSystemFamily {
   /**
    * WINDOWS_SERVER_2004_CORE
    */
-  public static readonly WINDOWS_SERVER_2004_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_2004_CORE');
+  public static readonly WINDOWS_SERVER_2004_CORE = OperatingSystemFamily.of(
+    'WINDOWS_SERVER_2004_CORE'
+  );
 
   /**
    * WINDOWS_SERVER_2016_FULL
    */
-  public static readonly WINDOWS_SERVER_2016_FULL = OperatingSystemFamily.of('WINDOWS_SERVER_2016_FULL');
+  public static readonly WINDOWS_SERVER_2016_FULL = OperatingSystemFamily.of(
+    'WINDOWS_SERVER_2016_FULL'
+  );
 
   /**
    * WINDOWS_SERVER_2019_CORE
    */
-  public static readonly WINDOWS_SERVER_2019_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_2019_CORE');
+  public static readonly WINDOWS_SERVER_2019_CORE = OperatingSystemFamily.of(
+    'WINDOWS_SERVER_2019_CORE'
+  );
 
   /**
    * WINDOWS_SERVER_2019_FULL
    */
-  public static readonly WINDOWS_SERVER_2019_FULL = OperatingSystemFamily.of('WINDOWS_SERVER_2019_FULL');
+  public static readonly WINDOWS_SERVER_2019_FULL = OperatingSystemFamily.of(
+    'WINDOWS_SERVER_2019_FULL'
+  );
 
   /**
    * WINDOWS_SERVER_2022_CORE
    */
-  public static readonly WINDOWS_SERVER_2022_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_2022_CORE');
+  public static readonly WINDOWS_SERVER_2022_CORE = OperatingSystemFamily.of(
+    'WINDOWS_SERVER_2022_CORE'
+  );
 
   /**
    * WINDOWS_SERVER_2022_FULL
    */
-  public static readonly WINDOWS_SERVER_2022_FULL = OperatingSystemFamily.of('WINDOWS_SERVER_2022_FULL');
+  public static readonly WINDOWS_SERVER_2022_FULL = OperatingSystemFamily.of(
+    'WINDOWS_SERVER_2022_FULL'
+  );
 
   /**
    * WINDOWS_SERVER_20H2_CORE
    */
-  public static readonly WINDOWS_SERVER_20H2_CORE = OperatingSystemFamily.of('WINDOWS_SERVER_20H2_CORE');
+  public static readonly WINDOWS_SERVER_20H2_CORE = OperatingSystemFamily.of(
+    'WINDOWS_SERVER_20H2_CORE'
+  );
 
   /**
    * Other operating system family.
@@ -81,13 +97,15 @@ export class OperatingSystemFamily {
    * @param family operating system family.
    *
    */
-  public static of(family: string) { return new OperatingSystemFamily(family); }
+  public static of(family: string) {
+    return new OperatingSystemFamily(family);
+  }
 
   /**
    *
    * @param _operatingSystemFamily The operating system family.
    */
-  private constructor(public readonly _operatingSystemFamily: string) { }
+  private constructor(public readonly _operatingSystemFamily: string) {}
 
   /**
    * Indicates whether the operating system family is Windows

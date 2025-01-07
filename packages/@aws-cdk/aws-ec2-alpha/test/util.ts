@@ -13,7 +13,7 @@ export function createTestSubnet(
     subnetType: SubnetType;
     addressFamily?: AddressFamily;
     ipv6Cidr?: subnet.IpCidr;
-  },
+  }
 ): subnet.SubnetV2 {
   const { vpcV2, availabilityZone, cidrBlock, subnetType, ipv6Cidr } = config;
 

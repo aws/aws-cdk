@@ -21,7 +21,7 @@ import { debugModeEnabled } from './debug';
  */
 export function captureStackTrace(
   below: Function = captureStackTrace,
-  limit = Number.MAX_SAFE_INTEGER,
+  limit = Number.MAX_SAFE_INTEGER
 ): string[] {
   if (!debugModeEnabled()) {
     return ['stack traces disabled'];
@@ -38,5 +38,8 @@ export function captureStackTrace(
   if (!object.stack) {
     return [];
   }
-  return object.stack.split('\n').slice(1).map(s => s.replace(/^\s*at\s+/, ''));
+  return object.stack
+    .split('\n')
+    .slice(1)
+    .map((s) => s.replace(/^\s*at\s+/, ''));
 }

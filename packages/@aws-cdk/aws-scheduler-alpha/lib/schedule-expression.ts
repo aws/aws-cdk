@@ -89,7 +89,10 @@ export interface CronOptionsWithTimezone extends events.CronOptions {
 const DEFAULT_TIMEZONE = TimeZone.ETC_UTC;
 
 class LiteralScheduleExpression extends ScheduleExpression {
-  constructor(public readonly expressionString: string, public readonly timeZone: TimeZone = DEFAULT_TIMEZONE) {
+  constructor(
+    public readonly expressionString: string,
+    public readonly timeZone: TimeZone = DEFAULT_TIMEZONE
+  ) {
     super();
   }
 }

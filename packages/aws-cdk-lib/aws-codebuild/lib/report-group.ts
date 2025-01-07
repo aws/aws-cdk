@@ -41,14 +41,13 @@ abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
   protected abstract readonly type?: ReportGroupType;
 
   public grantWrite(identity: iam.IGrantable): iam.Grant {
-    const typeAction = this.type === ReportGroupType.CODE_COVERAGE ? 'codebuild:BatchPutCodeCoverages' : 'codebuild:BatchPutTestCases';
+    const typeAction =
+      this.type === ReportGroupType.CODE_COVERAGE
+        ? 'codebuild:BatchPutCodeCoverages'
+        : 'codebuild:BatchPutTestCases';
     const ret = iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: [
-        'codebuild:CreateReport',
-        'codebuild:UpdateReport',
-        typeAction,
-      ],
+      actions: ['codebuild:CreateReport', 'codebuild:UpdateReport', typeAction],
       resourceArns: [this.reportGroupArn],
     });
 
@@ -137,7 +136,11 @@ export class ReportGroup extends ReportGroupBase {
    * defined outside of the CDK code,
    * by name.
    */
-  public static fromReportGroupName(scope: Construct, id: string, reportGroupName: string): IReportGroup {
+  public static fromReportGroupName(
+    scope: Construct,
+    id: string,
+    reportGroupName: string
+  ): IReportGroup {
     class Import extends ReportGroupBase {
       public readonly reportGroupName = reportGroupName;
       public readonly reportGroupArn = renderReportGroupArn(scope, reportGroupName);
@@ -164,11 +167,11 @@ export class ReportGroup extends ReportGroupBase {
         exportConfigType: props.exportBucket ? 'S3' : 'NO_EXPORT',
         s3Destination: props.exportBucket
           ? {
-            bucket: props.exportBucket.bucketName,
-            encryptionDisabled: props.exportBucket.encryptionKey ? false : undefined,
-            encryptionKey: props.exportBucket.encryptionKey?.keyArn,
-            packaging: props.zipExport ? 'ZIP' : undefined,
-          }
+              bucket: props.exportBucket.bucketName,
+              encryptionDisabled: props.exportBucket.encryptionKey ? false : undefined,
+              encryptionKey: props.exportBucket.encryptionKey?.keyArn,
+              packaging: props.zipExport ? 'ZIP' : undefined,
+            }
           : undefined,
       },
       name: props.reportGroupName,
@@ -177,17 +180,21 @@ export class ReportGroup extends ReportGroupBase {
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: cdk.RemovalPolicy.RETAIN,
     });
-    this.reportGroupArn = this.getResourceArnAttribute(resource.attrArn,
-      reportGroupArnComponents(this.physicalName));
+    this.reportGroupArn = this.getResourceArnAttribute(
+      resource.attrArn,
+      reportGroupArnComponents(this.physicalName)
+    );
     this.reportGroupName = this.getResourceNameAttribute(
       // there is no separate name attribute,
       // so use Fn::Select + Fn::Split to make one
-      cdk.Fn.select(1, cdk.Fn.split('/', resource.ref)),
+      cdk.Fn.select(1, cdk.Fn.split('/', resource.ref))
     );
     this.exportBucket = props.exportBucket;
 
     if (props.deleteReports && props.removalPolicy !== cdk.RemovalPolicy.DESTROY) {
-      throw new Error('Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.');
+      throw new Error(
+        "Cannot use 'deleteReports' property on a report group without setting removal policy to 'DESTROY'."
+      );
     }
   }
 }

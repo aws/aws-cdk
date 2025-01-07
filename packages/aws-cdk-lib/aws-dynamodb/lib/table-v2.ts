@@ -214,7 +214,9 @@ export interface ReplicaTableProps extends TableOptionsV2 {
    *
    * @default - inherited from the primary table
    */
-  readonly globalSecondaryIndexOptions?: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions };
+  readonly globalSecondaryIndexOptions?: {
+    [indexName: string]: ReplicaGlobalSecondaryIndexOptions;
+  };
 }
 
 /**
@@ -422,7 +424,11 @@ export class TableV2 extends TableBaseV2 {
    * @param id the construct's name
    * @param attrs attributes of the table
    */
-  public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributesV2): ITableV2 {
+  public static fromTableAttributes(
+    scope: Construct,
+    id: string,
+    attrs: TableAttributesV2
+  ): ITableV2 {
     class Import extends TableBaseV2 {
       public readonly tableArn: string;
       public readonly tableName: string;
@@ -432,16 +438,25 @@ export class TableV2 extends TableBaseV2 {
       public readonly resourcePolicy?: PolicyDocument;
 
       protected readonly region: string;
-      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+      protected readonly hasIndex =
+        (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
-      public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string, resourcePolicy?: PolicyDocument) {
+      public constructor(
+        tableArn: string,
+        tableName: string,
+        tableId?: string,
+        tableStreamArn?: string,
+        resourcePolicy?: PolicyDocument
+      ) {
         super(scope, id, { environmentFromArn: tableArn });
 
         const resourceRegion = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
         if (!resourceRegion) {
-          throw new Error('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+          throw new Error(
+            'Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>'
+          );
         }
 
         this.region = resourceRegion;
@@ -476,7 +491,9 @@ export class TableV2 extends TableBaseV2 {
       tableArn = attrs.tableArn;
       const resourceName = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!resourceName) {
-        throw new Error('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+        throw new Error(
+          'Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>'
+        );
       }
       tableName = resourceName;
     }
@@ -536,8 +553,14 @@ export class TableV2 extends TableBaseV2 {
   private readonly replicaTableArns: string[] = [];
   private readonly replicaStreamArns: string[] = [];
 
-  private readonly globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
-  private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
+  private readonly globalSecondaryIndexes = new Map<
+    string,
+    CfnGlobalTable.GlobalSecondaryIndexProperty
+  >();
+  private readonly localSecondaryIndexes = new Map<
+    string,
+    CfnGlobalTable.LocalSecondaryIndexProperty
+  >();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
 
@@ -569,24 +592,33 @@ export class TableV2 extends TableBaseV2 {
       this.billingMode = props.billing.mode;
     }
 
-    props.globalSecondaryIndexes?.forEach(gsi => this.addGlobalSecondaryIndex(gsi));
-    props.localSecondaryIndexes?.forEach(lsi => this.addLocalSecondaryIndex(lsi));
+    props.globalSecondaryIndexes?.forEach((gsi) => this.addGlobalSecondaryIndex(gsi));
+    props.localSecondaryIndexes?.forEach((lsi) => this.addLocalSecondaryIndex(lsi));
 
     const resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
       replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
-      globalSecondaryIndexes: Lazy.any({ produce: () => this.renderGlobalIndexes() }, { omitEmptyArray: true }),
-      localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
+      globalSecondaryIndexes: Lazy.any(
+        { produce: () => this.renderGlobalIndexes() },
+        { omitEmptyArray: true }
+      ),
+      localSecondaryIndexes: Lazy.any(
+        { produce: () => this.renderLocalIndexes() },
+        { omitEmptyArray: true }
+      ),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.writeProvisioning,
       writeOnDemandThroughputSettings: this.maxWriteRequestUnits
         ? { maxWriteRequestUnits: this.maxWriteRequestUnits }
         : undefined,
-      streamSpecification: Lazy.any(
-        { produce: () => props.dynamoStream ? { streamViewType: props.dynamoStream } : this.renderStreamSpecification() },
-      ),
+      streamSpecification: Lazy.any({
+        produce: () =>
+          props.dynamoStream
+            ? { streamViewType: props.dynamoStream }
+            : this.renderStreamSpecification(),
+      }),
       sseSpecification: this.encryption?._renderSseSpecification(),
       timeToLiveSpecification: props.timeToLiveAttribute
         ? { attributeName: props.timeToLiveAttribute, enabled: true }
@@ -604,7 +636,7 @@ export class TableV2 extends TableBaseV2 {
     this.tableId = resource.attrTableId;
     this.tableStreamArn = resource.attrStreamArn;
 
-    props.replicas?.forEach(replica => this.addReplica(replica));
+    props.replicas?.forEach((replica) => this.addReplica(replica));
 
     if (props.tableName) {
       this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
@@ -685,8 +717,8 @@ export class TableV2 extends TableBaseV2 {
       throw new Error(`No replica table exists in region ${region}`);
     }
 
-    const replicaTableArn = this.replicaTableArns.find(arn => arn.includes(region));
-    const replicaStreamArn = this.replicaStreamArns.find(arn => arn.includes(region));
+    const replicaTableArn = this.replicaTableArns.find((arn) => arn.includes(region));
+    const replicaStreamArn = this.replicaStreamArns.find((arn) => arn.includes(region));
 
     return TableV2.fromTableAttributes(this, `ReplicaTable${region}`, {
       tableArn: replicaTableArn,
@@ -696,21 +728,27 @@ export class TableV2 extends TableBaseV2 {
     });
   }
 
-  private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
+  private configureReplicaTable(
+    props: ReplicaTableProps
+  ): CfnGlobalTable.ReplicaSpecificationProperty {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
 
     /*
-    * Feature flag set as the following may be a breaking change.
-    * @see https://github.com/aws/aws-cdk/pull/31097
-    * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
-    */
-    const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
-      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
-      : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+     * Feature flag set as the following may be a breaking change.
+     * @see https://github.com/aws/aws-cdk/pull/31097
+     * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
+     */
+    const resourcePolicy = FeatureFlags.of(this).isEnabled(
+      cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA
+    )
+      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) ||
+        undefined
+      : (props.resourcePolicy ?? this.tableOptions.resourcePolicy);
 
-    const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
-      ({ ...p, [item.key]: item.value }), {},
+    const propTags: Record<string, string> = (props.tags ?? []).reduce(
+      (p, item) => ({ ...p, [item.key]: item.value }),
+      {}
     );
 
     const tags: CfnTag[] = Object.entries({
@@ -720,19 +758,21 @@ export class TableV2 extends TableBaseV2 {
 
     return {
       region: props.region,
-      globalSecondaryIndexes: this.configureReplicaGlobalSecondaryIndexes(props.globalSecondaryIndexOptions),
+      globalSecondaryIndexes: this.configureReplicaGlobalSecondaryIndexes(
+        props.globalSecondaryIndexOptions
+      ),
       deletionProtectionEnabled: props.deletionProtection ?? this.tableOptions.deletionProtection,
       tableClass: props.tableClass ?? this.tableOptions.tableClass,
       sseSpecification: this.encryption?._renderReplicaSseSpecification(this, props.region),
       kinesisStreamSpecification: props.kinesisStream
         ? { streamArn: props.kinesisStream.streamArn }
         : undefined,
-      contributorInsightsSpecification: contributorInsights !== undefined
-        ? { enabled: contributorInsights }
-        : undefined,
-      pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
-        ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
-        : undefined,
+      contributorInsightsSpecification:
+        contributorInsights !== undefined ? { enabled: contributorInsights } : undefined,
+      pointInTimeRecoverySpecification:
+        pointInTimeRecovery !== undefined
+          ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
+          : undefined,
       readProvisionedThroughputSettings: props.readCapacity
         ? props.readCapacity._renderReadCapacity()
         : this.readProvisioning,
@@ -742,24 +782,30 @@ export class TableV2 extends TableBaseV2 {
         : this.maxReadRequestUnits
           ? { maxReadRequestUnits: this.maxReadRequestUnits }
           : undefined,
-      resourcePolicy: resourcePolicy
-        ? { policyDocument: resourcePolicy }
-        : undefined,
+      resourcePolicy: resourcePolicy ? { policyDocument: resourcePolicy } : undefined,
     };
   }
 
-  private configureGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2): CfnGlobalTable.GlobalSecondaryIndexProperty {
+  private configureGlobalSecondaryIndex(
+    props: GlobalSecondaryIndexPropsV2
+  ): CfnGlobalTable.GlobalSecondaryIndexProperty {
     const keySchema = this.configureIndexKeySchema(props.partitionKey, props.sortKey);
     const projection = this.configureIndexProjection(props);
 
-    props.readCapacity && this.globalSecondaryIndexReadCapacitys.set(props.indexName, props.readCapacity);
-    const writeProvisionedThroughputSettings = props.writeCapacity ? props.writeCapacity._renderWriteCapacity() : this.writeProvisioning;
+    props.readCapacity &&
+      this.globalSecondaryIndexReadCapacitys.set(props.indexName, props.readCapacity);
+    const writeProvisionedThroughputSettings = props.writeCapacity
+      ? props.writeCapacity._renderWriteCapacity()
+      : this.writeProvisioning;
 
-    props.maxReadRequestUnits && this.globalSecondaryIndexMaxReadUnits.set(props.indexName, props.maxReadRequestUnits);
+    props.maxReadRequestUnits &&
+      this.globalSecondaryIndexMaxReadUnits.set(props.indexName, props.maxReadRequestUnits);
 
     const warmThroughput = props.warmThroughput ?? undefined;
 
-    const writeOnDemandThroughputSettings: CfnGlobalTable.WriteOnDemandThroughputSettingsProperty | undefined = props.maxWriteRequestUnits
+    const writeOnDemandThroughputSettings:
+      | CfnGlobalTable.WriteOnDemandThroughputSettingsProperty
+      | undefined = props.maxWriteRequestUnits
       ? { maxWriteRequestUnits: props.maxWriteRequestUnits }
       : undefined;
 
@@ -773,7 +819,9 @@ export class TableV2 extends TableBaseV2 {
     };
   }
 
-  private configureLocalSecondaryIndex(props: LocalSecondaryIndexProps): CfnGlobalTable.LocalSecondaryIndexProperty {
+  private configureLocalSecondaryIndex(
+    props: LocalSecondaryIndexProps
+  ): CfnGlobalTable.LocalSecondaryIndexProperty {
     const keySchema = this.configureIndexKeySchema(this.partitionKey, props.sortKey);
     const projection = this.configureIndexProjection(props);
 
@@ -784,10 +832,13 @@ export class TableV2 extends TableBaseV2 {
     };
   }
 
-  private configureReplicaGlobalSecondaryIndexes(options: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions } = {}) {
+  private configureReplicaGlobalSecondaryIndexes(
+    options: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions } = {}
+  ) {
     this.validateReplicaIndexOptions(options);
 
-    const replicaGlobalSecondaryIndexes: CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty[] = [];
+    const replicaGlobalSecondaryIndexes: CfnGlobalTable.ReplicaGlobalSecondaryIndexSpecificationProperty[] =
+      [];
     const indexNamesFromOptions = Object.keys(options);
 
     for (const gsi of this.globalSecondaryIndexes.values()) {
@@ -802,9 +853,12 @@ export class TableV2 extends TableBaseV2 {
         maxReadRequestUnits = indexOptions.maxReadRequestUnits;
       }
 
-      const readProvisionedThroughputSettings = readCapacity?._renderReadCapacity() ?? this.readProvisioning;
+      const readProvisionedThroughputSettings =
+        readCapacity?._renderReadCapacity() ?? this.readProvisioning;
 
-      const readOnDemandThroughputSettings: CfnGlobalTable.ReadOnDemandThroughputSettingsProperty | undefined = maxReadRequestUnits
+      const readOnDemandThroughputSettings:
+        | CfnGlobalTable.ReadOnDemandThroughputSettingsProperty
+        | undefined = maxReadRequestUnits
         ? { maxReadRequestUnits: maxReadRequestUnits }
         : undefined;
 
@@ -812,9 +866,8 @@ export class TableV2 extends TableBaseV2 {
         indexName,
         readProvisionedThroughputSettings,
         readOnDemandThroughputSettings,
-        contributorInsightsSpecification: contributorInsights !== undefined
-          ? { enabled: contributorInsights }
-          : undefined,
+        contributorInsightsSpecification:
+          contributorInsights !== undefined ? { enabled: contributorInsights } : undefined,
       });
     }
 
@@ -839,9 +892,11 @@ export class TableV2 extends TableBaseV2 {
   private configureIndexProjection(props: SecondaryIndexProps): CfnGlobalTable.ProjectionProperty {
     this.validateIndexProjection(props);
 
-    props.nonKeyAttributes?.forEach(attr => this.nonKeyAttributes.add(attr));
+    props.nonKeyAttributes?.forEach((attr) => this.nonKeyAttributes.add(attr));
     if (this.nonKeyAttributes.size > MAX_NON_KEY_ATTRIBUTES) {
-      throw new Error(`The maximum number of 'nonKeyAttributes' across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`);
+      throw new Error(
+        `The maximum number of 'nonKeyAttributes' across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`
+      );
     }
 
     return {
@@ -862,11 +917,13 @@ export class TableV2 extends TableBaseV2 {
     for (const replicaTable of this.replicaTables.values()) {
       replicaTables.push(this.configureReplicaTable(replicaTable));
     }
-    replicaTables.push(this.configureReplicaTable({
-      region: this.stack.region,
-      kinesisStream: this.tableOptions.kinesisStream,
-      tags: this.tableOptions.tags,
-    }));
+    replicaTables.push(
+      this.configureReplicaTable({
+        region: this.stack.region,
+        kinesisStream: this.tableOptions.kinesisStream,
+        tags: this.tableOptions.tags,
+      })
+    );
 
     return replicaTables;
   }
@@ -892,7 +949,9 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
-    return this.replicaTables.size > 0 ? { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES } : undefined;
+    return this.replicaTables.size > 0
+      ? { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES }
+      : undefined;
   }
 
   private addKey(key: Attribute, keyType: string) {
@@ -903,9 +962,13 @@ export class TableV2 extends TableBaseV2 {
   private addAttributeDefinition(attribute: Attribute) {
     const { name, type } = attribute;
 
-    const existingAttributeDef = this.attributeDefinitions.find(def => def.attributeName === name);
+    const existingAttributeDef = this.attributeDefinitions.find(
+      (def) => def.attributeName === name
+    );
     if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
-      throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`);
+      throw new Error(
+        `Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`
+      );
     }
 
     if (!existingAttributeDef) {
@@ -925,23 +988,33 @@ export class TableV2 extends TableBaseV2 {
 
   private validateIndexProjection(props: SecondaryIndexProps) {
     if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
-      throw new Error(`Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`);
+      throw new Error(
+        `Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`
+      );
     }
 
     if (props.projectionType !== ProjectionType.INCLUDE && props.nonKeyAttributes) {
-      throw new Error(`Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`);
+      throw new Error(
+        `Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`
+      );
     }
   }
 
-  private validateReplicaIndexOptions(options: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions }) {
+  private validateReplicaIndexOptions(options: {
+    [indexName: string]: ReplicaGlobalSecondaryIndexOptions;
+  }) {
     for (const indexName of Object.keys(options)) {
       if (!this.globalSecondaryIndexes.has(indexName)) {
-        throw new Error(`Cannot configure replica global secondary index, ${indexName}, because it is not defined on the primary table`);
+        throw new Error(
+          `Cannot configure replica global secondary index, ${indexName}, because it is not defined on the primary table`
+        );
       }
 
       const replicaGsiOptions = options[indexName];
       if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions.readCapacity) {
-        throw new Error(`Cannot configure 'readCapacity' for replica global secondary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+        throw new Error(
+          `Cannot configure 'readCapacity' for replica global secondary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`
+        );
       }
     }
   }
@@ -957,7 +1030,9 @@ export class TableV2 extends TableBaseV2 {
     }
 
     if (props.region === this.stack.region) {
-      throw new Error(`You cannot add a replica table in the same region as the primary table - the primary table region is ${this.region}`);
+      throw new Error(
+        `You cannot add a replica table in the same region as the primary table - the primary table region is ${this.region}`
+      );
     }
 
     if (this.replicaTables.has(props.region)) {
@@ -965,7 +1040,9 @@ export class TableV2 extends TableBaseV2 {
     }
 
     if (this.billingMode === BillingMode.PAY_PER_REQUEST && props.readCapacity) {
-      throw new Error(`You cannot provide 'readCapacity' on a replica table when the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+      throw new Error(
+        `You cannot provide 'readCapacity' on a replica table when the billing mode is ${BillingMode.PAY_PER_REQUEST}`
+      );
     }
   }
 
@@ -976,8 +1053,13 @@ export class TableV2 extends TableBaseV2 {
       throw new Error(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`);
     }
 
-    if (this.billingMode === BillingMode.PAY_PER_REQUEST && (props.readCapacity || props.writeCapacity)) {
-      throw new Error(`You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is ${BillingMode.PAY_PER_REQUEST}`);
+    if (
+      this.billingMode === BillingMode.PAY_PER_REQUEST &&
+      (props.readCapacity || props.writeCapacity)
+    ) {
+      throw new Error(
+        `You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is ${BillingMode.PAY_PER_REQUEST}`
+      );
     }
   }
 

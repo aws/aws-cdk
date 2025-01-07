@@ -117,23 +117,34 @@ export class PolicyValidationReportFormatter {
     const output = [json.title];
     output.push('-'.repeat(json.title.length));
 
-    json.pluginReports.forEach(plugin => {
+    json.pluginReports.forEach((plugin) => {
       output.push('');
-      output.push(table([
-        [`Plugin: ${plugin.summary.pluginName}`],
-        [`Version: ${plugin.version ?? 'N/A'}`],
-        [`Status: ${plugin.summary.status}`],
-      ], {
-        header: { content: 'Plugin Report' },
-        singleLine: true,
-        columns: [{
-          paddingLeft: 3,
-          paddingRight: 3,
-        }],
-      }));
+      output.push(
+        table(
+          [
+            [`Plugin: ${plugin.summary.pluginName}`],
+            [`Version: ${plugin.version ?? 'N/A'}`],
+            [`Status: ${plugin.summary.status}`],
+          ],
+          {
+            header: { content: 'Plugin Report' },
+            singleLine: true,
+            columns: [
+              {
+                paddingLeft: 3,
+                paddingRight: 3,
+              },
+            ],
+          }
+        )
+      );
       if (plugin.summary.metadata) {
         output.push('');
-        output.push(`Metadata: \n\t${Object.entries(plugin.summary.metadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`);
+        output.push(
+          `Metadata: \n\t${Object.entries(plugin.summary.metadata)
+            .flatMap(([key, value]) => `${key}: ${value}`)
+            .join('\n\t')}`
+        );
       }
 
       if (plugin.violations.length > 0) {
@@ -156,7 +167,9 @@ export class PolicyValidationReportFormatter {
           output.push('');
           output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
           output.push(`    - Template Path: ${construct.templatePath}`);
-          output.push(`    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`);
+          output.push(
+            `    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`
+          );
           output.push(`    - Resource ID: ${construct.resourceLogicalId}`);
           if (construct.locations) {
             output.push('    - Template Locations:');
@@ -166,12 +179,16 @@ export class PolicyValidationReportFormatter {
           }
         }
         output.push('');
-        output.push(`  Description: ${violation.description }`);
+        output.push(`  Description: ${violation.description}`);
         if (violation.fix) {
           output.push(`  How to fix: ${violation.fix}`);
         }
         if (violation.ruleMetadata) {
-          output.push(`  Rule Metadata: \n\t${Object.entries(violation.ruleMetadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`);
+          output.push(
+            `  Rule Metadata: \n\t${Object.entries(violation.ruleMetadata)
+              .flatMap(([key, value]) => `${key}: ${value}`)
+              .join('\n\t')}`
+          );
         }
       });
     });
@@ -179,10 +196,15 @@ export class PolicyValidationReportFormatter {
     output.push('');
     output.push('Policy Validation Report Summary');
     output.push('');
-    output.push(table([
-      ['Plugin', 'Status'],
-      ...reps.map(rep => [rep.pluginName, rep.success ? 'success' : 'failure']),
-    ], { }));
+    output.push(
+      table(
+        [
+          ['Plugin', 'Status'],
+          ...reps.map((rep) => [rep.pluginName, rep.success ? 'success' : 'failure']),
+        ],
+        {}
+      )
+    );
 
     return output.join(os.EOL);
   }
@@ -191,25 +213,27 @@ export class PolicyValidationReportFormatter {
     return {
       title: 'Validation Report',
       pluginReports: reps
-        .filter(rep => !rep.success)
-        .map(rep => ({
+        .filter((rep) => !rep.success)
+        .map((rep) => ({
           version: rep.pluginVersion,
           summary: {
             pluginName: rep.pluginName,
-            status: rep.success ? report.PolicyValidationReportStatusBeta1.SUCCESS : report.PolicyValidationReportStatusBeta1.FAILURE,
+            status: rep.success
+              ? report.PolicyValidationReportStatusBeta1.SUCCESS
+              : report.PolicyValidationReportStatusBeta1.FAILURE,
             metadata: rep.metadata,
           },
-          violations: rep.violations.map(violation => ({
+          violations: rep.violations.map((violation) => ({
             ruleName: violation.ruleName,
             description: violation.description,
             fix: violation.fix,
             ruleMetadata: violation.ruleMetadata,
             severity: violation.severity,
             violatingResources: violation.violatingResources,
-            violatingConstructs: violation.violatingResources.map(resource => {
+            violatingConstructs: violation.violatingResources.map((resource) => {
               const constructPath = this.tree.getConstructByLogicalId(
                 path.basename(resource.templatePath),
-                resource.resourceLogicalId,
+                resource.resourceLogicalId
               )?.node.path;
               return {
                 constructStack: this.reportTrace.formatJson(constructPath),

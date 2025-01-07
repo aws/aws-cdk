@@ -13,30 +13,38 @@ export class WaitTime {
   /**
    * Wait a fixed amount of time.
    */
-  public static duration(duration: cdk.Duration) { return new WaitTime({ Seconds: duration.toSeconds() }); }
+  public static duration(duration: cdk.Duration) {
+    return new WaitTime({ Seconds: duration.toSeconds() });
+  }
 
   /**
    * Wait until the given ISO8601 timestamp
    *
    * Example value: `2016-03-14T01:59:00Z`
    */
-  public static timestamp(timestamp: string) { return new WaitTime({ Timestamp: timestamp }); }
+  public static timestamp(timestamp: string) {
+    return new WaitTime({ Timestamp: timestamp });
+  }
 
   /**
    * Wait for a number of seconds stored in the state object.
    *
    * Example value: `$.waitSeconds`
    */
-  public static secondsPath(path: string) { return new WaitTime({ SecondsPath: path }); }
+  public static secondsPath(path: string) {
+    return new WaitTime({ SecondsPath: path });
+  }
 
   /**
    * Wait until a timestamp found in the state object.
    *
    * Example value: `$.waitTimestamp`
    */
-  public static timestampPath(path: string) { return new WaitTime({ TimestampPath: path }); }
+  public static timestampPath(path: string) {
+    return new WaitTime({ TimestampPath: path });
+  }
 
-  private constructor(private readonly json: any) { }
+  private constructor(private readonly json: any) {}
 
   /**
    * @internal

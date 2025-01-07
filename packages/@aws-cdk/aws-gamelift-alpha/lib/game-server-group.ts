@@ -25,7 +25,6 @@ export interface AutoScalingPolicy {
    * As player usage changes, the policy triggers to adjust the game server group capacity so that the metric returns to the target value.
    */
   readonly targetTrackingConfiguration: number;
-
 }
 /**
  * An allowed instance type for a game server group.
@@ -351,23 +350,33 @@ export class GameServerGroup extends GameServerGroupBase {
   /**
    * Import an existing game server group from its attributes.
    */
-  static fromGameServerGroupAttributes(scope: Construct, id: string, attrs: GameServerGroupAttributes): IGameServerGroup {
+  static fromGameServerGroupAttributes(
+    scope: Construct,
+    id: string,
+    attrs: GameServerGroupAttributes
+  ): IGameServerGroup {
     if (!attrs.gameServerGroupArn && !attrs.gameServerGroupName) {
-      throw new Error('Either gameServerGroupName or gameServerGroupArn must be provided in GameServerGroupAttributes');
+      throw new Error(
+        'Either gameServerGroupName or gameServerGroupArn must be provided in GameServerGroupAttributes'
+      );
     }
-    const gameServerGroupName = attrs.gameServerGroupName ??
-      cdk.Stack.of(scope).splitArn(attrs.gameServerGroupArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    const gameServerGroupName =
+      attrs.gameServerGroupName ??
+      cdk.Stack.of(scope).splitArn(attrs.gameServerGroupArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME)
+        .resourceName;
 
     if (!gameServerGroupName) {
       throw new Error(`No game server group name found in ARN: '${attrs.gameServerGroupArn}'`);
     }
 
-    const gameServerGroupArn = attrs.gameServerGroupArn ?? cdk.Stack.of(scope).formatArn({
-      service: 'gamelift',
-      resource: 'gameservergroup',
-      resourceName: attrs.gameServerGroupName,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-    });
+    const gameServerGroupArn =
+      attrs.gameServerGroupArn ??
+      cdk.Stack.of(scope).formatArn({
+        service: 'gamelift',
+        resource: 'gameservergroup',
+        resourceName: attrs.gameServerGroupName,
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      });
 
     class Import extends GameServerGroupBase {
       public readonly gameServerGroupName = gameServerGroupName!;
@@ -427,11 +436,15 @@ export class GameServerGroup extends GameServerGroupBase {
 
     if (!cdk.Token.isUnresolved(props.gameServerGroupName)) {
       if (props.gameServerGroupName.length > 128) {
-        throw new Error(`GameServerGroup name can not be longer than 128 characters but has ${props.gameServerGroupName.length} characters.`);
+        throw new Error(
+          `GameServerGroup name can not be longer than 128 characters but has ${props.gameServerGroupName.length} characters.`
+        );
       }
 
       if (!/^[a-zA-Z0-9-\.]+$/.test(props.gameServerGroupName)) {
-        throw new Error(`Game server group name ${props.gameServerGroupName} can contain only letters, numbers, hyphens, back slash or dot with no spaces.`);
+        throw new Error(
+          `Game server group name ${props.gameServerGroupName} can contain only letters, numbers, hyphens, back slash or dot with no spaces.`
+        );
       }
     }
 
@@ -440,30 +453,41 @@ export class GameServerGroup extends GameServerGroupBase {
     const { subnetIds } = props.vpc.selectSubnets(this.vpcSubnets);
 
     if (props.minSize && props.minSize < 0) {
-      throw new Error(`The minimum number of instances allowed in the Amazon EC2 Auto Scaling group cannot be lower than 0, given ${props.minSize}`);
+      throw new Error(
+        `The minimum number of instances allowed in the Amazon EC2 Auto Scaling group cannot be lower than 0, given ${props.minSize}`
+      );
     }
 
     if (props.maxSize && props.maxSize < 1) {
-      throw new Error(`The maximum number of instances allowed in the Amazon EC2 Auto Scaling group cannot be lower than 1, given ${props.maxSize}`);
+      throw new Error(
+        `The maximum number of instances allowed in the Amazon EC2 Auto Scaling group cannot be lower than 1, given ${props.maxSize}`
+      );
     }
 
     if (subnetIds.length > 20) {
-      throw new Error(`No more than 20 subnets are allowed per game server group, given ${subnetIds.length}`);
+      throw new Error(
+        `No more than 20 subnets are allowed per game server group, given ${subnetIds.length}`
+      );
     }
 
     // Add all instance definitions
     if (props.instanceDefinitions.length > 20) {
-      throw new Error(`No more than 20 instance definitions are allowed per game server group, given ${props.instanceDefinitions.length}`);
+      throw new Error(
+        `No more than 20 instance definitions are allowed per game server group, given ${props.instanceDefinitions.length}`
+      );
     }
 
-    this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.CompositePrincipal(
-        new iam.ServicePrincipal('gamelift.amazonaws.com'),
-        new iam.ServicePrincipal('autoscaling.amazonaws.com')),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('GameLiftGameServerGroupPolicy'),
-      ],
-    });
+    this.role =
+      props.role ??
+      new iam.Role(this, 'ServiceRole', {
+        assumedBy: new iam.CompositePrincipal(
+          new iam.ServicePrincipal('gamelift.amazonaws.com'),
+          new iam.ServicePrincipal('autoscaling.amazonaws.com')
+        ),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('GameLiftGameServerGroupPolicy'),
+        ],
+      });
     this.grantPrincipal = this.role;
 
     const resource = new CfnGameServerGroup(this, 'Resource', {
@@ -495,7 +519,9 @@ export class GameServerGroup extends GameServerGroupBase {
     });
   }
 
-  protected parseLaunchTemplate(props: GameServerGroupProps): CfnGameServerGroup.LaunchTemplateProperty {
+  protected parseLaunchTemplate(
+    props: GameServerGroupProps
+  ): CfnGameServerGroup.LaunchTemplateProperty {
     return {
       launchTemplateId: props.launchTemplate.launchTemplateId,
       launchTemplateName: props.launchTemplate.launchTemplateName,
@@ -503,7 +529,9 @@ export class GameServerGroup extends GameServerGroupBase {
     };
   }
 
-  protected parseAutoScalingPolicy(props: GameServerGroupProps): CfnGameServerGroup.AutoScalingPolicyProperty | undefined {
+  protected parseAutoScalingPolicy(
+    props: GameServerGroupProps
+  ): CfnGameServerGroup.AutoScalingPolicyProperty | undefined {
     if (!props.autoScalingPolicy) {
       return undefined;
     }
@@ -516,10 +544,14 @@ export class GameServerGroup extends GameServerGroupBase {
     };
   }
 
-  protected parseInstanceDefinitions(props: GameServerGroupProps): CfnGameServerGroup.InstanceDefinitionProperty[] {
+  protected parseInstanceDefinitions(
+    props: GameServerGroupProps
+  ): CfnGameServerGroup.InstanceDefinitionProperty[] {
     return props.instanceDefinitions.map(parseInstanceDefinition);
 
-    function parseInstanceDefinition(instanceDefinition: InstanceDefinition): CfnGameServerGroup.InstanceDefinitionProperty {
+    function parseInstanceDefinition(
+      instanceDefinition: InstanceDefinition
+    ): CfnGameServerGroup.InstanceDefinitionProperty {
       return {
         instanceType: instanceDefinition.instanceType.toString(),
         weightedCapacity: instanceDefinition.weight?.toString(),

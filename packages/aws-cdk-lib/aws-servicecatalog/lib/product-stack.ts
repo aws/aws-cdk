@@ -24,14 +24,14 @@ export interface ProductStackProps {
    *
    * @default - No encryption is used
    */
-  readonly serverSideEncryption? : ServerSideEncryption;
+  readonly serverSideEncryption?: ServerSideEncryption;
 
   /**
    * For AWS_KMS ServerSideEncryption a KMS KeyId must be provided which will be used to encrypt assets
    *
    * @default - No KMS KeyId and SSE_KMS encryption cannot be used
    */
-  readonly serverSideEncryptionAwsKmsKeyId? : string;
+  readonly serverSideEncryptionAwsKmsKeyId?: string;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
@@ -104,7 +104,7 @@ export class ProductStack extends cdk.Stack {
    * @internal
    */
   public _setParentProductStackHistory(parentProductStackHistory: ProductStackHistory) {
-    return this._parentProductStackHistory = parentProductStackHistory;
+    return (this._parentProductStackHistory = parentProductStackHistory);
   }
 
   /**

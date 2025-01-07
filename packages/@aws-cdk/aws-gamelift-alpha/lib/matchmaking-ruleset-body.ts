@@ -68,7 +68,9 @@ export class RuleSetContent implements IRuleSetContent {
     }
 
     if (!fs.lstatSync(path).isFile()) {
-      throw new Error(`RuleSet path is not link to a single file, please verify your path, actual ${path}`);
+      throw new Error(
+        `RuleSet path is not link to a single file, please verify your path, actual ${path}`
+      );
     }
     const file = fs.readFileSync(path);
 

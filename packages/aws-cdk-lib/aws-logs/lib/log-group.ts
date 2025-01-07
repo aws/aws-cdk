@@ -204,12 +204,13 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * Give permissions to read and filter events from this log group
    */
   public grantRead(grantee: iam.IGrantable) {
-    return this.grant(grantee,
+    return this.grant(
+      grantee,
       'logs:FilterLogEvents',
       'logs:GetLogEvents',
       'logs:GetLogGroupFields',
       'logs:DescribeLogGroups',
-      'logs:DescribeLogStreams',
+      'logs:DescribeLogStreams'
     );
   }
 
@@ -248,9 +249,11 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     if (!this.policy) {
       this.policy = new ResourcePolicy(this, 'Policy');
     }
-    this.policy.document.addStatements(statement.copy({
-      principals: statement.principals.map(p => this.convertArnPrincipalToAccountId(p)),
-    }));
+    this.policy.document.addStatements(
+      statement.copy({
+        principals: statement.principals.map((p) => this.convertArnPrincipalToAccountId(p)),
+      })
+    );
     return { statementAdded: true, policyDependable: this.policy };
   }
 
@@ -313,28 +316,28 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    *   evaluationPeriods: 1,
    * });
    * ```
-  */
+   */
   public metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('IncomingBytes', props);
   }
 
   /**
- * Creates a CloudWatch metric for this log group.
- *
- * @param metricName - The name of the metric to create.
- * @param props - Optional. Additional properties to configure the metric.
- * @returns A CloudWatch Metric object representing the specified metric for this log group.
- *
- * This method creates a CloudWatch Metric object with predefined settings for the log group.
- * It sets the namespace to 'AWS/Logs' and the statistic to 'Sum' by default.
- *
- * The created metric is automatically associated with this log group using the `attachTo` method.
- *
- * Common metric names for log groups include:
- * - 'IncomingBytes': The volume of log data in bytes ingested into the log group.
- * - 'IncomingLogEvents': The number of log events ingested into the log group.
- * ```
- */
+   * Creates a CloudWatch metric for this log group.
+   *
+   * @param metricName - The name of the metric to create.
+   * @param props - Optional. Additional properties to configure the metric.
+   * @returns A CloudWatch Metric object representing the specified metric for this log group.
+   *
+   * This method creates a CloudWatch Metric object with predefined settings for the log group.
+   * It sets the namespace to 'AWS/Logs' and the statistic to 'Sum' by default.
+   *
+   * The created metric is automatically associated with this log group using the `attachTo` method.
+   *
+   * Common metric names for log groups include:
+   * - 'IncomingBytes': The volume of log data in bytes ingested into the log group.
+   * - 'IncomingLogEvents': The number of log events ingested into the log group.
+   * ```
+   */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Logs',
@@ -565,7 +568,10 @@ export class LogGroup extends LogGroupBase {
 
     class Import extends LogGroupBase {
       public readonly logGroupArn = `${baseLogGroupArn}:*`;
-      public readonly logGroupName = Stack.of(scope).splitArn(baseLogGroupArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+      public readonly logGroupName = Stack.of(scope).splitArn(
+        baseLogGroupArn,
+        ArnFormat.COLON_RESOURCE_NAME
+      ).resourceName!;
     }
 
     return new Import(scope, id, {
@@ -608,10 +614,18 @@ export class LogGroup extends LogGroupBase {
     });
 
     let retentionInDays = props.retention;
-    if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
-    if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
+    if (retentionInDays === undefined) {
+      retentionInDays = RetentionDays.TWO_YEARS;
+    }
+    if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) {
+      retentionInDays = undefined;
+    }
 
-    if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
+    if (
+      retentionInDays !== undefined &&
+      !Token.isUnresolved(retentionInDays) &&
+      retentionInDays <= 0
+    ) {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
     }
 
@@ -622,8 +636,15 @@ export class LogGroup extends LogGroupBase {
       'us-iso-east-1', // DCA
       'us-isob-east-1', // LCK
     ];
-    if (logGroupClass !== undefined && !Token.isUnresolved(stack.region) && logGroupClassUnsupportedRegions.includes(stack.region)) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`);
+    if (
+      logGroupClass !== undefined &&
+      !Token.isUnresolved(stack.region) &&
+      logGroupClassUnsupportedRegions.includes(stack.region)
+    ) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-logs:propertyNotSupported',
+        `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`
+      );
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {

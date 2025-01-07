@@ -92,8 +92,11 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
   /**
    * Imports an App Runner Auto Scaling Configuration from attributes
    */
-  public static fromAutoScalingConfigurationAttributes(scope: Construct, id: string,
-    attrs: AutoScalingConfigurationAttributes): IAutoScalingConfiguration {
+  public static fromAutoScalingConfigurationAttributes(
+    scope: Construct,
+    id: string,
+    attrs: AutoScalingConfigurationAttributes
+  ): IAutoScalingConfiguration {
     const autoScalingConfigurationName = attrs.autoScalingConfigurationName;
     const autoScalingConfigurationRevision = attrs.autoScalingConfigurationRevision;
 
@@ -113,7 +116,11 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
   /**
    * Imports an App Runner Auto Scaling Configuration from its ARN
    */
-  public static fromArn(scope: Construct, id: string, autoScalingConfigurationArn: string): IAutoScalingConfiguration {
+  public static fromArn(
+    scope: Construct,
+    id: string,
+    autoScalingConfigurationArn: string
+  ): IAutoScalingConfiguration {
     const resourceParts = cdk.Fn.split('/', autoScalingConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
@@ -170,17 +177,22 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
   }
 
   private validateAutoScalingConfiguration(props: AutoScalingConfigurationProps) {
-    if (props.autoScalingConfigurationName !== undefined && !cdk.Token.isUnresolved(props.autoScalingConfigurationName)) {
-
-      if (props.autoScalingConfigurationName.length < 4 || props.autoScalingConfigurationName.length > 32) {
+    if (
+      props.autoScalingConfigurationName !== undefined &&
+      !cdk.Token.isUnresolved(props.autoScalingConfigurationName)
+    ) {
+      if (
+        props.autoScalingConfigurationName.length < 4 ||
+        props.autoScalingConfigurationName.length > 32
+      ) {
         throw new Error(
-          `\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${props.autoScalingConfigurationName.length} characters.`,
+          `\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${props.autoScalingConfigurationName.length} characters.`
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.autoScalingConfigurationName)) {
         throw new Error(
-          `\`autoScalingConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.autoScalingConfigurationName}.`,
+          `\`autoScalingConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.autoScalingConfigurationName}.`
         );
       }
     }
@@ -205,5 +217,4 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
       throw new Error(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}.`);
     }
   }
-
 }

@@ -22,6 +22,9 @@ import { Resource, Stack } from '../../../core';
  */
 export function forceSupportStackDependency(bucket: s3.IBucket, role: iam.IRole) {
   if (Resource.isOwnedResource(bucket) && Resource.isOwnedResource(role)) {
-    Stack.of(bucket).addDependency(Stack.of(role), `replication bucket {${bucket.node.path}} to action role {${role}}`);
+    Stack.of(bucket).addDependency(
+      Stack.of(role),
+      `replication bucket {${bucket.node.path}} to action role {${role}}`
+    );
   }
 }

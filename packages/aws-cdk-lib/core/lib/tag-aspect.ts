@@ -58,7 +58,6 @@ export interface TagProps {
  * The common functionality for Tag and Remove Tag Aspects
  */
 abstract class TagBase implements IAspect {
-
   /**
    * The string key for the tag
    */
@@ -87,14 +86,16 @@ abstract class TagBase implements IAspect {
  * The Tag Aspect will handle adding a tag to this node and cascading tags to children
  */
 export class Tag extends TagBase {
-
   /**
    * DEPRECATED: add tags to the node of a construct and all its the taggable children
    *
    * @deprecated use `Tags.of(scope).add()`
    */
   public static add(scope: Construct, key: string, value: string, props: TagProps = {}) {
-    Annotations.of(scope).addDeprecation('@aws-cdk/core.Tag.add(scope,k,v)', 'Use "Tags.of(scope).add(k,v)" instead');
+    Annotations.of(scope).addDeprecation(
+      '@aws-cdk/core.Tag.add(scope,k,v)',
+      'Use "Tags.of(scope).add(k,v)" instead'
+    );
     Tags.of(scope).add(key, value, props);
   }
 
@@ -104,7 +105,10 @@ export class Tag extends TagBase {
    * @deprecated use `Tags.of(scope).remove()`
    */
   public static remove(scope: Construct, key: string, props: TagProps = {}) {
-    Annotations.of(scope).addDeprecation('@aws-cdk/core.Tag.remove(scope,k,v)', 'Use "Tags.of(scope).remove(k,v)" instead');
+    Annotations.of(scope).addDeprecation(
+      '@aws-cdk/core.Tag.remove(scope,k,v)',
+      'Use "Tags.of(scope).remove(k,v)" instead'
+    );
     Tags.of(scope).remove(key, props);
   }
 
@@ -137,7 +141,7 @@ export class Tag extends TagBase {
         this.key,
         this.value,
         this.props.priority ?? this.defaultPriority,
-        this.props.applyToLaunchedInstances !== false,
+        this.props.applyToLaunchedInstances !== false
       );
     }
   }
@@ -155,7 +159,7 @@ export class Tags {
     return new Tags(scope);
   }
 
-  private constructor(private readonly scope: IConstruct) { }
+  private constructor(private readonly scope: IConstruct) {}
 
   /**
    * add tags to the node of a construct and all its the taggable children
@@ -176,7 +180,6 @@ export class Tags {
  * The RemoveTag Aspect will handle removing tags from this node and children
  */
 export class RemoveTag extends TagBase {
-
   private readonly defaultPriority = 200;
 
   constructor(key: string, props: TagProps = {}) {

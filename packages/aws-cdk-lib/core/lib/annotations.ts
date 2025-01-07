@@ -43,7 +43,7 @@ export class Annotations {
 
     // We don't use message currently, but encouraging people to supply it is good for documentation
     // purposes, and we can always add a report on it in the future.
-    void(message);
+    void message;
 
     // Iterate over the construct and remove any existing instances of this warning
     // (addWarningV2 will prevent future instances of it)
@@ -245,12 +245,17 @@ function removeWarningDeep(construct: IConstruct, id: string) {
  */
 function removeWarning(construct: IConstruct, id: string) {
   const meta: MetadataEntry[] | undefined = (construct.node as any)._metadata;
-  if (!meta) { return; }
+  if (!meta) {
+    return;
+  }
 
   let i = 0;
   while (i < meta.length) {
     const m = meta[i];
-    if (m.type === cxschema.ArtifactMetadataEntryType.WARN && (m.data as string).includes(ackTag(id))) {
+    if (
+      m.type === cxschema.ArtifactMetadataEntryType.WARN &&
+      (m.data as string).includes(ackTag(id))
+    ) {
       meta.splice(i, 1);
     } else {
       i += 1;

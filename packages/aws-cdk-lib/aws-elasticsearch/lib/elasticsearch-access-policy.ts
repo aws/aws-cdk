@@ -27,7 +27,6 @@ export interface ElasticsearchAccessPolicyProps {
  * Creates LogGroup resource policies.
  */
 export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
-
   private accessPolicyStatements: iam.PolicyStatement[] = [];
 
   constructor(scope: Construct, id: string, props: ElasticsearchAccessPolicyProps) {
@@ -40,11 +39,12 @@ export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
         parameters: {
           DomainName: props.domainName,
           AccessPolicies: cdk.Lazy.string({
-            produce: () => JSON.stringify(
-              new iam.PolicyDocument({
-                statements: this.accessPolicyStatements,
-              }).toJSON(),
-            ),
+            produce: () =>
+              JSON.stringify(
+                new iam.PolicyDocument({
+                  statements: this.accessPolicyStatements,
+                }).toJSON()
+              ),
           }),
         },
         // this is needed to limit the response body, otherwise it exceeds the CFN 4k limit

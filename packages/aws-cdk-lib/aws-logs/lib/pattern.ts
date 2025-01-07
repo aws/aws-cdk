@@ -13,7 +13,7 @@ export interface IFilterPattern {
 export abstract class JsonPattern implements IFilterPattern {
   // This is a separate class so we have some type safety where users can't
   // combine text patterns and JSON patterns with an 'and' operation.
-  constructor(public readonly jsonPatternString: string) { }
+  constructor(public readonly jsonPatternString: string) {}
 
   public get logPatternString(): string {
     return '{ ' + this.jsonPatternString + ' }';
@@ -24,7 +24,6 @@ export abstract class JsonPattern implements IFilterPattern {
  * A collection of static methods to generate appropriate ILogPatterns
  */
 export class FilterPattern {
-
   /**
    * Use the given string as log pattern.
    *
@@ -59,7 +58,7 @@ export class FilterPattern {
    * @param terms The words to search for. Any terms must match.
    */
   public static anyTerm(...terms: string[]): IFilterPattern {
-    return new TextLogPattern(terms.map(t => [t]));
+    return new TextLogPattern(terms.map((t) => [t]));
   }
 
   /**
@@ -160,8 +159,12 @@ export class FilterPattern {
    * A JSON log pattern that matches if all given JSON log patterns match
    */
   public static all(...patterns: JsonPattern[]): JsonPattern {
-    if (patterns.length === 0) { throw new Error('Must supply at least one pattern, or use allEvents() to match all events.'); }
-    if (patterns.length === 1) { return patterns[0]; }
+    if (patterns.length === 0) {
+      throw new Error('Must supply at least one pattern, or use allEvents() to match all events.');
+    }
+    if (patterns.length === 1) {
+      return patterns[0];
+    }
     return new JSONAggregatePattern('&&', patterns);
   }
 
@@ -169,8 +172,12 @@ export class FilterPattern {
    * A JSON log pattern that matches if any of the given JSON log patterns match
    */
   public static any(...patterns: JsonPattern[]): JsonPattern {
-    if (patterns.length === 0) { throw new Error('Must supply at least one pattern'); }
-    if (patterns.length === 1) { return patterns[0]; }
+    if (patterns.length === 0) {
+      throw new Error('Must supply at least one pattern');
+    }
+    if (patterns.length === 1) {
+      return patterns[0];
+    }
     return new JSONAggregatePattern('||', patterns);
   }
 
@@ -196,8 +203,7 @@ export class FilterPattern {
  * Use a string literal as a log pattern
  */
 class LiteralLogPattern implements IFilterPattern {
-  constructor(public readonly logPatternString: string) {
-  }
+  constructor(public readonly logPatternString: string) {}
 }
 
 /**
@@ -207,11 +213,11 @@ class TextLogPattern implements IFilterPattern {
   public readonly logPatternString: string;
 
   constructor(clauses: string[][]) {
-    const quotedClauses = clauses.map(terms => terms.map(quoteTerm).join(' '));
+    const quotedClauses = clauses.map((terms) => terms.map(quoteTerm).join(' '));
     if (quotedClauses.length === 1) {
       this.logPatternString = quotedClauses[0];
     } else {
-      this.logPatternString = quotedClauses.map(alt => '?' + alt).join(' ');
+      this.logPatternString = quotedClauses.map((alt) => '?' + alt).join(' ');
     }
   }
 }
@@ -255,13 +261,13 @@ class JSONAggregatePattern extends JsonPattern {
       throw new Error('Operator must be one of && or ||');
     }
 
-    const clauses = patterns.map(p => '(' + p.jsonPatternString + ')');
+    const clauses = patterns.map((p) => '(' + p.jsonPatternString + ')');
 
     super(clauses.join(` ${operator} `));
   }
 }
 
-export type RestrictionMap = {[column: string]: ColumnRestriction[]};
+export type RestrictionMap = { [column: string]: ColumnRestriction[] };
 
 const COL_ELLIPSIS = '...';
 
@@ -287,7 +293,7 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
       }
     }
 
-    if (sum(columns.map(c => c === COL_ELLIPSIS ? 1 : 0)) > 1) {
+    if (sum(columns.map((c) => (c === COL_ELLIPSIS ? 1 : 0))) > 1) {
       throw new Error("Can use at most one '...' column");
     }
 
@@ -296,14 +302,21 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
 
   // TODO: Temporarily changed from private to protected to unblock build. We need to think
   //     about how to handle jsii types with private constructors.
-  protected constructor(private readonly columns: string[], private readonly restrictions: RestrictionMap) {
+  protected constructor(
+    private readonly columns: string[],
+    private readonly restrictions: RestrictionMap
+  ) {
     // Private constructor so we validate in the .construct() factory function
   }
 
   /**
    * Restrict where the pattern applies
    */
-  public whereString(columnName: string, comparison: string, value: string): SpaceDelimitedTextPattern {
+  public whereString(
+    columnName: string,
+    comparison: string,
+    value: string
+  ): SpaceDelimitedTextPattern {
     if (columnName === COL_ELLIPSIS) {
       throw new Error("Can't use '...' in a restriction");
     }
@@ -313,16 +326,23 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
 
     comparison = validateStringOperator(comparison);
 
-    return new SpaceDelimitedTextPattern(this.columns, this.addRestriction(columnName, {
-      comparison,
-      stringValue: value,
-    }));
+    return new SpaceDelimitedTextPattern(
+      this.columns,
+      this.addRestriction(columnName, {
+        comparison,
+        stringValue: value,
+      })
+    );
   }
 
   /**
    * Restrict where the pattern applies
    */
-  public whereNumber(columnName: string, comparison: string, value: number): SpaceDelimitedTextPattern {
+  public whereNumber(
+    columnName: string,
+    comparison: string,
+    value: number
+  ): SpaceDelimitedTextPattern {
     if (columnName === COL_ELLIPSIS) {
       throw new Error("Can't use '...' in a restriction");
     }
@@ -332,10 +352,13 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
 
     comparison = validateNumericalOperator(comparison);
 
-    return new SpaceDelimitedTextPattern(this.columns, this.addRestriction(columnName, {
-      comparison,
-      numberValue: value,
-    }));
+    return new SpaceDelimitedTextPattern(
+      this.columns,
+      this.addRestriction(columnName, {
+        comparison,
+        numberValue: value,
+      })
+    );
   }
 
   public get logPatternString(): string {
@@ -347,9 +370,11 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
    */
   private columnExpression(column: string) {
     const restrictions = this.restrictions[column];
-    if (!restrictions) { return column; }
+    if (!restrictions) {
+      return column;
+    }
 
-    return restrictions.map(r => renderRestriction(column, r)).join(' && ');
+    return restrictions.map((r) => renderRestriction(column, r)).join(' && ');
   }
 
   /**
@@ -360,7 +385,9 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
     for (const key of Object.keys(this.restrictions)) {
       ret[key] = this.restrictions[key].slice();
     }
-    if (!(columnName in ret)) { ret[columnName] = []; }
+    if (!(columnName in ret)) {
+      ret[columnName] = [];
+    }
     ret[columnName].push(restriction);
     return ret;
   }
@@ -412,7 +439,9 @@ function validColumnName(column: string) {
  * Correct for a common typo/confusion, treat '==' as '='
  */
 function validateStringOperator(operator: string) {
-  if (operator === '==') { operator = '='; }
+  if (operator === '==') {
+    operator = '=';
+  }
 
   if (operator !== '=' && operator !== '!=') {
     throw new Error(`Invalid comparison operator ('${operator}'), must be either '=' or '!='`);
@@ -430,10 +459,14 @@ const VALID_OPERATORS = ['=', '!=', '<', '<=', '>', '>='];
  */
 function validateNumericalOperator(operator: string) {
   // Correct for a common typo, treat '==' as '='
-  if (operator === '==') { operator = '='; }
+  if (operator === '==') {
+    operator = '=';
+  }
 
   if (VALID_OPERATORS.indexOf(operator) === -1) {
-    throw new Error(`Invalid comparison operator ('${operator}'), must be one of ${VALID_OPERATORS.join(', ')}`);
+    throw new Error(
+      `Invalid comparison operator ('${operator}'), must be one of ${VALID_OPERATORS.join(', ')}`
+    );
   }
 
   return operator;

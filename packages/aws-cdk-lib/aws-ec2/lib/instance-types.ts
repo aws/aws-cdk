@@ -705,8 +705,8 @@ export enum InstanceClass {
   D3 = 'd3',
 
   /**
-  * Storage-optimized instances, 3rd generation
-  */
+   * Storage-optimized instances, 3rd generation
+   */
   STORAGE3_ENHANCED_NETWORK = 'storage3-enhanced-network',
 
   /**
@@ -1937,8 +1937,7 @@ export class InstanceType {
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }
 
-  constructor(private readonly instanceTypeIdentifier: string) {
-  }
+  constructor(private readonly instanceTypeIdentifier: string) {}
 
   /**
    * Return the instance type as a dotted string
@@ -1952,7 +1951,9 @@ export class InstanceType {
    */
   public get architecture(): InstanceArchitecture {
     // capture the family, generation, capabilities, and size portions of the instance type id
-    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
+    const instanceTypeComponents = this.instanceTypeIdentifier.match(
+      /^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/
+    );
     if (instanceTypeComponents == null) {
       throw new Error('Malformed instance type identifier');
     }
@@ -1983,7 +1984,10 @@ export class InstanceType {
    * Return whether this instance type is a burstable instance type
    */
   public isBurstable(): boolean {
-    return this.instanceTypeIdentifier.startsWith('t3') || this.instanceTypeIdentifier.startsWith('t4g') || this.instanceTypeIdentifier.startsWith('t2');
+    return (
+      this.instanceTypeIdentifier.startsWith('t3') ||
+      this.instanceTypeIdentifier.startsWith('t4g') ||
+      this.instanceTypeIdentifier.startsWith('t2')
+    );
   }
-
 }

@@ -1,10 +1,28 @@
 import { Construct } from 'constructs';
 import { IVpc } from '../../../aws-ec2';
 import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
+  AwsLogDriver,
+  BaseService,
+  CloudMapOptions,
+  Cluster,
+  ContainerImage,
+  DeploymentController,
+  DeploymentCircuitBreaker,
+  ICluster,
+  LogDriver,
+  PropagatedTagSource,
+  Secret,
+  CapacityProviderStrategy,
 } from '../../../aws-ecs';
-import { IListenerCertificate, INetworkLoadBalancer, IpAddressType, NetworkListener, NetworkLoadBalancer, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import {
+  IListenerCertificate,
+  INetworkLoadBalancer,
+  IpAddressType,
+  NetworkListener,
+  NetworkLoadBalancer,
+  NetworkLoadBalancerProps,
+  NetworkTargetGroup,
+} from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
@@ -177,11 +195,11 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly recordType?: NetworkLoadBalancedServiceRecordType;
 
   /**
- * Specifies which deployment controller to use for the service. For more information, see
- * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
- *
- * @default - Rolling update (ECS)
- */
+   * Specifies which deployment controller to use for the service. For more information, see
+   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+   *
+   * @default - Rolling update (ECS)
+   */
   readonly deploymentController?: DeploymentController;
 
   /**
@@ -329,7 +347,9 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
    */
   public get loadBalancer(): NetworkLoadBalancer {
     if (!this._networkLoadBalancer) {
-      throw new Error('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer');
+      throw new Error(
+        '.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer'
+      );
     }
     return this._networkLoadBalancer;
   }
@@ -357,7 +377,9 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new Error('You can only specify either vpc or cluster. Alternatively, you can leave both blank');
+      throw new Error(
+        'You can only specify either vpc or cluster. Alternatively, you can leave both blank'
+      );
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
@@ -392,7 +414,9 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
 
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
-        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
+        throw new Error(
+          'A Route53 hosted domain zone name is required to configure the specified domain name'
+        );
       }
 
       switch (props.recordType ?? NetworkLoadBalancedServiceRecordType.ALIAS) {
@@ -432,7 +456,10 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);
-    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return (
+      (stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster) ||
+      new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc })
+    );
   }
 
   /**

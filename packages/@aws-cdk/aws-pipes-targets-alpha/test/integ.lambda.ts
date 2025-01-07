@@ -40,9 +40,7 @@ class TestSource implements ISource {
 
 const functionName = 'TestCdkPipesTargetLambdaFunction';
 const targetFunction = new lambda.Function(stack, 'TargetLambdaFunction', {
-  code: lambda.AssetCode.fromAsset(
-    path.join(__dirname, 'integ.lambda.handler'),
-  ),
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.lambda.handler')),
   handler: 'handler.handler',
   functionName,
   runtime: lambda.Runtime.NODEJS_LATEST,
@@ -53,8 +51,8 @@ targetFunction.addToRolePolicy(
     new iam.PolicyStatement({
       actions: ['lambda:TagResource'],
       resources: ['*'],
-    }),
-  ),
+    })
+  )
 );
 
 new Pipe(stack, 'Pipe', {
@@ -76,14 +74,14 @@ putMessageOnQueue
   .next(
     test.assertions.awsApiCall('Lambda', 'listTags', {
       Resource: targetFunction.functionArn,
-    }),
+    })
   )
   .expect(
     ExpectedResult.objectLike({
       Tags: {
         Identifier: uuid,
       },
-    }),
+    })
   )
   .waitForAssertions({
     totalTimeout: cdk.Duration.seconds(10),

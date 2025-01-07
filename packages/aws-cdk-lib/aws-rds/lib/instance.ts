@@ -5,8 +5,22 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
-import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
+import {
+  applyDefaultRotationOptions,
+  defaultDeletionProtection,
+  engineDescription,
+  renderCredentials,
+  setupS3ImportExport,
+  helperRemovalPolicy,
+  renderUnless,
+} from './private/util';
+import {
+  Credentials,
+  PerformanceInsightRetention,
+  RotationMultiUserOptions,
+  RotationSingleUserOptions,
+  SnapshotCredentials,
+} from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -17,13 +31,28 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import {
+  ArnComponents,
+  ArnFormat,
+  Duration,
+  FeatureFlags,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Token,
+  Tokenization,
+} from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
  * A database instance
  */
-export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseInstance
+  extends IResource,
+    ec2.IConnectable,
+    secretsmanager.ISecretAttachmentTarget {
   /**
    * The instance identifier.
    */
@@ -135,7 +164,11 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   /**
    * Import an existing database instance.
    */
-  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
+  public static fromDatabaseInstanceAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DatabaseInstanceAttributes
+  ): IDatabaseInstance {
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
@@ -184,7 +217,9 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     }
 
     if (!this.instanceResourceId) {
-      throw new Error('For imported Database Instances, instanceResourceId is required to grantConnect()');
+      throw new Error(
+        'For imported Database Instances, instanceResourceId is required to grantConnect()'
+      );
     }
 
     if (!dbUser) {
@@ -755,7 +790,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
    *
    * Each export value will create a separate log group.
    */
-  public readonly cloudwatchLogGroups: {[engine: string]: logs.ILogGroup};
+  public readonly cloudwatchLogGroups: { [engine: string]: logs.ILogGroup };
 
   protected abstract readonly instanceType: ec2.InstanceType;
 
@@ -789,20 +824,29 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
     if (props.multiAz === true && props.availabilityZone) {
-      throw new Error('Requesting a specific availability zone is not valid for Multi-AZ instances');
+      throw new Error(
+        'Requesting a specific availability zone is not valid for Multi-AZ instances'
+      );
     }
 
-    const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'SubnetGroup', {
-      description: `Subnet group for ${this.node.id} database`,
-      vpc: this.vpc,
-      vpcSubnets: this.vpcPlacement,
-      removalPolicy: renderUnless(helperRemovalPolicy(props.removalPolicy), RemovalPolicy.DESTROY),
-    });
+    const subnetGroup =
+      props.subnetGroup ??
+      new SubnetGroup(this, 'SubnetGroup', {
+        description: `Subnet group for ${this.node.id} database`,
+        vpc: this.vpc,
+        vpcSubnets: this.vpcPlacement,
+        removalPolicy: renderUnless(
+          helperRemovalPolicy(props.removalPolicy),
+          RemovalPolicy.DESTROY
+        ),
+      });
 
-    const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
-      description: `Security group for ${this.node.id} database`,
-      vpc: props.vpc,
-    })];
+    const securityGroups = props.securityGroups || [
+      new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: `Security group for ${this.node.id} database`,
+        vpc: props.vpc,
+      }),
+    ];
 
     this.connections = new ec2.Connections({
       securityGroups,
@@ -811,21 +855,36 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
-      monitoringRole = props.monitoringRole || new iam.Role(this, 'MonitoringRole', {
-        assumedBy: new iam.ServicePrincipal('monitoring.rds.amazonaws.com'),
-        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')],
-      });
+      monitoringRole =
+        props.monitoringRole ||
+        new iam.Role(this, 'MonitoringRole', {
+          assumedBy: new iam.ServicePrincipal('monitoring.rds.amazonaws.com'),
+          managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName(
+              'service-role/AmazonRDSEnhancedMonitoringRole'
+            ),
+          ],
+        });
     }
 
     const storageType = props.storageType ?? StorageType.GP2;
     const iops = defaultIops(storageType, props.iops);
     if (props.storageThroughput && storageType !== StorageType.GP3) {
-      throw new Error(`The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`);
+      throw new Error(
+        `The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`
+      );
     }
-    if (storageType === StorageType.GP3 && props.storageThroughput && iops
-        && !Token.isUnresolved(props.storageThroughput) && !Token.isUnresolved(iops)
-        && props.storageThroughput/iops > 0.25) {
-      throw new Error(`The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`);
+    if (
+      storageType === StorageType.GP3 &&
+      props.storageThroughput &&
+      iops &&
+      !Token.isUnresolved(props.storageThroughput) &&
+      !Token.isUnresolved(iops) &&
+      props.storageThroughput / iops > 0.25
+    ) {
+      throw new Error(
+        `The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput / iops}.`
+      );
     }
 
     this.cloudwatchLogGroups = {};
@@ -834,32 +893,42 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.cloudwatchLogsRetentionRole = props.cloudwatchLogsRetentionRole;
     this.enableIamAuthentication = props.iamAuthentication;
 
-    const enablePerformanceInsights = props.enablePerformanceInsights
-      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+    const enablePerformanceInsights =
+      props.enablePerformanceInsights ||
+      props.performanceInsightRetention !== undefined ||
+      props.performanceInsightEncryptionKey !== undefined;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+      throw new Error(
+        '`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set'
+      );
     }
 
     if (props.domain) {
       this.domainId = props.domain;
-      this.domainRole = props.domainRole || new iam.Role(this, 'RDSDirectoryServiceRole', {
-        assumedBy: new iam.CompositePrincipal(
-          new iam.ServicePrincipal('rds.amazonaws.com'),
-          new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
-        ),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
-        ],
-      });
+      this.domainRole =
+        props.domainRole ||
+        new iam.Role(this, 'RDSDirectoryServiceRole', {
+          assumedBy: new iam.CompositePrincipal(
+            new iam.ServicePrincipal('rds.amazonaws.com'),
+            new iam.ServicePrincipal('directoryservice.rds.amazonaws.com')
+          ),
+          managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName(
+              'service-role/AmazonRDSDirectoryServiceAccess'
+            ),
+          ],
+        });
     }
 
-    const maybeLowercasedInstanceId = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
-    && !Token.isUnresolved(props.instanceIdentifier)
-      ? props.instanceIdentifier?.toLowerCase()
-      : props.instanceIdentifier;
+    const maybeLowercasedInstanceId =
+      FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER) &&
+      !Token.isUnresolved(props.instanceIdentifier)
+        ? props.instanceIdentifier?.toLowerCase()
+        : props.instanceIdentifier;
 
     const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
-    const isInPublicSubnet = this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC;
+    const isInPublicSubnet =
+      this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC;
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -867,11 +936,11 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       dbInstanceClass: Lazy.string({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: Token.isUnresolved(props.instanceIdentifier)
-        // if the passed identifier is a Token,
-        // we need to use the physicalName of the database
-        // (we cannot change its case anyway),
-        // as it might be used in a cross-environment fashion
-        ? this.physicalName
+        ? // if the passed identifier is a Token,
+          // we need to use the physicalName of the database
+          // (we cannot change its case anyway),
+          // as it might be used in a cross-environment fashion
+          this.physicalName
         : maybeLowercasedInstanceId,
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
@@ -887,16 +956,17 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       optionGroupName: props.optionGroup?.optionGroupName,
       performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
-        ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+        ? props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT
         : undefined,
       port: props.port !== undefined ? Tokenization.stringifyNumber(props.port) : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-      processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
+      processorFeatures:
+        props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
       publiclyAccessible: props.publiclyAccessible ?? isInPublicSubnet,
       storageType,
       storageThroughput: props.storageThroughput,
-      vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
+      vpcSecurityGroups: securityGroups.map((s) => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
@@ -914,7 +984,11 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
           retention: this.cloudwatchLogsRetention,
           role: this.cloudwatchLogsRetentionRole,
         });
-        this.cloudwatchLogGroups[log] = logs.LogGroup.fromLogGroupName(this, `LogGroup${this.instanceIdentifier}${log}`, logGroupName);
+        this.cloudwatchLogGroups[log] = logs.LogGroup.fromLogGroupName(
+          this,
+          `LogGroup${this.instanceIdentifier}${log}`,
+          logGroupName
+        );
       }
     }
   }
@@ -1021,7 +1095,10 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       if (!engineFeatures?.s3Import) {
         throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 import`);
       }
-      instanceAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: engineFeatures?.s3Import });
+      instanceAssociatedRoles.push({
+        roleArn: s3ImportRole.roleArn,
+        featureName: engineFeatures?.s3Import,
+      });
     }
     if (s3ExportRole) {
       if (!engineFeatures?.s3Export) {
@@ -1029,11 +1106,15 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       }
       // only add the export feature if it's different from the import feature
       if (engineFeatures.s3Import !== engineFeatures?.s3Export) {
-        instanceAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: engineFeatures?.s3Export });
+        instanceAssociatedRoles.push({
+          roleArn: s3ExportRole.roleArn,
+          featureName: engineFeatures?.s3Export,
+        });
       }
     }
 
-    this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
+    this.instanceType =
+      props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     if (props.parameterGroup && props.parameters) {
       throw new Error('You cannot specify both parameterGroup and parameters');
@@ -1041,9 +1122,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     const dbParameterGroupName = props.parameters
       ? new ParameterGroup(this, 'ParameterGroup', {
-        engine: props.engine,
-        parameters: props.parameters,
-      }).bindToInstance({}).parameterGroupName
+          engine: props.engine,
+          parameters: props.parameters,
+        }).bindToInstance({}).parameterGroupName
       : this.newCfnProps.dbParameterGroupName;
 
     this.sourceCfnProps = {
@@ -1067,7 +1148,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    * @param options the options for the rotation,
    *                if you want to override the defaults
    */
-  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
+  public addRotationSingleUser(
+    options: RotationSingleUserOptions = {}
+  ): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for an instance without secret.');
     }
@@ -1090,7 +1173,10 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   /**
    * Adds the multi user rotation to this instance.
    */
-  public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+  public addRotationMultiUser(
+    id: string,
+    options: RotationMultiUserOptions
+  ): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for an instance without secret.');
     }
@@ -1233,7 +1319,10 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
  *
  * @resource AWS::RDS::DBInstance
  */
-export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource implements IDatabaseInstance {
+export class DatabaseInstanceFromSnapshot
+  extends DatabaseInstanceSource
+  implements IDatabaseInstance
+{
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -1248,7 +1337,9 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     let secret = credentials?.secret;
     if (!secret && credentials?.generatePassword) {
       if (!credentials.username) {
-        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
+        throw new Error(
+          '`credentials` `username` must be specified when `generatePassword` is set to true'
+        );
       }
 
       secret = new DatabaseSecret(this, 'Secret', {
@@ -1263,7 +1354,9 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
+      masterUserPassword:
+        secret?.secretValueFromJson('password')?.unsafeUnwrap() ??
+        credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.instanceIdentifier = instance.ref;
@@ -1348,10 +1441,14 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
 
-    if (props.sourceDatabaseInstance.engine
-        && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
-        && props.backupRetention) {
-      throw new Error(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`);
+    if (
+      props.sourceDatabaseInstance.engine &&
+      !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups &&
+      props.backupRetention
+    ) {
+      throw new Error(
+        `Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`
+      );
     }
 
     // The read replica instance always uses the same engine as the source instance
@@ -1374,8 +1471,11 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
-    this.instanceResourceId = FeatureFlags.of(this).isEnabled(cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY) ?
-      instance.attrDbiResourceId : instance.attrDbInstanceArn;
+    this.instanceResourceId = FeatureFlags.of(this).isEnabled(
+      cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY
+    )
+      ? instance.attrDbiResourceId
+      : instance.attrDbInstanceArn;
 
     // create a number token that represents the port of the instance
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
@@ -1392,8 +1492,13 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
  *
  * @param features the processor features
  */
-function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.ProcessorFeatureProperty[] | undefined {
-  const featuresList = Object.entries(features).map(([name, value]) => ({ name, value: value.toString() }));
+function renderProcessorFeatures(
+  features: ProcessorFeatures
+): CfnDBInstance.ProcessorFeatureProperty[] | undefined {
+  const featuresList = Object.entries(features).map(([name, value]) => ({
+    name,
+    value: value.toString(),
+  }));
 
   return featuresList.length === 0 ? undefined : featuresList;
 }

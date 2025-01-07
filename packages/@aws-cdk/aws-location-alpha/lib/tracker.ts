@@ -172,26 +172,34 @@ export class Tracker extends Resource implements ITracker {
   public readonly trackerUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: TrackerProps = {}) {
-
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
+    if (
+      props.description &&
+      !Token.isUnresolved(props.description) &&
+      props.description.length > 1000
+    ) {
+      throw new Error(
+        `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`
+      );
     }
 
     if (props.trackerName !== undefined && !Token.isUnresolved(props.trackerName)) {
       if (props.trackerName.length < 1 || props.trackerName.length > 100) {
-        throw new Error(`\`trackerName\` must be between 1 and 100 characters, got: ${props.trackerName.length} characters.`);
+        throw new Error(
+          `\`trackerName\` must be between 1 and 100 characters, got: ${props.trackerName.length} characters.`
+        );
       }
 
       if (!/^[-._\w]+$/.test(props.trackerName)) {
-        throw new Error(`\`trackerName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.trackerName}.`);
+        throw new Error(
+          `\`trackerName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.trackerName}.`
+        );
       }
     }
 
-    if (!Token.isUnresolved(props.kmsKey)
-      && !props.kmsKey
-      && props.kmsKeyEnableGeospatialQueries
-    ) {
-      throw new Error('`kmsKeyEnableGeospatialQueries` can only be enabled that are configured to use an AWS KMS customer managed key');
+    if (!Token.isUnresolved(props.kmsKey) && !props.kmsKey && props.kmsKeyEnableGeospatialQueries) {
+      throw new Error(
+        '`kmsKeyEnableGeospatialQueries` can only be enabled that are configured to use an AWS KMS customer managed key'
+      );
     }
 
     super(scope, id, {
@@ -249,9 +257,7 @@ export class Tracker extends Resource implements ITracker {
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-trackers
    */
   public grantUpdateDevicePositions(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'geo:BatchUpdateDevicePosition',
-    );
+    return this.grant(grantee, 'geo:BatchUpdateDevicePosition');
   }
 
   /**

@@ -2,9 +2,8 @@ import { md5hash } from './md5';
 
 /**
  * Options for creating a unique resource name.
-*/
+ */
 interface MakeUniqueResourceNameOptions {
-
   /**
    * The maximum length of the unique resource name.
    *
@@ -43,8 +42,8 @@ interface MakeUniqueResourceNameOptions {
 const HIDDEN_FROM_HUMAN_ID = 'Resource';
 
 /**
-* Resources with this ID are complete hidden from the logical ID calculation.
-*/
+ * Resources with this ID are complete hidden from the logical ID calculation.
+ */
 const HIDDEN_ID = 'Default';
 
 const PATH_SEP = '/';
@@ -53,11 +52,14 @@ const MAX_LEN = 256;
 
 const HASH_LEN = 8;
 
-export function makeUniqueResourceName(components: string[], options: MakeUniqueResourceNameOptions) {
+export function makeUniqueResourceName(
+  components: string[],
+  options: MakeUniqueResourceNameOptions
+) {
   const maxLength = options.maxLength ?? 256;
   const separator = options.separator ?? '';
   const prefix = options.prefix ?? '';
-  components = components.filter(x => x !== HIDDEN_ID);
+  components = components.filter((x) => x !== HIDDEN_ID);
 
   if (components.length === 0) {
     throw new Error('Unable to calculate a unique resource name for an empty set of components');
@@ -67,7 +69,9 @@ export function makeUniqueResourceName(components: string[], options: MakeUnique
   // in order to support transparent migration of cloudformation templates to the CDK without the
   // need to rename all resources.
   if (components.length === 1) {
-    const topLevelResource = prefix + removeNonAllowedSpecialCharacters(components[0], separator, options.allowedSpecialCharacters);
+    const topLevelResource =
+      prefix +
+      removeNonAllowedSpecialCharacters(components[0], separator, options.allowedSpecialCharacters);
 
     if (topLevelResource.length <= maxLength) {
       return topLevelResource;
@@ -76,15 +80,21 @@ export function makeUniqueResourceName(components: string[], options: MakeUnique
 
   // Calculate the hash from the full path, included unresolved tokens so the hash value is always unique
   const hash = pathHash(components);
-  const human = prefix + removeDupes(components)
-    .filter(pathElement => pathElement !== HIDDEN_FROM_HUMAN_ID)
-    .map(pathElement => removeNonAllowedSpecialCharacters(pathElement, separator, options.allowedSpecialCharacters))
-    .filter(pathElement => pathElement)
-    .join(separator)
-    .concat(separator);
+  const human =
+    prefix +
+    removeDupes(components)
+      .filter((pathElement) => pathElement !== HIDDEN_FROM_HUMAN_ID)
+      .map((pathElement) =>
+        removeNonAllowedSpecialCharacters(pathElement, separator, options.allowedSpecialCharacters)
+      )
+      .filter((pathElement) => pathElement)
+      .join(separator)
+      .concat(separator);
 
   const maxhumanLength = maxLength - HASH_LEN;
-  return human.length > maxhumanLength ? `${splitInMiddle(human, maxhumanLength)}${hash}`: `${human}${hash}`;
+  return human.length > maxhumanLength
+    ? `${splitInMiddle(human, maxhumanLength)}${hash}`
+    : `${human}${hash}`;
 }
 
 /**
@@ -100,8 +110,14 @@ function pathHash(path: string[]): string {
 /**
  * Removes all non-allowed special characters in a string.
  */
-function removeNonAllowedSpecialCharacters(s: string, _separator: string, allowedSpecialCharacters?: string) {
-  const pattern = allowedSpecialCharacters ? `[^A-Za-z0-9${allowedSpecialCharacters}]` : '[^A-Za-z0-9]';
+function removeNonAllowedSpecialCharacters(
+  s: string,
+  _separator: string,
+  allowedSpecialCharacters?: string
+) {
+  const pattern = allowedSpecialCharacters
+    ? `[^A-Za-z0-9${allowedSpecialCharacters}]`
+    : '[^A-Za-z0-9]';
   const regex = new RegExp(pattern, 'g');
   return s.replace(regex, '');
 }

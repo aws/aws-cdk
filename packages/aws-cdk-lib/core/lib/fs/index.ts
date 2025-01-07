@@ -19,7 +19,12 @@ export class FileSystem {
    * @param options options
    * @param rootDir Root directory to calculate exclusions from
    */
-  public static copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
+  public static copyDirectory(
+    srcDir: string,
+    destDir: string,
+    options: CopyOptions = {},
+    rootDir?: string
+  ) {
     return copyDirectory(srcDir, destDir, options, rootDir);
   }
 
@@ -35,7 +40,7 @@ export class FileSystem {
    * @param fileOrDirectory The directory or file to fingerprint
    * @param options Fingerprinting options
    */
-  public static fingerprint(fileOrDirectory: string, options: FingerprintOptions = { }) {
+  public static fingerprint(fileOrDirectory: string, options: FingerprintOptions = {}) {
     return fingerprint(fileOrDirectory, options);
   }
 

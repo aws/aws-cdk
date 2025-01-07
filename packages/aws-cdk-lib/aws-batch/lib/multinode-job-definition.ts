@@ -2,7 +2,12 @@ import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { IEcsContainerDefinition } from './ecs-container-definition';
 import { Compatibility } from './ecs-job-definition';
-import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import {
+  baseJobDefinitionProperties,
+  IJobDefinition,
+  JobDefinitionBase,
+  JobDefinitionProps,
+} from './job-definition-base';
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Lazy, Stack } from '../../core';
 
@@ -126,9 +131,16 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   /**
    * refer to an existing JobDefinition by its arn
    */
-  public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
+  public static fromJobDefinitionArn(
+    scope: Construct,
+    id: string,
+    jobDefinitionArn: string
+  ): IJobDefinition {
     const stack = Stack.of(scope);
-    const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    const jobDefinitionName = stack.splitArn(
+      jobDefinitionArn,
+      ArnFormat.SLASH_RESOURCE_NAME
+    ).resourceName!;
 
     class Import extends JobDefinitionBase implements IJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
@@ -164,13 +176,14 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
       nodeProperties: {
         mainNode: this.mainNode ?? 0,
         nodeRangeProperties: Lazy.any({
-          produce: () => this.containers.map((container) => ({
-            targetNodes: container.startNode + ':' + container.endNode,
-            container: {
-              ...container.container._renderContainerDefinition(),
-              instanceType: this._instanceType?.toString(),
-            },
-          })),
+          produce: () =>
+            this.containers.map((container) => ({
+              targetNodes: container.startNode + ':' + container.endNode,
+              container: {
+                ...container.container._renderContainerDefinition(),
+                instanceType: this._instanceType?.toString(),
+              },
+            })),
         }),
         numNodes: Lazy.number({
           produce: () => computeNumNodes(this.containers),

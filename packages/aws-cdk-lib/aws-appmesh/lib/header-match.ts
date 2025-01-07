@@ -147,7 +147,7 @@ class HeaderMatchImpl extends HeaderMatch {
   constructor(
     private readonly headerName: string,
     private readonly invert: boolean,
-    private readonly matchProperty: CfnRoute.HeaderMatchMethodProperty,
+    private readonly matchProperty: CfnRoute.HeaderMatchMethodProperty
   ) {
     super();
   }

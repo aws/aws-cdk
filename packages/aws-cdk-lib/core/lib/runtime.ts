@@ -49,7 +49,9 @@ function pad(x: number) {
  * Turn a tag object into the proper CloudFormation representation
  */
 export function cfnTagToCloudFormation(x: any): any {
-  if (!canInspect(x)) { return x; }
+  if (!canInspect(x)) {
+    return x;
+  }
   return {
     Key: x.key,
     Value: x.value,
@@ -58,14 +60,18 @@ export function cfnTagToCloudFormation(x: any): any {
 
 export function listMapper(elementMapper: Mapper): Mapper {
   return (x: any) => {
-    if (!canInspect(x)) { return x; }
+    if (!canInspect(x)) {
+      return x;
+    }
     return x.map(elementMapper);
   };
 }
 
 export function hashMapper(elementMapper: Mapper): Mapper {
   return (x: any) => {
-    if (!canInspect(x)) { return x; }
+    if (!canInspect(x)) {
+      return x;
+    }
 
     const ret: any = {};
 
@@ -90,7 +96,9 @@ export function unionMapper(validators: Validator[], mappers: Mapper[]): Mapper 
   }
 
   return (x: any) => {
-    if (!canInspect(x)) { return x; }
+    if (!canInspect(x)) {
+      return x;
+    }
 
     for (let i = 0; i < validators.length; i++) {
       if (validators[i](x).isSuccess) {
@@ -124,8 +132,10 @@ export function unionMapper(validators: Validator[], mappers: Mapper[]): Mapper 
  * about the failure that occurred.
  */
 export class ValidationResult {
-  constructor(readonly errorMessage: string = '', readonly results: ValidationResults = new ValidationResults()) {
-  }
+  constructor(
+    readonly errorMessage: string = '',
+    readonly results: ValidationResults = new ValidationResults()
+  ) {}
 
   public get isSuccess(): boolean {
     return !this.errorMessage && this.results.isSuccess;
@@ -148,14 +158,19 @@ export class ValidationResult {
    */
   public errorTree(): string {
     const childMessages = this.results.errorTreeList();
-    return this.errorMessage + (childMessages.length ? `\n  ${childMessages.replace(/\n/g, '\n  ')}` : '');
+    return (
+      this.errorMessage +
+      (childMessages.length ? `\n  ${childMessages.replace(/\n/g, '\n  ')}` : '')
+    );
   }
 
   /**
    * Wrap this result with an error message, if it concerns an error
    */
   public prefix(message: string): ValidationResult {
-    if (this.isSuccess) { return this; }
+    if (this.isSuccess) {
+      return this;
+    }
     return new ValidationResult(`${message}: ${this.errorMessage}`, this.results);
   }
 }
@@ -164,8 +179,7 @@ export class ValidationResult {
  * A collection of validation results
  */
 export class ValidationResults {
-  constructor(public results: ValidationResult[] = []) {
-  }
+  constructor(public results: ValidationResult[] = []) {}
 
   public collect(result: ValidationResult) {
     // Only collect failures
@@ -175,11 +189,11 @@ export class ValidationResults {
   }
 
   public get isSuccess(): boolean {
-    return this.results.every(x => x.isSuccess);
+    return this.results.every((x) => x.isSuccess);
   }
 
   public errorTreeList(): string {
-    return this.results.map(child => child.errorTree()).join('\n');
+    return this.results.map((child) => child.errorTree()).join('\n');
   }
 
   /**
@@ -189,7 +203,9 @@ export class ValidationResults {
    * return a success.
    */
   public wrap(message: string): ValidationResult {
-    if (this.isSuccess) { return VALIDATION_SUCCESS; }
+    if (this.isSuccess) {
+      return VALIDATION_SUCCESS;
+    }
     return new ValidationResult(message, this);
   }
 }
@@ -206,7 +222,7 @@ export type Validator = (x: any) => ValidationResult;
  */
 export function canInspect(x: any) {
   // Note: using weak equality on purpose, we also want to catch undefined
-  return (x != null && !isCloudFormationIntrinsic(x) && !isCloudFormationDynamicReference(x));
+  return x != null && !isCloudFormationIntrinsic(x) && !isCloudFormationDynamicReference(x);
 }
 
 // CloudFormation validators for primitive types
@@ -251,7 +267,9 @@ export function validateObject(x: any): ValidationResult {
 }
 
 export function validateCfnTag(x: any): ValidationResult {
-  if (!canInspect(x)) { return VALIDATION_SUCCESS; }
+  if (!canInspect(x)) {
+    return VALIDATION_SUCCESS;
+  }
 
   if (x.key == null || x.value == null) {
     return new ValidationResult(`${JSON.stringify(x)} should have a 'key' and a 'value' property`);
@@ -265,7 +283,9 @@ export function validateCfnTag(x: any): ValidationResult {
  */
 export function listValidator(elementValidator: Validator): Validator {
   return (x: any) => {
-    if (!canInspect(x)) { return VALIDATION_SUCCESS; }
+    if (!canInspect(x)) {
+      return VALIDATION_SUCCESS;
+    }
 
     if (!x.forEach) {
       return new ValidationResult(`${JSON.stringify(x)} should be a list`);
@@ -274,7 +294,9 @@ export function listValidator(elementValidator: Validator): Validator {
     for (let i = 0; i < x.length; i++) {
       const element = x[i];
       const result = elementValidator(element);
-      if (!result.isSuccess) { return result.prefix(`element ${i}`); }
+      if (!result.isSuccess) {
+        return result.prefix(`element ${i}`);
+      }
     }
 
     return VALIDATION_SUCCESS;
@@ -286,11 +308,15 @@ export function listValidator(elementValidator: Validator): Validator {
  */
 export function hashValidator(elementValidator: Validator): Validator {
   return (x: any) => {
-    if (!canInspect(x)) { return VALIDATION_SUCCESS; }
+    if (!canInspect(x)) {
+      return VALIDATION_SUCCESS;
+    }
 
     for (const key of Object.keys(x)) {
       const result = elementValidator(x[key]);
-      if (!result.isSuccess) { return result.prefix(`element '${key}'`); }
+      if (!result.isSuccess) {
+        return result.prefix(`element '${key}'`);
+      }
     }
 
     return VALIDATION_SUCCESS;
@@ -333,7 +359,11 @@ export function requiredValidator(x: any) {
  *
  * @throws if the property ``name`` is not present in ``props``.
  */
-export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
+export function requireProperty(
+  props: { [name: string]: any },
+  name: string,
+  context: Construct
+): any {
   const value = props[name];
   if (value == null) {
     throw new Error(`${context.toString()} is missing required property: ${name}`);
@@ -364,7 +394,9 @@ export function unionValidator(...validators: Validator[]): Validator {
 
     for (const validator of validators) {
       const result = validator(x);
-      if (result.isSuccess) { return result; }
+      if (result.isSuccess) {
+        return result;
+      }
       results.collect(result.prefix(eitherOr));
       eitherOr = 'or';
     }
@@ -379,9 +411,13 @@ export function unionValidator(...validators: Validator[]): Validator {
  * look like: { "Fn::GetAtt": [...] } or similar.
  */
 function isCloudFormationIntrinsic(x: any) {
-  if (!(typeof x === 'object')) { return false; }
+  if (!(typeof x === 'object')) {
+    return false;
+  }
   const keys = Object.keys(x);
-  if (keys.length !== 1) { return false; }
+  if (keys.length !== 1) {
+    return false;
+  }
 
   return keys[0] === 'Ref' || keys[0].slice(0, 4) === 'Fn::';
 }
@@ -392,7 +428,7 @@ function isCloudFormationIntrinsic(x: any) {
  * CloudFormation dynamic references take the format: '{{resolve:service-name:reference-key}}'
  */
 function isCloudFormationDynamicReference(x: any) {
-  return (typeof x === 'string' && x.startsWith('{{resolve:') && x.endsWith('}}'));
+  return typeof x === 'string' && x.startsWith('{{resolve:') && x.endsWith('}}');
 }
 
 // Cannot be public because JSII gets confused about es5.d.ts

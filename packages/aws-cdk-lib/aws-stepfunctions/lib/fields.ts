@@ -1,4 +1,11 @@
-import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject, renderInExpression, jsonPathFromAny } from './private/json-path';
+import {
+  findReferencedPaths,
+  jsonPathString,
+  JsonPathToken,
+  renderObject,
+  renderInExpression,
+  jsonPathFromAny,
+} from './private/json-path';
 import { Token, IResolvable, JsonNull } from '../../core';
 
 /**
@@ -11,7 +18,9 @@ export class JsonPath {
   /**
    * Special string value to discard state input, output or result.
    */
-  public static readonly DISCARD = Token.asString(JsonNull.INSTANCE, { displayHint: 'DISCARD (JSON `null`)' });
+  public static readonly DISCARD = Token.asString(JsonNull.INSTANCE, {
+    displayHint: 'DISCARD (JSON `null`)',
+  });
 
   /**
    * Instead of using a literal string, get the value from a JSON path
@@ -173,7 +182,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static array(...values: string[]): string {
-    return new JsonPathToken(`States.Array(${values.map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.Array(${values.map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -184,7 +195,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static arrayPartition(array: any, chunkSize: number): string {
-    return new JsonPathToken(`States.ArrayPartition(${[array, chunkSize].map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.ArrayPartition(${[array, chunkSize].map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -195,7 +208,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static arrayContains(array: any, value: any): string {
-    return new JsonPathToken(`States.ArrayContains(${[array, value].map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.ArrayContains(${[array, value].map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -206,7 +221,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static arrayRange(start: number, end: number, step: number): string {
-    return new JsonPathToken(`States.ArrayRange(${[start, end, step].map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.ArrayRange(${[start, end, step].map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -217,7 +234,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static arrayGetItem(array: any, index: number): string {
-    return new JsonPathToken(`States.ArrayGetItem(${[array, index].map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.ArrayGetItem(${[array, index].map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -273,7 +292,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static hash(data: any, algorithm: string): string {
-    return new JsonPathToken(`States.Hash(${[data, algorithm].map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.Hash(${[data, algorithm].map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -284,7 +305,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static jsonMerge(value1: any, value2: any): string {
-    return new JsonPathToken(`States.JsonMerge(${[value1, value2].map(renderInExpression).join(', ')}, false)`).toString();
+    return new JsonPathToken(
+      `States.JsonMerge(${[value1, value2].map(renderInExpression).join(', ')}, false)`
+    ).toString();
   }
 
   /**
@@ -295,7 +318,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static mathRandom(start: number, end: number): string {
-    return new JsonPathToken(`States.MathRandom(${[start, end].map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.MathRandom(${[start, end].map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -306,7 +331,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static mathAdd(num1: number, num2: number): string {
-    return new JsonPathToken(`States.MathAdd(${[num1, num2].map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.MathAdd(${[num1, num2].map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -317,7 +344,9 @@ export class JsonPath {
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
    */
   public static stringSplit(inputString: string, splitter: string): string {
-    return new JsonPathToken(`States.StringSplit(${[inputString, splitter].map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.StringSplit(${[inputString, splitter].map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -346,7 +375,9 @@ export class JsonPath {
    */
   public static format(formatString: string, ...values: string[]): string {
     const allArgs = [formatString, ...values];
-    return new JsonPathToken(`States.Format(${allArgs.map(renderInExpression).join(', ')})`).toString();
+    return new JsonPathToken(
+      `States.Format(${allArgs.map(renderInExpression).join(', ')})`
+    ).toString();
   }
 
   /**
@@ -555,29 +586,34 @@ function validateJsonPath(path: string) {
     'Format',
   ];
   const intrinsicFunctionFullNames = intrinsicFunctionNames.map((fn) => `States.${fn}`);
-  if (path !== '$'
-    && !path.startsWith('$.')
-    && path !== '$$'
-    && !path.startsWith('$$.')
-    && !path.startsWith('$[')
-    && intrinsicFunctionFullNames.every(fn => !path.startsWith(fn))
+  if (
+    path !== '$' &&
+    !path.startsWith('$.') &&
+    path !== '$$' &&
+    !path.startsWith('$$.') &&
+    !path.startsWith('$[') &&
+    intrinsicFunctionFullNames.every((fn) => !path.startsWith(fn))
   ) {
     const lastItem = intrinsicFunctionFullNames.pop();
     const intrinsicFunctionsStr = intrinsicFunctionFullNames.join(', ') + ', or ' + lastItem;
-    throw new Error(`JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
+    throw new Error(
+      `JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`
+    );
   }
 }
 
 function validateDataPath(path: string) {
-  if (path !== '$'
-    && !path.startsWith('$[')
-    && !path.startsWith('$.')) {
-    throw new Error("Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$.'");
+  if (path !== '$' && !path.startsWith('$[') && !path.startsWith('$.')) {
+    throw new Error(
+      "Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$.'"
+    );
   }
 }
 
 function validateContextPath(path: string) {
   if (path !== '$$' && !path.startsWith('$$.')) {
-    throw new Error("Context JSON path values must either be exactly equal to '$$' or start with '$$.'");
+    throw new Error(
+      "Context JSON path values must either be exactly equal to '$$' or start with '$$.'"
+    );
   }
 }

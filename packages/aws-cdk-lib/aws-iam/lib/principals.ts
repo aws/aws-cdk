@@ -170,10 +170,12 @@ export abstract class PrincipalBase implements IAssumeRolePrincipal, IComparable
 
   public addToAssumeRolePolicy(document: PolicyDocument): void {
     // Default implementation of this protocol, compatible with the legacy behavior
-    document.addStatements(new PolicyStatement({
-      actions: [this.assumeRoleAction],
-      principals: [this],
-    }));
+    document.addStatements(
+      new PolicyStatement({
+        actions: [this.assumeRoleAction],
+        principals: [this],
+      })
+    );
   }
 
   public toString() {
@@ -231,7 +233,9 @@ abstract class PrincipalAdapter extends PrincipalBase {
     super();
   }
 
-  public get policyFragment(): PrincipalPolicyFragment { return this.wrapped.policyFragment; }
+  public get policyFragment(): PrincipalPolicyFragment {
+    return this.wrapped.policyFragment;
+  }
 
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.wrapped.addToPolicy(statement);
@@ -269,12 +273,15 @@ export class PrincipalWithConditions extends PrincipalAdapter {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
-    defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
-      // Avoid override of existing actions (see https://github.com/aws/aws-cdk/issues/28426)
-      statement.addActions(this.assumeRoleAction);
-      statement.addConditions(this.conditions);
-      return statement;
-    }));
+    defaultAddPrincipalToAssumeRole(
+      this.wrapped,
+      new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
+        // Avoid override of existing actions (see https://github.com/aws/aws-cdk/issues/28426)
+        statement.addActions(this.assumeRoleAction);
+        statement.addConditions(this.conditions);
+        return statement;
+      })
+    );
   }
 
   /**
@@ -335,7 +342,10 @@ export class PrincipalWithConditions extends PrincipalAdapter {
     return this.appendDedupe(JSON.stringify(this.conditions));
   }
 
-  private mergeConditions(principalConditions: Conditions, additionalConditions: Conditions): Conditions {
+  private mergeConditions(
+    principalConditions: Conditions,
+    additionalConditions: Conditions
+  ): Conditions {
     const mergedConditions: Conditions = {};
     Object.entries(principalConditions).forEach(([operator, condition]) => {
       mergedConditions[operator] = condition;
@@ -354,7 +364,9 @@ export class PrincipalWithConditions extends PrincipalAdapter {
       // if either the existing condition or the new one contain unresolved
       // tokens, fail the merge. this is as far as we go at this point.
       if (cdk.Token.isUnresolved(condition) || cdk.Token.isUnresolved(existing)) {
-        throw new Error(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
+        throw new Error(
+          `multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`
+        );
       }
 
       validateConditionObject(existing);
@@ -383,10 +395,13 @@ export class SessionTagsPrincipal extends PrincipalAdapter {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
-    defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
-      statement.addActions('sts:TagSession');
-      return statement;
-    }));
+    defaultAddPrincipalToAssumeRole(
+      this.wrapped,
+      new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
+        statement.addActions('sts:TagSession');
+        return statement;
+      })
+    );
   }
 
   public dedupeString(): string | undefined {
@@ -421,8 +436,8 @@ export class PrincipalPolicyFragment {
      * The conditions under which the policy is in effect.
      * See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
      */
-    public readonly conditions: Conditions = {}) {
-  }
+    public readonly conditions: Conditions = {}
+  ) {}
 }
 
 /**
@@ -477,7 +492,9 @@ export class AccountPrincipal extends ArnPrincipal {
    * @param accountId AWS account ID (i.e. '123456789012')
    */
   constructor(public readonly accountId: any) {
-    super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
+    super(
+      new StackDependentToken((stack) => `arn:${stack.partition}:iam::${accountId}:root`).toString()
+    );
     if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
       throw new Error('accountId should be of type string');
     }
@@ -569,9 +586,12 @@ export class ServicePrincipal extends PrincipalBase {
       }
 
       public get policyFragment(): PrincipalPolicyFragment {
-        return new PrincipalPolicyFragment({
-          Service: [this.service],
-        }, this.opts.conditions);
+        return new PrincipalPolicyFragment(
+          {
+            Service: [this.service],
+          },
+          this.opts.conditions
+        );
       }
     }
     return new StaticServicePrincipal(servicePrincipalName);
@@ -582,14 +602,20 @@ export class ServicePrincipal extends PrincipalBase {
    *
    * @param service AWS service (i.e. sqs.amazonaws.com)
    */
-  constructor(public readonly service: string, private readonly opts: ServicePrincipalOpts = {}) {
+  constructor(
+    public readonly service: string,
+    private readonly opts: ServicePrincipalOpts = {}
+  ) {
     super();
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({
-      Service: [new ServicePrincipalToken(this.service, this.opts).toString()],
-    }, this.opts.conditions);
+    return new PrincipalPolicyFragment(
+      {
+        Service: [new ServicePrincipalToken(this.service, this.opts).toString()],
+      },
+      this.opts.conditions
+    );
   }
 
   public toString() {
@@ -616,7 +642,7 @@ export class OrganizationPrincipal extends PrincipalBase {
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment(
       { AWS: ['*'] },
-      { StringEquals: { 'aws:PrincipalOrgID': this.organizationId } },
+      { StringEquals: { 'aws:PrincipalOrgID': this.organizationId } }
     );
   }
 
@@ -691,7 +717,8 @@ export class FederatedPrincipal extends PrincipalBase {
   constructor(
     public readonly federated: string,
     conditions: Conditions = {},
-    assumeRoleAction: string = 'sts:AssumeRole') {
+    assumeRoleAction: string = 'sts:AssumeRole'
+  ) {
     super();
 
     this.conditions = conditions;
@@ -716,7 +743,6 @@ export class FederatedPrincipal extends PrincipalBase {
  * Facebook, Google, etc.
  */
 export class WebIdentityPrincipal extends FederatedPrincipal {
-
   /**
    *
    * @param identityProvider identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
@@ -741,7 +767,6 @@ export class WebIdentityPrincipal extends FederatedPrincipal {
  * A principal that represents a federated identity provider as from a OpenID Connect provider.
  */
 export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
-
   /**
    *
    * @param openIdConnectProvider OpenID Connect provider
@@ -783,7 +808,9 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     super(samlProvider, {
       ...conditions,
       StringEquals: {
-        'SAML:aud': RegionInfo.get(samlProvider.stack.region).samlSignOnUrl ?? 'https://signin.aws.amazon.com/saml',
+        'SAML:aud':
+          RegionInfo.get(samlProvider.stack.region).samlSignOnUrl ??
+          'https://signin.aws.amazon.com/saml',
       },
     });
   }
@@ -798,7 +825,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
  */
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor() {
-    super(new StackDependentToken(stack => stack.account).toString());
+    super(new StackDependentToken((stack) => stack.account).toString());
   }
 
   public toString() {
@@ -830,7 +857,7 @@ export class AnyPrincipal extends ArnPrincipal {
  * A principal representing all identities in all accounts
  * @deprecated use `AnyPrincipal`
  */
-export class Anyone extends AnyPrincipal { }
+export class Anyone extends AnyPrincipal {}
 
 /**
  * A principal that uses a literal '*' in the IAM JSON language
@@ -867,7 +894,9 @@ export class CompositePrincipal extends PrincipalBase {
   constructor(...principals: IPrincipal[]) {
     super();
     if (principals.length === 0) {
-      throw new Error('CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
+      throw new Error(
+        'CompositePrincipals must be constructed with at least 1 Principal but none were passed.'
+      );
     }
     this.assumeRoleAction = principals[0].assumeRoleAction;
     this.addPrincipals(...principals);
@@ -898,7 +927,8 @@ export class CompositePrincipal extends PrincipalBase {
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
         throw new Error(
           'Components of a CompositePrincipal must not have conditions. ' +
-          `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
+            `Tried to add the following fragment: ${JSON.stringify(fragment)}`
+        );
       }
     }
 
@@ -917,7 +947,9 @@ export class CompositePrincipal extends PrincipalBase {
 
   public dedupeString(): string | undefined {
     const inner = this._principals.map(ComparablePrincipal.dedupeStringFor);
-    if (inner.some(x => x === undefined)) { return undefined; }
+    if (inner.some((x) => x === undefined)) {
+      return undefined;
+    }
     return `CompositePrincipal[${inner.join(',')}]`;
   }
 
@@ -960,7 +992,8 @@ class ServicePrincipalToken implements cdk.IResolvable {
   public readonly creationStack: string[];
   constructor(
     private readonly service: string,
-    private readonly opts: ServicePrincipalOpts) {
+    private readonly opts: ServicePrincipalOpts
+  ) {
     this.creationStack = cdk.captureStackTrace();
   }
 
@@ -976,7 +1009,9 @@ class ServicePrincipalToken implements cdk.IResolvable {
 
     // If the user had previously set the feature flag to `false` we would allow them to provide only the service name instead of the
     // entire service principal. We can't break them so now everyone gets to do it!
-    const match = this.service.match(/^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/);
+    const match = this.service.match(
+      /^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/
+    );
     const service = match ? `${match[1]}.amazonaws.com` : this.service;
     if (
       this.opts.region &&

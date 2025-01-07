@@ -52,11 +52,11 @@ function deduplicateArtifacts(artifacts?: Artifact[]): Artifact[] {
   const ret = new Array<Artifact>();
   for (const artifact of artifacts || []) {
     if (artifact.artifactName) {
-      if (ret.find(a => a.artifactName === artifact.artifactName)) {
+      if (ret.find((a) => a.artifactName === artifact.artifactName)) {
         continue;
       }
     } else {
-      if (ret.find(a => a === artifact)) {
+      if (ret.find((a) => a === artifact)) {
         continue;
       }
     }

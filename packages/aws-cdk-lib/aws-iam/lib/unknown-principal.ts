@@ -35,13 +35,18 @@ export class UnknownPrincipal implements IPrincipal {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error(`Cannot get policy fragment of ${Node.of(this.resource).path}, resource imported without a role`);
+    throw new Error(
+      `Cannot get policy fragment of ${Node.of(this.resource).path}, resource imported without a role`
+    );
   }
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     const stack = Stack.of(this.resource);
     const repr = JSON.stringify(stack.resolve(statement));
-    Annotations.of(this.resource).addWarningV2('@aws-cdk/aws-iam:unknownPrincipalAddStatementToRole', `Add statement to this resource's role: ${repr}`);
+    Annotations.of(this.resource).addWarningV2(
+      '@aws-cdk/aws-iam:unknownPrincipalAddStatementToRole',
+      `Add statement to this resource's role: ${repr}`
+    );
     // Pretend we did the work. The human will do it for us, eventually.
     return { statementAdded: true, policyDependable: new DependencyGroup() };
   }

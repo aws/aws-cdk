@@ -118,14 +118,21 @@ export abstract class BaseDataSource extends Construct {
   protected api: IGraphqlApi;
   protected serviceRole?: IRole;
 
-  constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: BackedDataSourceProps,
+    extended: ExtendedDataSourceProps
+  ) {
     super(scope, id);
 
     if (extended.type !== 'NONE') {
-      this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync.amazonaws.com') });
+      this.serviceRole =
+        props.serviceRole ||
+        new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync.amazonaws.com') });
     }
     // Replace unsupported characters from DataSource name. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}
-    const name = (props.name ?? id);
+    const name = props.name ?? id;
     const supportedName = Token.isUnresolved(name) ? name : name.replace(/[\W]+/g, '');
     this.ds = new CfnDataSource(this, 'Resource', {
       apiId: props.api.apiId,
@@ -170,7 +177,12 @@ export abstract class BackedDataSource extends BaseDataSource implements IGranta
    */
   public readonly grantPrincipal: IPrincipal;
 
-  constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: BackedDataSourceProps,
+    extended: ExtendedDataSourceProps
+  ) {
     super(scope, id, props, extended);
 
     this.grantPrincipal = this.serviceRole!;
@@ -180,8 +192,7 @@ export abstract class BackedDataSource extends BaseDataSource implements IGranta
 /**
  * Properties for an AppSync dummy datasource
  */
-export interface NoneDataSourceProps extends BaseDataSourceProps {
-}
+export interface NoneDataSourceProps extends BaseDataSourceProps {}
 
 /**
  * An AppSync dummy datasource
@@ -275,10 +286,12 @@ export interface HttpDataSourceProps extends BackedDataSourceProps {
  */
 export class HttpDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
-    const authorizationConfig = props.authorizationConfig ? {
-      authorizationType: 'AWS_IAM',
-      awsIamConfig: props.authorizationConfig,
-    } : undefined;
+    const authorizationConfig = props.authorizationConfig
+      ? {
+          authorizationType: 'AWS_IAM',
+          awsIamConfig: props.authorizationConfig,
+        }
+      : undefined;
     super(scope, id, props, {
       type: 'HTTP',
       httpConfig: {
@@ -383,7 +396,7 @@ export interface RdsDataSourcePropsV2 extends BackedDataSourceProps {
  * An AppSync datasource backed by RDS
  */
 export class RdsDataSource extends BackedDataSource {
-  constructor(scope: Construct, id: string, props: RdsDataSourceProps)
+  constructor(scope: Construct, id: string, props: RdsDataSourceProps);
   constructor(scope: Construct, id: string, props: RdsDataSourcePropsV2) {
     super(scope, id, props, {
       type: 'RELATIONAL_DATABASE',

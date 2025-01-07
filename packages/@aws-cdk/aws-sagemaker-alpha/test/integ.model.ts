@@ -76,7 +76,7 @@ const ecrImageAsset = new ecr_assets.DockerImageAsset(stack, 'EcrImage', {
 });
 const ecrImage = sagemaker.ContainerImage.fromEcrRepository(
   ecrImageAsset.repository,
-  ecrImageAsset.imageTag,
+  ecrImageAsset.imageTag
 );
 
 const localImage = sagemaker.ContainerImage.fromAsset(dockerfileDirectory);
@@ -84,7 +84,7 @@ const localImage = sagemaker.ContainerImage.fromAsset(dockerfileDirectory);
 // AWS DLC Images: https://github.com/aws/deep-learning-containers/blob/master/available_images.md
 const dlcImage = sagemaker.ContainerImage.fromDlc(
   'huggingface-pytorch-training',
-  '1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04',
+  '1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04'
 );
 
 /*
@@ -96,10 +96,7 @@ const dlcImage = sagemaker.ContainerImage.fromDlc(
 const artifactAsset = new s3_assets.Asset(stack, 'S3ModelData', {
   path: artifactFilePath,
 });
-const s3ModelData = sagemaker.ModelData.fromBucket(
-  artifactAsset.bucket,
-  artifactAsset.s3ObjectKey,
-);
+const s3ModelData = sagemaker.ModelData.fromBucket(artifactAsset.bucket, artifactAsset.s3ObjectKey);
 
 const localModelData = sagemaker.ModelData.fromAsset(artifactFilePath);
 
@@ -110,10 +107,12 @@ const localModelData = sagemaker.ModelData.fromAsset(artifactFilePath);
  */
 
 new sagemaker.Model(stack, 'PrimaryContainerModel', {
-  containers: [{
-    image: ecrImage,
-    modelData: s3ModelData,
-  }],
+  containers: [
+    {
+      image: ecrImage,
+      modelData: s3ModelData,
+    },
+  ],
   vpc: new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false }),
 });
 
@@ -126,9 +125,7 @@ new sagemaker.Model(stack, 'InferencePipelineModel', {
 });
 
 new sagemaker.Model(stack, 'HuggingFaceModel', {
-  containers: [
-    { image: dlcImage },
-  ],
+  containers: [{ image: dlcImage }],
 });
 
 new sagemaker.Model(stack, 'NetworkIsolationModel', {

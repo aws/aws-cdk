@@ -1,6 +1,21 @@
 import * as path from 'path';
-import { AssemblyManifest, Manifest, ArtifactType, AwsCloudFormationStackProperties, ArtifactManifest, MetadataEntry, AssetManifestProperties, ArtifactMetadataEntryType, ContainerImageAssetMetadataEntry, FileAssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
-import { AssetManifest, FileManifestEntry, DockerImageManifestEntry } from 'cdk-assets/lib/asset-manifest';
+import {
+  AssemblyManifest,
+  Manifest,
+  ArtifactType,
+  AwsCloudFormationStackProperties,
+  ArtifactManifest,
+  MetadataEntry,
+  AssetManifestProperties,
+  ArtifactMetadataEntryType,
+  ContainerImageAssetMetadataEntry,
+  FileAssetMetadataEntry,
+} from '@aws-cdk/cloud-assembly-schema';
+import {
+  AssetManifest,
+  FileManifestEntry,
+  DockerImageManifestEntry,
+} from 'cdk-assets/lib/asset-manifest';
 import * as fs from 'fs-extra';
 
 /**
@@ -29,7 +44,6 @@ export class AssemblyManifestReader {
     try {
       const obj = Manifest.loadAssemblyManifest(fileName);
       return new AssemblyManifestReader(path.dirname(fileName), obj, fileName);
-
     } catch (e: any) {
       throw new Error(`Cannot read integ manifest '${fileName}': ${e.message}`);
     }
@@ -48,7 +62,9 @@ export class AssemblyManifestReader {
       throw new Error(`Cannot read integ manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
-      return AssemblyManifestReader.fromFile(path.join(filePath, AssemblyManifestReader.DEFAULT_FILENAME));
+      return AssemblyManifestReader.fromFile(
+        path.join(filePath, AssemblyManifestReader.DEFAULT_FILENAME)
+      );
     }
     return AssemblyManifestReader.fromFile(filePath);
   }
@@ -58,7 +74,11 @@ export class AssemblyManifestReader {
    */
   public readonly directory: string;
 
-  constructor(directory: string, private readonly manifest: AssemblyManifest, private readonly manifestFileName: string) {
+  constructor(
+    directory: string,
+    private readonly manifest: AssemblyManifest,
+    private readonly manifestFileName: string
+  ) {
     this.directory = directory;
   }
 
@@ -69,7 +89,9 @@ export class AssemblyManifestReader {
   public get stacks(): Record<string, any> {
     const stacks: Record<string, any> = {};
     for (const [artifactId, artifact] of Object.entries(this.manifest.artifacts ?? {})) {
-      if (artifact.type !== ArtifactType.AWS_CLOUDFORMATION_STACK) { continue; }
+      if (artifact.type !== ArtifactType.AWS_CLOUDFORMATION_STACK) {
+        continue;
+      }
       const props = artifact.properties as AwsCloudFormationStackProperties;
 
       const template = fs.readJSONSync(path.resolve(this.directory, props.templateFile));
@@ -83,16 +105,18 @@ export class AssemblyManifestReader {
    * returns a map of artifactId to CloudFormation template
    */
   public getNestedStacksForStack(stackId: string): Record<string, any> {
-    const nestedTemplates: string[] = this.getAssetManifestsForStack(stackId).flatMap(
-      manifest => manifest.files
-        .filter(asset => asset.source.path?.endsWith('.nested.template.json'))
-        .map(asset => asset.source.path!),
+    const nestedTemplates: string[] = this.getAssetManifestsForStack(stackId).flatMap((manifest) =>
+      manifest.files
+        .filter((asset) => asset.source.path?.endsWith('.nested.template.json'))
+        .map((asset) => asset.source.path!)
     );
 
-    const nestedStacks: Record<string, any> = Object.fromEntries(nestedTemplates.map(templateFile => ([
-      templateFile.split('.', 1)[0],
-      fs.readJSONSync(path.resolve(this.directory, templateFile)),
-    ])));
+    const nestedStacks: Record<string, any> = Object.fromEntries(
+      nestedTemplates.map((templateFile) => [
+        templateFile.split('.', 1)[0],
+        fs.readJSONSync(path.resolve(this.directory, templateFile)),
+      ])
+    );
 
     return nestedStacks;
   }
@@ -114,10 +138,13 @@ export class AssemblyManifestReader {
   public getAssetIdsForStack(stackId: string): string[] {
     const assets: string[] = [];
     for (const artifact of Object.values(this.manifest.artifacts ?? {})) {
-      if (artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`) {
-        assets.push(...this.assetsFromAssetManifest(artifact).map(asset => asset.id.assetId));
+      if (
+        artifact.type === ArtifactType.ASSET_MANIFEST &&
+        (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`
+      ) {
+        assets.push(...this.assetsFromAssetManifest(artifact).map((asset) => asset.id.assetId));
       } else if (artifact.type === ArtifactType.AWS_CLOUDFORMATION_STACK) {
-        assets.push(...this.assetsFromAssemblyManifest(artifact).map(asset => asset.id));
+        assets.push(...this.assetsFromAssemblyManifest(artifact).map((asset) => asset.id));
       }
     }
     return assets;
@@ -129,17 +156,22 @@ export class AssemblyManifestReader {
   public getAssetLocationsForStack(stackId: string): string[] {
     const assets: string[] = [];
     for (const artifact of Object.values(this.manifest.artifacts ?? {})) {
-      if (artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`) {
-        assets.push(...this.assetsFromAssetManifest(artifact).flatMap(asset => {
-          if (asset.type === 'file' && !asset.source.path?.endsWith('nested.template.json')) {
-            return asset.source.path!;
-          } else if (asset.type !== 'file') {
-            return asset.source.directory!;
-          }
-          return [];
-        }));
+      if (
+        artifact.type === ArtifactType.ASSET_MANIFEST &&
+        (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`
+      ) {
+        assets.push(
+          ...this.assetsFromAssetManifest(artifact).flatMap((asset) => {
+            if (asset.type === 'file' && !asset.source.path?.endsWith('nested.template.json')) {
+              return asset.source.path!;
+            } else if (asset.type !== 'file') {
+              return asset.source.directory!;
+            }
+            return [];
+          })
+        );
       } else if (artifact.type === ArtifactType.AWS_CLOUDFORMATION_STACK) {
-        assets.push(...this.assetsFromAssemblyManifest(artifact).map(asset => asset.path));
+        assets.push(...this.assetsFromAssemblyManifest(artifact).map((asset) => asset.path));
       }
     }
     return assets;
@@ -150,9 +182,12 @@ export class AssemblyManifestReader {
    */
   public getAssetManifestsForStack(stackId: string): AssetManifest[] {
     return Object.values(this.manifest.artifacts ?? {})
-      .filter(artifact =>
-        artifact.type === ArtifactType.ASSET_MANIFEST && (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`)
-      .map(artifact => {
+      .filter(
+        (artifact) =>
+          artifact.type === ArtifactType.ASSET_MANIFEST &&
+          (artifact.properties as AssetManifestProperties)?.file === `${stackId}.assets.json`
+      )
+      .map((artifact) => {
         const fileName = (artifact.properties as AssetManifestProperties).file;
         return AssetManifest.fromFile(path.join(this.directory, fileName));
       });
@@ -161,12 +196,14 @@ export class AssemblyManifestReader {
   /**
    * Get a list of assets from the assembly manifest
    */
-  private assetsFromAssemblyManifest(artifact: ArtifactManifest): (ContainerImageAssetMetadataEntry | FileAssetMetadataEntry)[] {
+  private assetsFromAssemblyManifest(
+    artifact: ArtifactManifest
+  ): (ContainerImageAssetMetadataEntry | FileAssetMetadataEntry)[] {
     const assets: (ContainerImageAssetMetadataEntry | FileAssetMetadataEntry)[] = [];
     for (const metadata of Object.values(artifact.metadata ?? {})) {
-      metadata.forEach(data => {
+      metadata.forEach((data) => {
         if (data.type === ArtifactMetadataEntryType.ASSET) {
-          const asset = (data.data as ContainerImageAssetMetadataEntry | FileAssetMetadataEntry);
+          const asset = data.data as ContainerImageAssetMetadataEntry | FileAssetMetadataEntry;
           if (asset.path.startsWith('asset.')) {
             assets.push(asset);
           }
@@ -179,14 +216,19 @@ export class AssemblyManifestReader {
   /**
    * Get a list of assets from the asset manifest
    */
-  private assetsFromAssetManifest(artifact: ArtifactManifest): (FileManifestEntry | DockerImageManifestEntry)[] {
+  private assetsFromAssetManifest(
+    artifact: ArtifactManifest
+  ): (FileManifestEntry | DockerImageManifestEntry)[] {
     const assets: (FileManifestEntry | DockerImageManifestEntry)[] = [];
     const fileName = (artifact.properties as AssetManifestProperties).file;
     const assetManifest = AssetManifest.fromFile(path.join(this.directory, fileName));
-    assetManifest.entries.forEach(entry => {
+    assetManifest.entries.forEach((entry) => {
       if (entry.type === 'file') {
         const source = (entry as FileManifestEntry).source;
-        if (source.path && (source.path.startsWith('asset.') || source.path.endsWith('nested.template.json'))) {
+        if (
+          source.path &&
+          (source.path.startsWith('asset.') || source.path.endsWith('nested.template.json'))
+        ) {
           assets.push(entry as FileManifestEntry);
         }
       } else if (entry.type === 'docker-image') {
@@ -212,7 +254,10 @@ export class AssemblyManifestReader {
     Manifest.saveAssemblyManifest(newManifest, this.manifestFileName);
   }
 
-  private renderArtifactMetadata(artifact: ArtifactManifest, trace?: StackTrace): { [id: string]: MetadataEntry[] } | undefined {
+  private renderArtifactMetadata(
+    artifact: ArtifactManifest,
+    trace?: StackTrace
+  ): { [id: string]: MetadataEntry[] } | undefined {
     const newMetadata: { [id: string]: MetadataEntry[] } = {};
     if (!artifact.metadata) return artifact.metadata;
     for (const [metadataId, metadataEntry] of Object.entries(artifact.metadata ?? {})) {
@@ -237,11 +282,13 @@ export class AssemblyManifestReader {
     }
     if (trace && trace.size > 0) {
       for (const [id, data] of trace.entries()) {
-        newMetadata[id] = [{
-          type: 'aws:cdk:logicalId',
-          data: id,
-          trace: [data],
-        }];
+        newMetadata[id] = [
+          {
+            type: 'aws:cdk:logicalId',
+            data: id,
+            trace: [data],
+          },
+        ];
       }
     }
     return newMetadata;

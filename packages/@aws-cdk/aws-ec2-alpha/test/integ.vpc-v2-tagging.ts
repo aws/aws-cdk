@@ -69,103 +69,115 @@ const tag_assertion = integ.assertions.awsApiCall('EC2', 'describeVpcs', {
   VpcIds: [vpc.vpcId],
 });
 
-tag_assertion.expect(ExpectedResult.objectLike({
-  Vpcs: [
-    Match.objectLike({
-      Tags: Match.arrayWith([
-        Match.objectLike({
-          Key: 'Name',
-          Value: 'CDKintegTestVPC',
-        }),
-      ]),
-    }),
-  ],
-}));
+tag_assertion.expect(
+  ExpectedResult.objectLike({
+    Vpcs: [
+      Match.objectLike({
+        Tags: Match.arrayWith([
+          Match.objectLike({
+            Key: 'Name',
+            Value: 'CDKintegTestVPC',
+          }),
+        ]),
+      }),
+    ],
+  })
+);
 
 // Assertion for the Internet Gateway (IGW)
 const igw_assertion = integ.assertions.awsApiCall('EC2', 'describeInternetGateways', {
   InternetGatewayIds: [vpc.internetGatewayId],
 });
 
-igw_assertion.expect(ExpectedResult.objectLike({
-  InternetGateways: [
-    Match.objectLike({
-      Tags: Match.arrayWith([
-        Match.objectLike({
-          Key: 'Name',
-          Value: 'CDKIntegTestTagIGW',
-        }),
-      ]),
-    }),
-  ],
-}));
+igw_assertion.expect(
+  ExpectedResult.objectLike({
+    InternetGateways: [
+      Match.objectLike({
+        Tags: Match.arrayWith([
+          Match.objectLike({
+            Key: 'Name',
+            Value: 'CDKIntegTestTagIGW',
+          }),
+        ]),
+      }),
+    ],
+  })
+);
 
 // Assertion for the NAT Gateway (NGW)
 const ngw_assertion = integ.assertions.awsApiCall('EC2', 'describeNatGateways', {
   NatGatewayIds: [natgw.natGatewayId],
 });
 
-ngw_assertion.expect(ExpectedResult.objectLike({
-  NatGateways: [
-    Match.objectLike({
-      Tags: Match.arrayWith([
-        Match.objectLike({
-          Key: 'Name',
-          Value: 'CDKIntegTestTagNGW',
-        }),
-      ]),
-    }),
-  ],
-}));
+ngw_assertion.expect(
+  ExpectedResult.objectLike({
+    NatGateways: [
+      Match.objectLike({
+        Tags: Match.arrayWith([
+          Match.objectLike({
+            Key: 'Name',
+            Value: 'CDKIntegTestTagNGW',
+          }),
+        ]),
+      }),
+    ],
+  })
+);
 
 // Assertion for the Route Table
 const route_table_assertion = integ.assertions.awsApiCall('EC2', 'describeRouteTables', {
   RouteTableIds: [routeTable.routeTableId],
 });
 
-route_table_assertion.expect(ExpectedResult.objectLike({
-  RouteTables: [
-    Match.objectLike({
-      Tags: Match.arrayWith([
-        Match.objectLike({
-          Key: 'Name',
-          Value: 'TestRouteTable',
-        }),
-      ]),
-    }),
-  ],
-}));
+route_table_assertion.expect(
+  ExpectedResult.objectLike({
+    RouteTables: [
+      Match.objectLike({
+        Tags: Match.arrayWith([
+          Match.objectLike({
+            Key: 'Name',
+            Value: 'TestRouteTable',
+          }),
+        ]),
+      }),
+    ],
+  })
+);
 
 // Assertion for the IPAM and IPAM Scope
 const ipam_assertion = integ.assertions.awsApiCall('EC2', 'describeIpams', {
   IpamIds: [ipam.ipamId],
 });
-ipam_assertion.expect(ExpectedResult.objectLike({
-  Ipams: [
-    Match.objectLike({
-      Tags: Match.arrayWith([
-        Match.objectLike({
-          Key: 'Name',
-          Value: 'CDKIpamTestTag',
-        }),
-      ]),
-    }),
-  ],
-}));
+ipam_assertion.expect(
+  ExpectedResult.objectLike({
+    Ipams: [
+      Match.objectLike({
+        Tags: Match.arrayWith([
+          Match.objectLike({
+            Key: 'Name',
+            Value: 'CDKIpamTestTag',
+          }),
+        ]),
+      }),
+    ],
+  })
+);
 
 // Assertion for the IPAM Scope
 const ipam_scope_assertion = integ.assertions.awsApiCall('EC2', 'describeIpamScopes', {
   IpamScopeIds: [scope.scopeId],
 });
-ipam_scope_assertion.expect(ExpectedResult.objectLike({
-  IpamScopes: [
-    Match.objectLike({
-      Tags: Match.arrayWith([
-        Match.objectLike({
-          Key: 'Name',
-          Value: 'CustomPrivateScopeTag',
-        }),
-      ]),
-    }),
-  ],
-}));
+ipam_scope_assertion.expect(
+  ExpectedResult.objectLike({
+    IpamScopes: [
+      Match.objectLike({
+        Tags: Match.arrayWith([
+          Match.objectLike({
+            Key: 'Name',
+            Value: 'CustomPrivateScopeTag',
+          }),
+        ]),
+      }),
+    ],
+  })
+);

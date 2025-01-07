@@ -6,9 +6,8 @@ import { Stack } from './stack';
 
 /**
  * Options for creating a unique resource name.
-*/
+ */
 export interface UniqueResourceNameOptions {
-
   /**
    * The maximum length of the unique resource name.
    *
@@ -47,7 +46,7 @@ export class Names {
    */
   public static uniqueId(construct: IConstruct): string {
     const node = Node.of(construct);
-    const components = node.scopes.slice(1).map(c => Node.of(c).id);
+    const components = node.scopes.slice(1).map((c) => Node.of(c).id);
     return components.length > 0 ? makeUniqueId(components) : '';
   }
 
@@ -62,7 +61,7 @@ export class Names {
    * @returns a unique id based on the construct path
    */
   public static nodeUniqueId(node: Node): string {
-    const components = node.scopes.slice(1).map(c => Node.of(c).id);
+    const components = node.scopes.slice(1).map((c) => Node.of(c).id);
     return components.length > 0 ? makeUniqueId(components) : '';
   }
 
@@ -83,9 +82,19 @@ export class Names {
   public static uniqueResourceName(construct: IConstruct, options: UniqueResourceNameOptions) {
     const node = Node.of(construct);
 
-    const componentsPath = node.scopes.slice(node.scopes.indexOf(node.scopes.reverse()
-      .find(component => (Stack.isStack(component) && !unresolved(component.stackName)))!,
-    )).map(component => Stack.isStack(component) && !unresolved(component.stackName) ? component.stackName : Node.of(component).id);
+    const componentsPath = node.scopes
+      .slice(
+        node.scopes.indexOf(
+          node.scopes
+            .reverse()
+            .find((component) => Stack.isStack(component) && !unresolved(component.stackName))!
+        )
+      )
+      .map((component) =>
+        Stack.isStack(component) && !unresolved(component.stackName)
+          ? component.stackName
+          : Node.of(component).id
+      );
 
     return makeUniqueResourceName(componentsPath, options);
   }

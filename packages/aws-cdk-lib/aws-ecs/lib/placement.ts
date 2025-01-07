@@ -43,7 +43,7 @@ export class PlacementStrategy {
     if (fields.length === 0) {
       throw new Error('spreadAcross: give at least one field to spread by');
     }
-    return new PlacementStrategy(fields.map(field => ({ type: 'spread', field })));
+    return new PlacementStrategy(fields.map((field) => ({ type: 'spread', field })));
   }
 
   /**
@@ -81,8 +81,7 @@ export class PlacementStrategy {
   /**
    * Constructs a new instance of the PlacementStrategy class.
    */
-  private constructor(private readonly json: CfnService.PlacementStrategyProperty[]) {
-  }
+  private constructor(private readonly json: CfnService.PlacementStrategyProperty[]) {}
 
   /**
    * Return the placement JSON
@@ -117,14 +116,15 @@ export class PlacementConstraint {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html
    */
   public static memberOf(...expressions: string[]) {
-    return new PlacementConstraint(expressions.map(expression => ({ type: 'memberOf', expression })));
+    return new PlacementConstraint(
+      expressions.map((expression) => ({ type: 'memberOf', expression }))
+    );
   }
 
   /**
    * Constructs a new instance of the PlacementConstraint class.
    */
-  private constructor(private readonly json: CfnService.PlacementConstraintProperty[]) {
-  }
+  private constructor(private readonly json: CfnService.PlacementConstraintProperty[]) {}
 
   /**
    * Return the placement JSON

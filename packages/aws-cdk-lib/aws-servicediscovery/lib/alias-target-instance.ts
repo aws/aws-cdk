@@ -51,9 +51,11 @@ export class AliasTargetInstance extends InstanceBase {
 
     // Should already be enforced when creating service, but validates if service is not instantiated with #createService
     const dnsRecordType = props.service.dnsRecordType;
-    if (dnsRecordType !== DnsRecordType.A
-      && dnsRecordType !== DnsRecordType.AAAA
-      && dnsRecordType !== DnsRecordType.A_AAAA) {
+    if (
+      dnsRecordType !== DnsRecordType.A &&
+      dnsRecordType !== DnsRecordType.AAAA &&
+      dnsRecordType !== DnsRecordType.A_AAAA
+    ) {
       throw new Error('Service must use `A` or `AAAA` records to register an AliasRecordTarget.');
     }
 

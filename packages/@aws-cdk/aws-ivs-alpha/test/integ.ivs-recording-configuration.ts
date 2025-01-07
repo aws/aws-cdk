@@ -24,7 +24,11 @@ const recordingConfiguration = new RecordingConfiguration(stack, 'RecordingConfi
     Resolution.SD,
     Resolution.LOWEST_RESOLUTION,
   ]),
-  thumbnailConfiguration: ThumbnailConfiguration.interval(Resolution.FULL_HD, [Storage.LATEST, Storage.SEQUENTIAL], Duration.seconds(30)),
+  thumbnailConfiguration: ThumbnailConfiguration.interval(
+    Resolution.FULL_HD,
+    [Storage.LATEST, Storage.SEQUENTIAL],
+    Duration.seconds(30)
+  ),
 });
 
 new Channel(stack, 'Channel', {

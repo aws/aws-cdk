@@ -7,8 +7,7 @@ import * as sqs from '../../aws-sqs';
  * Use an SQS queue as a hook target
  */
 export class QueueHook implements autoscaling.ILifecycleHookTarget {
-  constructor(private readonly queue: sqs.IQueue) {
-  }
+  constructor(private readonly queue: sqs.IQueue) {}
 
   /**
    * If an `IRole` is found in `options`, grant it access to send messages.
@@ -16,7 +15,10 @@ export class QueueHook implements autoscaling.ILifecycleHookTarget {
    *
    * @returns the `IRole` with access to send messages and the ARN of the queue it has access to send messages to.
    */
-  public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
+  public bind(
+    _scope: Construct,
+    options: autoscaling.BindHookTargetOptions
+  ): autoscaling.LifecycleHookTargetConfig {
     const role = createRole(_scope, options.role);
     this.queue.grantSendMessages(role);
 

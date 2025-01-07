@@ -37,7 +37,10 @@ abstract class RequireImdsv2Aspect implements cdk.IAspect {
    */
   protected warn(node: IConstruct, message: string) {
     if (this.suppressWarnings !== true) {
-      cdk.Annotations.of(node).addWarningV2(`@aws-cdk/aws-ec2:imdsv2${RequireImdsv2Aspect.name}`, `${RequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`);
+      cdk.Annotations.of(node).addWarningV2(
+        `@aws-cdk/aws-ec2:imdsv2${RequireImdsv2Aspect.name}`,
+        `${RequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`
+      );
     }
   }
 }
@@ -81,7 +84,10 @@ export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
       return;
     }
     if (node.instance.launchTemplate !== undefined) {
-      this.warn(node, 'Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.');
+      this.warn(
+        node,
+        'Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'
+      );
       return;
     }
 

@@ -50,14 +50,17 @@ export interface ClusterSubnetGroupProps {
  * @resource AWS::Redshift::ClusterSubnetGroup
  */
 export class ClusterSubnetGroup extends Resource implements IClusterSubnetGroup {
-
   /**
    * Imports an existing subnet group by name.
    */
-  public static fromClusterSubnetGroupName(scope: Construct, id: string, clusterSubnetGroupName: string): IClusterSubnetGroup {
-    return new class extends Resource implements IClusterSubnetGroup {
+  public static fromClusterSubnetGroupName(
+    scope: Construct,
+    id: string,
+    clusterSubnetGroupName: string
+  ): IClusterSubnetGroup {
+    return new (class extends Resource implements IClusterSubnetGroup {
       public readonly clusterSubnetGroupName = clusterSubnetGroupName;
-    }(scope, id);
+    })(scope, id);
   }
 
   public readonly clusterSubnetGroupName: string;
@@ -65,7 +68,9 @@ export class ClusterSubnetGroup extends Resource implements IClusterSubnetGroup 
   constructor(scope: Construct, id: string, props: ClusterSubnetGroupProps) {
     super(scope, id);
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
+    const { subnetIds } = props.vpc.selectSubnets(
+      props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }
+    );
 
     const subnetGroup = new CfnClusterSubnetGroup(this, 'Default', {
       description: props.description,

@@ -1,5 +1,10 @@
 import { Construct } from 'constructs';
-import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import {
+  Ec2Service,
+  Ec2TaskDefinition,
+  PlacementConstraint,
+  PlacementStrategy,
+} from '../../../aws-ecs';
 import { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
@@ -11,8 +16,8 @@ import {
 /**
  * The properties for the ApplicationMultipleTargetGroupsEc2Service service.
  */
-export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends ApplicationMultipleTargetGroupsServiceBaseProps {
-
+export interface ApplicationMultipleTargetGroupsEc2ServiceProps
+  extends ApplicationMultipleTargetGroupsServiceBaseProps {
   /**
    * The task definition to use for tasks in the service. Only one of TaskDefinition or TaskImageOptions must be specified.
    *
@@ -73,7 +78,7 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 
@@ -81,7 +86,6 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
  * An EC2 service running on an ECS cluster fronted by an application load balancer.
  */
 export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultipleTargetGroupsServiceBase {
-
   /**
    * The EC2 service in this construct.
    */
@@ -99,7 +103,11 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
   /**
    * Constructs a new instance of the ApplicationMultipleTargetGroupsEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsEc2ServiceProps = {}) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: ApplicationMultipleTargetGroupsEc2ServiceProps = {}
+  ) {
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
@@ -146,7 +154,11 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
     this.service = this.createEc2Service(props);
     if (props.targetGroups) {
       this.addPortMappingForTargets(this.taskDefinition.defaultContainer, props.targetGroups);
-      this.targetGroup = this.registerECSTargets(this.service, this.taskDefinition.defaultContainer, props.targetGroups);
+      this.targetGroup = this.registerECSTargets(
+        this.service,
+        this.taskDefinition.defaultContainer,
+        props.targetGroups
+      );
     } else {
       this.targetGroup = this.listener.addTargets('ECS', {
         targets: [this.service],
@@ -156,7 +168,9 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
   }
 
   private createEc2Service(props: ApplicationMultipleTargetGroupsEc2ServiceProps): Ec2Service {
-    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)
+      ? this.internalDesiredCount
+      : this.desiredCount;
 
     return new Ec2Service(this, 'Service', {
       cluster: this.cluster,

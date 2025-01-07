@@ -6,8 +6,15 @@ import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
   Annotations,
-  CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  ContextProvider, Fn, IResource, Resource, Stack, Token,
+  CfnDynamicReference,
+  CfnDynamicReferenceService,
+  CfnParameter,
+  ContextProvider,
+  Fn,
+  IResource,
+  Resource,
+  Stack,
+  Token,
   Tokenization,
 } from '../../core';
 
@@ -402,7 +409,6 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
    * @default false
    */
   readonly forceDynamicReference?: boolean;
-
 }
 
 /**
@@ -452,7 +458,6 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
    * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
-
 }
 
 /**
@@ -466,18 +471,25 @@ export interface SecureStringParameterAttributes extends CommonStringParameterAt
  * });
  */
 export class StringParameter extends ParameterBase implements IStringParameter {
-
   /**
    * Imports an external string parameter by name.
    */
-  public static fromStringParameterName(scope: Construct, id: string, stringParameterName: string): IStringParameter {
+  public static fromStringParameterName(
+    scope: Construct,
+    id: string,
+    stringParameterName: string
+  ): IStringParameter {
     return this.fromStringParameterAttributes(scope, id, { parameterName: stringParameterName });
   }
 
   /**
    * Imports an external string parameter by ARN.
    */
-  public static fromStringParameterArn(scope: Construct, id: string, stringParameterArn: string): IStringParameter {
+  public static fromStringParameterArn(
+    scope: Construct,
+    id: string,
+    stringParameterArn: string
+  ): IStringParameter {
     if (Token.isUnresolved(stringParameterArn)) {
       throw new Error('stringParameterArn cannot be an unresolved token');
     }
@@ -491,7 +503,10 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       throw new Error('unexpected StringParameterArn format');
     } else if (Token.isUnresolved(stackRegion)) {
       // Region is unknown during synthesis, emit a warning for visibility
-      Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-ssm:crossAccountReferenceSameRegion', 'Cross-account references will only work within the same region');
+      Annotations.of(scope).addWarningV2(
+        'aws-cdk-lib/aws-ssm:crossAccountReferenceSameRegion',
+        'Cross-account references will only work within the same region'
+      );
     } else if (!Token.isUnresolved(stackRegion) && arnParts[3] !== stackRegion) {
       // If the region is known, it must match the region specified in the ARN string
       throw new Error('stringParameterArn must be in the same region as the stack');
@@ -500,9 +515,16 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const parameterType = ParameterValueType.STRING;
 
     let stringValue: string;
-    stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${parameterType}>`, default: stringParameterArn }).valueAsString;
+    stringValue = new CfnParameter(scope, `${id}.Parameter`, {
+      type: `AWS::SSM::Parameter::Value<${parameterType}>`,
+      default: stringParameterArn,
+    }).valueAsString;
     class Import extends ParameterBase {
-      public readonly parameterName = stringParameterArn.split('/').pop()?.replace(/parameter\/$/, '') ?? '';
+      public readonly parameterName =
+        stringParameterArn
+          .split('/')
+          .pop()
+          ?.replace(/parameter\/$/, '') ?? '';
       public readonly parameterArn = stringParameterArn;
       public readonly parameterType = parameterType;
       public readonly stringValue = stringValue;
@@ -514,12 +536,21 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   /**
    * Imports an external string parameter with name and optional version.
    */
-  public static fromStringParameterAttributes(scope: Construct, id: string, attrs: StringParameterAttributes): IStringParameter {
+  public static fromStringParameterAttributes(
+    scope: Construct,
+    id: string,
+    attrs: StringParameterAttributes
+  ): IStringParameter {
     if (!attrs.parameterName) {
       throw new Error('parameterName cannot be an empty string');
     }
-    if (attrs.type && ![ParameterType.STRING, ParameterType.AWS_EC2_IMAGE_ID].includes(attrs.type)) {
-      throw new Error(`fromStringParameterAttributes does not support ${attrs.type}. Please use ParameterType.STRING or ParameterType.AWS_EC2_IMAGE_ID`);
+    if (
+      attrs.type &&
+      ![ParameterType.STRING, ParameterType.AWS_EC2_IMAGE_ID].includes(attrs.type)
+    ) {
+      throw new Error(
+        `fromStringParameterAttributes does not support ${attrs.type}. Please use ParameterType.STRING or ParameterType.AWS_EC2_IMAGE_ID`
+      );
     }
 
     const type = attrs.type ?? attrs.valueType ?? ParameterValueType.STRING;
@@ -527,19 +558,36 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     let stringValue: string;
     if (attrs.version) {
-      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString();
+      stringValue = new CfnDynamicReference(
+        CfnDynamicReferenceService.SSM,
+        `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`
+      ).toString();
     } else if (forceDynamicReference) {
-      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, attrs.parameterName).toString();
-    } else if (Token.isUnresolved(attrs.parameterName) && Fn._isFnBase(Tokenization.reverseString(attrs.parameterName).firstToken)) {
+      stringValue = new CfnDynamicReference(
+        CfnDynamicReferenceService.SSM,
+        attrs.parameterName
+      ).toString();
+    } else if (
+      Token.isUnresolved(attrs.parameterName) &&
+      Fn._isFnBase(Tokenization.reverseString(attrs.parameterName).firstToken)
+    ) {
       // the default value of a CfnParameter can only contain strings, so we cannot use it when a parameter name contains tokens.
-      stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, attrs.parameterName).toString();
+      stringValue = new CfnDynamicReference(
+        CfnDynamicReferenceService.SSM,
+        attrs.parameterName
+      ).toString();
     } else {
-      stringValue = new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+      stringValue = new CfnParameter(scope, `${id}.Parameter`, {
+        type: `AWS::SSM::Parameter::Value<${type}>`,
+        default: attrs.parameterName,
+      }).valueAsString;
     }
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
-      public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
+      public readonly parameterArn = arnForParameterName(this, attrs.parameterName, {
+        simpleName: attrs.simpleName,
+      });
       public readonly parameterType = ParameterType.STRING; // this is the type returned by CFN @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html#aws-resource-ssm-parameter-return-values
       public readonly stringValue = stringValue;
     }
@@ -550,16 +598,22 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   /**
    * Imports a secure string parameter from the SSM parameter store.
    */
-  public static fromSecureStringParameterAttributes(scope: Construct, id: string, attrs: SecureStringParameterAttributes): IStringParameter {
+  public static fromSecureStringParameterAttributes(
+    scope: Construct,
+    id: string,
+    attrs: SecureStringParameterAttributes
+  ): IStringParameter {
     const version = attrs.version ? Tokenization.stringifyNumber(attrs.version) : '';
     const stringValue = new CfnDynamicReference(
       CfnDynamicReferenceService.SSM_SECURE,
-      version ? `${attrs.parameterName}:${version}` : attrs.parameterName,
+      version ? `${attrs.parameterName}:${version}` : attrs.parameterName
     ).toString();
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
-      public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
+      public readonly parameterArn = arnForParameterName(this, attrs.parameterName, {
+        simpleName: attrs.simpleName,
+      });
       public readonly parameterType = ParameterType.SECURE_STRING;
       public readonly stringValue = stringValue;
       public readonly encryptionKey = attrs.encryptionKey;
@@ -579,7 +633,11 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * and the ContextProvider will be told NOT to raise an error on synthesis
    * if the SSM Parameter is not found in the account at synth time.
    */
-  public static valueFromLookup(scope: Construct, parameterName: string, defaultValue?: string): string {
+  public static valueFromLookup(
+    scope: Construct,
+    parameterName: string,
+    defaultValue?: string
+  ): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
@@ -596,8 +654,17 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param parameterName The name of the SSM parameter.
    * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
    */
-  public static valueForStringParameter(scope: Construct, parameterName: string, version?: number): string {
-    return StringParameter.valueForTypedStringParameterV2(scope, parameterName, ParameterValueType.STRING, version);
+  public static valueForStringParameter(
+    scope: Construct,
+    parameterName: string,
+    version?: number
+  ): string {
+    return StringParameter.valueForTypedStringParameterV2(
+      scope,
+      parameterName,
+      ParameterValueType.STRING,
+      version
+    );
   }
 
   /**
@@ -607,14 +674,25 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param type The type of the SSM parameter.
    * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
    */
-  public static valueForTypedStringParameterV2(scope: Construct, parameterName: string, type = ParameterValueType.STRING, version?: number): string {
+  public static valueForTypedStringParameterV2(
+    scope: Construct,
+    parameterName: string,
+    type = ParameterValueType.STRING,
+    version?: number
+  ): string {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringParameter;
 
-    if (exists) { return exists.stringValue; }
+    if (exists) {
+      return exists.stringValue;
+    }
 
-    return this.fromStringParameterAttributes(stack, id, { parameterName, version, valueType: type }).stringValue;
+    return this.fromStringParameterAttributes(stack, id, {
+      parameterName,
+      version,
+      valueType: type,
+    }).stringValue;
   }
 
   /**
@@ -625,18 +703,28 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
    * @deprecated - use valueForTypedStringParameterV2 instead
    */
-  public static valueForTypedStringParameter(scope: Construct, parameterName: string, type = ParameterType.STRING, version?: number): string {
+  public static valueForTypedStringParameter(
+    scope: Construct,
+    parameterName: string,
+    type = ParameterType.STRING,
+    version?: number
+  ): string {
     if (type === ParameterType.STRING_LIST) {
-      throw new Error('valueForTypedStringParameter does not support STRING_LIST, '
-        +'use valueForTypedListParameter instead');
+      throw new Error(
+        'valueForTypedStringParameter does not support STRING_LIST, ' +
+          'use valueForTypedListParameter instead'
+      );
     }
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringParameter;
 
-    if (exists) { return exists.stringValue; }
+    if (exists) {
+      return exists.stringValue;
+    }
 
-    return this.fromStringParameterAttributes(stack, id, { parameterName, version, type }).stringValue;
+    return this.fromStringParameterAttributes(stack, id, { parameterName, version, type })
+      .stringValue;
   }
 
   /**
@@ -646,13 +734,20 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * @param version The parameter version (required for secure strings)
    * @deprecated Use `SecretValue.ssmSecure()` instead, it will correctly type the imported value as a `SecretValue` and allow importing without version. `SecretValue` lives in the core `aws-cdk-lib` module.
    */
-  public static valueForSecureStringParameter(scope: Construct, parameterName: string, version: number): string {
+  public static valueForSecureStringParameter(
+    scope: Construct,
+    parameterName: string,
+    version: number
+  ): string {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringParameter;
-    if (exists) { return exists.stringValue; }
+    if (exists) {
+      return exists.stringValue;
+    }
 
-    return this.fromSecureStringParameterAttributes(stack, id, { parameterName, version }).stringValue;
+    return this.fromSecureStringParameterAttributes(stack, id, { parameterName, version })
+      .stringValue;
   }
 
   public readonly parameterArn: string;
@@ -676,7 +771,9 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     }
 
     if (props.type && props.type === ParameterType.AWS_EC2_IMAGE_ID) {
-      throw new Error('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?');
+      throw new Error(
+        'The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?'
+      );
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
@@ -705,17 +802,23 @@ export class StringParameter extends ParameterBase implements IStringParameter {
  * @resource AWS::SSM::Parameter
  */
 export class StringListParameter extends ParameterBase implements IStringListParameter {
-
   /**
    * Imports an external parameter of type string list.
    * Returns a token and should not be parsed.
    */
-  public static fromStringListParameterName(scope: Construct, id: string, stringListParameterName: string): IStringListParameter {
+  public static fromStringListParameterName(
+    scope: Construct,
+    id: string,
+    stringListParameterName: string
+  ): IStringListParameter {
     class Import extends ParameterBase {
       public readonly parameterName = stringListParameterName;
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
       public readonly parameterType = ParameterType.STRING_LIST;
-      public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.SSM, stringListParameterName).toString());
+      public readonly stringListValue = Fn.split(
+        ',',
+        new CfnDynamicReference(CfnDynamicReferenceService.SSM, stringListParameterName).toString()
+      );
     }
 
     return new Import(scope, id);
@@ -724,7 +827,11 @@ export class StringListParameter extends ParameterBase implements IStringListPar
   /**
    * Imports an external string list parameter with name and optional version.
    */
-  public static fromListParameterAttributes(scope: Construct, id: string, attrs: ListParameterAttributes): IStringListParameter {
+  public static fromListParameterAttributes(
+    scope: Construct,
+    id: string,
+    attrs: ListParameterAttributes
+  ): IStringListParameter {
     if (!attrs.parameterName) {
       throw new Error('parameterName cannot be an empty string');
     }
@@ -733,12 +840,20 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     const valueType = `List<${type}>`;
 
     const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toStringList()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${valueType}>`, default: attrs.parameterName }).valueAsList;
+      ? new CfnDynamicReference(
+          CfnDynamicReferenceService.SSM,
+          `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`
+        ).toStringList()
+      : new CfnParameter(scope, `${id}.Parameter`, {
+          type: `AWS::SSM::Parameter::Value<${valueType}>`,
+          default: attrs.parameterName,
+        }).valueAsList;
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
-      public readonly parameterArn = arnForParameterName(this, attrs.parameterName, { simpleName: attrs.simpleName });
+      public readonly parameterArn = arnForParameterName(this, attrs.parameterName, {
+        simpleName: attrs.simpleName,
+      });
       public readonly parameterType = valueType; // it doesn't really matter what this is since a CfnParameter can only be `String | StringList`
       public readonly stringListValue = stringValue;
     }
@@ -753,14 +868,25 @@ export class StringListParameter extends ParameterBase implements IStringListPar
    * @param type the type of the SSM list parameter
    * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
    */
-  public static valueForTypedListParameter(scope: Construct, parameterName: string, type = ParameterValueType.STRING, version?: number): string[] {
+  public static valueForTypedListParameter(
+    scope: Construct,
+    parameterName: string,
+    type = ParameterValueType.STRING,
+    version?: number
+  ): string[] {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringListParameter;
 
-    if (exists) { return exists.stringListValue; }
+    if (exists) {
+      return exists.stringListValue;
+    }
 
-    return this.fromListParameterAttributes(stack, id, { parameterName, elementType: type, version }).stringListValue;
+    return this.fromListParameterAttributes(stack, id, {
+      parameterName,
+      elementType: type,
+      version,
+    }).stringListValue;
   }
 
   public readonly parameterArn: string;
@@ -773,12 +899,14 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       physicalName: props.parameterName,
     });
 
-    if (props.stringListValue.find(str => !Token.isUnresolved(str) && str.indexOf(',') !== -1)) {
-      throw new Error('Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.');
+    if (props.stringListValue.find((str) => !Token.isUnresolved(str) && str.indexOf(',') !== -1)) {
+      throw new Error(
+        "Values of a StringList SSM Parameter cannot contain the ',' character. Use a string parameter instead."
+      );
     }
 
     if (props.allowedPattern && !Token.isUnresolved(props.stringListValue)) {
-      props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
+      props.stringListValue.forEach((str) => _assertValidValue(str, props.allowedPattern!));
     }
 
     validateParameterName(this.physicalName);
@@ -821,7 +949,9 @@ function _assertValidValue(value: string, allowedPattern: string): void {
     return;
   }
   if (!new RegExp(allowedPattern).test(value)) {
-    throw new Error(`The supplied value (${value}) does not match the specified allowedPattern (${allowedPattern})`);
+    throw new Error(
+      `The supplied value (${value}) does not match the specified allowedPattern (${allowedPattern})`
+    );
   }
 }
 
@@ -830,11 +960,15 @@ function makeIdentityForImportedValue(parameterName: string) {
 }
 
 function validateParameterName(parameterName: string) {
-  if (Token.isUnresolved(parameterName)) { return; }
+  if (Token.isUnresolved(parameterName)) {
+    return;
+  }
   if (parameterName.length > 2048) {
     throw new Error('name cannot be longer than 2048 characters.');
   }
   if (!parameterName.match(/^[\/\w.-]+$/)) {
-    throw new Error(`name must only contain letters, numbers, and the following 4 symbols .-_/; got ${parameterName}`);
+    throw new Error(
+      `name must only contain letters, numbers, and the following 4 symbols .-_/; got ${parameterName}`
+    );
   }
 }

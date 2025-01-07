@@ -4,13 +4,17 @@ import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
-import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
+import {
+  NetworkLoadBalancedServiceBase,
+  NetworkLoadBalancedServiceBaseProps,
+} from '../base/network-load-balanced-service-base';
 
 /**
  * The properties for the NetworkLoadBalancedFargateService service.
  */
-export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalancedServiceBaseProps, FargateServiceBaseProps {
-
+export interface NetworkLoadBalancedFargateServiceProps
+  extends NetworkLoadBalancedServiceBaseProps,
+    FargateServiceBaseProps {
   /**
    * Determines whether the service will be assigned a public IP address.
    *
@@ -37,7 +41,6 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
  * A Fargate service running on an ECS cluster fronted by a network load balancer.
  */
 export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServiceBase {
-
   public readonly assignPublicIp: boolean;
   /**
    * The Fargate service in this construct.
@@ -74,7 +77,9 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
 
       // Create log driver if logging is enabled
       const enableLogging = taskImageOptions.enableLogging ?? true;
-      const logDriver = taskImageOptions.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
+      const logDriver =
+        taskImageOptions.logDriver ??
+        (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
       const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
@@ -91,7 +96,9 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
-    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)
+      ? this.internalDesiredCount
+      : this.desiredCount;
 
     this.service = new FargateService(this, 'Service', {
       cluster: this.cluster,

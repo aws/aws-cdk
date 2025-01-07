@@ -1,8 +1,21 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { exec as runCli } from 'aws-cdk/lib';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { createAssembly, prepareContext, prepareDefaultEnvironment } from 'aws-cdk/lib/api/cxapp/exec';
-import { SharedOptions, DeployOptions, DestroyOptions, BootstrapOptions, SynthOptions, ListOptions, StackActivityProgress, HotswapMode } from './commands';
+import {
+  createAssembly,
+  prepareContext,
+  prepareDefaultEnvironment,
+} from 'aws-cdk/lib/api/cxapp/exec';
+import {
+  SharedOptions,
+  DeployOptions,
+  DestroyOptions,
+  BootstrapOptions,
+  SynthOptions,
+  ListOptions,
+  StackActivityProgress,
+  HotswapMode,
+} from './commands';
 
 /**
  * AWS CDK CLI operations
@@ -101,8 +114,8 @@ export class AwsCdkCli implements IAwsCdkCli {
    * @returns an instance of `AwsCdkCli`
    */
   public static fromCdkAppDirectory(directory?: string, props: CdkAppDirectoryProps = {}) {
-    return new AwsCdkCli(async (args) => changeDir(
-      () => {
+    return new AwsCdkCli(async (args) =>
+      changeDir(() => {
         if (props.app) {
           args.push('--app', props.app);
         }
@@ -111,29 +124,29 @@ export class AwsCdkCli implements IAwsCdkCli {
         }
 
         return runCli(args);
-      },
-      directory,
-    ));
+      }, directory)
+    );
   }
 
   /**
    * Create the CLI from a CloudAssemblyDirectoryProducer
    */
   public static fromCloudAssemblyDirectoryProducer(producer: ICloudAssemblyDirectoryProducer) {
-    return new AwsCdkCli(async (args) => changeDir(
-      () => runCli(args, async (sdk, config) => {
-        const env = await prepareDefaultEnvironment(sdk);
-        const context = await prepareContext(config, env);
+    return new AwsCdkCli(async (args) =>
+      changeDir(
+        () =>
+          runCli(args, async (sdk, config) => {
+            const env = await prepareDefaultEnvironment(sdk);
+            const context = await prepareContext(config, env);
 
-        return withEnv(async() => createAssembly(await producer.produce(context)), env);
-      }),
-      producer.workingDirectory,
-    ));
+            return withEnv(async () => createAssembly(await producer.produce(context)), env);
+          }),
+        producer.workingDirectory
+      )
+    );
   }
 
-  private constructor(
-    private readonly cli: (args: string[]) => Promise<number | void>,
-  ) {}
+  private constructor(private readonly cli: (args: string[]) => Promise<number | void>) {}
 
   /**
    * Execute the CLI with a list of arguments
@@ -181,17 +194,27 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...renderBooleanArg('example-permissions-boundary', options.examplePermissionsBoundary),
       ...renderBooleanArg('terminationProtection', options.usePreviousParameters),
       ...renderBooleanArg('execute', options.execute),
-      ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
-      ...options.bootstrapBucketName ? ['--bootstrap-bucket-name', options.bootstrapBucketName] : [],
-      ...options.cfnExecutionPolicy ? ['--cloudformation-execution-policies', options.cfnExecutionPolicy] : [],
-      ...options.template ? ['--template', options.template] : [],
-      ...options.customPermissionsBoundary ? ['--custom-permissions-boundary', options.customPermissionsBoundary] : [],
-      ...options.qualifier ? ['--qualifier', options.qualifier] : [],
-      ...options.trust ? ['--trust', options.trust] : [],
-      ...options.trustForLookup ? ['--trust-for-lookup', options.trustForLookup] : [],
-      ...options.bootstrapKmsKeyId ? ['--bootstrap-kms-key-id', options.bootstrapKmsKeyId] : [],
-      ...options.bootstrapCustomerKey ? ['--bootstrap-customer-key', options.bootstrapCustomerKey] : [],
-      ...options.publicAccessBlockConfiguration ? ['--public-access-block-configuration', options.publicAccessBlockConfiguration] : [],
+      ...(options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : []),
+      ...(options.bootstrapBucketName
+        ? ['--bootstrap-bucket-name', options.bootstrapBucketName]
+        : []),
+      ...(options.cfnExecutionPolicy
+        ? ['--cloudformation-execution-policies', options.cfnExecutionPolicy]
+        : []),
+      ...(options.template ? ['--template', options.template] : []),
+      ...(options.customPermissionsBoundary
+        ? ['--custom-permissions-boundary', options.customPermissionsBoundary]
+        : []),
+      ...(options.qualifier ? ['--qualifier', options.qualifier] : []),
+      ...(options.trust ? ['--trust', options.trust] : []),
+      ...(options.trustForLookup ? ['--trust-for-lookup', options.trustForLookup] : []),
+      ...(options.bootstrapKmsKeyId ? ['--bootstrap-kms-key-id', options.bootstrapKmsKeyId] : []),
+      ...(options.bootstrapCustomerKey
+        ? ['--bootstrap-customer-key', options.bootstrapCustomerKey]
+        : []),
+      ...(options.publicAccessBlockConfiguration
+        ? ['--public-access-block-configuration', options.publicAccessBlockConfiguration]
+        : []),
       ...this.createDefaultArguments(options),
     ];
 
@@ -214,14 +237,18 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...renderBooleanArg('asset-prebuild', options.assetPrebuild),
       ...renderNumberArg('concurrency', options.concurrency),
       ...renderHotswapArg(options.hotswap),
-      ...options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : [],
-      ...options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : [],
-      ...options.parameters ? renderMapArrayArg('--parameters', options.parameters) : [],
-      ...options.outputsFile ? ['--outputs-file', options.outputsFile] : [],
-      ...options.requireApproval ? ['--require-approval', options.requireApproval] : [],
-      ...options.changeSetName ? ['--change-set-name', options.changeSetName] : [],
-      ...options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : [],
-      ...options.progress ? ['--progress', options.progress] : ['--progress', StackActivityProgress.EVENTS],
+      ...(options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : []),
+      ...(options.notificationArns
+        ? renderArrayArg('--notification-arns', options.notificationArns)
+        : []),
+      ...(options.parameters ? renderMapArrayArg('--parameters', options.parameters) : []),
+      ...(options.outputsFile ? ['--outputs-file', options.outputsFile] : []),
+      ...(options.requireApproval ? ['--require-approval', options.requireApproval] : []),
+      ...(options.changeSetName ? ['--change-set-name', options.changeSetName] : []),
+      ...(options.toolkitStackName ? ['--toolkit-stack-name', options.toolkitStackName] : []),
+      ...(options.progress
+        ? ['--progress', options.progress]
+        : ['--progress', StackActivityProgress.EVENTS]),
       ...this.createDefaultArguments(options),
     ];
 
@@ -233,7 +260,7 @@ export class AwsCdkCli implements IAwsCdkCli {
    */
   public async destroy(options: DestroyOptions = {}) {
     const destroyCommandArgs: string[] = [
-      ...options.requireApproval ? [] : ['--force'],
+      ...(options.requireApproval ? [] : ['--force']),
       ...renderBooleanArg('exclusively', options.exclusively),
       ...this.createDefaultArguments(options),
     ];
@@ -260,11 +287,11 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...renderBooleanArg('asset-metadata', options.assetMetadata),
       ...renderBooleanArg('notices', options.notices),
       ...renderBooleanArg('color', options.color ?? (process.env.NO_COLOR ? false : undefined)),
-      ...options.context ? renderMapArrayArg('--context', options.context) : [],
-      ...options.profile ? ['--profile', options.profile] : [],
-      ...options.proxy ? ['--proxy', options.proxy] : [],
-      ...options.caBundlePath ? ['--ca-bundle-path', options.caBundlePath] : [],
-      ...options.roleArn ? ['--role-arn', options.roleArn] : [],
+      ...(options.context ? renderMapArrayArg('--context', options.context) : []),
+      ...(options.profile ? ['--profile', options.profile] : []),
+      ...(options.proxy ? ['--proxy', options.proxy] : []),
+      ...(options.caBundlePath ? ['--ca-bundle-path', options.caBundlePath] : []),
+      ...(options.roleArn ? ['--role-arn', options.roleArn] : []),
       ...stacks,
     ];
   }
@@ -281,7 +308,10 @@ function renderHotswapArg(hotswapMode: HotswapMode | undefined): string[] {
   }
 }
 
-function renderMapArrayArg(flag: string, parameters: { [name: string]: string | undefined }): string[] {
+function renderMapArrayArg(
+  flag: string,
+  parameters: { [name: string]: string | undefined }
+): string[] {
   const params: string[] = [];
   for (const [key, value] of Object.entries(parameters)) {
     params.push(`${key}=${value}`);
@@ -326,7 +356,6 @@ async function changeDir(block: () => Promise<any>, workingDir?: string) {
     }
 
     return await block();
-
   } finally {
     if (workingDir) {
       process.chdir(originalWorkingDir);
@@ -346,7 +375,6 @@ async function withEnv(block: () => Promise<any>, env: Record<string, string> = 
     };
 
     return await block();
-
   } finally {
     process.env = originalEnv;
   }

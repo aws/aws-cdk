@@ -61,17 +61,16 @@ export interface ScheduleTargetBaseProps {
  * Base class for Schedule Targets
  */
 export abstract class ScheduleTargetBase {
-
   constructor(
     private readonly baseProps: ScheduleTargetBaseProps,
-    protected readonly targetArn: string,
-  ) {
-  }
+    protected readonly targetArn: string
+  ) {}
 
   protected abstract addTargetActionToRole(role: iam.IRole): void;
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
-    const role: iam.IRole = this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
+    const role: iam.IRole =
+      this.baseProps.role ?? this.createOrGetScheduleTargetRole(_schedule, this.targetArn);
 
     this.addTargetActionToRole(role);
 
@@ -82,9 +81,11 @@ export abstract class ScheduleTargetBase {
     return {
       arn: this.targetArn,
       role,
-      deadLetterConfig: this.baseProps.deadLetterQueue ? {
-        arn: this.baseProps.deadLetterQueue.queueArn,
-      } : undefined,
+      deadLetterConfig: this.baseProps.deadLetterQueue
+        ? {
+            arn: this.baseProps.deadLetterQueue.queueArn,
+          }
+        : undefined,
       retryPolicy: this.renderRetryPolicy(this.baseProps.maxEventAge, this.baseProps.retryAttempts),
       input: this.baseProps.input,
     };
@@ -107,7 +108,9 @@ export abstract class ScheduleTargetBase {
    */
   private createOrGetScheduleTargetRole(schedule: ISchedule, targetArn: string): iam.IRole {
     const stack = Stack.of(schedule);
-    const arn = Token.isUnresolved(targetArn) ? JSON.stringify(stack.resolve(targetArn)) : targetArn;
+    const arn = Token.isUnresolved(targetArn)
+      ? JSON.stringify(stack.resolve(targetArn))
+      : targetArn;
     const hash = md5hash(arn).slice(0, 6);
     const id = 'SchedulerRoleForTarget-' + hash;
     const existingRole = stack.node.tryFindChild(id) as iam.Role;
@@ -116,23 +119,27 @@ export abstract class ScheduleTargetBase {
       conditions: {
         StringEquals: {
           'aws:SourceAccount': schedule.env.account,
-          'aws:SourceArn': schedule.group?.groupArn ?? Stack.of(schedule).formatArn({
-            service: 'scheduler',
-            resource: 'schedule-group',
-            region: schedule.env.region,
-            account: schedule.env.account,
-            resourceName: schedule.group?.groupName ?? 'default',
-          }),
+          'aws:SourceArn':
+            schedule.group?.groupArn ??
+            Stack.of(schedule).formatArn({
+              service: 'scheduler',
+              resource: 'schedule-group',
+              region: schedule.env.region,
+              account: schedule.env.account,
+              resourceName: schedule.group?.groupName ?? 'default',
+            }),
         },
       },
     });
 
     if (existingRole) {
-      existingRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [principal],
-        actions: ['sts:AssumeRole'],
-      }));
+      existingRole.assumeRolePolicy?.addStatements(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          principals: [principal],
+          actions: ['sts:AssumeRole'],
+        })
+      );
       return existingRole;
     }
     const role = new iam.Role(stack, id, {
@@ -146,13 +153,18 @@ export abstract class ScheduleTargetBase {
    * Allow schedule to send events with failed invocation to an Amazon SQS queue.
    */
   private addDeadLetterQueueActionToRole(role: iam.IRole, queue: sqs.IQueue) {
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [queue.queueArn],
-    }));
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [queue.queueArn],
+      })
+    );
   }
 
-  private renderRetryPolicy(maximumEventAge: Duration | undefined, maximumRetryAttempts: number | undefined): CfnSchedule.RetryPolicyProperty {
+  private renderRetryPolicy(
+    maximumEventAge: Duration | undefined,
+    maximumRetryAttempts: number | undefined
+  ): CfnSchedule.RetryPolicyProperty {
     const maxMaxAge = Duration.days(1).toSeconds();
     const minMaxAge = Duration.minutes(1).toSeconds();
     let maxAge: number = maxMaxAge;
@@ -164,7 +176,7 @@ export abstract class ScheduleTargetBase {
       if (maxAge < minMaxAge) {
         throw new Error('Minimum event age is 1 minute');
       }
-    };
+    }
     let maxAttempts = 185;
     if (typeof maximumRetryAttempts != 'undefined') {
       if (maximumRetryAttempts < 0) {

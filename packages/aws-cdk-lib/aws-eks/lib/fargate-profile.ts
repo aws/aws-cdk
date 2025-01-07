@@ -112,7 +112,6 @@ export interface Selector {
  * match a selector in that profile in order to be scheduled onto Fargate.
  */
 export class FargateProfile extends Construct implements ITaggable {
-
   /**
    * The full Amazon Resource Name (ARN) of the Fargate profile.
    *
@@ -147,20 +146,29 @@ export class FargateProfile extends Construct implements ITaggable {
       onEventLayer: props.cluster.onEventLayer,
     });
 
-    this.podExecutionRole = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
-      assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy')],
-    });
+    this.podExecutionRole =
+      props.podExecutionRole ??
+      new iam.Role(this, 'PodExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy'),
+        ],
+      });
 
     this.podExecutionRole.grantPassRole(props.cluster.adminRole);
 
     if (props.subnetSelection && !props.vpc) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:fargateProfileDefaultToPrivateSubnets', 'Vpc must be defined to use a custom subnet selection. All private subnets belonging to the EKS cluster will be used by default');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-eks:fargateProfileDefaultToPrivateSubnets',
+        'Vpc must be defined to use a custom subnet selection. All private subnets belonging to the EKS cluster will be used by default'
+      );
     }
 
     let subnets: string[] | undefined;
     if (props.vpc) {
-      const selection: ec2.SubnetSelection = props.subnetSelection ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
+      const selection: ec2.SubnetSelection = props.subnetSelection ?? {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      };
       subnets = props.vpc.selectSubnets(selection).subnetIds;
     }
 
@@ -212,11 +220,7 @@ export class FargateProfile extends Construct implements ITaggable {
       // see https://github.com/aws/aws-cdk/issues/7981
       props.cluster.awsAuth.addRoleMapping(this.podExecutionRole, {
         username: 'system:node:{{SessionName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes',
-          'system:node-proxier',
-        ],
+        groups: ['system:bootstrappers', 'system:nodes', 'system:node-proxier'],
       });
     }
   }

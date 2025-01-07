@@ -43,7 +43,6 @@ export interface WebSocketRouteOptions {
    * @default false
    */
   readonly returnResponse?: boolean;
-
 }
 
 /**

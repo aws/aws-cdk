@@ -116,7 +116,9 @@ export abstract class LambdaInsightsVersion {
         const arch = _function.architecture?.name ?? Architecture.X86_64.name;
         // Check if insights version is valid. This should only happen if one of the public static readonly versions are set incorrectly
         // or if the version is not available for the Lambda Architecture
-        const versionExists = RegionInfo.regions.some(regionInfo => regionInfo.cloudwatchLambdaInsightsArn(insightsVersion, arch));
+        const versionExists = RegionInfo.regions.some((regionInfo) =>
+          regionInfo.cloudwatchLambdaInsightsArn(insightsVersion, arch)
+        );
         if (!versionExists) {
           throw new Error(`Insights version ${insightsVersion} does not exist.`);
         }
@@ -148,7 +150,6 @@ export abstract class LambdaInsightsVersion {
  * This function is run on CDK synthesis.
  */
 function getVersionArn(scope: IConstruct, insightsVersion: string, architecture?: string): string {
-
   const scopeStack = Stack.of(scope);
   const region = scopeStack.region;
   const arch = architecture ?? Architecture.X86_64.name;

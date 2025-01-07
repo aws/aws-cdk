@@ -39,16 +39,29 @@ export class ReportTrace {
     return this.renderPrettyPrintedTraceInfo(trace);
   }
 
-  private renderPrettyPrintedTraceInfo(info?: ConstructTrace, indent?: string, start: string = STARTER_LINE): string {
-    const notAvailableMessage = '\tConstruct trace not available. Rerun with `--debug` to see trace information';
+  private renderPrettyPrintedTraceInfo(
+    info?: ConstructTrace,
+    indent?: string,
+    start: string = STARTER_LINE
+  ): string {
+    const notAvailableMessage =
+      '\tConstruct trace not available. Rerun with `--debug` to see trace information';
     if (info) {
-      const indentation = indent ?? ' '.repeat(STARTER_LINE.length+1);
+      const indentation = indent ?? ' '.repeat(STARTER_LINE.length + 1);
       const result: string[] = [
         `${start} ${info?.id} (${info?.path})`,
         `${indentation}${VERTICAL_LINE} Construct: ${info?.construct}`,
         `${indentation}${VERTICAL_LINE} Library Version: ${info?.libraryVersion}`,
         `${indentation}${VERTICAL_LINE} Location: ${info?.location}`,
-        ...info?.child ? [this.renderPrettyPrintedTraceInfo(info?.child, ' '.repeat(indentation.length+STARTER_LINE.length+1), indentation+STARTER_LINE)] : [],
+        ...(info?.child
+          ? [
+              this.renderPrettyPrintedTraceInfo(
+                info?.child,
+                ' '.repeat(indentation.length + STARTER_LINE.length + 1),
+                indentation + STARTER_LINE
+              ),
+            ]
+          : []),
       ];
       return result.join('\n\t');
     }

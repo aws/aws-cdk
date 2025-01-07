@@ -40,7 +40,6 @@ export interface PoetryPackagingProps {
 }
 
 export class Packaging {
-
   /**
    * Standard packaging with `pip`.
    */
@@ -70,12 +69,15 @@ export class Packaging {
       dependenciesFile: DependenciesFile.POETRY,
       // Export dependencies with credentials available in the bundling image.
       exportCommand: [
-        'poetry', 'export',
-        ...props?.poetryIncludeHashes ? [] : ['--without-hashes'],
-        ...props?.poetryWithoutUrls ? ['--without-urls'] : [],
+        'poetry',
+        'export',
+        ...(props?.poetryIncludeHashes ? [] : ['--without-hashes']),
+        ...(props?.poetryWithoutUrls ? ['--without-urls'] : []),
         '--with-credentials',
-        '--format', DependenciesFile.PIP,
-        '--output', DependenciesFile.PIP,
+        '--format',
+        DependenciesFile.PIP,
+        '--output',
+        DependenciesFile.PIP,
       ].join(' '),
     });
   }
@@ -87,10 +89,15 @@ export class Packaging {
     return new Packaging({ dependenciesFile: DependenciesFile.NONE });
   }
 
-  public static fromEntry(entry: string, poetryIncludeHashes?: boolean, poetryWithoutUrls?: boolean): Packaging {
+  public static fromEntry(
+    entry: string,
+    poetryIncludeHashes?: boolean,
+    poetryWithoutUrls?: boolean
+  ): Packaging {
     if (fs.existsSync(path.join(entry, DependenciesFile.PIPENV))) {
       return this.withPipenv();
-    } if (fs.existsSync(path.join(entry, DependenciesFile.POETRY))) {
+    }
+    if (fs.existsSync(path.join(entry, DependenciesFile.POETRY))) {
       return this.withPoetry({ poetryIncludeHashes, poetryWithoutUrls });
     } else if (fs.existsSync(path.join(entry, DependenciesFile.PIP))) {
       return this.withPip();

@@ -55,7 +55,11 @@ export class EvaluateExpression extends sfn.TaskStateBase {
 
   private readonly evalFn: lambda.SingletonFunction;
 
-  constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: EvaluateExpressionProps
+  ) {
     super(scope, id, props);
 
     this.evalFn = createEvalFn(this.props.runtime, this);
@@ -81,7 +85,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
           ...acc,
           [m]: sfn.JsonPath.stringAt(m), // It's okay to always use `stringAt` here
         }),
-        {},
+        {}
       );
     }
 

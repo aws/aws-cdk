@@ -6,7 +6,10 @@ import { IScalableFunctionAttribute, UtilizationScalingOptions } from '../scalab
 /**
  * A scalable lambda alias attribute
  */
-export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute implements IScalableFunctionAttribute {
+export class ScalableFunctionAttribute
+  extends appscaling.BaseScalableAttribute
+  implements IScalableFunctionAttribute
+{
   constructor(scope: Construct, id: string, props: ScalableFunctionAttributeProps) {
     super(scope, id, props);
   }
@@ -17,8 +20,13 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
    * https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
    */
   public scaleOnUtilization(options: UtilizationScalingOptions) {
-    if ( !Token.isUnresolved(options.utilizationTarget) && (options.utilizationTarget < 0.1 || options.utilizationTarget > 0.9)) {
-      throw new Error(`Utilization Target should be between 0.1 and 0.9. Found ${options.utilizationTarget}.`);
+    if (
+      !Token.isUnresolved(options.utilizationTarget) &&
+      (options.utilizationTarget < 0.1 || options.utilizationTarget > 0.9)
+    ) {
+      throw new Error(
+        `Utilization Target should be between 0.1 and 0.9. Found ${options.utilizationTarget}.`
+      );
     }
     super.doScaleToTrackMetric('Tracking', {
       targetValue: options.utilizationTarget,
@@ -38,5 +46,4 @@ export class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute 
 /**
  * Properties of a scalable function attribute
  */
-export interface ScalableFunctionAttributeProps extends appscaling.BaseScalableAttributeProps {
-}
+export interface ScalableFunctionAttributeProps extends appscaling.BaseScalableAttributeProps {}

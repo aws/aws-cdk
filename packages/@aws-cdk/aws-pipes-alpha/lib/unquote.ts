@@ -1,7 +1,7 @@
 import { PipeVariable } from './pipeVariable';
 
 // enrich the pipe variable values with quotes so that the regex match includes the quotes, otherwise the replace function will not find the quotes
-const pipeVariableValuesWithQuotes = Object.values(PipeVariable).map(value => `"${value}"`);
+const pipeVariableValuesWithQuotes = Object.values(PipeVariable).map((value) => `"${value}"`);
 
 // build a regex that matches the pipe variable values with quotes like "<aws.pipes.pipe-name>"
 const pipeVariableRegex = new RegExp(`(${pipeVariableValuesWithQuotes.join('|')})`, 'g');
@@ -25,8 +25,10 @@ const removeQuotes = (match: string): string => match.replace(/^"|"$/g, '');
 const removeQuotesFromVariables = (stringWithQuotes: string, replacer: (match: string) => string) =>
   stringWithQuotes.replace(pipeVariableRegex, replacer);
 
-const removeQuotesFromEventPathExpression = (stringWithQuotes: string, replacer: (match: string) => string) =>
-  stringWithQuotes.replace(eventPathRegex, replacer);
+const removeQuotesFromEventPathExpression = (
+  stringWithQuotes: string,
+  replacer: (match: string) => string
+) => stringWithQuotes.replace(eventPathRegex, replacer);
 
 /**
  * Removes the quotes from PipeVariables and EventPathExpressions
@@ -35,7 +37,9 @@ const removeQuotesFromEventPathExpression = (stringWithQuotes: string, replacer:
  */
 export const unquote = (stringWithQuotes: string) => {
   const stringWithoutVariablesQuotes = removeQuotesFromVariables(stringWithQuotes, removeQuotes);
-  const stringWithoutEventPathQuotes = removeQuotesFromEventPathExpression(stringWithoutVariablesQuotes, removeQuotes);
+  const stringWithoutEventPathQuotes = removeQuotesFromEventPathExpression(
+    stringWithoutVariablesQuotes,
+    removeQuotes
+  );
   return stringWithoutEventPathQuotes;
 };
-

@@ -8,7 +8,10 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
   const stack = Stack.of(fn);
 
   const functionResource = fn.node.defaultChild as CfnResource;
-  const { properties, template, logicalId } = resolveSingleResourceProperties(stack, functionResource);
+  const { properties, template, logicalId } = resolveSingleResourceProperties(
+    stack,
+    functionResource
+  );
 
   let stringifiedConfig;
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_VERSION_PROPS)) {
@@ -84,19 +87,25 @@ function filterUsefulKeys(properties: any) {
     .filter(([k, v]) => v != null && !Object.keys(versionProps).includes(k))
     .map(([k, _]) => k);
   if (unclassified.length > 0) {
-    throw new Error(`The following properties are not recognized as version properties: [${unclassified}].`
-      + ' See the README of the aws-lambda module to learn more about this and to fix it.');
+    throw new Error(
+      `The following properties are not recognized as version properties: [${unclassified}].` +
+        ' See the README of the aws-lambda module to learn more about this and to fix it.'
+    );
   }
-  const notLocked = Object.entries(versionProps).filter(([_, v]) => !v).map(([k, _]) => k);
-  notLocked.forEach(p => delete properties[p]);
+  const notLocked = Object.entries(versionProps)
+    .filter(([_, v]) => !v)
+    .map(([k, _]) => k);
+  notLocked.forEach((p) => delete properties[p]);
 
   const ret: { [key: string]: any } = {};
-  Object.entries(properties).filter(([k, _]) => versionProps[k]).forEach(([k, v]) => ret[k] = v);
+  Object.entries(properties)
+    .filter(([k, _]) => versionProps[k])
+    .forEach(([k, v]) => (ret[k] = v));
   return ret;
 }
 
 function calculateLayersHash(layers: ILayerVersion[]): string {
-  const layerConfig: {[key: string]: any } = {};
+  const layerConfig: { [key: string]: any } = {};
   for (const layer of layers) {
     const stack = Stack.of(layer);
     const layerResource = layer.node.defaultChild as CfnResource;
@@ -110,7 +119,7 @@ function calculateLayersHash(layers: ILayerVersion[]): string {
       } else {
         layerConfig[layer.node.id] = {
           arn: stack.resolve(layer.layerVersionArn),
-          runtimes: layer.compatibleRuntimes?.map(r => r.name),
+          runtimes: layer.compatibleRuntimes?.map((r) => r.name),
         };
       }
       continue;
@@ -135,8 +144,7 @@ function calculateLayersHash(layers: ILayerVersion[]): string {
  * we explicitly rely on some objects NOT being sorted.
  */
 class PropertySort {
-  constructor(private readonly knownKeysOrder: string[]) {
-  }
+  constructor(private readonly knownKeysOrder: string[]) {}
 
   public sortObject(properties: any): any {
     const ret: any = {};
@@ -180,20 +188,43 @@ class PropertySort {
 function sortFunctionProperties(properties: any) {
   return new PropertySort([
     // <= 2.87 explicitly fixed order
-    'Code', 'Handler', 'Role', 'Runtime',
+    'Code',
+    'Handler',
+    'Role',
+    'Runtime',
     // <= 2.87 implicitly fixed order
-    'Architectures', 'CodeSigningConfigArn', 'DeadLetterConfig', 'Description', 'Environment',
-    'EphemeralStorage', 'FileSystemConfigs', 'FunctionName', 'ImageConfig', 'KmsKeyArn', 'Layers',
-    'MemorySize', 'PackageType', 'ReservedConcurrentExecutions', 'RuntimeManagementConfig', 'SnapStart',
-    'Tags', 'Timeout', 'TracingConfig', 'VpcConfig',
+    'Architectures',
+    'CodeSigningConfigArn',
+    'DeadLetterConfig',
+    'Description',
+    'Environment',
+    'EphemeralStorage',
+    'FileSystemConfigs',
+    'FunctionName',
+    'ImageConfig',
+    'KmsKeyArn',
+    'Layers',
+    'MemorySize',
+    'PackageType',
+    'ReservedConcurrentExecutions',
+    'RuntimeManagementConfig',
+    'SnapStart',
+    'Tags',
+    'Timeout',
+    'TracingConfig',
+    'VpcConfig',
   ]).sortObject(properties);
 }
 
 function sortLayerVersionProperties(properties: any) {
   return new PropertySort([
     // <=2.87.0 implicit sort order
-    'Content', 'CompatibleArchitectures', 'CompatibleRuntimes', 'Description',
-    'LayerName', 'LicenseInfo',
+    'Content',
+    'CompatibleArchitectures',
+    'CompatibleRuntimes',
+    'Description',
+    'LayerName',
+    'LicenseInfo',
   ]).sortObject(properties);
 }
 
@@ -202,7 +233,9 @@ function resolveSingleResourceProperties(stack: Stack, res: CfnResource): any {
   const resources = template.Resources;
   const resourceKeys = Object.keys(resources);
   if (resourceKeys.length !== 1) {
-    throw new Error(`Expected one rendered CloudFormation resource but found ${resourceKeys.length}`);
+    throw new Error(
+      `Expected one rendered CloudFormation resource but found ${resourceKeys.length}`
+    );
   }
   const logicalId = resourceKeys[0];
   return { properties: resources[logicalId].Properties, template, logicalId };

@@ -2,7 +2,11 @@ import { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
 
 import { CfnResource } from '../../core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
+import {
+  AwsCustomResource,
+  AwsCustomResourcePolicy,
+  PhysicalResourceId,
+} from '../../custom-resources';
 import { EndpointGroup } from '../lib';
 
 /**
@@ -20,7 +24,6 @@ export class AcceleratorSecurityGroupPeer implements ec2.IPeer {
    * to other resources created by CDK.
    */
   public static fromVpc(scope: Construct, id: string, vpc: ec2.IVpc, endpointGroup: EndpointGroup) {
-
     // The security group name is always 'GlobalAccelerator'
     const globalAcceleratorSGName = 'GlobalAccelerator';
 
@@ -36,15 +39,11 @@ export class AcceleratorSecurityGroupPeer implements ec2.IPeer {
           Filters: [
             {
               Name: 'group-name',
-              Values: [
-                globalAcceleratorSGName,
-              ],
+              Values: [globalAcceleratorSGName],
             },
             {
               Name: 'vpc-id',
-              Values: [
-                vpc.vpcId,
-              ],
+              Values: [vpc.vpcId],
             },
           ],
         },
@@ -62,18 +61,21 @@ export class AcceleratorSecurityGroupPeer implements ec2.IPeer {
     // We add a dependency on the endpoint group, guaranteeing that CloudFormation won't
     // try and look up the SG before AGA creates it. The SG is created when a VPC resource
     // is associated with an AGA
-    lookupAcceleratorSGCustomResource.node.addDependency(endpointGroup.node.defaultChild as CfnResource);
+    lookupAcceleratorSGCustomResource.node.addDependency(
+      endpointGroup.node.defaultChild as CfnResource
+    );
 
     // Look up the security group ID
-    return new AcceleratorSecurityGroupPeer(lookupAcceleratorSGCustomResource.getResponseField(ec2ResponseSGIdField));
+    return new AcceleratorSecurityGroupPeer(
+      lookupAcceleratorSGCustomResource.getResponseField(ec2ResponseSGIdField)
+    );
   }
 
   public readonly canInlineRule = false;
   public readonly connections: ec2.Connections = new ec2.Connections({ peer: this });
   public readonly uniqueId: string = 'GlobalAcceleratorGroup';
 
-  private constructor(private readonly securityGroupId: string) {
-  }
+  private constructor(private readonly securityGroupId: string) {}
 
   public toIngressRuleConfig(): any {
     return { sourceSecurityGroupId: this.securityGroupId };

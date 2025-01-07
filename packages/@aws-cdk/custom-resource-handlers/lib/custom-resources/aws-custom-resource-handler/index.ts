@@ -12,7 +12,10 @@ import { loadAwsSdk } from './load-sdk';
 import { decodeCall, decodeSpecialValues, respond, getCredentials, formatData } from './utils';
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context): Promise<void> {
+export async function handler(
+  event: AWSLambda.CloudFormationCustomResourceEvent,
+  context: AWSLambda.Context
+): Promise<void> {
   try {
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
     event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
@@ -23,14 +26,17 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     let physicalResourceId: string;
     switch (event.RequestType) {
       case 'Create':
-        physicalResourceId = event.ResourceProperties.Create?.physicalResourceId?.id ??
-                             event.ResourceProperties.Update?.physicalResourceId?.id ??
-                             event.ResourceProperties.Delete?.physicalResourceId?.id ??
-                             event.LogicalResourceId;
+        physicalResourceId =
+          event.ResourceProperties.Create?.physicalResourceId?.id ??
+          event.ResourceProperties.Update?.physicalResourceId?.id ??
+          event.ResourceProperties.Delete?.physicalResourceId?.id ??
+          event.LogicalResourceId;
         break;
       case 'Update':
       case 'Delete':
-        physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
+        physicalResourceId =
+          event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ??
+          event.PhysicalResourceId;
         break;
     }
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
@@ -40,7 +46,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);
 
-      let awsSdk = await loadAwsSdk(apiCall.v3PackageName, event.ResourceProperties.InstallLatestAwsSdk);
+      let awsSdk = await loadAwsSdk(
+        apiCall.v3PackageName,
+        event.ResourceProperties.InstallLatestAwsSdk
+      );
 
       console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
 
@@ -69,7 +78,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       } catch (e: any) {
         // empirecal evidence show e.name is not always set
         const exceptionName = e.name ?? e.constructor.name;
-        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(exceptionName)) {
+        if (
+          !call.ignoreErrorCodesMatching ||
+          !new RegExp(call.ignoreErrorCodesMatching).test(exceptionName)
+        ) {
           throw e;
         }
       }

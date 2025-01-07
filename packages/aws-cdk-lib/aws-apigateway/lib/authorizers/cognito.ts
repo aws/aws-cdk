@@ -78,7 +78,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
       name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'COGNITO_USER_POOLS',
-      providerArns: props.cognitoUserPools.map(userPool => userPool.userPoolArn),
+      providerArns: props.cognitoUserPools.map((userPool) => userPool.userPoolArn),
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySource || IdentitySource.header('Authorization'),
     };
@@ -107,7 +107,9 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
 
     this.restApiId = restApi.restApiId;
 
-    const addToLogicalId = FeatureFlags.of(this).isEnabled(APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID);
+    const addToLogicalId = FeatureFlags.of(this).isEnabled(
+      APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID
+    );
 
     const deployment = restApi.latestDeployment;
     if (deployment && addToLogicalId) {

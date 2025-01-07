@@ -6,9 +6,13 @@ import { Artifact } from '../artifact';
  * Validation function that checks if the number of artifacts is within the given bounds
  */
 export function validateArtifactBounds(
-  type: string, artifacts: Artifact[],
-  min: number, max: number,
-  category: string, provider: string): string[] {
+  type: string,
+  artifacts: Artifact[],
+  min: number,
+  max: number,
+  category: string,
+  provider: string
+): string[] {
   const ret: string[] = [];
 
   if (artifacts.length < min) {
@@ -26,10 +30,19 @@ export function validateArtifactBounds(
  * Validation function that guarantees that an action is or is not a source action. This is useful because Source actions can only be
  * in the first stage of a pipeline, and the first stage can only contain source actions.
  */
-export function validateSourceAction(mustBeSource: boolean, category: string, actionName: string, stageName: string): string[] {
+export function validateSourceAction(
+  mustBeSource: boolean,
+  category: string,
+  actionName: string,
+  stageName: string
+): string[] {
   if (mustBeSource !== (category === ActionCategory.SOURCE)) {
-    return [`Action ${actionName} in stage ${stageName}: ` + (mustBeSource ? 'first stage may only contain Source actions'
-      : 'Source actions may only occur in first stage')];
+    return [
+      `Action ${actionName} in stage ${stageName}: ` +
+        (mustBeSource
+          ? 'first stage may only contain Source actions'
+          : 'Source actions may only occur in first stage'),
+    ];
   }
   return [];
 }
@@ -69,6 +82,8 @@ function validateAgainstRegex(regex: RegExp, thing: string, name: string | undef
   }
 
   if (name !== undefined && !regex.test(name)) {
-    throw new Error(`${thing} name must match regular expression: ${regex.toString()}, got '${name}'`);
+    throw new Error(
+      `${thing} name must match regular expression: ${regex.toString()}, got '${name}'`
+    );
   }
 }

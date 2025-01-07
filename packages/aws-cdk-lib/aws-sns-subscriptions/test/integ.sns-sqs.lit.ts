@@ -17,9 +17,11 @@ class SnsToSqs extends cdk.Stack {
       encryptionMasterKey: new kms.Key(this, 'EncryptionMasterKey'),
     });
 
-    topic.addSubscription(new subs.SqsSubscription(queue, {
-      deadLetterQueue: new sqs.Queue(this, 'DeadLetterQueue'),
-    }));
+    topic.addSubscription(
+      new subs.SqsSubscription(queue, {
+        deadLetterQueue: new sqs.Queue(this, 'DeadLetterQueue'),
+      })
+    );
     /// !hide
   }
 }

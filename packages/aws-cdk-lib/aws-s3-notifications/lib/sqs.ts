@@ -8,19 +8,20 @@ import { Annotations } from '../../core';
  * Use an SQS queue as a bucket notification destination
  */
 export class SqsDestination implements s3.IBucketNotificationDestination {
-  constructor(private readonly queue: sqs.IQueue) {
-  }
+  constructor(private readonly queue: sqs.IQueue) {}
 
   /**
    * Allows using SQS queues as destinations for bucket notifications.
    * Use `bucket.onEvent(event, queue)` to subscribe.
    */
   public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
-    this.queue.grantSendMessages(new iam.ServicePrincipal('s3.amazonaws.com', {
-      conditions: {
-        ArnLike: { 'aws:SourceArn': bucket.bucketArn },
-      },
-    }));
+    this.queue.grantSendMessages(
+      new iam.ServicePrincipal('s3.amazonaws.com', {
+        conditions: {
+          ArnLike: { 'aws:SourceArn': bucket.bucketArn },
+        },
+      })
+    );
 
     // if this queue is encrypted, we need to allow S3 to read messages since that's how
     // it verifies that the notification destination configuration is valid.
@@ -30,9 +31,15 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
         actions: ['kms:GenerateDataKey*', 'kms:Decrypt'],
         resources: ['*'],
       });
-      const addResult = this.queue.encryptionMasterKey.addToResourcePolicy(statement, /* allowNoOp */ true);
+      const addResult = this.queue.encryptionMasterKey.addToResourcePolicy(
+        statement,
+        /* allowNoOp */ true
+      );
       if (!addResult.statementAdded) {
-        Annotations.of(this.queue.encryptionMasterKey).addWarningV2('@aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded', `Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`);
+        Annotations.of(this.queue.encryptionMasterKey).addWarningV2(
+          '@aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded',
+          `Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`
+        );
       }
     }
 
@@ -42,5 +49,4 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
       dependencies: [this.queue],
     };
   }
-
 }

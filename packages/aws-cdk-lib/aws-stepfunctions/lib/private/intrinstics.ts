@@ -31,8 +31,7 @@ export interface FnCallExpression {
 export class IntrinsicParser {
   private i: number = 0;
 
-  constructor(private readonly expression: string) {
-  }
+  constructor(private readonly expression: string) {}
 
   public parseTopLevelIntrinsic(): TopLevelIntrinsic {
     this.ws();
@@ -89,7 +88,7 @@ export class IntrinsicParser {
   private parsePath(): PathExpression {
     const pathString = new Array<string>();
     if (this.char() !== '$') {
-      this.raiseError('expected \'$\'');
+      this.raiseError("expected '$'");
     }
     pathString.push(this.consume());
 
@@ -252,7 +251,9 @@ export class IntrinsicParser {
   }
 
   private raiseError(message: string): never {
-    throw new Error(`Invalid JSONPath expression: ${message} at index ${this.i} in ${JSON.stringify(this.expression)}`);
+    throw new Error(
+      `Invalid JSONPath expression: ${message} at index ${this.i} in ${JSON.stringify(this.expression)}`
+    );
   }
 }
 

@@ -54,11 +54,14 @@ export interface PublishToTopicProps {
  * @deprecated Use `SnsPublish`
  */
 export class PublishToTopic implements sfn.IStepFunctionsTask {
-
   private readonly integrationPattern: sfn.ServiceIntegrationPattern;
 
-  constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
-    this.integrationPattern = props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
+  constructor(
+    private readonly topic: sns.ITopic,
+    private readonly props: PublishToTopicProps
+  ) {
+    this.integrationPattern =
+      props.integrationPattern || sfn.ServiceIntegrationPattern.FIRE_AND_FORGET;
 
     const supportedPatterns = [
       sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
@@ -66,12 +69,16 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new Error(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SNS.`);
+      throw new Error(
+        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SNS.`
+      );
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new Error('Task Token is missing in message (pass JsonPath.taskToken somewhere in message)');
+        throw new Error(
+          'Task Token is missing in message (pass JsonPath.taskToken somewhere in message)'
+        );
       }
     }
   }
@@ -79,10 +86,12 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: getResourceArn('sns', 'publish', this.integrationPattern),
-      policyStatements: [new iam.PolicyStatement({
-        actions: ['sns:Publish'],
-        resources: [this.topic.topicArn],
-      })],
+      policyStatements: [
+        new iam.PolicyStatement({
+          actions: ['sns:Publish'],
+          resources: [this.topic.topicArn],
+        }),
+      ],
       parameters: {
         TopicArn: this.topic.topicArn,
         Message: this.props.message.value,

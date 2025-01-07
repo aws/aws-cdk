@@ -16,7 +16,8 @@ import { Token } from '../token';
 export class MetadataResource extends Construct {
   constructor(scope: Stack, id: string) {
     super(scope, id);
-    const metadataServiceExists = Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
+    const metadataServiceExists =
+      Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
     if (metadataServiceExists) {
       const resource = new CfnResource(this, 'Default', {
         type: 'AWS::CDK::Metadata',
@@ -41,13 +42,15 @@ export class MetadataResource extends Construct {
 }
 
 function makeCdkMetadataAvailableCondition() {
-  return Fn.conditionOr(...RegionInfo.regions
-    .filter(ri => ri.cdkMetadataResourceAvailable)
-    .map(ri => Fn.conditionEquals(Aws.REGION, ri.name)));
+  return Fn.conditionOr(
+    ...RegionInfo.regions
+      .filter((ri) => ri.cdkMetadataResourceAvailable)
+      .map((ri) => Fn.conditionEquals(Aws.REGION, ri.name))
+  );
 }
 
 /** Convenience type for arbitrarily-nested map */
-class Trie extends Map<string, Trie> { }
+class Trie extends Map<string, Trie> {}
 
 /**
  * Formats the analytics string which has 3 or 4 sections separated by colons (:)
@@ -78,7 +81,7 @@ class Trie extends Map<string, Trie> { }
  */
 export function formatAnalytics(infos: ConstructInfo[]) {
   const trie = new Trie();
-  infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie));
+  infos.forEach((info) => insertFqnInTrie(`${info.version}!${info.fqn}`, trie));
 
   const plaintextEncodedConstructs = prefixEncodeTrie(trie);
   const compressedConstructsBuffer = zlib.gzipSync(Buffer.from(plaintextEncodedConstructs));

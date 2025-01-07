@@ -11,15 +11,15 @@ export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
   const stack = Stack.of(construct);
   obj = stack.resolve(obj);
 
-  if (typeof(obj) !== 'object') {
+  if (typeof obj !== 'object') {
     return obj;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(x => capitalizePropertyNames(construct, x));
+    return obj.map((x) => capitalizePropertyNames(construct, x));
   }
 
-  const newObj: any = { };
+  const newObj: any = {};
   for (const key of Object.keys(obj)) {
     const value = obj[key];
 
@@ -35,7 +35,7 @@ export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
  * Turns empty arrays/objects to undefined (after evaluating tokens).
  */
 export function ignoreEmpty(obj: any): any {
-  return new PostResolveToken(obj, o => {
+  return new PostResolveToken(obj, (o) => {
     // undefined/null
     if (o == null) {
       return o;
@@ -45,7 +45,7 @@ export function ignoreEmpty(obj: any): any {
       return undefined;
     }
 
-    if (typeof(o) === 'object' && Object.keys(o).length === 0) {
+    if (typeof o === 'object' && Object.keys(o).length === 0) {
       return undefined;
     }
 
@@ -58,11 +58,11 @@ export function ignoreEmpty(obj: any): any {
  */
 export function filterUndefined(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.filter(x => x != null).map(x => filterUndefined(x));
+    return obj.filter((x) => x != null).map((x) => filterUndefined(x));
   }
 
-  if (typeof(obj) === 'object') {
-    const ret: any = { };
+  if (typeof obj === 'object') {
+    const ret: any = {};
     for (const [key, value] of Object.entries(obj)) {
       if (value == null) {
         continue;
@@ -79,7 +79,10 @@ export function filterUndefined(obj: any): any {
  * A Token that applies a function AFTER resolve resolution
  */
 export class PostResolveToken extends Intrinsic implements IPostProcessor {
-  constructor(value: any, private readonly processor: (x: any, context: IResolveContext) => any) {
+  constructor(
+    value: any,
+    private readonly processor: (x: any, context: IResolveContext) => any
+  ) {
     super(value, { stackTrace: false });
   }
 
@@ -122,5 +125,5 @@ export function findLastCommonElement<T>(path1: T[], path2: T[]): T | undefined 
 }
 
 export function undefinedIfAllValuesAreEmpty<A extends object>(object: A): A | undefined {
-  return Object.values(object).some(v => v !== undefined) ? object : undefined;
+  return Object.values(object).some((v) => v !== undefined) ? object : undefined;
 }

@@ -57,10 +57,7 @@ const prodStage = {
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
   crossAccountKeys: true,
-  stages: [
-    sourceStage,
-    prodStage,
-  ],
+  stages: [sourceStage, prodStage],
 });
 /// !hide
 

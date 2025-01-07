@@ -1,6 +1,17 @@
 import { Construct } from 'constructs';
-import { DnsValidatedCertificate, ICertificate, Certificate, CertificateValidation } from '../../aws-certificatemanager';
-import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '../../aws-cloudfront';
+import {
+  DnsValidatedCertificate,
+  ICertificate,
+  Certificate,
+  CertificateValidation,
+} from '../../aws-certificatemanager';
+import {
+  CloudFrontWebDistribution,
+  OriginProtocolPolicy,
+  PriceClass,
+  ViewerCertificate,
+  ViewerProtocolPolicy,
+} from '../../aws-cloudfront';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '../../aws-route53';
 import { CloudFrontTarget } from '../../aws-route53-targets';
 import { BlockPublicAccess, Bucket, RedirectProtocol } from '../../aws-s3';
@@ -59,9 +70,14 @@ export class HttpsRedirect extends Construct {
     const domainNames = props.recordNames ?? [props.zone.zoneName];
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+      const certificateRegion = Stack.of(this).splitArn(
+        props.certificate.certificateArn,
+        ArnFormat.SLASH_RESOURCE_NAME
+      ).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new Error(`The certificate must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
+        throw new Error(
+          `The certificate must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`
+        );
       }
     }
     const redirectCert = props.certificate ?? this.createCertificate(domainNames, props.zone);
@@ -76,13 +92,15 @@ export class HttpsRedirect extends Construct {
     });
     const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
       defaultRootObject: '',
-      originConfigs: [{
-        behaviors: [{ isDefaultBehavior: true }],
-        customOriginSource: {
-          domainName: redirectBucket.bucketWebsiteDomainName,
-          originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
+      originConfigs: [
+        {
+          behaviors: [{ isDefaultBehavior: true }],
+          customOriginSource: {
+            domainName: redirectBucket.bucketWebsiteDomainName,
+            originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
+          },
         },
-      }],
+      ],
       viewerCertificate: ViewerCertificate.fromAcmCertificate(redirectCert, {
         aliases: domainNames,
       }),
@@ -126,14 +144,19 @@ export class HttpsRedirect extends Construct {
       throw new Error(`Stack ${stack.stackId} must be created in the scope of an App or Stage`);
     }
     if (Token.isUnresolved(stack.region)) {
-      throw new Error(`When ${ROUTE53_PATTERNS_USE_CERTIFICATE} is enabled, a region must be defined on the Stack`);
+      throw new Error(
+        `When ${ROUTE53_PATTERNS_USE_CERTIFICATE} is enabled, a region must be defined on the Stack`
+      );
     }
     if (stack.region !== 'us-east-1') {
       const stackId = `certificate-redirect-stack-${stack.node.addr}`;
       const certStack = parent.node.tryFindChild(stackId) as Stack;
-      return certStack ?? new Stack(parent, stackId, {
-        env: { region: 'us-east-1', account: stack.account },
-      });
+      return (
+        certStack ??
+        new Stack(parent, stackId, {
+          env: { region: 'us-east-1', account: stack.account },
+        })
+      );
     }
     return this;
   }
@@ -153,7 +176,10 @@ export class HttpsRedirect extends Construct {
     if (useCertificate) {
       // this preserves backwards compatibility. Previously the certificate was always created in `this` scope
       // so we need to keep the name the same
-      const id = (this.certificateScope() === this) ? 'RedirectCertificate' : 'RedirectCertificate'+this.node.addr;
+      const id =
+        this.certificateScope() === this
+          ? 'RedirectCertificate'
+          : 'RedirectCertificate' + this.node.addr;
       return new Certificate(this.certificateScope(), id, {
         domainName: domainNames[0],
         subjectAlternativeNames: domainNames,

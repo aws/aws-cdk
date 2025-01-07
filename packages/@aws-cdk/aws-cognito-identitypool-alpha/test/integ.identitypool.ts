@@ -1,4 +1,10 @@
-import { UserPool, UserPoolIdentityProviderGoogle, UserPoolIdentityProviderAmazon, ProviderAttribute, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import {
+  UserPool,
+  UserPoolIdentityProviderGoogle,
+  UserPoolIdentityProviderAmazon,
+  ProviderAttribute,
+  UserPoolClient,
+} from 'aws-cdk-lib/aws-cognito';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { App, SecretValue, Stack } from 'aws-cdk-lib';
 import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
@@ -38,10 +44,21 @@ new UserPoolIdentityProviderAmazon(stack, 'OtherPoolProviderAmazon', {
 const client = userPool.addClient('testClient');
 const userPoolToImport = new UserPool(stack, 'UserPoolToImport');
 const clientToImport = userPoolToImport.addClient('clientToImport');
-const importedUserPool = UserPool.fromUserPoolArn(stack, 'ImportedUserPool', userPoolToImport.userPoolArn);
-const importedUserPoolClient = UserPoolClient.fromUserPoolClientId(stack, 'ImportedUserPoolClient', clientToImport.userPoolClientId);
+const importedUserPool = UserPool.fromUserPoolArn(
+  stack,
+  'ImportedUserPool',
+  userPoolToImport.userPoolArn
+);
+const importedUserPoolClient = UserPoolClient.fromUserPoolClientId(
+  stack,
+  'ImportedUserPoolClient',
+  clientToImport.userPoolClientId
+);
 const provider = new UserPoolAuthenticationProvider({ userPool, userPoolClient: client });
-const importedProvider = new UserPoolAuthenticationProvider({ userPool: importedUserPool, userPoolClient: importedUserPoolClient });
+const importedProvider = new UserPoolAuthenticationProvider({
+  userPool: importedUserPool,
+  userPoolClient: importedUserPoolClient,
+});
 const idPool = new IdentityPool(stack, 'identitypool', {
   authenticationProviders: {
     userPools: [provider, importedProvider],
@@ -63,15 +80,19 @@ const idPool = new IdentityPool(stack, 'identitypool', {
   allowClassicFlow: true,
   identityPoolName: 'my-id-pool',
 });
-idPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
-  effect: Effect.ALLOW,
-  actions: ['dynamodb:*'],
-  resources: ['*'],
-}));
-idPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
-  effect: Effect.ALLOW,
-  actions: ['dynamodb:Get*'],
-  resources: ['*'],
-}));
+idPool.authenticatedRole.addToPrincipalPolicy(
+  new PolicyStatement({
+    effect: Effect.ALLOW,
+    actions: ['dynamodb:*'],
+    resources: ['*'],
+  })
+);
+idPool.unauthenticatedRole.addToPrincipalPolicy(
+  new PolicyStatement({
+    effect: Effect.ALLOW,
+    actions: ['dynamodb:Get*'],
+    resources: ['*'],
+  })
+);
 idPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({ userPool: otherPool }));
 app.synth();

@@ -20,5 +20,7 @@ export function hashcode(s: string): string {
  * @param attr2 The second attribute to compare
  */
 export function sameEnv(attr1: string, attr2: string): boolean {
-  return [cdk.TokenComparison.SAME, cdk.TokenComparison.BOTH_UNRESOLVED].includes(cdk.Token.compareStrings(attr1, attr2));
+  return [cdk.TokenComparison.SAME, cdk.TokenComparison.BOTH_UNRESOLVED].includes(
+    cdk.Token.compareStrings(attr1, attr2)
+  );
 }

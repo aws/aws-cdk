@@ -27,15 +27,20 @@ export class FakeSourceAction extends codepipeline.Action {
       category: codepipeline.ActionCategory.SOURCE,
       provider: 'Fake',
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 4 },
-      outputs: [props.output, ...props.extraOutputs || []],
+      outputs: [props.output, ...(props.extraOutputs || [])],
     };
     this.variables = {
-      firstVariable: Lazy.string({ produce: () => `#{${this.actionProperties.variablesNamespace}.FirstVariable}` }),
+      firstVariable: Lazy.string({
+        produce: () => `#{${this.actionProperties.variablesNamespace}.FirstVariable}`,
+      }),
     };
   }
 
-  public bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  public bound(
+    _scope: Construct,
+    _stage: codepipeline.IStage,
+    _options: codepipeline.ActionBindOptions
+  ): codepipeline.ActionConfig {
     return {};
   }
 }

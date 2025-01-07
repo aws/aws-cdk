@@ -10,7 +10,10 @@ async function main() {
   // as if it was an installed module.
   await withTemporaryDirectory(async (tmpDir) => {
     await fs.mkdirp(path.join(tmpDir, 'node_modules'));
-    await fs.symlink(path.resolve(__dirname, '..'), path.join(tmpDir, 'node_modules', 'aws-cdk-lib'));
+    await fs.symlink(
+      path.resolve(__dirname, '..'),
+      path.join(tmpDir, 'node_modules', 'aws-cdk-lib')
+    );
 
     assertImportSucceeds('aws-cdk-lib');
     assertImportFails('aws-cdk-lib/LICENSE', 'ERR_PACKAGE_PATH_NOT_EXPORTED');
@@ -31,7 +34,9 @@ async function main() {
       } catch (e: any) {
         if (e.code !== code) {
           // eslint-disable-next-line no-console
-          console.error(`Import of '${name}' should have produced error ${code}, but got ${(e as any).code}.`);
+          console.error(
+            `Import of '${name}' should have produced error ${code}, but got ${(e as any).code}.`
+          );
           process.exitCode = 1;
         }
       }

@@ -1,11 +1,5 @@
 import { Construct } from 'constructs';
-import {
-  Arn,
-  CustomResource,
-  IResource,
-  Resource,
-  Token,
-} from '../../core';
+import { Arn, CustomResource, IResource, Resource, Token } from '../../core';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
 
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
@@ -106,7 +100,11 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    * @param id ID of the construct
    * @param openIdConnectProviderArn the ARN to import
    */
-  public static fromOpenIdConnectProviderArn(scope: Construct, id: string, openIdConnectProviderArn: string): IOpenIdConnectProvider {
+  public static fromOpenIdConnectProviderArn(
+    scope: Construct,
+    id: string,
+    openIdConnectProviderArn: string
+  ): IOpenIdConnectProvider {
     const resourceName = Arn.extractResourceName(openIdConnectProviderArn, 'oidc-provider');
 
     class Import extends Resource implements IOpenIdConnectProvider {
@@ -155,7 +153,10 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     });
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
-    this.openIdConnectProviderIssuer = Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
+    this.openIdConnectProviderIssuer = Arn.extractResourceName(
+      this.openIdConnectProviderArn,
+      'oidc-provider'
+    );
     this.openIdConnectProviderthumbprints = Token.asString(resource.getAtt('Thumbprints'));
   }
 
