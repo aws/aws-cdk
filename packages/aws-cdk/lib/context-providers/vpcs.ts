@@ -1,16 +1,14 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
-import { SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
+import type { VpcContextQuery } from '@aws-cdk/cloud-assembly-schema';
+import { type VpcContextResponse, type VpcSubnetGroup, VpcSubnetGroupType } from '@aws-cdk/cx-api';
+import type { Filter, RouteTable, Tag, Vpc } from '@aws-sdk/client-ec2';
+import type { IEC2Client } from '../api';
+import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
-
 export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
+  constructor(private readonly aws: SdkProvider) {}
 
-  constructor(private readonly aws: SdkProvider) {
-  }
-
-  public async getValue(args: cxschema.VpcContextQuery) {
+  public async getValue(args: VpcContextQuery) {
     const ec2 = (await initContextProviderSdk(this.aws, args)).ec2();
 
     const vpcId = await this.findVpc(ec2, args);
@@ -18,12 +16,12 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     return this.readVpcProps(ec2, vpcId, args);
   }
 
-  private async findVpc(ec2: AWS.EC2, args: cxschema.VpcContextQuery): Promise<AWS.EC2.Vpc> {
+  private async findVpc(ec2: IEC2Client, args: VpcContextQuery): Promise<Vpc> {
     // Build request filter (map { Name -> Value } to list of [{ Name, Values }])
-    const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
+    const filters: Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
 
     debug(`Listing VPCs in ${args.account}:${args.region}`);
-    const response = await ec2.describeVpcs({ Filters: filters }).promise();
+    const response = await ec2.describeVpcs({ Filters: filters });
 
     const vpcs = response.Vpcs || [];
     if (vpcs.length === 0) {
@@ -36,17 +34,17 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     return vpcs[0];
   }
 
-  private async readVpcProps(ec2: AWS.EC2, vpc: AWS.EC2.Vpc, args: cxschema.VpcContextQuery): Promise<cxapi.VpcContextResponse> {
+  private async readVpcProps(ec2: IEC2Client, vpc: Vpc, args: VpcContextQuery): Promise<VpcContextResponse> {
     const vpcId = vpc.VpcId!;
 
     debug(`Describing VPC ${vpcId}`);
 
     const filters = { Filters: [{ Name: 'vpc-id', Values: [vpcId] }] };
 
-    const subnetsResponse = await ec2.describeSubnets(filters).promise();
+    const subnetsResponse = await ec2.describeSubnets(filters);
     const listedSubnets = subnetsResponse.Subnets || [];
 
-    const routeTablesResponse = await ec2.describeRouteTables(filters).promise();
+    const routeTablesResponse = await ec2.describeRouteTables(filters);
     const routeTables = new RouteTables(routeTablesResponse.RouteTables || []);
 
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
@@ -61,31 +59,47 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     // - Name tag, we tag subnets with their subnet group name. In absence of this tag,
     //   we use the type as the name.
 
-    const azs = Array.from(new Set<string>(listedSubnets.map(s => s.AvailabilityZone!)));
+    const azs = Array.from(new Set<string>(listedSubnets.map((s) => s.AvailabilityZone!)));
     azs.sort();
 
-    const subnets: Subnet[] = listedSubnets.map(subnet => {
+    const subnets: Subnet[] = listedSubnets.map((subnet) => {
       let type = getTag('aws-cdk:subnet-type', subnet.Tags);
-      if (type === undefined && subnet.MapPublicIpOnLaunch) { type = SubnetType.Public; }
-      if (type === undefined && routeTables.hasRouteToIgw(subnet.SubnetId)) { type = SubnetType.Public; }
-      if (type === undefined && routeTables.hasRouteToNatGateway(subnet.SubnetId)) { type = SubnetType.Private; }
-      if (type === undefined && routeTables.hasRouteToTransitGateway(subnet.SubnetId)) { type = SubnetType.Private; }
-      if (type === undefined) { type = SubnetType.Isolated; }
+      if (type === undefined && subnet.MapPublicIpOnLaunch) {
+        type = SubnetType.Public;
+      }
+      if (type === undefined && routeTables.hasRouteToIgw(subnet.SubnetId)) {
+        type = SubnetType.Public;
+      }
+      if (type === undefined && routeTables.hasRouteToNatGateway(subnet.SubnetId)) {
+        type = SubnetType.Private;
+      }
+      if (type === undefined && routeTables.hasRouteToTransitGateway(subnet.SubnetId)) {
+        type = SubnetType.Private;
+      }
+      if (type === undefined) {
+        type = SubnetType.Isolated;
+      }
 
       if (!isValidSubnetType(type)) {
         // eslint-disable-next-line max-len
-        throw new Error(`Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`);
+        throw new Error(
+          `Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`,
+        );
       }
 
       if (args.subnetGroupNameTag && !getTag(args.subnetGroupNameTag, subnet.Tags)) {
-        throw new Error(`Invalid subnetGroupNameTag: Subnet ${subnet.SubnetArn} does not have an associated tag with Key='${args.subnetGroupNameTag}'`);
+        throw new Error(
+          `Invalid subnetGroupNameTag: Subnet ${subnet.SubnetArn} does not have an associated tag with Key='${args.subnetGroupNameTag}'`,
+        );
       }
 
       const name = getTag(args.subnetGroupNameTag || 'aws-cdk:subnet-name', subnet.Tags) || type;
       const routeTableId = routeTables.routeTableIdForSubnetId(subnet.SubnetId);
 
       if (!routeTableId) {
-        throw new Error(`Subnet ${subnet.SubnetArn} does not have an associated route table (and there is no "main" table)`);
+        throw new Error(
+          `Subnet ${subnet.SubnetArn} does not have an associated route table (and there is no "main" table)`,
+        );
       }
 
       return {
@@ -99,7 +113,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     });
 
     let grouped: SubnetGroups;
-    let assymetricSubnetGroups: cxapi.VpcSubnetGroup[] | undefined;
+    let assymetricSubnetGroups: VpcSubnetGroup[] | undefined;
     if (args.returnAsymmetricSubnets) {
       grouped = { azs: [], groups: [] };
       assymetricSubnetGroups = groupAsymmetricSubnets(subnets);
@@ -109,42 +123,60 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     }
 
     // Find attached+available VPN gateway for this VPC
-    const vpnGatewayResponse = (args.returnVpnGateways ?? true)
-      ? await ec2.describeVpnGateways({
-        Filters: [
-          {
-            Name: 'attachment.vpc-id',
-            Values: [vpcId],
-          },
-          {
-            Name: 'attachment.state',
-            Values: ['attached'],
-          },
-          {
-            Name: 'state',
-            Values: ['available'],
-          },
-        ],
-      }).promise()
-      : undefined;
-    const vpnGatewayId = vpnGatewayResponse?.VpnGateways?.length === 1
-      ? vpnGatewayResponse.VpnGateways[0].VpnGatewayId
-      : undefined;
+    const vpnGatewayResponse =
+      (args.returnVpnGateways ?? true)
+        ? await ec2.describeVpnGateways({
+          Filters: [
+            {
+              Name: 'attachment.vpc-id',
+              Values: [vpcId],
+            },
+            {
+              Name: 'attachment.state',
+              Values: ['attached'],
+            },
+            {
+              Name: 'state',
+              Values: ['available'],
+            },
+          ],
+        })
+        : undefined;
+    const vpnGatewayId =
+      vpnGatewayResponse?.VpnGateways?.length === 1 ? vpnGatewayResponse.VpnGateways[0].VpnGatewayId : undefined;
 
     return {
       vpcId,
       vpcCidrBlock: vpc.CidrBlock!,
       ownerAccountId: vpc.OwnerId,
       availabilityZones: grouped.azs,
-      isolatedSubnetIds: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.subnets.map(s => s.subnetId))),
-      isolatedSubnetNames: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.name ? [group.name] : [])),
-      isolatedSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.subnets.map(s => s.routeTableId))),
-      privateSubnetIds: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.subnets.map(s => s.subnetId))),
-      privateSubnetNames: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.name ? [group.name] : [])),
-      privateSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.subnets.map(s => s.routeTableId))),
-      publicSubnetIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.subnetId))),
-      publicSubnetNames: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.name ? [group.name] : [])),
-      publicSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.routeTableId))),
+      isolatedSubnetIds: collapse(
+        flatMap(findGroups(SubnetType.Isolated, grouped), (group) => group.subnets.map((s) => s.subnetId)),
+      ),
+      isolatedSubnetNames: collapse(
+        flatMap(findGroups(SubnetType.Isolated, grouped), (group) => (group.name ? [group.name] : [])),
+      ),
+      isolatedSubnetRouteTableIds: collapse(
+        flatMap(findGroups(SubnetType.Isolated, grouped), (group) => group.subnets.map((s) => s.routeTableId)),
+      ),
+      privateSubnetIds: collapse(
+        flatMap(findGroups(SubnetType.Private, grouped), (group) => group.subnets.map((s) => s.subnetId)),
+      ),
+      privateSubnetNames: collapse(
+        flatMap(findGroups(SubnetType.Private, grouped), (group) => (group.name ? [group.name] : [])),
+      ),
+      privateSubnetRouteTableIds: collapse(
+        flatMap(findGroups(SubnetType.Private, grouped), (group) => group.subnets.map((s) => s.routeTableId)),
+      ),
+      publicSubnetIds: collapse(
+        flatMap(findGroups(SubnetType.Public, grouped), (group) => group.subnets.map((s) => s.subnetId)),
+      ),
+      publicSubnetNames: collapse(
+        flatMap(findGroups(SubnetType.Public, grouped), (group) => (group.name ? [group.name] : [])),
+      ),
+      publicSubnetRouteTableIds: collapse(
+        flatMap(findGroups(SubnetType.Public, grouped), (group) => group.subnets.map((s) => s.routeTableId)),
+      ),
       vpnGatewayId,
       subnetGroups: assymetricSubnetGroups,
     };
@@ -152,10 +184,12 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 }
 
 class RouteTables {
-  public readonly mainRouteTable?: AWS.EC2.RouteTable;
+  public readonly mainRouteTable?: RouteTable;
 
-  constructor(private readonly tables: AWS.EC2.RouteTable[]) {
-    this.mainRouteTable = this.tables.find(table => !!table.Associations && table.Associations.some(assoc => !!assoc.Main));
+  constructor(private readonly tables: RouteTable[]) {
+    this.mainRouteTable = this.tables.find(
+      (table) => !!table.Associations && table.Associations.some((assoc) => !!assoc.Main),
+    );
   }
 
   public routeTableIdForSubnetId(subnetId: string | undefined): string | undefined {
@@ -169,7 +203,11 @@ class RouteTables {
   public hasRouteToNatGateway(subnetId: string | undefined): boolean {
     const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
 
-    return !!table && !!table.Routes && table.Routes.some(route => !!route.NatGatewayId && route.DestinationCidrBlock === '0.0.0.0/0');
+    return (
+      !!table &&
+      !!table.Routes &&
+      table.Routes.some((route) => !!route.NatGatewayId && route.DestinationCidrBlock === '0.0.0.0/0')
+    );
   }
 
   /**
@@ -178,7 +216,11 @@ class RouteTables {
   public hasRouteToTransitGateway(subnetId: string | undefined): boolean {
     const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
 
-    return !!table && !!table.Routes && table.Routes.some(route => !!route.TransitGatewayId && route.DestinationCidrBlock === '0.0.0.0/0');
+    return (
+      !!table &&
+      !!table.Routes &&
+      table.Routes.some((route) => !!route.TransitGatewayId && route.DestinationCidrBlock === '0.0.0.0/0')
+    );
   }
 
   /**
@@ -187,18 +229,22 @@ class RouteTables {
   public hasRouteToIgw(subnetId: string | undefined): boolean {
     const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
 
-    return !!table && !!table.Routes && table.Routes.some(route => !!route.GatewayId && route.GatewayId.startsWith('igw-'));
+    return (
+      !!table && !!table.Routes && table.Routes.some((route) => !!route.GatewayId && route.GatewayId.startsWith('igw-'))
+    );
   }
 
   public tableForSubnet(subnetId: string | undefined) {
-    return this.tables.find(table => !!table.Associations && table.Associations.some(assoc => assoc.SubnetId === subnetId));
+    return this.tables.find(
+      (table) => !!table.Associations && table.Associations.some((assoc) => assoc.SubnetId === subnetId),
+    );
   }
 }
 
 /**
  * Return the value of a tag from a set of tags
  */
-function getTag(name: string, tags?: AWS.EC2.Tag[]): string | undefined {
+function getTag(name: string, tags?: Tag[]): string | undefined {
   for (const tag of tags || []) {
     if (tag.Key === name) {
       return tag.Value;
@@ -211,35 +257,6 @@ function getTag(name: string, tags?: AWS.EC2.Tag[]): string | undefined {
  * Group subnets of the same type together, and order by AZ
  */
 function groupSubnets(subnets: Subnet[]): SubnetGroups {
-  const grouping: {[key: string]: Subnet[]} = {};
-  for (const subnet of subnets) {
-    const key = [subnet.type, subnet.name].toString();
-    if (!(key in grouping)) { grouping[key] = []; }
-    grouping[key].push(subnet);
-  }
-
-  const groups = Object.values(grouping).map(sns => {
-    sns.sort((a: Subnet, b: Subnet) => a.az.localeCompare(b.az));
-    return {
-      type: sns[0].type,
-      name: sns[0].name,
-      subnets: sns,
-    };
-  });
-
-  const azs = groups[0].subnets.map(s => s.az);
-
-  for (const group of groups) {
-    const groupAZs = group.subnets.map(s => s.az);
-    if (!arraysEqual(groupAZs, azs)) {
-      throw new Error(`Not all subnets in VPC have the same AZs: ${groupAZs} vs ${azs}`);
-    }
-  }
-
-  return { azs, groups };
-}
-
-function groupAsymmetricSubnets(subnets: Subnet[]): cxapi.VpcSubnetGroup[] {
   const grouping: { [key: string]: Subnet[] } = {};
   for (const subnet of subnets) {
     const key = [subnet.type, subnet.name].toString();
@@ -249,13 +266,44 @@ function groupAsymmetricSubnets(subnets: Subnet[]): cxapi.VpcSubnetGroup[] {
     grouping[key].push(subnet);
   }
 
-  return Object.values(grouping).map(subnetArray => {
+  const groups = Object.values(grouping).map((sns) => {
+    sns.sort((a: Subnet, b: Subnet) => a.az.localeCompare(b.az));
+    return {
+      type: sns[0].type,
+      name: sns[0].name,
+      subnets: sns,
+    };
+  });
+
+  const azs = groups[0].subnets.map((s) => s.az);
+
+  for (const group of groups) {
+    const groupAZs = group.subnets.map((s) => s.az);
+    if (!arraysEqual(groupAZs, azs)) {
+      throw new Error(`Not all subnets in VPC have the same AZs: ${groupAZs} vs ${azs}`);
+    }
+  }
+
+  return { azs, groups };
+}
+
+function groupAsymmetricSubnets(subnets: Subnet[]): VpcSubnetGroup[] {
+  const grouping: { [key: string]: Subnet[] } = {};
+  for (const subnet of subnets) {
+    const key = [subnet.type, subnet.name].toString();
+    if (!(key in grouping)) {
+      grouping[key] = [];
+    }
+    grouping[key].push(subnet);
+  }
+
+  return Object.values(grouping).map((subnetArray) => {
     subnetArray.sort((subnet1: Subnet, subnet2: Subnet) => subnet1.az.localeCompare(subnet2.az));
 
     return {
       name: subnetArray[0].name,
       type: subnetTypeToVpcSubnetType(subnetArray[0].type),
-      subnets: subnetArray.map(subnet => ({
+      subnets: subnetArray.map((subnet) => ({
         subnetId: subnet.subnetId,
         cidr: subnet.cidr,
         availabilityZone: subnet.az,
@@ -265,11 +313,14 @@ function groupAsymmetricSubnets(subnets: Subnet[]): cxapi.VpcSubnetGroup[] {
   });
 }
 
-function subnetTypeToVpcSubnetType(type: SubnetType): cxapi.VpcSubnetGroupType {
+function subnetTypeToVpcSubnetType(type: SubnetType): VpcSubnetGroupType {
   switch (type) {
-    case SubnetType.Isolated: return cxapi.VpcSubnetGroupType.ISOLATED;
-    case SubnetType.Private: return cxapi.VpcSubnetGroupType.PRIVATE;
-    case SubnetType.Public: return cxapi.VpcSubnetGroupType.PUBLIC;
+    case SubnetType.Isolated:
+      return VpcSubnetGroupType.ISOLATED;
+    case SubnetType.Private:
+      return VpcSubnetGroupType.PRIVATE;
+    case SubnetType.Public:
+      return VpcSubnetGroupType.PUBLIC;
   }
 }
 
@@ -280,9 +331,7 @@ enum SubnetType {
 }
 
 function isValidSubnetType(val: string): val is SubnetType {
-  return val === SubnetType.Public
-    || val === SubnetType.Private
-    || val === SubnetType.Isolated;
+  return val === SubnetType.Public || val === SubnetType.Private || val === SubnetType.Isolated;
 }
 
 interface Subnet {
@@ -306,7 +355,9 @@ interface SubnetGroups {
 }
 
 function arraysEqual(as: string[], bs: string[]): boolean {
-  if (as.length !== bs.length) { return false; }
+  if (as.length !== bs.length) {
+    return false;
+  }
 
   for (let i = 0; i < as.length; i++) {
     if (as[i] !== bs[i]) {
@@ -318,7 +369,7 @@ function arraysEqual(as: string[], bs: string[]): boolean {
 }
 
 function findGroups(type: SubnetType, groups: SubnetGroups): SubnetGroup[] {
-  return groups.groups.filter(g => g.type === type);
+  return groups.groups.filter((g) => g.type === type);
 }
 
 function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {
@@ -330,7 +381,8 @@ function flatMap<T, U>(xs: T[], fn: (x: T) => U[]): U[] {
 }
 
 function collapse<T>(xs: T[]): T[] | undefined {
-  if (xs.length > 0) { return xs; }
+  if (xs.length > 0) {
+    return xs;
+  }
   return undefined;
-
 }

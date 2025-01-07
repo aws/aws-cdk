@@ -119,7 +119,7 @@ export function withSamIntegrationFixture(block: (context: SamIntegrationTestFix
 export class SamIntegrationTestFixture extends TestFixture {
   public async samShell(command: string[], filter?: string, action?: () => any, options: Omit<ShellOptions, 'cwd' | 'output'> = {}): Promise<ActionOutput> {
     return shellWithAction(command, filter, action, {
-      output: this.output,
+      outputs: [this.output],
       cwd: path.join(this.integTestDir, 'cdk.out').toString(),
       ...options,
     });
@@ -182,7 +182,12 @@ export async function shellWithAction(
     throw new Error('Use either env or modEnv but not both');
   }
 
-  options.output?.write(`💻 ${command.join(' ')}\n`);
+  const writeToOutputs = (x: string) => {
+    for (const output of options.outputs ?? []) {
+      output.write(x);
+    }
+  };
+  writeToOutputs(`💻 ${command.join(' ')}\n`);
 
   const env = options.env ?? (options.modEnv ? { ...process.env, ...options.modEnv } : undefined);
 
@@ -206,17 +211,17 @@ export async function shellWithAction(
       out.push(Buffer.from(chunk));
       if (!actionExecuted && typeof filter === 'string' && Buffer.concat(out).toString('utf-8').includes(filter) && typeof action === 'function') {
         actionExecuted = true;
-        options.output?.write('before executing action');
+        writeToOutputs('before executing action');
         action().then((output) => {
-          options.output?.write(`action output is ${output}`);
+          writeToOutputs(`action output is ${output}`);
           actionOutput = output;
           actionSucceeded = true;
         }).catch((error) => {
-          options.output?.write(`action error is ${error}`);
+          writeToOutputs(`action error is ${error}`);
           actionSucceeded = false;
           actionOutput = error;
         }).finally(() => {
-          options.output?.write('terminate sam sub process');
+          writeToOutputs('terminate sam sub process');
           killSubProcess(child, command.join(' '));
         });
       }
@@ -235,13 +240,13 @@ export async function shellWithAction(
     }
 
     child.stdout!.on('data', chunk => {
-      options.output?.write(chunk);
+      writeToOutputs(chunk);
       stdout.push(chunk);
       executeAction(chunk);
     });
 
     child.stderr!.on('data', chunk => {
-      options.output?.write(chunk);
+      writeToOutputs(chunk);
       if (options.captureStderr ?? true) {
         stderr.push(chunk);
       }

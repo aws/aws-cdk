@@ -1,6 +1,5 @@
 # Amazon FSx Construct Library
 
-
 [Amazon FSx](https://docs.aws.amazon.com/fsx/?id=docs_gateway) provides fully managed third-party file systems with the
 native compatibility and feature sets for workloads such as Microsoft Windows–based storage, high-performance computing,
 machine learning, and electronic design automation.
@@ -51,6 +50,30 @@ const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
   vpcSubnet: vpc.privateSubnets[0],
 });
 ```
+
+### File System Type Version
+
+You can set [the Lustre version for the file system](https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-fsx-filesystem.html#cfn-fsx-filesystem-filesystemtypeversion). To do this, use the `fileSystemTypeVersion` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.SCRATCH_2 },
+  storageCapacityGiB: 1200,
+  vpc,
+  vpcSubnet: vpc.privateSubnets[0],
+  fileSystemTypeVersion: fsx.FileSystemTypeVersion.V_2_15,
+});
+```
+
+**Note**: The `fileSystemTypeVersion` has a restrictions on the values that can be set based on the `deploymentType`.
+
+- `V_2_10` is supported by the Scratch and `PERSISTENT_1` deployment types.
+- `V_2_12` is supported by all Lustre deployment types.
+- `V_2_15` is supported by all Lustre deployment types and is recommended for all new file systems.
+
+**Note**: The default value of `fileSystemTypeVersion` is `V_2_10` except for `PERSISTENT_2` deployment type where the default value is `V_2_12`.
 
 ### Connecting
 

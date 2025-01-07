@@ -117,7 +117,7 @@ export class ContextProvider {
 
       // We'll store the extendedProps in the missingContextKey report
       // so that we can retrieve the dummyValue and ignoreError flag
-      // in the aws-cdk's ssm-context provider
+      // in the aws-cdk's ssm-context and kms key provider
       stack.reportMissingContextKey({
         key,
         provider: options.provider as cxschema.ContextProvider,

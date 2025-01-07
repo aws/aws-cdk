@@ -6,6 +6,13 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { LambdaInvoke } from '../lib';
 
+const LAMBDA_TAGGING_PERMISSION = new iam.PolicyStatement(
+  new iam.PolicyStatement({
+    actions: ['lambda:TagResource'],
+    resources: ['*'],
+  }),
+);
+
 /*
  * Stack verification steps:
  * The lambda function is implemented to add a tag:
@@ -15,60 +22,111 @@ import { LambdaInvoke } from '../lib';
  * The assertion checks that the expected tag is created by calling listTags on the lambda function
  */
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-schedule');
+/**
+ * 1st stack creates a lambda which will be imported to 2nd stack to test using imported lambda
+ */
+const lambdaStack = new cdk.Stack(app, 'aws-cdk-schedule-lambda');
 
-const functionName = 'TestSchedulerLambdaInvokeTarget';
-const functionArn = stack.formatArn({
-  service: 'lambda',
-  resource: 'function',
-  resourceName: functionName,
-  arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
-});
-const payload = 'test';
-
-const func = new lambda.Function(stack, 'MyLambda', {
+const funcName = 'FirstSelfTaggingLambda';
+const funcToBeImported = new lambda.Function(lambdaStack, 'MyLambda', {
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.schedule-lambda-target.handler')),
   handler: 'index.handler',
   timeout: cdk.Duration.seconds(30),
   runtime: lambda.Runtime.NODEJS_LATEST,
-  functionName: functionName,
+  functionName: funcName,
 });
-func.addEnvironment('FUNC_ARN', stack.resolve(functionArn));
+funcToBeImported.addToRolePolicy(LAMBDA_TAGGING_PERMISSION);
 
-func.addToRolePolicy(new iam.PolicyStatement(
-  new iam.PolicyStatement({
-    actions: ['lambda:TagResource'],
-    resources: ['*'],
-  }),
-));
+const funcToBeImportedStaticArn = lambdaStack.formatArn({
+  service: 'lambda',
+  resource: 'function',
+  resourceName: funcName,
+  arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+});
+funcToBeImported.addEnvironment('FUNC_ARN', lambdaStack.resolve(funcToBeImportedStaticArn));
 
-new scheduler.Schedule(stack, 'Schedule', {
+/**
+ * 2nd stack creates a lambda and a schedule to check they integrate correctly.
+ * It also creates a schedule to use with an imported lambda from the 1st stack above.
+ */
+
+const scheduleStack = new cdk.Stack(app, 'aws-cdk-schedule');
+scheduleStack.addDependency(lambdaStack);
+
+// 1st case with imported lambda
+const importedFunc = lambda.Function.fromFunctionAttributes(scheduleStack, 'importedFromFirstStack', {
+  functionArn: funcToBeImportedStaticArn,
+  skipPermissions: true,
+});
+const importedLambdaTagValue = 'importedLambdaTagValue';
+new scheduler.Schedule(scheduleStack, 'ScheduleWithImportedLambda', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
-  target: new LambdaInvoke(func, {
-    input: scheduler.ScheduleTargetInput.fromText(payload),
+  target: new LambdaInvoke(importedFunc, {
+    input: scheduler.ScheduleTargetInput.fromObject({ tagValue: importedLambdaTagValue }),
   }),
 });
-// test multiple schedules with same target ARN are created correctly
-new scheduler.Schedule(stack, 'Schedule2', {
+
+// 2nd case with lambda and schedule in same stack
+const secondFuncName = 'SecondSelfTaggingLambda';
+const sameStackFunc = new lambda.Function(scheduleStack, 'MyLambda', {
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.schedule-lambda-target.handler')),
+  handler: 'index.handler',
+  timeout: cdk.Duration.seconds(30),
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  functionName: secondFuncName,
+});
+sameStackFunc.addToRolePolicy(LAMBDA_TAGGING_PERMISSION);
+const sameStackFuncStaticArn = scheduleStack.formatArn({
+  service: 'lambda',
+  resource: 'function',
+  resourceName: secondFuncName,
+  arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+});
+sameStackFunc.addEnvironment('FUNC_ARN', scheduleStack.resolve(sameStackFuncStaticArn));
+
+const sameStackLambdaTagValue = 'sameStackLambdaTagValue';
+new scheduler.Schedule(scheduleStack, 'ScheduleWithSameStackLambda', {
+  schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
+  target: new LambdaInvoke(sameStackFunc, {
+    input: scheduler.ScheduleTargetInput.fromObject({ tagValue: sameStackLambdaTagValue }),
+  }),
+});
+
+// 3rd case testing reusing target lambda, static date and target props
+new scheduler.Schedule(scheduleStack, 'ScheduleWithStaticDate', {
   schedule: scheduler.ScheduleExpression.at(new Date('2000-01-01T00:00:00Z')),
-  target: new LambdaInvoke(func, { retryAttempts: 0 }),
+  target: new LambdaInvoke(sameStackFunc, { maxEventAge: cdk.Duration.minutes(1), retryAttempts: 1 }),
 });
 
 const integ = new IntegTest(app, 'integtest-lambda-invoke', {
-  testCases: [stack],
+  testCases: [scheduleStack],
   stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
 });
 
-const invokeListTags = integ.assertions.awsApiCall('Lambda', 'listTags', {
-  Resource: func.functionArn,
+const listTagsOnImportedLambda = integ.assertions.awsApiCall('Lambda', 'listTags', {
+  Resource: funcToBeImportedStaticArn,
 });
 
 // Verifies that expected tag is created for the lambda function
-invokeListTags.expect(ExpectedResult.objectLike({
+listTagsOnImportedLambda.expect(ExpectedResult.objectLike({
   Tags: {
-    OutputValue: Buffer.from(JSON.stringify(payload)).toString('base64'),
+    OutputValue: Buffer.from(JSON.stringify(importedLambdaTagValue)).toString('base64'),
   },
 })).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(10),
-  interval: cdk.Duration.seconds(5),
+  interval: cdk.Duration.seconds(10),
+});
+
+const listTagsOnSameStackLambda = integ.assertions.awsApiCall('Lambda', 'listTags', {
+  Resource: sameStackFuncStaticArn,
+});
+
+// Verifies that expected tag is created for the lambda function
+listTagsOnSameStackLambda.expect(ExpectedResult.objectLike({
+  Tags: {
+    OutputValue: Buffer.from(JSON.stringify(sameStackLambdaTagValue)).toString('base64'),
+  },
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(10),
+  interval: cdk.Duration.seconds(10),
 });

@@ -1,8 +1,8 @@
-import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, IDependable } from 'constructs';
-import { Annotations, Duration, IResource, Resource } from 'aws-cdk-lib/core';
+import { Annotations, Duration, IResource, Resource, Tags } from 'aws-cdk-lib/core';
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
-import { NetworkUtils, allRouteTableIds } from './util';
+import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
 import { ISubnetV2 } from './subnet-v2';
 
 /**
@@ -176,6 +176,45 @@ export interface NatGatewayProps extends NatGatewayOptions {
 }
 
 /**
+ * Options to define a VPC peering connection.
+ */
+export interface VPCPeeringConnectionOptions {
+  /**
+   * The VPC that is accepting the peering connection.
+   */
+  readonly acceptorVpc: IVpcV2;
+
+  /**
+   * The role arn created in the acceptor account.
+   *
+   * @default - no peerRoleArn needed if not cross account connection
+   */
+  readonly peerRoleArn?: string;
+
+  /**
+   * The resource name of the peering connection.
+   *
+   * @default - peering connection provisioned without any name
+   */
+  readonly vpcPeeringConnectionName?: string;
+}
+
+/**
+ * Properties to define a VPC peering connection.
+ */
+export interface VPCPeeringConnectionProps extends VPCPeeringConnectionOptions {
+  /**
+   * The VPC that is requesting the peering connection.
+   */
+  readonly requestorVpc: IVpcV2;
+}
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
+
+/**
  * Creates an egress-only internet gateway
  * @resource AWS::EC2::EgressOnlyInternetGateway
  */
@@ -198,6 +237,9 @@ export class EgressOnlyInternetGateway extends Resource implements IRouteTarget 
   constructor(scope: Construct, id: string, props: EgressOnlyInternetGatewayProps) {
     super(scope, id);
 
+    if (props.egressOnlyInternetGatewayName) {
+      Tags.of(this).add(NAME_TAG, props.egressOnlyInternetGatewayName);
+    }
     this.routerType = RouterType.EGRESS_ONLY_INTERNET_GATEWAY;
 
     this.resource = new CfnEgressOnlyInternetGateway(this, 'EIGW', {
@@ -245,6 +287,10 @@ export class InternetGateway extends Resource implements IRouteTarget {
     this.routerTargetId = this.resource.attrInternetGatewayId;
     this.vpcId = props.vpc.vpcId;
 
+    if (props.internetGatewayName) {
+      Tags.of(this).add(NAME_TAG, props.internetGatewayName);
+    }
+
     new CfnVPCGatewayAttachment(this, 'GWAttachment', {
       vpcId: this.vpcId,
       internetGatewayId: this.routerTargetId,
@@ -288,7 +334,9 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
   private readonly _routePropagation: CfnVPNGatewayRoutePropagation;
 
   constructor(scope: Construct, id: string, props: VPNGatewayV2Props) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.vpnGatewayName,
+    });
 
     this.routerType = RouterType.GATEWAY;
 
@@ -306,13 +354,17 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
       vpnGatewayId: this.resource.attrVpnGatewayId,
     });
 
+    if (props.vpnGatewayName) {
+      Tags.of(this).add(NAME_TAG, props.vpnGatewayName);
+    }
+
     // Propagate routes on route tables associated with the right subnets
     const vpnRoutePropagation = props.vpnRoutePropagation ?? [];
     const subnets = vpnRoutePropagation.map(s => props.vpc.selectSubnets(s).subnets).flat();
     const routeTableIds = allRouteTableIds(subnets);
 
     if (routeTableIds.length === 0) {
-      Annotations.of(this).addWarningV2('@aws-cdk:aws-ec2-elpha:enableVpnGatewayV2', `No subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Annotations.of(scope).addWarningV2('@aws-cdk:aws-ec2-elpha:enableVpnGatewayV2', `No subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     this._routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -331,15 +383,22 @@ export class VPNGatewayV2 extends Resource implements IRouteTarget {
  * @resource AWS::EC2::NatGateway
  */
 export class NatGateway extends Resource implements IRouteTarget {
+
+  /**
+   * Id of the NatGateway
+   * @attribute
+   */
+  public readonly natGatewayId: string;
+
   /**
    * The type of router used in the route.
    */
-  readonly routerType: RouterType;
+  public readonly routerType: RouterType;
 
   /**
    * The ID of the route target.
    */
-  readonly routerTargetId: string;
+  public readonly routerTargetId: string;
 
   /**
    * Indicates whether the NAT gateway supports public or private connectivity.
@@ -375,6 +434,10 @@ export class NatGateway extends Resource implements IRouteTarget {
       }
     }
 
+    if (props.natGatewayName) {
+      Tags.of(this).add(NAME_TAG, props?.natGatewayName);
+    }
+
     // If user does not provide EIP, generate one for them
     var aId: string | undefined;
     if (this.connectivityType === NatConnectivityType.PUBLIC) {
@@ -395,11 +458,112 @@ export class NatGateway extends Resource implements IRouteTarget {
       secondaryAllocationIds: props.secondaryAllocationIds,
       ...props,
     });
+    this.natGatewayId = this.resource.attrNatGatewayId;
 
     this.routerTargetId = this.resource.attrNatGatewayId;
     this.node.defaultChild = this.resource;
     this.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
+}
+
+/**
+ * Creates a peering connection between two VPCs
+ * @resource AWS::EC2::VPCPeeringConnection
+ */
+export class VPCPeeringConnection extends Resource implements IRouteTarget {
+
+  /**
+   * The type of router used in the route.
+   */
+  readonly routerType: RouterType;
+
+  /**
+   * The ID of the route target.
+   */
+  readonly routerTargetId: string;
+
+  /**
+   * The VPC peering connection CFN resource.
+   */
+  public readonly resource: CfnVPCPeeringConnection;
+
+  constructor(scope: Construct, id: string, props: VPCPeeringConnectionProps) {
+    super(scope, id);
+
+    this.routerType = RouterType.VPC_PEERING_CONNECTION;
+
+    const isCrossAccount = props.requestorVpc.ownerAccountId !== props.acceptorVpc.ownerAccountId;
+
+    if (!isCrossAccount && props.peerRoleArn) {
+      throw new Error('peerRoleArn is not needed for same account peering');
+    }
+
+    if (isCrossAccount && !props.peerRoleArn) {
+      throw new Error('Cross account VPC peering requires peerRoleArn');
+    }
+
+    const overlap = this.validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);
+    if (overlap) {
+      throw new Error('CIDR block should not overlap with each other for establishing a peering connection');
+    }
+    if (props.vpcPeeringConnectionName) {
+      Tags.of(this).add(NAME_TAG, props.vpcPeeringConnectionName);
+    }
+
+    this.resource = new CfnVPCPeeringConnection(this, 'VPCPeeringConnection', {
+      vpcId: props.requestorVpc.vpcId,
+      peerVpcId: props.acceptorVpc.vpcId,
+      peerOwnerId: props.acceptorVpc.ownerAccountId,
+      peerRegion: props.acceptorVpc.region,
+      peerRoleArn: isCrossAccount ? props.peerRoleArn : undefined,
+    });
+
+    this.routerTargetId = this.resource.attrId;
+    this.node.defaultChild = this.resource;
+  }
+
+  /**
+   * Validates if the provided IPv4 CIDR block overlaps with existing subnet CIDR blocks within the given VPC.
+   *
+   * @param requestorVpc The VPC of the requestor.
+   * @param acceptorVpc The VPC of the acceptor.
+   * @returns True if the IPv4 CIDR block overlaps with each other for two VPCs, false otherwise.
+   * @internal
+   */
+  private validateVpcCidrOverlap(requestorVpc: IVpcV2, acceptorVpc: IVpcV2): boolean {
+
+    const requestorCidrs = [requestorVpc.ipv4CidrBlock];
+    const acceptorCidrs = [acceptorVpc.ipv4CidrBlock];
+
+    if (requestorVpc.secondaryCidrBlock) {
+      requestorCidrs.push(...requestorVpc.secondaryCidrBlock
+        .map(block => block.cidrBlock)
+        .filter((cidr): cidr is string => cidr !== undefined));
+    }
+
+    if (acceptorVpc.secondaryCidrBlock) {
+      acceptorCidrs.push(...acceptorVpc.secondaryCidrBlock
+        .map(block => block.cidrBlock)
+        .filter((cidr): cidr is string => cidr !== undefined));
+    }
+
+    for (const requestorCidr of requestorCidrs) {
+      const requestorRange = new CidrBlock(requestorCidr);
+      const requestorIpRange: [string, string] = [requestorRange.minIp(), requestorRange.maxIp()];
+
+      for (const acceptorCidr of acceptorCidrs) {
+        const acceptorRange = new CidrBlock(acceptorCidr);
+        const acceptorIpRange: [string, string] = [acceptorRange.minIp(), acceptorRange.maxIp()];
+
+        if (requestorRange.rangesOverlap(acceptorIpRange, requestorIpRange)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
 }
 
 /**
@@ -534,7 +698,7 @@ export class Route extends Resource implements IRouteV2 {
   /**
    * The type of router the route is targetting
    */
-  public readonly targetRouterType: RouterType
+  public readonly targetRouterType: RouterType;
 
   /**
    * The route CFN resource.
@@ -569,7 +733,6 @@ export class Route extends Resource implements IRouteV2 {
       throw new Error('Egress only internet gateway does not support IPv4 routing');
     }
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
-
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it
     if (!(this.target.endpoint instanceof GatewayVpcEndpoint)) {
       this.resource = new CfnRoute(this, 'Route', {
@@ -630,6 +793,9 @@ export class RouteTable extends Resource implements IRouteTable {
     this.resource = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpc.vpcId,
     });
+    if (props.routeTableName) {
+      Tags.of(this).add(NAME_TAG, props.routeTableName);
+    }
     this.node.defaultChild = this.resource;
 
     this.routeTableId = this.resource.attrRouteTableId;
@@ -640,12 +806,14 @@ export class RouteTable extends Resource implements IRouteTable {
    *
    * @param destination The IPv4 or IPv6 CIDR block used for the destination match.
    * @param target The gateway or endpoint targeted by the route.
+   * @param routeName The resource name of the route.
    */
-  public addRoute(id: string, destination: string, target: RouteTargetType) {
+  public addRoute(id: string, destination: string, target: RouteTargetType, routeName?: string) {
     new Route(this, id, {
       routeTable: this,
       destination: destination,
       target: target,
+      routeName: routeName,
     });
   }
 }

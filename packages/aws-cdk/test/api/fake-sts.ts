@@ -1,7 +1,8 @@
-/* eslint-disable import/order */
+import { AssumeRoleCommand, GetCallerIdentityCommand, Tag } from '@aws-sdk/client-sts';
 import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';
+import { mockSTSClient } from '../util/mock-sdk';
 
 interface RegisteredIdentity {
   readonly account: string;
@@ -21,7 +22,7 @@ interface AssumedRole {
   readonly serialNumber: string;
   readonly tokenCode: string;
   readonly roleSessionName: string;
-  readonly tags?: AWS.STS.Tag[];
+  readonly tags?: Tag[];
   readonly transitiveTagKeys?: string[];
 }
 
@@ -35,6 +36,8 @@ interface AssumedRole {
  * Instead, we want to validate how we're setting up credentials for the
  * SDK, so we pretend to be the STS server and have an in-memory database
  * of users and roles.
+ *
+ * With the v3 upgrade, this is only now half way being used as
  */
 export class FakeSts {
   public readonly assumedRoles = new Array<AssumedRole>();
@@ -42,8 +45,7 @@ export class FakeSts {
   private identities: Record<string, RegisteredIdentity> = {};
   private roles: Record<string, RegisteredRole> = {};
 
-  constructor() {
-  }
+  constructor() {}
 
   /**
    * Begin mocking
@@ -55,31 +57,40 @@ export class FakeSts {
     if (!nock.isActive()) {
       nock.activate();
     }
-    nock(/.*/).persist().post(/.*/).reply(function (this, uri, body, cb) {
-      const parsedBody = typeof body === 'string' ? urldecode(body) : body;
+    nock(/.*/)
+      .persist()
+      .post(/.*/)
+      .reply(function (this, uri, body, cb) {
+        const parsedBody = typeof body === 'string' ? urldecode(body) : body;
 
-      try {
-        const response = self.handleRequest({
-          uri,
-          host: this.req.headers.host,
-          parsedBody,
-          headers: this.req.headers,
-        });
-        cb(null, [200, xmlJs.js2xml(response, { compact: true })]);
-      } catch (e: any) {
-        cb(null, [400, xmlJs.js2xml({
-          ErrorResponse: {
-            _attributes: { xmlns: 'https://sts.amazonaws.com/doc/2011-06-15/' },
-            Error: {
-              Type: 'Sender',
-              Code: e.code ?? 'Error',
-              Message: e.message,
-            },
-            RequestId: '1',
-          },
-        }, { compact: true })]);
-      }
-    });
+        try {
+          const response = self.handleRequest({
+            uri,
+            host: this.req.headers.host,
+            parsedBody,
+            headers: this.req.headers,
+          });
+          cb(null, [200, xmlJs.js2xml(response, { compact: true })]);
+        } catch (e: any) {
+          cb(null, [
+            400,
+            xmlJs.js2xml(
+              {
+                ErrorResponse: {
+                  _attributes: { xmlns: 'https://sts.amazonaws.com/doc/2011-06-15/' },
+                  Error: {
+                    Type: 'Sender',
+                    Code: e.name ?? 'Error',
+                    Message: e.message,
+                  },
+                  RequestId: '1',
+                },
+              },
+              { compact: true },
+            ),
+          ]);
+        }
+      });
 
     // Scrub some environment variables that might be set if we're running on CodeBuild which will interfere with the tests.
     delete process.env.AWS_PROFILE;
@@ -103,20 +114,24 @@ export class FakeSts {
    * Register a user
    */
   public registerUser(account: string, accessKey: string, options: RegisterUserOptions = {}) {
-    const userName = options.name ?? `User${Object.keys(this.identities).length + 1 }`;
+    const userName = options.name ?? `User${Object.keys(this.identities).length + 1}`;
+    const arn = `arn:${options.partition ?? 'aws'}:sts::${account}:user/${userName}`;
+    const userId = `${accessKey}:${userName}`;
 
     this.identities[accessKey] = {
-      account: account,
-      arn: `arn:${options.partition ?? 'aws'}:sts::${account}:user/${userName}`,
-      userId: `${accessKey}:${userName}`,
+      account,
+      arn,
+      userId,
     };
+
+    this.setSTSMocks(account, arn, userName, accessKey);
   }
 
   /**
    * Register an assumable role
    */
   public registerRole(account: string, roleArn: string, options: RegisterRoleOptions = {}) {
-    const roleName = options.name ?? `Role${Object.keys(this.roles).length + 1 }`;
+    const roleName = options.name ?? `Role${Object.keys(this.roles).length + 1}`;
 
     this.roles[roleArn] = {
       allowedAccounts: options.allowedAccounts ?? [account],
@@ -124,6 +139,33 @@ export class FakeSts {
       roleName,
       account,
     };
+
+    this.setSTSMocks(account, roleArn, roleArn);
+  }
+
+  private setSTSMocks(account: string, roleArn: string, name: string, accessKey?: string) {
+    const accessKeyId = accessKey ?? uuid.v4();
+    mockSTSClient
+      .on(GetCallerIdentityCommand)
+      .resolves({
+        Account: account,
+        Arn: roleArn,
+        UserId: name,
+      })
+      .on(AssumeRoleCommand)
+      .resolves({
+        AssumedRoleUser: {
+          Arn: roleArn,
+          AssumedRoleId: `${accessKeyId}:${name}`,
+        },
+        Credentials: {
+          AccessKeyId: accessKeyId,
+          SecretAccessKey: 'Secret',
+          SessionToken: 'Token',
+          Expiration: new Date(Date.now() + 3600 * 1000),
+        },
+        PackedPolicySize: 6,
+      });
   }
 
   private handleRequest(mockRequest: MockRequest): Record<string, any> {
@@ -131,16 +173,15 @@ export class FakeSts {
       const identity = this.identity(mockRequest);
 
       switch (mockRequest.parsedBody.Action) {
-        case 'GetCallerIdentity':
+        case 'GetCallerIdentityCommand':
           return this.handleGetCallerIdentity(identity);
 
-        case 'AssumeRole':
+        case 'AssumeRoleCommand':
           return this.handleAssumeRole(identity, mockRequest);
       }
 
       throw new Error(`Unrecognized Action in MockAwsHttp: ${mockRequest.parsedBody.Action}`);
     })();
-    // console.log(mockRequest.parsedBody, '->', response);
     return response;
   }
 
@@ -165,10 +206,13 @@ export class FakeSts {
    *
    * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
    */
-  private decodeMapFromRequestBody(parameter: string, body: Record<string, string>): AWS.STS.Tag[] {
+  private decodeMapFromRequestBody(parameter: string, body: Record<string, string>): Tag[] {
     return Object.entries(body)
       .filter(([key, _]) => key.startsWith(`${parameter}.member.`) && key.endsWith('.Key'))
-      .map(([key, tagKey]) => ({ Key: tagKey, Value: body[`${parameter}.member.${key.split('.')[2]}.Value`] }));
+      .map(([key, tagKey]) => ({
+        Key: tagKey,
+        Value: body[`${parameter}.member.${key.split('.')[2]}.Value`],
+      }));
   }
 
   /**
@@ -201,7 +245,9 @@ export class FakeSts {
     }
 
     if (!targetRole.allowedAccounts.includes(identity.account)) {
-      throw new Error(`Identity from account: ${identity.account} not allowed to assume ${roleArn}, must be one of: ${targetRole.allowedAccounts}`);
+      throw new Error(
+        `Identity from account: ${identity.account} not allowed to assume ${roleArn}, must be one of: ${targetRole.allowedAccounts}`,
+      );
     }
 
     const freshAccessKey = uuid.v4();
@@ -238,7 +284,7 @@ export class FakeSts {
     const failureRequested = s.match(/<FAIL:([^>]+)>/);
     if (failureRequested) {
       const err = new Error(`STS failing by user request: ${failureRequested[1]}`);
-      (err as any).code = failureRequested[1];
+      (err as any).name = failureRequested[1];
       throw err;
     }
   }
@@ -248,7 +294,9 @@ export class FakeSts {
     this.checkForFailure(keyId);
 
     const ret = this.identities[keyId];
-    if (!ret) { throw new Error(`Unrecognized access key used: ${keyId}`); }
+    if (!ret) {
+      throw new Error(`Unrecognized access key used: ${keyId}`);
+    }
     return ret;
   }
 
@@ -260,7 +308,9 @@ export class FakeSts {
     const auth = mockRequest.headers.authorization;
 
     const m = auth?.match(/Credential=([^\/]+)/);
-    if (!m) { throw new Error(`No correct authorization header: ${auth}`); }
+    if (!m) {
+      throw new Error(`No correct authorization header: ${auth}`);
+    }
     return m[1];
   }
 }
@@ -273,7 +323,10 @@ export interface RegisterUserOptions {
 export interface RegisterRoleOptions {
   readonly allowedAccounts?: string[];
   readonly name?: string;
-  readonly partition?: string;
+}
+
+export interface STSMocksOptions {
+  readonly accessKey?: string;
 }
 
 interface MockRequest {

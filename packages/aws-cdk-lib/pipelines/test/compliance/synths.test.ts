@@ -186,6 +186,27 @@ test('CodeBuild: environment variables specified in multiple places are correctl
     }),
   });
 
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-2', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+      primaryOutputDirectory: '.',
+      env: {
+        SOME_ENV_VAR: 'SomeValue',
+      },
+      installCommands: [
+        'install1',
+        'install2',
+      ],
+      commands: ['synth'],
+      buildEnvironment: {
+        environmentVariables: {
+          INNER_VAR: { value: 'InnerValue' },
+        },
+        privileged: true,
+      },
+    }),
+  });
+
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     Environment: Match.objectLike({
@@ -215,27 +236,6 @@ test('CodeBuild: environment variables specified in multiple places are correctl
         },
       })),
     },
-  });
-
-  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-2', {
-    synth: new cdkp.CodeBuildStep('Synth', {
-      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
-      primaryOutputDirectory: '.',
-      env: {
-        SOME_ENV_VAR: 'SomeValue',
-      },
-      installCommands: [
-        'install1',
-        'install2',
-      ],
-      commands: ['synth'],
-      buildEnvironment: {
-        environmentVariables: {
-          INNER_VAR: { value: 'InnerValue' },
-        },
-        privileged: true,
-      },
-    }),
   });
 
   // THEN

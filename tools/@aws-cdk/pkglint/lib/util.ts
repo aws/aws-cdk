@@ -8,13 +8,13 @@ import { PackageJson, PKGLINT_IGNORES } from './packagejson';
 export function expectJSON(
   ruleName: string,
   pkg: PackageJson,
-  jsonPath: string,
+  jsonPath: string | string[],
   expected: any,
   ignore?: RegExp,
   caseInsensitive: boolean = false,
   regexMatch: boolean = false,
 ) {
-  const parts = jsonPath.split('.');
+  const parts = Array.isArray(jsonPath) ? jsonPath : jsonPath.split('.');
   const actual = deepGet(pkg.json, parts);
   if (checkEquality()) {
     pkg.report({

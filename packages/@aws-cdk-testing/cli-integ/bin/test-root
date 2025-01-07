@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('./test-root.js');
+require('../lib/cli/test-root.js');

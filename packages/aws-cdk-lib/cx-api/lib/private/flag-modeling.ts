@@ -30,7 +30,7 @@ export interface FlagInfoBase {
   /** Version number the flag was introduced in each version line. `undefined` means flag does not exist in that line. */
   readonly introducedIn: { v1?: string; v2?: string };
   /** Default value, if flag is unset by user. Adding a flag with a default may not change behavior after GA! */
-  readonly defaults?: { v2?: any };
+  readonly defaults?: { v1?: any; v2?: any };
   /** Default in new projects */
   readonly recommendedValue: any;
 };

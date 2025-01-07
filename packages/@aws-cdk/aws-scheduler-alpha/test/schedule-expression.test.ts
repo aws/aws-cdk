@@ -118,7 +118,7 @@ describe('schedule expression', () => {
   });
 
   test('one-time expression with invalid date throws', () => {
-    expect(() => ScheduleExpression.at(new Date('13-20-1969'))).toThrowError('Invalid date');
+    expect(() => ScheduleExpression.at(new Date('13-20-1969'))).toThrow('Invalid date');
   });
 });
 
@@ -130,13 +130,13 @@ describe('fractional minutes checks', () => {
   });
 
   test('rate cannot be a fractional amount of minutes (defined with minutes)', () => {
-    expect(()=> {
-      ScheduleExpression.rate(Duration.minutes(5/3));
+    expect(() => {
+      ScheduleExpression.rate(Duration.minutes(5 / 3));
     }).toThrow(/must be a whole number of/);
   });
 
   test('rate cannot be a fractional amount of minutes (defined with hours)', () => {
-    expect(()=> {
+    expect(() => {
       ScheduleExpression.rate(Duration.hours(1.03));
     }).toThrow(/cannot be converted into a whole number of/);
   });
@@ -149,7 +149,7 @@ describe('fractional minutes checks', () => {
 
   test('rate cannot be less than 1 minute (defined with minutes as fractions)', () => {
     expect(() => {
-      ScheduleExpression.rate(Duration.minutes(1/2));
+      ScheduleExpression.rate(Duration.minutes(1 / 2));
     }).toThrow(/must be a whole number of/);
   });
 
@@ -163,5 +163,10 @@ describe('fractional minutes checks', () => {
     expect('rate(10 minutes)').toEqual(
       ScheduleExpression.rate(Duration.minutes(10))
         .expressionString);
+  });
+
+  test('literal schedule expression', () => {
+    expect('rate(1 hour)').toEqual(
+      ScheduleExpression.expression('rate(1 hour)').expressionString);
   });
 });

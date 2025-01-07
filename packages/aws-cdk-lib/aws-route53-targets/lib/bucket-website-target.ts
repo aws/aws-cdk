@@ -1,3 +1,4 @@
+import { IAliasRecordTargetProps } from './shared';
 import * as route53 from '../../aws-route53';
 import * as s3 from '../../aws-s3';
 import { Stack, Token } from '../../core';
@@ -7,8 +8,7 @@ import { RegionInfo } from '../../region-info';
  * Use a S3 as an alias record target
  */
 export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
-  constructor(private readonly bucket: s3.IBucket) {
-  }
+  constructor(private readonly bucket: s3.IBucket, private readonly props?: IAliasRecordTargetProps) {}
 
   public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     const { region } = Stack.of(this.bucket.stack);
@@ -27,6 +27,6 @@ export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
       throw new Error(`Bucket website target is not supported for the "${region}" region`);
     }
 
-    return { hostedZoneId, dnsName };
+    return { hostedZoneId, dnsName, evaluateTargetHealth: this.props?.evaluateTargetHealth };
   }
 }

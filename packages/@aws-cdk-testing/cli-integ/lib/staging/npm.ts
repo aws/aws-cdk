@@ -31,7 +31,7 @@ export async function uploadNpmPackages(packages: string[], login: LoginInformat
     await shell(['node', require.resolve('npm'), 'publish', path.resolve(pkg)], {
       modEnv: npmEnv(usageDir, login),
       show: 'error',
-      output,
+      outputs: [output],
     });
 
     console.log(`✅ ${pkg}`);

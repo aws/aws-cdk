@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "bastionhost-disable-al2023-feature-flag-test/DefaultTest": {
+      "stacks": [
+        "integ-bastionhost-disable-al2023-feature-flag"
+      ],
+      "assertionStack": "bastionhost-disable-al2023-feature-flag-test/DefaultTest/DeployAssert",
+      "assertionStackName": "bastionhostdisableal2023featureflagtestDefaultTestDeployAssert09C4BDD4"
+    }
+  }
+}

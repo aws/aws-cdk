@@ -1,0 +1,223 @@
+{
+ "Resources": {
+  "GeofenceCollection1D36FEE6D": {
+   "Type": "AWS::Location::GeofenceCollection",
+   "Properties": {
+    "CollectionName": "cdkinteglocationtrackerGeofenceCollection10D13873F"
+   }
+  },
+  "GeofenceCollection2348D6DB5": {
+   "Type": "AWS::Location::GeofenceCollection",
+   "Properties": {
+    "CollectionName": "cdkinteglocationtrackerGeofenceCollection262FB26D9"
+   }
+  },
+  "GeofenceCollectionForAdd131D6B4EA": {
+   "Type": "AWS::Location::GeofenceCollection",
+   "Properties": {
+    "CollectionName": "cdkinteglocationtrackerGeofenceCollectionForAdd1449865F9"
+   }
+  },
+  "GeofenceCollectionForAdd21A9CA549": {
+   "Type": "AWS::Location::GeofenceCollection",
+   "Properties": {
+    "CollectionName": "cdkinteglocationtrackerGeofenceCollectionForAdd22B418373"
+   }
+  },
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TrackerAF5FC55F": {
+   "Type": "AWS::Location::Tracker",
+   "Properties": {
+    "Description": "test tracker",
+    "EventBridgeEnabled": true,
+    "KmsKeyEnableGeospatialQueries": true,
+    "KmsKeyId": {
+     "Fn::GetAtt": [
+      "Key961B73FD",
+      "Arn"
+     ]
+    },
+    "PositionFiltering": "AccuracyBased",
+    "TrackerName": "My_Tracker"
+   }
+  },
+  "TrackerTrackerConsumerGeofenceCollection106C790AE": {
+   "Type": "AWS::Location::TrackerConsumer",
+   "Properties": {
+    "ConsumerArn": {
+     "Fn::GetAtt": [
+      "GeofenceCollection1D36FEE6D",
+      "Arn"
+     ]
+    },
+    "TrackerName": {
+     "Ref": "TrackerAF5FC55F"
+    }
+   }
+  },
+  "TrackerTrackerConsumerGeofenceCollection2BA7E93DE": {
+   "Type": "AWS::Location::TrackerConsumer",
+   "Properties": {
+    "ConsumerArn": {
+     "Fn::GetAtt": [
+      "GeofenceCollection2348D6DB5",
+      "Arn"
+     ]
+    },
+    "TrackerName": {
+     "Ref": "TrackerAF5FC55F"
+    }
+   }
+  },
+  "TrackerTrackerConsumerGeofenceCollectionForAdd1BAA19E05": {
+   "Type": "AWS::Location::TrackerConsumer",
+   "Properties": {
+    "ConsumerArn": {
+     "Fn::GetAtt": [
+      "GeofenceCollectionForAdd131D6B4EA",
+      "Arn"
+     ]
+    },
+    "TrackerName": {
+     "Ref": "TrackerAF5FC55F"
+    }
+   }
+  },
+  "TrackerTrackerConsumerGeofenceCollectionForAdd268D815CE": {
+   "Type": "AWS::Location::TrackerConsumer",
+   "Properties": {
+    "ConsumerArn": {
+     "Fn::GetAtt": [
+      "GeofenceCollectionForAdd21A9CA549",
+      "Arn"
+     ]
+    },
+    "TrackerName": {
+     "Ref": "TrackerAF5FC55F"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttGeofenceCollection1D36FEE6DArn9B50BDFC": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GeofenceCollection1D36FEE6D",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputFnGetAttGeofenceCollection1D36FEE6DArn9B50BDFC"
+   }
+  },
+  "ExportsOutputFnGetAttGeofenceCollection2348D6DB5Arn8B13E123": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GeofenceCollection2348D6DB5",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputFnGetAttGeofenceCollection2348D6DB5Arn8B13E123"
+   }
+  },
+  "ExportsOutputFnGetAttGeofenceCollectionForAdd131D6B4EAArnBFDA7317": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GeofenceCollectionForAdd131D6B4EA",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputFnGetAttGeofenceCollectionForAdd131D6B4EAArnBFDA7317"
+   }
+  },
+  "ExportsOutputFnGetAttGeofenceCollectionForAdd21A9CA549Arn540CF730": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GeofenceCollectionForAdd21A9CA549",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputFnGetAttGeofenceCollectionForAdd21A9CA549Arn540CF730"
+   }
+  },
+  "ExportsOutputRefTrackerAF5FC55FD7F6E1CB": {
+   "Value": {
+    "Ref": "TrackerAF5FC55F"
+   },
+   "Export": {
+    "Name": "cdk-integ-location-tracker:ExportsOutputRefTrackerAF5FC55FD7F6E1CB"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

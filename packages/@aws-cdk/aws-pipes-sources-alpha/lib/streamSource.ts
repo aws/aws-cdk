@@ -17,15 +17,15 @@ export interface StreamSourceParameters {
   readonly batchSize?: number;
 
   /**
-    * Define the target to send dead-letter queue events to.
-    *
-    * The dead-letter queue stores any events that are not successfully delivered to a Pipes target after all retry attempts are exhausted.
-    * You can then resolve the issue that caused the failed invocations and replay the events at a later time.
-    * In some cases, such as when access is denied to a resource, events are sent directly to the dead-letter queue and are not retried.
-    *
-    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-deadletterconfig
-    * @default - no dead-letter queue or topic
-    */
+   * Define the target to send dead-letter queue events to.
+   *
+   * The dead-letter queue stores any events that are not successfully delivered to a Pipes target after all retry attempts are exhausted.
+   * You can then resolve the issue that caused the failed invocations and replay the events at a later time.
+   * In some cases, such as when access is denied to a resource, events are sent directly to the dead-letter queue and are not retried.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-deadletterconfig
+   * @default - no dead-letter queue or topic
+   */
   readonly deadLetterTarget?: IQueue | ITopic;
 
   /**

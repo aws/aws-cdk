@@ -314,7 +314,7 @@ test('Error when grantRead with different role and no KMS', () => {
   // THEN
   expect(() => {
     secret.grantRead(role);
-  }).toThrowError('KMS Key must be provided for cross account access to Secret');
+  }).toThrow('KMS Key must be provided for cross account access to Secret');
 });
 
 test('grantRead with KMS Key', () => {
