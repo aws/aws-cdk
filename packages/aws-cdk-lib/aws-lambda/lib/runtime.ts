@@ -402,3 +402,4 @@ export function determineLatestNodeRuntime(scope: Construct): Runtime {
   const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_18_X.name);
   return new Runtime(runtimeName, RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 }
+
