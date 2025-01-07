@@ -35,6 +35,7 @@ taskDefinition.addContainer('DefaultContainer', {
 const ecsService = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -777,6 +778,7 @@ const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -790,6 +792,7 @@ const service = new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -810,14 +813,16 @@ new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1)
+  minHealthyPercent: 100,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1),
 });
 
 new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST
+  minHealthyPercent: 100,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST,
 });
 ```
 
@@ -838,6 +843,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   circuitBreaker: {
     enable: true,
     rollback: true
@@ -874,6 +880,7 @@ declare const elbAlarm: cw.Alarm;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   deploymentAlarms: {
     alarmNames: [elbAlarm.alarmName],
     behavior: ecs.AlarmBehavior.ROLLBACK_ON_ALARM,
@@ -960,6 +967,7 @@ const service = new ecs.FargateService(this, 'Service', {
   serviceName,
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 
 const cpuMetric = new cw.Metric({
@@ -997,7 +1005,7 @@ on the service, there will be no restrictions on the alarm name.
 declare const vpc: ec2.Vpc;
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
@@ -1024,7 +1032,7 @@ Alternatively, you can also create all load balancer targets to be registered in
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const vpc: ec2.Vpc;
-const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
@@ -1063,7 +1071,7 @@ for the alternatives.
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const vpc: ec2.Vpc;
-const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elb.LoadBalancer(this, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
@@ -1076,7 +1084,7 @@ Similarly, if you want to have more control over load balancer targeting:
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const vpc: ec2.Vpc;
-const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elb.LoadBalancer(this, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
@@ -1412,6 +1420,7 @@ specificContainer.addPortMappings({
 new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   cloudMapOptions: {
     // Create SRV records - useful for bridge networking
     dnsRecordType: cloudmap.DnsRecordType.SRV,
@@ -1469,6 +1478,7 @@ taskDefinition.addContainer('web', {
 new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
       capacityProvider: 'FARGATE_SPOT',
@@ -1546,6 +1556,7 @@ taskDefinition.addContainer('web', {
 new ecs.Ec2Service(this, 'EC2Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
       capacityProvider: capacityProvider.capacityProviderName,
@@ -1642,6 +1653,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   enableExecuteCommand: true,
 });
 ```
@@ -1715,6 +1727,7 @@ cluster.addDefaultCloudMapNamespace({
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   serviceConnectConfiguration: {
     services: [
       {
@@ -1739,6 +1752,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 service.enableServiceConnect();
 ```
@@ -1752,6 +1766,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const customService = new ecs.FargateService(this, 'CustomizedService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   serviceConnectConfiguration: {
     logDriver: ecs.LogDrivers.awsLogs({
       streamPrefix: 'sc-traffic',
@@ -1781,6 +1796,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   serviceConnectConfiguration: {
     services: [
       {
@@ -1844,6 +1860,7 @@ taskDefinition.addVolume(volume);
 const service = new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 
 service.addVolume(volume);
@@ -1873,6 +1890,7 @@ taskDefinition.addVolume(volumeFromSnapshot);
 const service = new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 
 service.addVolume(volumeFromSnapshot);
