@@ -702,7 +702,7 @@ export class Cluster extends Resource implements ICluster {
 
       if (!FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking) &&
         FeatureFlags.of(this).isEnabled(Enable_IMDS_Blocking_Deprecated_Feature)) {
-        // new commands
+        // new commands from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html#task-iam-role-considerations
         autoScalingGroup.addUserData('sudo yum install -y iptables-services; sudo iptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
         autoScalingGroup.addUserData('sudo iptables-save | sudo tee /etc/sysconfig/iptables && sudo systemctl enable --now iptables');
       } else if (!FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking) &&
