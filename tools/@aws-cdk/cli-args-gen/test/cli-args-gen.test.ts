@@ -13,6 +13,11 @@ describe('render', () => {
           desc: 'Enable debug logging',
           default: false,
         },
+        verbose: {
+          type: 'boolean',
+          count: true,
+          desc: 'Increase logging verbosity',
+        },
         context: {
           default: [],
           type: 'array',
@@ -87,6 +92,13 @@ describe('render', () => {
          * @default - false
          */
         readonly debug?: boolean;
+
+        /**
+         * Increase logging verbosity
+         *
+         * @default - undefined
+         */
+        readonly verbose?: number;
 
         /**
          * context values
