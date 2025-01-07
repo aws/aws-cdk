@@ -25,7 +25,9 @@ export interface OriginGroupProps {
   /**
    * The selection criteria for the origin group.
    *
-   * @default - nothing is returned
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html#concept_origin_groups.creating
+   *
+   * @default - OriginSelectionCriteria.DEFAULT
    */
   readonly selectionCriteria?: cloudfront.OriginSelectionCriteria;
 }
