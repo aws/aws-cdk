@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.174.1](https://github.com/aws/aws-cdk/compare/v2.174.0...v2.174.1) (2025-01-07)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#32755](https://github.com/aws/aws-cdk/issues/32755)) ([0bc32c9](https://github.com/aws/aws-cdk/commit/0bc32c9acca6f8524ca0c8d925534ede79950213))
+* update L1 CloudFormation resource definitions ([#32768](https://github.com/aws/aws-cdk/issues/32768)) ([20070a4](https://github.com/aws/aws-cdk/commit/20070a4cc77133e4fbdb556655cb3d0127620397))
+
 ## [2.174.0](https://github.com/aws/aws-cdk/compare/v2.173.4...v2.174.0) (2025-01-04)
 
 
