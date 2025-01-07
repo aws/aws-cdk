@@ -3,6 +3,14 @@ import * as fc from 'fast-check';
 import * as fs from 'fs-extra';
 import { App, AppProps, AspectApplication, Aspects, IAspect } from '../lib';
 
+// Control number of runs from an env var for a burn-in test
+if (process.env.FAST_CHECK_NUM_RUNS) {
+  fc.configureGlobal({
+    ...fc.readConfigureGlobal(),
+    numRuns: Number(process.env.FAST_CHECK_NUM_RUNS),
+  });
+}
+
 //////////////////////////////////////////////////////////////////////
 //  Tests
 
@@ -13,7 +21,7 @@ describe('every aspect gets invoked exactly once', () => {
         afterSynth((testApp) => {
           forEveryVisitPair(testApp.actionLog, (a, b) => {
             if (sameConstruct(a, b) && sameAspect(a, b)) {
-              throw new Error(`Duplicate visit: ${a.index} and ${b.index}`);
+              throw new Error(`Duplicate visit: t=${a.index} and t=${b.index}`);
             }
           });
         }, stabilizeAspects)(app);
@@ -34,7 +42,7 @@ describe('every aspect gets invoked exactly once', () => {
             for (const construct of originalConstructsOnApp) {
               if (isAncestorOf(aspectApplication.construct, construct)) {
                 if (!visitsMap.get(construct)!.includes(aspectApplication.aspect)) {
-                  throw new Error(`Aspect ${aspectApplication.aspect.constructor.name} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its original scope.`);
+                  throw new Error(`Aspect ${aspectApplication.aspect} applied on ${aspectApplication.construct.node.path} did not visit construct ${construct.node.path} in its original scope.`);
                 }
               }
             }
@@ -86,23 +94,14 @@ test('inherited aspects get invoked before locally defined aspects, if both have
 
           if (!(aInherited == true && bInherited == false)) return;
 
-          // But only if the application of aspect A exists at least as long as the application of aspect B
-          /*
-          const aAppliedT = aspectAppliedT(testApp, a.aspect, a.construct);
-          const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
-
-          if (!(aAppliedT <= bAppliedT)) return;
-          */
-
           if (!(a.index < b.index)) {
             throw new Error(
-              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
+              `Aspect ${a.aspect}@${aPrio} at t=${a.index} (inherited=${aInherited}) should have been before ${b.aspect}@${bPrio} at t=${b.index} (inherited=${bInherited}), but was after`,
             );
           }
         });
       }, stabilizeAspects)(app);
     }),
-    { seed: 1151562818, path: '59:26:25:23:23:23:23:23:13:0', endOnFailure: true },
   ),
 );
 
@@ -122,7 +121,7 @@ test('for every construct, lower priorities go before higher priorities', () =>
 
           if (!implies(aPrio < bPrio && aAppliedT <= bAppliedT, a.index < b.index)) {
             throw new Error(
-              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
+              `Aspect ${a.aspect}@${aPrio} (applied at t=${aAppliedT}) at t=${a.index} should have been before ${b.aspect}@${bPrio} (applied at t=${bAppliedT}) at t=${b.index}, but was after`,
             );
           }
         });
@@ -141,9 +140,12 @@ test('for every construct, if a invokes before b that must mean it is of equal o
           const aPrio = lowestAspectPrioFor(a.aspect, a.construct);
           const bPrio = lowestAspectPrioFor(b.aspect, b.construct);
 
-          if (!implies(a.index < b.index, aPrio <= bPrio)) {
+          // We can't invoke an aspect before it was applied
+          const bAppliedT = aspectAppliedT(testApp, b.aspect, b.construct);
+
+          if (!implies(bAppliedT < a.index && a.index < b.index, aPrio <= bPrio)) {
             throw new Error(
-              `Aspect ${a.aspect}@${aPrio} at ${a.index} should have been before ${b.aspect}@${bPrio} at ${b.index}, but was after`,
+              `Aspect ${a.aspect}@${aPrio} at t=${a.index} should have been after ${b.aspect}@${bPrio} (added at t=${bAppliedT}) at t=${b.index}, but was before`,
             );
           }
         });
@@ -282,13 +284,27 @@ function ancestors(a: Construct): IConstruct[] {
 /**
  * Returns all aspects of the given construct's ancestors (excluding its own locally defined aspects)
  */
-function allAncestorAspects(a: IConstruct): IAspect[] {
-  const ancestorConstructs = ancestors(a);
+function allAncestorAspects(c: IConstruct): IAspect[] {
+  const ancestorConstructs = ancestors(c);
 
   // Filter out the current node and get aspects of the ancestors
   return ancestorConstructs
     .slice(1) // Exclude the node itself
     .flatMap((ancestor) => Aspects.of(ancestor).applied.map((aspectApplication) => aspectApplication.aspect));
+}
+
+/**
+ * Return all aspects locally defined on this construct
+ */
+function localAspects(c: IConstruct): IAspect[] {
+  return Aspects.of(c).applied.map((aspectApplication) => aspectApplication.aspect);
+}
+
+/**
+ * Return whether an aspect is inherited and NOT locally defined
+ */
+function isAspectExclusivelyInherited(a: IAspect, c: IConstruct) {
+  return allAncestorAspects(c).includes(a) && !localAspects(c).includes(a);
 }
 
 /**
@@ -423,7 +439,7 @@ class PrettyApp {
     recurse(this.cdkApp);
     lines.push('VISITS');
     this.actionLog.forEach((visit, i) => {
-      lines.push(`  ${i}. ${renderAspectAction(visit)}`);
+      lines.push(`  t=${i}. ${renderAspectAction(visit)}`);
     });
 
     lines.push('', '');
@@ -785,14 +801,19 @@ class AspectAddingAspect extends TracingAspect {
 
     const constructs = this.newAspect.constructPaths.map((p) => findConstructDeep(node.node.root, p));
     for (const construct of constructs) {
-      Aspects.of(construct).add(this.newAspect.aspect, { priority: this.newAspect.priority });
-      const executionState = this.executionState(node);
-      executionState.actionLog.push({
-        action: 'aspectApplied',
-        construct,
-        aspect: this.newAspect.aspect,
-        priority: this.newAspect.priority,
-      });
+      const constructAspects = Aspects.of(construct);
+      const cnt = constructAspects.applied.length;
+      constructAspects.add(this.newAspect.aspect, { priority: this.newAspect.priority });
+
+      if (constructAspects.applied.length !== cnt) {
+        const executionState = this.executionState(node);
+        executionState.actionLog.push({
+          action: 'aspectApplied',
+          construct,
+          aspect: this.newAspect.aspect,
+          priority: this.newAspect.priority,
+        });
+      }
     }
   }
 

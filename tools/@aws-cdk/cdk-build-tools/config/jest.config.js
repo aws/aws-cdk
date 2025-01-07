@@ -40,5 +40,5 @@ module.exports = {
    * The exception is when we use our custom logger in the CLI or when other processes are spun up
    * within tests. It has no impact there.
    */
-  silent: true,
+  // silent: true,
 };
